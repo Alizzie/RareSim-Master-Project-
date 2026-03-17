@@ -42,6 +42,7 @@ def main():
         "mondo_rare": "https://purl.obolibrary.org/obo/mondo/subsets/mondo-rare.owl",
         "ordo": "https://www.orphadata.com/data/ontologies/ordo/last_version/ORDO_en_4.8.owl",
         "hoom": "https://data.bioontology.org/ontologies/HOOM/submissions/13/download?apikey=8b5b7825-538d-40e0-9e9e-5ab9274a9aeb",
+        "phenotype.hpoa": "https://github.com/obophenotype/human-phenotype-ontology/releases/download/v2023-10-09/phenotype.hpoa"
     }
 
     for name, url in urls.items():
