@@ -2,7 +2,7 @@ import math
 from typing import Dict
 
 from schemas import DiseaseProfile
-
+'''Functions to compute information content (IC) values for HPO terms based on their frequencies across disease profiles.'''
 
 def compute_term_frequencies(
     disease_profiles: Dict[str, DiseaseProfile],

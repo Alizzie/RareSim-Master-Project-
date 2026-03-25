@@ -24,7 +24,7 @@ from loaders import (
 )
 from normalizers import normalize_hpo_id
 from schemas import PatientProfile
-
+'''Main script to build shared artifacts for the project, including disease profiles, HPO term frequencies, information content values, and an example patient profile.'''
 
 def save_json(data, output_path: Path) -> None:
     with output_path.open("w", encoding="utf-8") as handle:

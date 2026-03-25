@@ -1,5 +1,5 @@
 from typing import Dict, Set
-
+'''Functions to compute ancestors of HPO terms and apply the true-path rule for term propagation.'''
 
 def compute_ancestors(
     hpo_parents: Dict[str, Set[str]]

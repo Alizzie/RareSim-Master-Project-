@@ -7,7 +7,7 @@ from normalizers import (
     normalize_owl_local_id,
 )
 from schemas import DiseaseProfile
-
+'''Functions to build comprehensive disease profiles by integrating data from multiple sources (HPOA, ORDO, MONDO, HOOM) and applying propagation rules.'''
 
 def _pick_merged_description(
     ordo_description: Optional[str],

@@ -1,6 +1,6 @@
 import re
 from typing import Optional
-
+'''Functions to normalize and standardize identifiers for diseases and HPO terms, ensuring consistency across different data sources.'''
 
 HPO_PATTERN = re.compile(r"^HP:\d{7}$")
 

@@ -1,5 +1,5 @@
 from pathlib import Path
-
+'''Configuration file for the project, defining paths, constants, and settings.'''
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 ONTOLOGY_DIR = PROJECT_ROOT / "ontologies" / "model"

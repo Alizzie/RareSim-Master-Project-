@@ -2,7 +2,7 @@ import csv
 import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Dict, List, Optional, Set, Tuple
-
+'''Functions to load and parse ontology files (OWL) and annotation files (HPOA), extracting relevant metadata and relationships.'''
 
 OWL_NS = {
     "owl": "http://www.w3.org/2002/07/owl#",

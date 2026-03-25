@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from typing import Dict, Optional, Set
-
+'''Data classes representing the core entities in the project, such as diseases and patients.'''
 
 @dataclass
 class DiseaseProfile:
