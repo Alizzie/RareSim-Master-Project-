@@ -20,6 +20,7 @@ class DiseaseProfile:
     hoom_description: Optional[str] = None
 
     merged_description: Optional[str] = None
+    canonicalized_to_orpha: bool = False
 
 
 @dataclass

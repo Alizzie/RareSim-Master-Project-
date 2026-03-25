@@ -21,14 +21,6 @@ def normalize_hpo_id(hpo_id: str) -> Optional[str]:
 
 
 def normalize_disease_id(raw_id: str) -> Optional[str]:
-    """
-    Normalize disease IDs into a consistent string format.
-
-    Examples:
-      Orphanet:123 -> ORPHA:123
-      ORPHA:123 -> ORPHA:123
-      MONDO:0001234 -> MONDO:0001234
-    """
     if not raw_id:
         return None
 
@@ -40,7 +32,13 @@ def normalize_disease_id(raw_id: str) -> Optional[str]:
     if raw_id.startswith("ORPHA:"):
         return raw_id
 
+    if raw_id.startswith("OMIM:"):
+        return raw_id
+
     if raw_id.startswith("MONDO:"):
+        return raw_id
+
+    if raw_id.startswith("DECIPHER:"):
         return raw_id
 
     if raw_id.isdigit():
@@ -50,11 +48,6 @@ def normalize_disease_id(raw_id: str) -> Optional[str]:
 
 
 def normalize_owl_local_id(local_id: str) -> str:
-    """
-    Convert ontology local IDs:
-      Orphanet_123 -> ORPHA:123
-      MONDO_0001234 -> MONDO:0001234
-    """
     if local_id.startswith("Orphanet_"):
         return "ORPHA:" + local_id.split("_", maxsplit=1)[1]
 

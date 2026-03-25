@@ -22,7 +22,8 @@ from loaders import (
     load_mondo_metadata,
     load_ordo_metadata,
 )
-from normalizers import normalize_hpo_id
+from mapping_utils import build_orpha_mapping_index
+from normalizers import normalize_hpo_id, normalize_owl_local_id
 from schemas import PatientProfile
 '''Main script to build shared artifacts for the project, including disease profiles, HPO term frequencies, information content values, and an example patient profile.'''
 
@@ -64,15 +65,23 @@ def main() -> None:
     hpoa_records = load_hpoa_annotations(HPOA_PATH)
 
     print("Loading ORDO metadata...")
-    ordo_metadata = load_ordo_metadata(ORDO_PATH)
+    ordo_metadata = load_ordo_metadata(ORDO_PATH, normalize_owl_local_id)
 
     print("Loading MONDO metadata...")
-    mondo_metadata = load_mondo_metadata(MONDO_PATH)
+    mondo_metadata = load_mondo_metadata(MONDO_PATH, normalize_owl_local_id)
 
     print("Loading HOOM metadata...")
-    hoom_metadata = load_hoom_metadata(HOOM_PATH)
+    hoom_metadata = load_hoom_metadata(HOOM_PATH, normalize_owl_local_id)
 
-    print("Building disease profiles...")
+    print("Building OMIM/MONDO -> ORPHA mapping index...")
+    mapping_index = build_orpha_mapping_index(
+        ordo_metadata=ordo_metadata,
+        mondo_metadata=mondo_metadata,
+        hoom_metadata=hoom_metadata,
+    )
+    print(f"Mapping index size: {len(mapping_index)}")
+
+    print("Building disease profiles with ORPHA canonicalization...")
     disease_profiles = build_disease_profiles(
         hpoa_records=hpoa_records,
         hpo_labels=hpo_labels,
@@ -80,6 +89,7 @@ def main() -> None:
         ordo_metadata=ordo_metadata,
         mondo_metadata=mondo_metadata,
         hoom_metadata=hoom_metadata,
+        mapping_index=mapping_index,
         apply_true_path_rule=APPLY_TRUE_PATH_RULE,
     )
 
@@ -120,6 +130,7 @@ def main() -> None:
     save_json(term_frequencies, OUTPUT_DIR / "term_frequencies.json")
     save_json(ic_values, OUTPUT_DIR / "information_content.json")
     save_json(patient_json, OUTPUT_DIR / "example_patient.json")
+    save_json(mapping_index, OUTPUT_DIR / "orpha_mapping_index.json")
 
     print("Done.")
     print(f"Disease profiles built: {len(disease_profiles)}")
@@ -128,4 +139,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-    

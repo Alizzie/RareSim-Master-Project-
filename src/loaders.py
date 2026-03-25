@@ -102,6 +102,7 @@ def load_hpoa_annotations(hpoa_path: Path) -> List[dict]:
 def load_disease_ontology_metadata(
     ontology_path: Path,
     id_prefixes: tuple[str, ...],
+    normalize_local_id_func,
 ) -> Dict[str, dict]:
     """
     Generic OWL metadata loader for disease ontologies.
@@ -123,36 +124,36 @@ def load_disease_ontology_metadata(
 
         local_id = about.split("/")[-1]
 
-        label = _extract_label(cls)
-        description = _extract_description(cls)
-        xrefs = _extract_xrefs(cls)
-
         results[local_id] = {
             "uri": about,
-            "label": label,
-            "description": description,
-            "xrefs": xrefs,
+            "normalized_id": normalize_local_id_func(local_id),
+            "label": _extract_label(cls),
+            "description": _extract_description(cls),
+            "xrefs": _extract_xrefs(cls),
         }
 
     return results
 
 
-def load_ordo_metadata(ordo_path: Path) -> Dict[str, dict]:
+def load_ordo_metadata(ordo_path: Path, normalize_local_id_func) -> Dict[str, dict]:
     return load_disease_ontology_metadata(
         ontology_path=ordo_path,
         id_prefixes=("Orphanet_", "ORDO_"),
+        normalize_local_id_func=normalize_local_id_func,
     )
 
 
-def load_mondo_metadata(mondo_path: Path) -> Dict[str, dict]:
+def load_mondo_metadata(mondo_path: Path, normalize_local_id_func) -> Dict[str, dict]:
     return load_disease_ontology_metadata(
         ontology_path=mondo_path,
         id_prefixes=("MONDO_",),
+        normalize_local_id_func=normalize_local_id_func,
     )
 
 
-def load_hoom_metadata(hoom_path: Path) -> Dict[str, dict]:
+def load_hoom_metadata(hoom_path: Path, normalize_local_id_func) -> Dict[str, dict]:
     return load_disease_ontology_metadata(
         ontology_path=hoom_path,
         id_prefixes=("HOOM_", "Orphanet_", "MONDO_"),
+        normalize_local_id_func=normalize_local_id_func,
     )
