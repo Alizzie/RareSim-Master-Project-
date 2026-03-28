@@ -12,7 +12,10 @@ from config import (
     ORDO_PATH,
     OUTPUT_DIR,
 )
-from disease_profiles import build_disease_profiles
+from disease_profiles import (
+    build_canonical_disease_profiles,
+    expand_alias_profiles,
+)
 from hpo_utils import compute_ancestors, propagate_hpo_terms
 from ic import compute_information_content, compute_term_frequencies
 from loaders import (
@@ -54,6 +57,40 @@ def build_patient_profile(
     )
 
 
+def is_valid_disease_profile(profile) -> bool:
+    has_hpo = len(profile.hpo_terms) > 0
+    has_description = bool(profile.merged_description and profile.merged_description.strip())
+    return has_hpo or has_description
+
+
+def filter_disease_profiles(disease_profiles: dict) -> tuple[dict, dict]:
+    filtered = {}
+    removed_no_hpo_no_desc = 0
+
+    for disease_id, profile in disease_profiles.items():
+        if is_valid_disease_profile(profile):
+            filtered[disease_id] = profile
+        else:
+            removed_no_hpo_no_desc += 1
+
+    stats = {
+        "total_before_filter": len(disease_profiles),
+        "total_after_filter": len(filtered),
+        "removed_no_hpo_no_description": removed_no_hpo_no_desc,
+    }
+    return filtered, stats
+
+
+def serialize_profiles(disease_profiles: dict) -> dict:
+    out = {}
+    for disease_id, profile in disease_profiles.items():
+        row = asdict(profile)
+        row["hpo_terms"] = sorted(profile.hpo_terms)
+        row["propagated_hpo_terms"] = sorted(profile.propagated_hpo_terms)
+        out[disease_id] = row
+    return out
+
+
 def main() -> None:
     print("Loading HPO...")
     hpo_labels, hpo_parents = load_hpo_owl(HPO_PATH)
@@ -81,8 +118,8 @@ def main() -> None:
     )
     print(f"Mapping index size: {len(mapping_index)}")
 
-    print("Building disease profiles with ORPHA canonicalization...")
-    disease_profiles = build_disease_profiles(
+    print("Building canonical disease profiles...")
+    canonical_profiles, alias_to_canonical = build_canonical_disease_profiles(
         hpoa_records=hpoa_records,
         hpo_labels=hpo_labels,
         hpo_ancestors=hpo_ancestors,
@@ -93,11 +130,32 @@ def main() -> None:
         apply_true_path_rule=APPLY_TRUE_PATH_RULE,
     )
 
-    print("Computing term frequencies and IC...")
-    term_frequencies = compute_term_frequencies(disease_profiles)
+    print("Expanding profiles to all mapped aliases...")
+    expanded_profiles = expand_alias_profiles(
+        canonical_profiles=canonical_profiles,
+        alias_to_canonical=alias_to_canonical,
+    )
+
+    print("Filtering canonical profiles...")
+    canonical_profiles, canonical_filter_stats = filter_disease_profiles(canonical_profiles)
+
+    print("Filtering expanded alias profiles...")
+    expanded_profiles, expanded_filter_stats = filter_disease_profiles(expanded_profiles)
+
+    print(
+        f"Canonical profiles before filter: {canonical_filter_stats['total_before_filter']} | "
+        f"after: {canonical_filter_stats['total_after_filter']}"
+    )
+    print(
+        f"Expanded alias profiles before filter: {expanded_filter_stats['total_before_filter']} | "
+        f"after: {expanded_filter_stats['total_after_filter']}"
+    )
+
+    print("Computing term frequencies and IC from canonical profiles...")
+    term_frequencies = compute_term_frequencies(canonical_profiles)
     ic_values = compute_information_content(
         term_frequencies=term_frequencies,
-        total_diseases=len(disease_profiles),
+        total_diseases=len(canonical_profiles),
     )
 
     print("Building example patient profile...")
@@ -110,18 +168,12 @@ def main() -> None:
     )
 
     print("Saving outputs...")
-    disease_profiles_json = {}
-    for disease_id, profile in disease_profiles.items():
-        row = asdict(profile)
-        row["hpo_terms"] = sorted(profile.hpo_terms)
-        row["propagated_hpo_terms"] = sorted(profile.propagated_hpo_terms)
-        disease_profiles_json[disease_id] = row
-
     patient_json = asdict(patient)
     patient_json["hpo_terms"] = sorted(patient.hpo_terms)
     patient_json["propagated_hpo_terms"] = sorted(patient.propagated_hpo_terms)
 
-    save_json(disease_profiles_json, OUTPUT_DIR / "disease_profiles.json")
+    save_json(serialize_profiles(canonical_profiles), OUTPUT_DIR / "canonical_disease_profiles.json")
+    save_json(serialize_profiles(expanded_profiles), OUTPUT_DIR / "disease_profiles.json")
     save_json(hpo_labels, OUTPUT_DIR / "hpo_labels.json")
     save_json(
         {k: sorted(v) for k, v in hpo_ancestors.items()},
@@ -131,11 +183,15 @@ def main() -> None:
     save_json(ic_values, OUTPUT_DIR / "information_content.json")
     save_json(patient_json, OUTPUT_DIR / "example_patient.json")
     save_json(mapping_index, OUTPUT_DIR / "orpha_mapping_index.json")
+    save_json(alias_to_canonical, OUTPUT_DIR / "alias_to_canonical.json")
+    save_json(canonical_filter_stats, OUTPUT_DIR / "canonical_filter_stats.json")
+    save_json(expanded_filter_stats, OUTPUT_DIR / "expanded_filter_stats.json")
 
     print("Done.")
-    print(f"Disease profiles built: {len(disease_profiles)}")
+    print(f"Canonical profiles saved: {len(canonical_profiles)}")
+    print(f"Expanded alias profiles saved: {len(expanded_profiles)}")
     print(f"Artifacts saved to: {OUTPUT_DIR}")
-
 
 if __name__ == "__main__":
     main()
+    
