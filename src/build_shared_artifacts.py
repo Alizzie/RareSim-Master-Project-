@@ -28,7 +28,9 @@ from loaders import (
 from mapping_utils import build_orpha_mapping_index
 from normalizers import normalize_hpo_id, normalize_owl_local_id
 from schemas import PatientProfile
-'''Main script to build shared artifacts for the project, including disease profiles, HPO term frequencies, information content values, and an example patient profile.'''
+
+"""Main script to build shared artifacts for the project, including disease profiles, HPO term frequencies, information content values, and an example patient profile."""
+
 
 def save_json(data, output_path: Path) -> None:
     with output_path.open("w", encoding="utf-8") as handle:
@@ -43,7 +45,8 @@ def build_patient_profile(
     hpo_ancestors: dict[str, set[str]],
 ) -> PatientProfile:
     normalized_terms = {
-        term for term in (normalize_hpo_id(x) for x in hpo_terms)
+        term
+        for term in (normalize_hpo_id(x) for x in hpo_terms)
         if term is not None and term in hpo_labels
     }
 
@@ -59,7 +62,9 @@ def build_patient_profile(
 
 def is_valid_disease_profile(profile) -> bool:
     has_hpo = len(profile.hpo_terms) > 0
-    has_description = bool(profile.merged_description and profile.merged_description.strip())
+    has_description = bool(
+        profile.merged_description and profile.merged_description.strip()
+    )
     return has_hpo or has_description
 
 
@@ -137,10 +142,14 @@ def main() -> None:
     )
 
     print("Filtering canonical profiles...")
-    canonical_profiles, canonical_filter_stats = filter_disease_profiles(canonical_profiles)
+    canonical_profiles, canonical_filter_stats = filter_disease_profiles(
+        canonical_profiles
+    )
 
     print("Filtering expanded alias profiles...")
-    expanded_profiles, expanded_filter_stats = filter_disease_profiles(expanded_profiles)
+    expanded_profiles, expanded_filter_stats = filter_disease_profiles(
+        expanded_profiles
+    )
 
     print(
         f"Canonical profiles before filter: {canonical_filter_stats['total_before_filter']} | "
@@ -172,12 +181,21 @@ def main() -> None:
     patient_json["hpo_terms"] = sorted(patient.hpo_terms)
     patient_json["propagated_hpo_terms"] = sorted(patient.propagated_hpo_terms)
 
-    save_json(serialize_profiles(canonical_profiles), OUTPUT_DIR / "canonical_disease_profiles.json")
-    save_json(serialize_profiles(expanded_profiles), OUTPUT_DIR / "disease_profiles.json")
+    save_json(
+        serialize_profiles(canonical_profiles),
+        OUTPUT_DIR / "canonical_disease_profiles.json",
+    )
+    save_json(
+        serialize_profiles(expanded_profiles), OUTPUT_DIR / "disease_profiles.json"
+    )
     save_json(hpo_labels, OUTPUT_DIR / "hpo_labels.json")
     save_json(
         {k: sorted(v) for k, v in hpo_ancestors.items()},
         OUTPUT_DIR / "hpo_ancestors.json",
+    )
+
+    save_json(
+        {k: sorted(v) for k, v in hpo_parents.items()}, OUTPUT_DIR / "hpo_parents.json"
     )
     save_json(term_frequencies, OUTPUT_DIR / "term_frequencies.json")
     save_json(ic_values, OUTPUT_DIR / "information_content.json")
@@ -192,6 +210,6 @@ def main() -> None:
     print(f"Expanded alias profiles saved: {len(expanded_profiles)}")
     print(f"Artifacts saved to: {OUTPUT_DIR}")
 
+
 if __name__ == "__main__":
     main()
-    

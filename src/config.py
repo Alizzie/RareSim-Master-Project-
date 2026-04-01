@@ -1,5 +1,6 @@
 from pathlib import Path
-'''Configuration file for the project, defining paths, constants, and settings.'''
+
+"""Configuration file for the project, defining paths, constants, and settings."""
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 ONTOLOGY_DIR = PROJECT_ROOT / "ontologies" / "model"
@@ -27,9 +28,11 @@ MIN_DISEASE_HPO_TERMS = 1
 
 EXAMPLE_PATIENT = {
     "patient_id": "patient_001",
-    "raw_text": (
-        "Patient with developmental delay, cerebellar ataxia, "
-        "and anemia."
-    ),
+    "raw_text": ("Patient with developmental delay, cerebellar ataxia, " "and anemia."),
     "hpo_terms": ["HP:0001263", "HP:0002470", "HP:0001903"],
 }
+
+NEO4J_URI = "bolt://localhost:7687"
+NEO4J_USER = "neo4j"
+NEO4J_PASSWORD = "raresim123"
+NEO4J_DATABASE = "neo4j"
