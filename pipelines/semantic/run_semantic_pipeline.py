@@ -11,14 +11,19 @@ from semantic_methods import (
     simgic_similarity,
 )
 from semantic_utils import (
+    count_profile_term_status,
     load_json,
     preprocess_ancestor_sets,
     rank_diseases_bma,
     rank_diseases_set_based,
     save_json,
+    summarize_patient_terms,
+    summarize_top_results_namespaces,
 )
 
-'''Main script to run the semantic similarity pipeline, integrating disease profiles, patient data, and various similarity methods.'''
+"""Main script to run the semantic similarity pipeline, integrating disease
+profiles, patient data, and various similarity methods.
+"""
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 SHARED_DIR = PROJECT_ROOT / "outputs" / "shared"
@@ -44,6 +49,20 @@ def main() -> None:
     patient = load_json(SHARED_DIR / "example_patient.json")
 
     ancestor_sets = preprocess_ancestor_sets(ancestors)
+
+    patient_term_summary = summarize_patient_terms(
+        patient=patient,
+        ic_values=ic_values,
+        use_propagated_terms=USE_PROPAGATED_TERMS,
+        ic_threshold=IC_THRESHOLD,
+    )
+
+    profile_term_summary = count_profile_term_status(
+        disease_profiles=disease_profiles,
+        ic_values=ic_values,
+        use_propagated_terms=USE_PROPAGATED_TERMS,
+        ic_threshold=IC_THRESHOLD,
+    )
 
     run_config = {
         "disease_profile_file": DISEASE_PROFILE_FILE,
@@ -101,16 +120,33 @@ def main() -> None:
         all_diagnostics[method_name] = diagnostics
         save_json(results, SEMANTIC_DIR / f"{method_name}_top{TOP_K}.json")
 
+    top_result_namespace_summary = summarize_top_results_namespaces(all_results)
+
     save_json(run_config, SEMANTIC_DIR / "run_config.json")
     save_json(all_diagnostics, SEMANTIC_DIR / "run_diagnostics.json")
     save_json(all_results, SEMANTIC_DIR / f"semantic_all_methods_top{TOP_K}.json")
+    save_json(patient_term_summary, SEMANTIC_DIR / "patient_term_summary.json")
+    save_json(profile_term_summary, SEMANTIC_DIR / "profile_term_summary.json")
+    save_json(
+        top_result_namespace_summary,
+        SEMANTIC_DIR / "top_result_namespace_summary.json",
+    )
 
     print("\nRun configuration:")
     print(json.dumps(run_config, indent=2, ensure_ascii=False))
 
+    print("\nPatient term summary:")
+    print(json.dumps(patient_term_summary, indent=2, ensure_ascii=False))
+
+    print("\nDisease profile term summary:")
+    print(json.dumps(profile_term_summary, indent=2, ensure_ascii=False))
+
     print("\nDiagnostics:")
     for method_name, diagnostics in all_diagnostics.items():
         print(f"- {method_name}: {diagnostics}")
+
+    print("\nTop-result namespace summary:")
+    print(json.dumps(top_result_namespace_summary, indent=2, ensure_ascii=False))
 
     for method_name, results in all_results.items():
         print(f"\nTop results for {method_name}:")
@@ -127,3 +163,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+    

@@ -1,6 +1,8 @@
 import json
 from pathlib import Path
 from typing import Callable, Dict, List, Optional, Set, Tuple
+from collections import Counter
+from typing import Any
 '''Utility functions for semantic similarity calculations and disease profile handling:'''
 
 def load_json(path: Path) -> dict:
@@ -12,6 +14,77 @@ def save_json(data: dict | list, path: Path) -> None:
     with path.open("w", encoding="utf-8") as handle:
         json.dump(data, handle, indent=2, ensure_ascii=False)
 
+
+def get_namespace(disease_id: str) -> str:
+    if ":" in disease_id:
+        return disease_id.split(":", 1)[0]
+    return "UNKNOWN"
+
+
+def count_profile_term_status(
+    disease_profiles: Dict[str, dict],
+    ic_values: Dict[str, float],
+    use_propagated_terms: bool,
+    ic_threshold: Optional[float],
+) -> dict:
+    n_total = len(disease_profiles)
+    n_with_terms_before_filter = 0
+    n_with_terms_after_filter = 0
+    n_lost_all_terms_due_to_threshold = 0
+
+    for profile in disease_profiles.values():
+        key = "propagated_hpo_terms" if use_propagated_terms else "hpo_terms"
+        original_terms = set(profile.get(key, []))
+        filtered_terms = filter_terms_by_ic(original_terms, ic_values, ic_threshold)
+
+        if original_terms:
+            n_with_terms_before_filter += 1
+        if filtered_terms:
+            n_with_terms_after_filter += 1
+        if original_terms and not filtered_terms:
+            n_lost_all_terms_due_to_threshold += 1
+
+    return {
+        "n_total_profiles": n_total,
+        "n_with_terms_before_filter": n_with_terms_before_filter,
+        "n_with_terms_after_filter": n_with_terms_after_filter,
+        "n_lost_all_terms_due_to_threshold": n_lost_all_terms_due_to_threshold,
+    }
+
+
+def summarize_patient_terms(
+    patient: dict,
+    ic_values: Dict[str, float],
+    use_propagated_terms: bool,
+    ic_threshold: Optional[float],
+) -> dict:
+    key = "propagated_hpo_terms" if use_propagated_terms else "hpo_terms"
+    original_terms = set(patient.get(key, []))
+    filtered_terms = filter_terms_by_ic(original_terms, ic_values, ic_threshold)
+
+    removed_terms = sorted(original_terms - filtered_terms)
+    kept_terms = sorted(filtered_terms)
+
+    return {
+        "n_terms_before_filter": len(original_terms),
+        "n_terms_after_filter": len(filtered_terms),
+        "kept_terms": kept_terms,
+        "removed_terms": removed_terms,
+    }
+
+
+def count_namespaces_in_results(results: List[dict]) -> dict:
+    counter = Counter(get_namespace(row["disease_id"]) for row in results)
+    return dict(counter)
+
+
+def summarize_top_results_namespaces(
+    all_results: Dict[str, List[dict]],
+) -> dict:
+    summary = {}
+    for method_name, results in all_results.items():
+        summary[method_name] = count_namespaces_in_results(results)
+    return summary
 
 def filter_terms_by_ic(
     terms: Set[str],
