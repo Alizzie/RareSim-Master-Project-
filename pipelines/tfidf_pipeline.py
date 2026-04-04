@@ -30,7 +30,7 @@ def load_json(path: Path) -> dict:
 # Nutshell:
 #   - A term that appears in every disease profile carries no discriminative
 #     signal -> IDF = log(1) = 0 -> contributes nothing to the score
-#   - A term that appears in only 1 disease out of 10,000 is highly specific
+#   - A term that appears in only 1 disease out of 10000 is highly specific
 #     -> gets a high IDF score
 #
 # Our case: documents = disease profiles, terms = HPO phenotype terms
@@ -90,7 +90,7 @@ def disease_tfidf_vector(
 
 # Cosine Similarity
 # Compare the patient vector against each disease vector
-# Formula: cos(A, B) = (A * B) / (||A|| × ||B||)
+# Formula: cos(A, B) = (A * B) / (||A|| x ||B||)
 
 def cosine_similarity(
     vec_a: Dict[str, float],
@@ -103,10 +103,8 @@ def cosine_similarity(
     if not vec_a or not vec_b:
         return 0.0
 
-    # Dot product: sum of products of shared term weights
     dot = sum(vec_a[t] * vec_b[t] for t in vec_a if t in vec_b)
 
-    # L2 norms of each vector
     norm_a = math.sqrt(sum(v ** 2 for v in vec_a.values()))
     norm_b = math.sqrt(sum(v ** 2 for v in vec_b.values()))
 
