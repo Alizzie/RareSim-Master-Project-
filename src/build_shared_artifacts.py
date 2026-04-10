@@ -36,7 +36,7 @@ from phenotype_merge import merge_phenotype_annotation_records
 from schemas import PatientProfile
 
 """Build shared artifacts for the project, including disease profiles,
-HPO term frequencies, information content values, and an example patient profile.
+HPO parent relations, information content values, and an example patient profile.
 """
 
 
@@ -267,8 +267,11 @@ def main() -> None:
         "canonical_disease_profiles.json": serialize_profiles(canonical_profiles),
         "disease_profiles.json": serialize_profiles(expanded_profiles),
         "hpo_labels.json": hpo_labels,
+        "hpo_parents.json": {
+        k: sorted(v) for k, v in hpo_parents.items()
+        },
         "hpo_ancestors.json": {
-            key: sorted(value) for key, value in hpo_ancestors.items()
+            k: sorted(v) for k, v in hpo_ancestors.items()
         },
         "term_frequencies.json": term_frequencies,
         "information_content.json": ic_values,
@@ -296,4 +299,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-    

@@ -44,3 +44,5 @@ NEO4J_URI = "bolt://localhost:7687"
 NEO4J_USER = "neo4j"
 NEO4J_PASSWORD = "raresim123"
 NEO4J_DATABASE = "neo4j"
+
+SHARED_DIR = OUTPUT_DIR
