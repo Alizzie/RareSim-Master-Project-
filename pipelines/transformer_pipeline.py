@@ -39,9 +39,8 @@ CACHE_ROOT.mkdir(parents=True, exist_ok=True)
 
 MODEL_LIST = [
     "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
-    # "dmis-lab/biobert-base-cased-v1.1",
-    # "emilyalsentzer/Bio_ClinicalBERT",
-    # "sentence-transformers/all-MiniLM-L6-v2",
+    "emilyalsentzer/Bio_ClinicalBERT",
+    "sentence-transformers/all-MiniLM-L6-v2",
 ]
 
 TOP_K = 10
