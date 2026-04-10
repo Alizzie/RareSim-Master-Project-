@@ -2,13 +2,33 @@ import math
 from typing import Dict, List, Optional, Set, Tuple
 
 from semantic_utils import get_ancestors_inclusive, sum_ic
-'''Module for semantic similarity methods and related utilities:'''
+
+'''
+Module for semantic similarity methods between HPO terms and term sets.
+
+Core idea:
+- Terms are compared using the ontology structure (ancestors)
+- Information Content (IC) is used to measure specificity
+- More specific shared ancestors → higher similarity
+'''
+
 
 def get_common_ancestors(
     term_a: str,
     term_b: str,
     ancestor_sets: Dict[str, Set[str]],
 ) -> Set[str]:
+    """
+    Returns the set of shared ancestors between two HPO terms.
+
+    Important:
+    - Uses *inclusive* ancestors → includes the term itself
+    - Intersection defines the semantic overlap
+
+    Intuition:
+    If two terms share many ancestors (especially specific ones),
+    they are semantically related.
+    """
     ancestors_a = get_ancestors_inclusive(term_a, ancestor_sets)
     ancestors_b = get_ancestors_inclusive(term_b, ancestor_sets)
     return ancestors_a & ancestors_b
@@ -20,6 +40,20 @@ def get_mica(
     ancestor_sets: Dict[str, Set[str]],
     ic_values: Dict[str, float],
 ) -> Tuple[Optional[str], float]:
+    """
+    Computes the MICA (Most Informative Common Ancestor).
+
+    Definition:
+    - Among all shared ancestors, pick the one with highest IC
+
+    Why:
+    - IC measures specificity (rare = high IC)
+    - The most specific shared ancestor captures the strongest semantic relation
+
+    Returns:
+    - mica_term: the ancestor term
+    - mica_ic: its IC value
+    """
     common = get_common_ancestors(term_a, term_b, ancestor_sets)
     if not common:
         return None, 0.0
@@ -35,6 +69,19 @@ def resnik_similarity(
     ancestor_sets: Dict[str, Set[str]],
     ic_values: Dict[str, float],
 ) -> Tuple[float, Optional[str]]:
+    """
+    Resnik similarity.
+
+    Definition:
+    similarity = IC(MICA)
+
+    Interpretation:
+    - Only considers the shared ancestor (not individual terms)
+    - Higher IC → more specific → more similar
+
+    Limitation:
+    - Ignores how far terms are from MICA
+    """
     mica_term, mica_ic = get_mica(term_a, term_b, ancestor_sets, ic_values)
     return mica_ic, mica_term
 
@@ -45,6 +92,19 @@ def lin_similarity(
     ancestor_sets: Dict[str, Set[str]],
     ic_values: Dict[str, float],
 ) -> Tuple[float, Optional[str]]:
+    """
+    Lin similarity.
+
+    Definition:
+    (2 * IC(MICA)) / (IC(term_a) + IC(term_b))
+
+    Interpretation:
+    - Normalizes Resnik by term specificity
+    - Produces values in [0, 1]
+
+    Behavior:
+    - High when both terms are specific AND share a strong ancestor
+    """
     mica_term, mica_ic = get_mica(term_a, term_b, ancestor_sets, ic_values)
     if mica_term is None:
         return 0.0, None
@@ -66,6 +126,16 @@ def jiang_conrath_distance(
     ancestor_sets: Dict[str, Set[str]],
     ic_values: Dict[str, float],
 ) -> Tuple[float, Optional[str]]:
+    """
+    Jiang-Conrath distance.
+
+    Definition:
+    distance = IC(a) + IC(b) - 2 * IC(MICA)
+
+    Interpretation:
+    - Measures dissimilarity instead of similarity
+    - Lower distance = more similar
+    """
     mica_term, mica_ic = get_mica(term_a, term_b, ancestor_sets, ic_values)
     if mica_term is None:
         return float("inf"), None
@@ -82,6 +152,16 @@ def jiang_conrath_similarity(
     ancestor_sets: Dict[str, Set[str]],
     ic_values: Dict[str, float],
 ) -> Tuple[float, Optional[str]]:
+    """
+    Converts Jiang-Conrath distance into similarity.
+
+    Definition:
+    similarity = 1 / (1 + distance)
+
+    Interpretation:
+    - Bounded in (0,1]
+    - Higher value → more similar
+    """
     distance, mica_term = jiang_conrath_distance(
         term_a,
         term_b,
@@ -100,6 +180,20 @@ def simgic_similarity(
     disease_terms: Set[str],
     ic_values: Dict[str, float],
 ) -> Tuple[float, dict]:
+    """
+    simGIC similarity (set-based, IC-weighted Jaccard).
+
+    Definition:
+    sum(IC(intersection)) / sum(IC(union))
+
+    Interpretation:
+    - Extends Jaccard by weighting terms by importance (IC)
+    - Rewards matching rare/specific phenotypes more
+
+    Output:
+    - similarity score
+    - explanation with statistics
+    """
     if not patient_terms or not disease_terms:
         return 0.0, {
             "intersection_size": 0,
@@ -135,6 +229,19 @@ def icto_similarity(
     disease_terms: Set[str],
     ic_values: Dict[str, float],
 ) -> Tuple[float, dict]:
+    """
+    ICTO similarity (IC-weighted overlap coefficient).
+
+    Definition:
+    sum(IC(intersection)) / min(sum(IC(patient)), sum(IC(disease)))
+
+    Interpretation:
+    - Measures how much the smaller set is covered
+    - More sensitive than simGIC when sizes differ
+
+    Use case:
+    - Good when patient has few symptoms but matches disease well
+    """
     if not patient_terms or not disease_terms:
         return 0.0, {
             "intersection_size": 0,
@@ -170,6 +277,19 @@ def jaccard_similarity(
     disease_terms: Set[str],
     ic_values: Dict[str, float],
 ) -> Tuple[float, dict]:
+    """
+    Standard Jaccard similarity (baseline).
+
+    Definition:
+    |intersection| / |union|
+
+    Interpretation:
+    - Treats all terms equally (no IC weighting)
+    - Useful baseline for comparison
+
+    Note:
+    - Ignores ontology structure and term importance
+    """
     del ic_values
 
     if not patient_terms or not disease_terms:
