@@ -12,7 +12,13 @@ HPO_PATH = ONTOLOGY_DIR / "hpo.owl"
 ORDO_PATH = ONTOLOGY_DIR / "ordo.owl"
 MONDO_PATH = ONTOLOGY_DIR / "mondo_rare.owl"
 HOOM_PATH = ONTOLOGY_DIR / "hoom.owl"
-HPOA_PATH = ONTOLOGY_DIR / "phenotype.hpoa.owl"
+HPOA_PATH = ONTOLOGY_DIR / "phenotype.hpoa"
+
+ORPHADATA_PRODUCT4_PATH = ONTOLOGY_DIR / "en_product4_HPO.xml"
+
+MONARCH_DISEASE_TO_HPO_PATH = (
+    ONTOLOGY_DIR / "disease_to_phenotypic_feature_association.all.tsv.gz"
+)
 
 ONTOLOGY_PATHS = {
     "hpo": HPO_PATH,
@@ -20,6 +26,8 @@ ONTOLOGY_PATHS = {
     "mondo": MONDO_PATH,
     "hoom": HOOM_PATH,
     "hpoa": HPOA_PATH,
+    "orphadata_product4": ORPHADATA_PRODUCT4_PATH,
+    "monarch_disease_hpo": MONARCH_DISEASE_TO_HPO_PATH,
 }
 
 CANONICAL_DISEASE_NAMESPACE = "ORPHA"
@@ -36,3 +44,5 @@ NEO4J_URI = "bolt://localhost:7687"
 NEO4J_USER = "neo4j"
 NEO4J_PASSWORD = "raresim123"
 NEO4J_DATABASE = "neo4j"
+
+SHARED_DIR = OUTPUT_DIR
