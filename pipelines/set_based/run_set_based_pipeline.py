@@ -1,16 +1,22 @@
 """
 Main script to run the semantic similarity pipeline, integrating disease
-profiles, patient data, and various similarity methods.
+profiles, patient data, and cosine similarity calculations to rank diseases based on HPO term overlap.
 """
 
 from pathlib import Path
 from typing import Optional
 
 from vector_similarity_methods import cosine_similarity_dense
-from utils import load_json, save_json
-import numpy as np
+from set_based_utils import (
+    load_json,
+    save_json,
+    _create_metadata,
+    _get_binary_vector,
+    _sort_results_by_similarity,
+)
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 SHARED_DIR = PROJECT_ROOT / "outputs" / "shared"
 SETBASED_DIR = PROJECT_ROOT / "outputs" / "set_based"
 SETBASED_DIR.mkdir(parents=True, exist_ok=True)
@@ -25,40 +31,6 @@ DISEASE_PROFILE_FILE = (
     if USE_CANONICAL_PROFILES
     else "disease_profiles.json"
 )
-
-
-def _create_metadata(hpo_vocab: set, patient_terms: set, disease_terms: set) -> dict:
-    metadata = {}
-    metadata["hpo_vocab_size"] = len(hpo_vocab)
-    metadata["patient_terms_size"] = len(patient_terms)
-    metadata["existing_hpo_terms_size"] = len(disease_terms)
-    metadata["patient_terms"] = list(patient_terms)
-    metadata["unmatched_terms"] = list(patient_terms.difference(disease_terms))
-    metadata["similarity_method"] = "cosine_similarity_dense"
-    metadata["use_propagated_terms"] = USE_PROPAGATED_TERMS
-    return metadata
-
-
-def _get_binary_vector(terms: set, term_to_index: dict) -> np.ndarray:
-    vec = np.zeros(len(term_to_index))
-    no_match_terms = []
-    for t in terms:
-        if t in term_to_index:
-            vec[term_to_index[t]] = 1.0
-        else:
-            no_match_terms.append(t)
-    return vec, no_match_terms
-
-
-def _sort_results_by_similarity(all_results: dict, metadata: dict) -> list:
-    sorted_results = sorted(
-        all_results.items(), key=lambda x: x[1]["similarity_score"], reverse=True
-    )
-
-    return [
-        {**result, "metadata": metadata, "rank": rank}
-        for rank, (_, result) in enumerate(sorted_results, start=1)
-    ]
 
 
 def main() -> None:
@@ -78,6 +50,7 @@ def main() -> None:
         hpo_vocab=hpo_vocab,
         patient_terms=patient_terms,
         disease_terms=set(loaded_hpo_terms.keys()),
+        use_propagated_terms=USE_PROPAGATED_TERMS,
     )
     all_results = {}
 
