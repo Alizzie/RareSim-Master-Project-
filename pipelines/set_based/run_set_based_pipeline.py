@@ -6,7 +6,11 @@ profiles, patient data, and cosine similarity calculations to rank diseases base
 from pathlib import Path
 from typing import Optional
 
-from vector_similarity_methods import cosine_similarity
+from vector_similarity_methods import (
+    cosine_similarity,
+    jaccard_similarity,
+    overlap_coefficient,
+)
 from set_based_utils import (
     load_json,
     save_json,
@@ -52,6 +56,7 @@ def main() -> None:
         disease_terms=set(loaded_hpo_terms.keys()),
         use_propagated_terms=USE_PROPAGATED_TERMS,
     )
+
     all_results = {}
 
     for disease_id, profile in disease_profiles.items():
