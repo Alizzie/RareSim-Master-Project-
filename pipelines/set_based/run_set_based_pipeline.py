@@ -6,13 +6,13 @@ profiles, patient data, and cosine similarity calculations to rank diseases base
 from pathlib import Path
 from typing import Optional
 
-from vector_similarity_methods import cosine_similarity_dense
+from vector_similarity_methods import cosine_similarity
 from set_based_utils import (
     load_json,
     save_json,
-    _create_metadata,
-    _get_binary_vector,
-    _sort_results_by_similarity,
+    create_metadata,
+    get_binary_vector,
+    sort_results_by_similarity,
 )
 
 
@@ -44,9 +44,9 @@ def main() -> None:
     hpo_vocab = sorted(set(loaded_hpo_terms.keys()).union(patient_terms))
     term_to_index = {term: idx for idx, term in enumerate(hpo_vocab)}
 
-    patient_vec, _ = _get_binary_vector(patient_terms, term_to_index)
+    patient_vec, _ = get_binary_vector(patient_terms, term_to_index)
 
-    metadata = _create_metadata(
+    metadata = create_metadata(
         hpo_vocab=hpo_vocab,
         patient_terms=patient_terms,
         disease_terms=set(loaded_hpo_terms.keys()),
@@ -56,19 +56,21 @@ def main() -> None:
 
     for disease_id, profile in disease_profiles.items():
         disease_terms = set(profile.get(terms_key, []))
-        disease_vec, _ = _get_binary_vector(disease_terms, term_to_index)
+        disease_vec, _ = get_binary_vector(disease_terms, term_to_index)
 
-        similarity_score = cosine_similarity_dense(patient_vec, disease_vec)
-        matched_hpo_terms = patient_terms.intersection(disease_terms)
+        score, similarity_explaination = cosine_similarity(patient_vec, disease_vec)
+        similarity_explaination["top_shared_terms"] = list(
+            patient_terms.intersection(disease_terms)
+        )[:10]
 
         all_results[disease_id] = {
             "disease_id": disease_id,
             "label": profile.get("label", ""),
-            "similarity_score": similarity_score,
-            "matched_terms": list(matched_hpo_terms),
+            "similarity_score": score,
+            "explaination": similarity_explaination,
         }
 
-    results = _sort_results_by_similarity(all_results, metadata)
+    results = sort_results_by_similarity(all_results, metadata)
     top_k_summary = results[:TOP_K]
 
     save_json(results, SETBASED_DIR / "set_based_similarity_results.json")
