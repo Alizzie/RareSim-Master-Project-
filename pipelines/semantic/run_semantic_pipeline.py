@@ -46,7 +46,10 @@ def main() -> None:
     disease_profiles = load_json(SHARED_DIR / DISEASE_PROFILE_FILE)
     ic_values = load_json(SHARED_DIR / "information_content.json")
     ancestors = load_json(SHARED_DIR / "hpo_ancestors.json")
-    patient = load_json(SHARED_DIR / "example_patient.json")
+    hpo_labels = load_json(SHARED_DIR / "hpo_labels.json")
+
+    from src.patient_loader import load_patient
+    patient = load_patient(SHARED_DIR / "example_patient.json", hpo_labels)
 
     ancestor_sets = preprocess_ancestor_sets(ancestors)
 

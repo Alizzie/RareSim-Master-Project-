@@ -1,3 +1,4 @@
+from patient_loader import load_patient
 from transformer_config import (
     PROJECT_ROOT,
     OUTPUTS_DIR,
@@ -19,7 +20,8 @@ from transformer_retriever import DiseaseRetriever, load_json, save_json
 def main():
     disease_profiles = load_json(DISEASE_PROFILES_PATH)
     hpo_labels = load_json(HPO_LABELS_PATH)
-    patient = load_json(PATIENT_PATH)
+    from src.patient_loader import load_patient
+    patient = load_patient(PATIENT_PATH, hpo_labels)
     alias_to_canonical = load_json(ALIAS_TO_CANONICAL_PATH)
 
     retriever = DiseaseRetriever(
