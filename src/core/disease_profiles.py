@@ -1,14 +1,14 @@
 from copy import deepcopy
 from typing import Dict, Optional, Set, Tuple
 
-from hpo_utils import propagate_hpo_terms
-from mapping_utils import (
+from core.hpo_utils import propagate_hpo_terms
+from core.mapping_utils import (
     choose_preferred_label,
     merge_source_ids,
     resolve_to_orpha,
 )
-from normalizers import normalize_disease_id, normalize_hpo_id
-from schemas import DiseaseProfile
+from core.normalizers import normalize_disease_id, normalize_hpo_id
+from core.schemas import DiseaseProfile
 
 """Module to build disease profiles by integrating data from multiple sources."""
 
@@ -271,9 +271,7 @@ def expand_alias_profiles(
         alias_profile.source_ids = dict(alias_profile.source_ids)
         alias_profile.source_ids["canonical_id"] = canonical_id
         alias_profile.hpo_terms = set(canonical_profile.hpo_terms)
-        alias_profile.propagated_hpo_terms = set(
-            canonical_profile.propagated_hpo_terms
-        )
+        alias_profile.propagated_hpo_terms = set(canonical_profile.propagated_hpo_terms)
         alias_profile.term_provenance = dict(canonical_profile.term_provenance)
         alias_profile.negative_hpo_terms = set(canonical_profile.negative_hpo_terms)
 

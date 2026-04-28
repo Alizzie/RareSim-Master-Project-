@@ -1,16 +1,16 @@
-import math
-from typing import Dict, List, Optional, Set, Tuple
-
-from semantic_utils import get_ancestors_inclusive, sum_ic
-
-'''
+"""
 Module for semantic similarity methods between HPO terms and term sets.
 
 Core idea:
 - Terms are compared using the ontology structure (ancestors)
 - Information Content (IC) is used to measure specificity
 - More specific shared ancestors → higher similarity
-'''
+"""
+
+import math
+from typing import Dict, Optional, Set, Tuple
+
+from .utils import get_ancestors_inclusive, sum_ic
 
 
 def get_common_ancestors(

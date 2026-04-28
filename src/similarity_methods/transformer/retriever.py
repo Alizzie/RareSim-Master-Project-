@@ -4,15 +4,15 @@ import json
 
 import numpy as np
 
-from transformer_config import CACHE_ROOT, MAX_LENGTH, TOP_K
-from transformer_embeddings import (
+from similarity_methods.transformer.config import CACHE_ROOT, MAX_LENGTH, TOP_K
+from similarity_methods.transformer.embeddings import (
     embed_texts,
     get_model_type,
     hash_text,
     load_embedding_backend,
     make_safe_model_name,
 )
-from transformer_text import build_disease_texts, build_patient_text
+from similarity_methods.transformer.text import build_disease_texts, build_patient_text
 
 """
 Retriever logic for transformer-based disease ranking.
@@ -189,11 +189,13 @@ class DiseaseRetriever:
         self.model_list = model_list
         self.rebuild_cache = rebuild_cache
 
-        self.global_disease_ids, self.global_disease_labels, self.global_disease_texts = (
-            build_disease_texts(
-                disease_profiles=self.disease_profiles,
-                hpo_labels=self.hpo_labels,
-            )
+        (
+            self.global_disease_ids,
+            self.global_disease_labels,
+            self.global_disease_texts,
+        ) = build_disease_texts(
+            disease_profiles=self.disease_profiles,
+            hpo_labels=self.hpo_labels,
         )
 
         self.backends: Dict[str, dict] = {}
@@ -310,4 +312,3 @@ class DiseaseRetriever:
             patient_text=patient_text,
             top_k=top_k,
         )
-    

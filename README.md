@@ -17,3 +17,20 @@ docker run -d --name neo4j-raresim \
   -e NEO4J_PLUGINS='["graph-data-science"]' \
   neo4j:5
 ```
+
+
+# 2. How to Run
+## Step 1 — download raw ontology files
+```
+python ontologies/load_models_to_local.py
+```
+
+## Step 2 — process them into shared artifacts
+```
+python -m build_shared_artifacts
+```
+
+## Step 3 — run the app
+```
+python -m gui.app --defaults
+```

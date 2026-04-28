@@ -1,8 +1,7 @@
-from pathlib import Path
-
 """Configuration file for the project, defining paths, constants, and settings."""
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+from shared.paths import PROJECT_ROOT
+
 ONTOLOGY_DIR = PROJECT_ROOT / "ontologies" / "model"
 OUTPUT_DIR = PROJECT_ROOT / "outputs" / "shared"
 
@@ -12,7 +11,7 @@ HPO_PATH = ONTOLOGY_DIR / "hpo.owl"
 ORDO_PATH = ONTOLOGY_DIR / "ordo.owl"
 MONDO_PATH = ONTOLOGY_DIR / "mondo_rare.owl"
 HOOM_PATH = ONTOLOGY_DIR / "hoom.owl"
-HPOA_PATH = ONTOLOGY_DIR / "phenotype.hpoa"
+HPOA_PATH = ONTOLOGY_DIR / "phenotype.hpoa.owl"
 
 ORPHADATA_PRODUCT4_PATH = ONTOLOGY_DIR / "en_product4_HPO.xml"
 

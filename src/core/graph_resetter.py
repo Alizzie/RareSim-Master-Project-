@@ -14,7 +14,7 @@ from neo4j import GraphDatabase
 from neo4j.exceptions import ServiceUnavailable
 
 try:
-    from config import NEO4J_URI, NEO4J_USER, NEO4J_PASSWORD, NEO4J_DATABASE
+    from core.config import NEO4J_URI, NEO4J_USER, NEO4J_PASSWORD, NEO4J_DATABASE
 except ImportError:
     NEO4J_URI = "bolt://localhost:7687"
     NEO4J_USER = "neo4j"

@@ -6,7 +6,7 @@ import torch
 from sentence_transformers import SentenceTransformer
 from transformers import AutoModel, BertTokenizer, BertTokenizerFast
 
-from transformer_config import BATCH_SIZE, MAX_LENGTH
+from similarity_methods.transformer.config import BATCH_SIZE, MAX_LENGTH
 
 """
 Embedding backends for transformer retrieval.

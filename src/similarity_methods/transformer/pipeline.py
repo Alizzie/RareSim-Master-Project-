@@ -1,4 +1,4 @@
-from transformer_config import (
+from similarity_methods.transformer.config import (
     PROJECT_ROOT,
     OUTPUTS_DIR,
     TRANSFORMER_DIR,
@@ -12,9 +12,18 @@ from transformer_config import (
     TOP_K,
 )
 
-from transformer_embeddings import get_model_type, make_safe_model_name
-from transformer_retriever import DiseaseRetriever, load_json, save_json
-'''Main pipeline for transformer-based disease retrieval. make sure to run this after you have the necessary data files coming from build_shared_artifacts.py and the transformer models downloaded.'''
+from similarity_methods.transformer.embeddings import (
+    get_model_type,
+    make_safe_model_name,
+)
+from similarity_methods.transformer.retriever import (
+    DiseaseRetriever,
+    load_json,
+    save_json,
+)
+
+"""Main pipeline for transformer-based disease retrieval. make sure to run this after you have the necessary data files coming from build_shared_artifacts.py and the transformer models downloaded."""
+
 
 def main():
     disease_profiles = load_json(DISEASE_PROFILES_PATH)
@@ -69,4 +78,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    

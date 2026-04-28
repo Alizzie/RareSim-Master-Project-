@@ -1,8 +1,13 @@
+"""
+Main script to run the semantic similarity pipeline, integrating disease
+profiles, patient data, and various similarity methods.
+"""
+
 import json
 from pathlib import Path
 from typing import Optional
 
-from semantic_methods import (
+from .methods import (
     icto_similarity,
     jaccard_similarity,
     jiang_conrath_similarity,
@@ -10,7 +15,7 @@ from semantic_methods import (
     resnik_similarity,
     simgic_similarity,
 )
-from semantic_utils import (
+from .utils import (
     count_profile_term_status,
     load_json,
     preprocess_ancestor_sets,
@@ -21,9 +26,6 @@ from semantic_utils import (
     summarize_top_results_namespaces,
 )
 
-"""Main script to run the semantic similarity pipeline, integrating disease
-profiles, patient data, and various similarity methods.
-"""
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 SHARED_DIR = PROJECT_ROOT / "outputs" / "shared"
@@ -42,7 +44,7 @@ DISEASE_PROFILE_FILE = (
 )
 
 
-def main() -> None:
+def run() -> None:
     disease_profiles = load_json(SHARED_DIR / DISEASE_PROFILE_FILE)
     ic_values = load_json(SHARED_DIR / "information_content.json")
     ancestors = load_json(SHARED_DIR / "hpo_ancestors.json")
@@ -162,5 +164,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
-    
+    run()

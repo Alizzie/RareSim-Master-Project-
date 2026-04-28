@@ -1,9 +1,10 @@
+"""Utility functions for semantic similarity calculations and disease profile handling:"""
+
 import json
 from pathlib import Path
 from typing import Callable, Dict, List, Optional, Set, Tuple
 from collections import Counter
-from typing import Any
-'''Utility functions for semantic similarity calculations and disease profile handling:'''
+
 
 def load_json(path: Path) -> dict:
     with path.open("r", encoding="utf-8") as handle:
@@ -86,6 +87,7 @@ def summarize_top_results_namespaces(
         summary[method_name] = count_namespaces_in_results(results)
     return summary
 
+
 def filter_terms_by_ic(
     terms: Set[str],
     ic_values: Dict[str, float],
@@ -111,8 +113,7 @@ def preprocess_ancestor_sets(
     ancestors: Dict[str, List[str]],
 ) -> Dict[str, Set[str]]:
     return {
-        term: set(parent_terms) | {term}
-        for term, parent_terms in ancestors.items()
+        term: set(parent_terms) | {term} for term, parent_terms in ancestors.items()
     }
 
 
