@@ -278,6 +278,7 @@ def rank_diseases(
     patient: dict,
     model: Word2Vec,
     ic_values: Dict[str, float],
+    alias_to_canonical: Dict[str, str],
     use_propagated: bool = True,
     top_k: int = 10,
 ) -> List[dict]:
@@ -330,39 +331,61 @@ def rank_diseases(
 
     results.sort(key=lambda x: x["score"], reverse=True)
 
-    for rank, row in enumerate(results, start=1):
+    grouped = {}
+    for row in results:
+        canonical_id = alias_to_canonical.get(row["disease_id"], row["disease_id"])
+        if canonical_id not in grouped or row["score"] > grouped[canonical_id]["score"]:
+            grouped[canonical_id] = row
+            grouped[canonical_id]["canonical_disease_id"] = canonical_id
+
+    collapsed = sorted(grouped.values(), key=lambda x: x["score"], reverse=True)
+
+    for rank, row in enumerate(collapsed, start=1):
         row["rank"] = rank
 
-    return results[:top_k]
+    return collapsed[:top_k]
 
 # main
 
 def main() -> None:
+
+    print("No saved model found, training from scratch...")
     print("Loading shared artifacts...")
     hpo_parents = load_json(SHARED_DIR / "hpo_parents.json")
     disease_profiles = load_json(SHARED_DIR / "disease_profiles.json")
     ic_values = load_json(SHARED_DIR / "information_content.json")
+    alias_to_canonical = load_json(SHARED_DIR / "alias_to_canonical.json")
     patient = load_json(SHARED_DIR / "example_patient.json")
 
     print(f"  {len(hpo_parents)} HPO terms, {len(disease_profiles)} disease profiles")
 
-    # Step 1: Build graph
-    print("Building graph...")
-    graph = build_graph(hpo_parents, disease_profiles)
-    print(f"  Nodes: {len(graph)}")
-
-    # Step 2: Generate IC random walks
-    print("Generating random walks...")
-    walks = generate_walks(graph, ic_values)
-
-    # Step 3: Train Word2Vec
-    print("Training Word2Vec...")
-    model = train_word2vec(walks)
-
-    # Save
     model_path = HPO2VEC_DIR / "hpo2vec_model"
-    model.save(str(model_path))
-    print(f"  Model saved to: {model_path}")
+
+    print(model_path)
+
+    if model_path.exists():
+        print("Loading saved model...")
+        model = Word2Vec.load(str(model_path))
+    else:
+        print("No saved model found, training from scratch...")
+
+        # Step 1: Build graph
+        print("Building graph...")
+        graph = build_graph(hpo_parents, disease_profiles)
+        print(f"  Nodes: {len(graph)}")
+
+        # Step 2: Generate IC random walks
+        print("Generating random walks...")
+        walks = generate_walks(graph, ic_values)
+
+        # Step 3: Train Word2Vec
+        print("Training Word2Vec...")
+        model = train_word2vec(walks)
+
+        # Save
+        model_path = HPO2VEC_DIR / "hpo2vec_model"
+        model.save(str(model_path))
+        print(f"  Model saved to: {model_path}")
 
     # Steps 4-6: Embed and rank
     print("Ranking diseases for example patient...")
@@ -371,6 +394,7 @@ def main() -> None:
         patient=patient,
         model=model,
         ic_values=ic_values,
+        alias_to_canonical=alias_to_canonical,
         use_propagated=True,
         top_k=10,
     )
