@@ -26,7 +26,8 @@ def _empty_explanation(method: str, pat: TermInput) -> dict:
 def _shared_terms(pat: TermInput, disease: TermInput) -> list[str]:
     a = set(to_binary_vector(pat).keys())
     b = set(to_binary_vector(disease).keys())
-    return sorted(a & b)[:10]
+    shared_terms = a & b
+    return sorted(shared_terms)[:10], len(shared_terms)
 
 
 def cosine_similarity(
@@ -39,10 +40,12 @@ def cosine_similarity(
         return 0.0, _empty_explanation("cosine_similarity", pat)
 
     score = _cosine(pat, disease, use_binary)
+    shared_terms, n_shared = _shared_terms(pat, disease)
     explanation = {
         "method": "cosine_similarity",
         "score": score,
-        "top_shared_terms": _shared_terms(pat, disease),
+        "top_shared_terms": shared_terms,
+        "n_shared_terms": n_shared,
     }
     return score, explanation
 
@@ -52,14 +55,14 @@ def jaccard_similarity(pat: TermInput, disease: TermInput) -> Tuple[float, dict]
     if not pat or not disease:
         return 0.0, _empty_explanation("jaccard", pat)
 
-    a = set(to_binary_vector(pat).keys())
-    b = set(to_binary_vector(disease).keys())
+    pat = set(to_binary_vector(pat).keys())
+    disease = set(to_binary_vector(disease).keys())
     score = _jaccard(pat, disease)
     explanation = {
         "method": "jaccard",
-        "intersection_size": len(a & b),
-        "union_size": len(a | b),
-        "top_shared_terms": sorted(a & b)[:10],
+        "intersection_size": len(pat & disease),
+        "union_size": len(pat | disease),
+        "top_shared_terms": sorted(pat & disease)[:10],
     }
     return score, explanation
 
@@ -69,15 +72,15 @@ def dice_similarity(pat: TermInput, disease: TermInput) -> Tuple[float, dict]:
     if not pat or not disease:
         return 0.0, _empty_explanation("dice", pat)
 
-    a = set(to_binary_vector(pat).keys())
-    b = set(to_binary_vector(disease).keys())
+    pat = set(to_binary_vector(pat).keys())
+    disease = set(to_binary_vector(disease).keys())
     score = _dice(pat, disease)
     explanation = {
         "method": "dice",
-        "intersection_size": len(a & b),
-        "size_a": len(a),
-        "size_b": len(b),
-        "top_shared_terms": sorted(a & b)[:10],
+        "intersection_size": len(pat & disease),
+        "size_patient": len(pat),
+        "size_disease": len(disease),
+        "top_shared_terms": sorted(pat & disease)[:10],
     }
     return score, explanation
 
@@ -87,13 +90,13 @@ def overlap_coefficient(pat: TermInput, disease: TermInput) -> Tuple[float, dict
     if not pat or not disease:
         return 0.0, _empty_explanation("overlap_coefficient", pat)
 
-    a = set(to_binary_vector(pat).keys())
-    b = set(to_binary_vector(disease).keys())
+    pat = set(to_binary_vector(pat).keys())
+    disease = set(to_binary_vector(disease).keys())
     score = _overlap(pat, disease)
     explanation = {
         "method": "overlap_coefficient",
-        "intersection_size": len(a & b),
-        "min_size": min(len(a), len(b)),
-        "top_shared_terms": sorted(a & b)[:10],
+        "intersection_size": len(pat & disease),
+        "min_size": min(len(pat), len(disease)),
+        "top_shared_terms": sorted(pat & disease)[:10],
     }
     return score, explanation

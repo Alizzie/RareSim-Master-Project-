@@ -18,7 +18,7 @@ Usage:
 import argparse
 from pathlib import Path
 from shared.paths import SHARED_DIR
-from shared.pipeline_config import PipelineConfig
+from shared.pipeline import PipelineConfig
 from shared.context import AppContext
 from shared.io import load_patient
 from gui.utils import (
@@ -30,7 +30,6 @@ from gui.utils import (
 )
 
 from similarity_methods.set_based.pipeline import run as run_set_based
-
 
 ALL_METHODS = [
     "semantic_resnik",
@@ -102,6 +101,7 @@ def parse_args():
 
 # --- Entry point ----------------------------------
 def main() -> None:
+    """Main function to run the terminal interface."""
     check_artifacts_exist()
     args = parse_args()
 

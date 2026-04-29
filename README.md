@@ -20,6 +20,10 @@ docker run -d --name neo4j-raresim \
 
 
 # 2. How to Run
+```
+pip install -e .
+```
+
 ## Step 1 — download raw ontology files
 ```
 python ontologies/load_models_to_local.py

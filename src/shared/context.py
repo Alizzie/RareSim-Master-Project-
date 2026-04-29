@@ -12,16 +12,19 @@ from core.schemas import PatientProfile
 
 @dataclass
 class AppContext:
-    disease_profiles: dict
-    hpo_labels: dict
-    ic_values: dict
-    ancestors: dict
+    """Holds shared data and metadata for the application."""
+
+    disease_profiles: dict[str, dict]
+    hpo_labels: dict[str, str]
+    ic_values: dict[str, float]
+    ancestors: dict[str, list[str]]
     app_metadata: AppMetadata
 
     @classmethod
     def load(
         cls, patient: PatientProfile, use_canonical_profiles: bool = True
     ) -> "AppContext":
+        """Load shared data and compute metadata based on the patient profile."""
 
         profile_file = (
             "canonical_disease_profiles.json"

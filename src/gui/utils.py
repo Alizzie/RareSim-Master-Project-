@@ -1,3 +1,7 @@
+"""
+Utility functions for the GUI application, including artifact checks, result display, and user prompts.
+"""
+
 from shared.paths import SHARED_DIR, PROJECT_ROOT
 from shared.result import SimilarityResult
 import shared.io as io
@@ -25,6 +29,7 @@ def check_artifacts_exist() -> None:
 
 
 def print_results_table(method_name: str, results: list[SimilarityResult]) -> None:
+    """Print the results for a given method."""
     print(f"\n{'─' * 64}")
     print(f"  {method_name}")
     print(f"{'─' * 64}")
@@ -41,6 +46,7 @@ def print_results_table(method_name: str, results: list[SimilarityResult]) -> No
 
 
 def save_results(all_results: dict) -> None:
+    """Save all results to a JSON file in the outputs directory inside gui."""
     out_dir = PROJECT_ROOT / "outputs" / "gui"
     out_dir.mkdir(parents=True, exist_ok=True)
     path = out_dir / "all_results.json"
@@ -50,6 +56,7 @@ def save_results(all_results: dict) -> None:
 
 # -- Prompts ----------------------------------
 def prompt_patient(DEFAULTS: dict) -> dict:
+    """Prompt the user to select a patient profile, either from a JSON file or using the default example."""
     print("\nNo patient file provided.")
     print("  [1] Load from JSON file path")
     print("  [2] Use default example patient")
@@ -64,6 +71,7 @@ def prompt_patient(DEFAULTS: dict) -> dict:
 
 
 def prompt_methods(DEFAULTS: dict, ALL_METHODS: list[str]) -> list[str]:
+    """Prompt the user to select which similarity methods to run, either by choosing from a list or using all methods."""
     print("\nAvailable methods:")
     for i, name in enumerate(ALL_METHODS, 1):
         print(f"  [{i:>2}] {name}")

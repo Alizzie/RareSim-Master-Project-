@@ -3,22 +3,26 @@ Main script to run the semantic similarity pipeline, integrating disease profile
 patient data, and cosine similarity calculations to rank diseases based on HPO term overlap.
 """
 
-from shared.io import save_individual_results, load_patient
-from shared.paths import PROJECT_ROOT, SHARED_DIR
-from shared.pipeline_config import PipelineConfig
+from shared.paths import PROJECT_ROOT
 from shared.context import AppContext
-from shared.result import Metadata, SimilarityResult
+from shared.result import SimilarityResult
+from shared.pipeline import (
+    PipelineConfig,
+    build_metadata,
+    sort_and_rank,
+    run_pipeline_main,
+)
 from core.schemas import PatientProfile
-from similarity_methods.methods import (
+from shared.methods import (
     cosine_similarity,
     jaccard_similarity,
     overlap_coefficient,
     dice_similarity,
 )
-from similarity_methods.set_based.utils import extend_explaination
-from similarity_methods.utils import sort_and_rank
+from shared.explaination import expand, SET_BASED_EXPLANATION
 
 SETBASED_DIR = PROJECT_ROOT / "outputs" / "set_based"
+PIPELINE_NAME = "set_based"
 
 METHOD_MAP = {
     "set_cosine": cosine_similarity,
@@ -33,15 +37,10 @@ def run(
     selected: list[str],
     config: PipelineConfig,
     ctx: AppContext,
-) -> dict:
+) -> dict[str, list[SimilarityResult]]:
     """Run the set-based similarity pipeline for the given patient and selected methods."""
 
-    terms_key = "propagated_hpo_terms" if config.use_propagated_terms else "hpo_terms"
-    patient_terms = set(
-        patient.propagated_hpo_terms
-        if config.use_propagated_terms
-        else patient.hpo_terms
-    )
+    patient_terms = set(patient.get_terms(config.use_propagated_terms))
 
     all_results = {}
 
@@ -51,10 +50,10 @@ def run(
 
         results = []
         for disease_id, profile in ctx.disease_profiles.items():
-            disease_terms = set(profile.get(terms_key, []))
+            disease_terms = set(profile.get(config.terms_key, []))
             score, explaination = fn(patient_terms, disease_terms)
-            explaination = extend_explaination(
-                explaination, patient_terms, disease_terms
+            explaination = expand(
+                explaination, patient_terms, disease_terms, SET_BASED_EXPLANATION
             )
 
             results.append(
@@ -64,14 +63,13 @@ def run(
                     score=score,
                     method_name=method_name,
                     explanation=explaination,
-                    metadata=Metadata(
+                    metadata=build_metadata(
                         method_name=method_name,
-                        pipeline_name="set_based",
-                        use_propagated_terms=config.use_propagated_terms,
-                        ic_threshold=config.ic_threshold,
-                        top_k=config.top_k,
+                        pipeline_name=PIPELINE_NAME,
+                        config=config,
                         n_patient_terms=len(patient_terms),
                         n_disease_terms=len(disease_terms),
+                        ctx=ctx,
                     ),
                 )
             )
@@ -83,16 +81,12 @@ def run(
 
 def main() -> None:
     """Example main function to run the set-based similarity pipeline."""
-    patient = load_patient(SHARED_DIR / "example_patient.json")
-    config = PipelineConfig()
-    ctx = AppContext.load(patient, config.use_canonical_profiles)
-
-    results = run(patient, list(METHOD_MAP.keys()), config, ctx)
-
-    for method_name, rows in results.items():
-        save_individual_results(
-            rows, SETBASED_DIR / f"{method_name}_top{config.top_k}.json"
-        )
+    run_pipeline_main(
+        pipeline_name=PIPELINE_NAME,
+        method_names=list(METHOD_MAP.keys()),
+        run_fn=run,
+        output_dir=SETBASED_DIR,
+    )
 
 
 if __name__ == "__main__":
