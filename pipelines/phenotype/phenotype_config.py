@@ -42,6 +42,9 @@ HPO_BLOCKLIST = {
     "HP:0012823",  # Clinical modifier
     "HP:0031797",  # Clinical course
     "HP:0040279",  # Frequency
+    "HP:0032316",  # Family history — not a phenotype
+    "HP:0003674",  # Onset — metadata
+    "HP:0012777",  # Biomarker — metadata
 }
 
 # Active extraction methods
@@ -54,4 +57,4 @@ EXTRACTION_METHODS = ["dictionary", "synonyms", "biomedical_ner"]
 BIOMEDICAL_NER_MODEL = "d4data/biomedical-ner-all"
 
 # Minimum NER confidence threshold — detections below this are discarded
-BIOMEDICAL_NER_MIN_CONFIDENCE = 0.5
+BIOMEDICAL_NER_MIN_CONFIDENCE = 0.6
