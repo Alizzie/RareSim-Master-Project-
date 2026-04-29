@@ -4,7 +4,6 @@ from typing import Optional
 
 from semantic_methods import (
     icto_similarity,
-    jaccard_similarity,
     jiang_conrath_similarity,
     lin_similarity,
     resnik_similarity,
@@ -21,8 +20,14 @@ from semantic_utils import (
     summarize_top_results_namespaces,
 )
 
-"""Main script to run the semantic similarity pipeline, integrating disease
-profiles, patient data, and various similarity methods.
+"""
+Main script to run the semantic similarity pipeline.
+
+Methods:
+- BMA: Resnik, Lin, Jiang-Conrath (IC-based pairwise)
+- Set-based: SimGIC, ICTO (IC-weighted set overlap)
+
+Saves only one combined output file: semantic_all_methods_top{TOP_K}.json
 """
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -46,6 +51,9 @@ def main() -> None:
     disease_profiles = load_json(SHARED_DIR / DISEASE_PROFILE_FILE)
     ic_values = load_json(SHARED_DIR / "information_content.json")
     ancestors = load_json(SHARED_DIR / "hpo_ancestors.json")
+    hpo_labels = load_json(SHARED_DIR / "hpo_labels.json")
+
+    # swap to load_patient() after phenotype branch merges to main
     patient = load_json(SHARED_DIR / "example_patient.json")
 
     ancestor_sets = preprocess_ancestor_sets(ancestors)
@@ -83,7 +91,6 @@ def main() -> None:
     methods_set = {
         "semantic_simgic": simgic_similarity,
         "semantic_icto": icto_similarity,
-        "semantic_jaccard": jaccard_similarity,
     }
 
     all_results = {}
@@ -103,7 +110,6 @@ def main() -> None:
         )
         all_results[method_name] = results
         all_diagnostics[method_name] = diagnostics
-        save_json(results, SEMANTIC_DIR / f"{method_name}_top{TOP_K}.json")
 
     for method_name, similarity_fn in methods_set.items():
         results, diagnostics = rank_diseases_set_based(
@@ -118,28 +124,21 @@ def main() -> None:
         )
         all_results[method_name] = results
         all_diagnostics[method_name] = diagnostics
-        save_json(results, SEMANTIC_DIR / f"{method_name}_top{TOP_K}.json")
 
     top_result_namespace_summary = summarize_top_results_namespaces(all_results)
 
-    save_json(run_config, SEMANTIC_DIR / "run_config.json")
-    save_json(all_diagnostics, SEMANTIC_DIR / "run_diagnostics.json")
-    save_json(all_results, SEMANTIC_DIR / f"semantic_all_methods_top{TOP_K}.json")
-    save_json(patient_term_summary, SEMANTIC_DIR / "patient_term_summary.json")
-    save_json(profile_term_summary, SEMANTIC_DIR / "profile_term_summary.json")
+    # ── Save only combined output ─────────────────────────────────────────────
     save_json(
-        top_result_namespace_summary,
-        SEMANTIC_DIR / "top_result_namespace_summary.json",
+        all_results,
+        SEMANTIC_DIR / f"semantic_all_methods_top{TOP_K}.json",
     )
 
+    # ── Print results ─────────────────────────────────────────────────────────
     print("\nRun configuration:")
     print(json.dumps(run_config, indent=2, ensure_ascii=False))
 
     print("\nPatient term summary:")
     print(json.dumps(patient_term_summary, indent=2, ensure_ascii=False))
-
-    print("\nDisease profile term summary:")
-    print(json.dumps(profile_term_summary, indent=2, ensure_ascii=False))
 
     print("\nDiagnostics:")
     for method_name, diagnostics in all_diagnostics.items():
@@ -158,9 +157,8 @@ def main() -> None:
                 f"{row['label']}"
             )
 
-    print(f"\nSaved outputs to: {SEMANTIC_DIR}")
+    print(f"\nSaved to: {SEMANTIC_DIR / f'semantic_all_methods_top{TOP_K}.json'}")
 
 
 if __name__ == "__main__":
     main()
-    

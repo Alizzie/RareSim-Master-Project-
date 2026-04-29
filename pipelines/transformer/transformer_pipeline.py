@@ -10,11 +10,22 @@ from transformer_config import (
     MODEL_LIST,
     PATIENT_PATH,
     TOP_K,
+    RUN_LLM_EXPLAINER,
+    LLM_EXPLAINER_MODEL,
+    TOP_K_LLM_EXPLAIN,
 )
 
 from transformer_embeddings import get_model_type, make_safe_model_name
 from transformer_retriever import DiseaseRetriever, load_json, save_json
-'''Main pipeline for transformer-based disease retrieval. make sure to run this after you have the necessary data files coming from build_shared_artifacts.py and the transformer models downloaded.'''
+
+"""
+Main pipeline for transformer-based disease retrieval.
+
+Make sure to run this after you have the necessary data files
+coming from build_shared_artifacts.py and the transformer models downloaded.
+
+"""
+
 
 def main():
     disease_profiles = load_json(DISEASE_PROFILES_PATH)
@@ -62,6 +73,42 @@ def main():
 
         print(f"Saved to: {out_path}")
 
+    # ── LLM Explanation (if we want reasoning with LLM) ────────────────────────────────────────────
+    if RUN_LLM_EXPLAINER:
+        try:
+            import sys
+            from pathlib import Path
+
+            project_root = Path(__file__).resolve().parent.parent.parent
+            llm_dir = project_root / "pipelines" / "llm"
+
+            sys.path.append(str(project_root))
+            sys.path.append(str(llm_dir))    # ← this makes llm_explainer importable directly
+
+            from pipelines.llm.llm_explainer import explain_top_results  
+
+            for model_name, results in all_results.items():
+                print(f"\nExplaining results for: {model_name}")
+
+                explained = explain_top_results(
+                    patient=patient,
+                    transformer_results=results,
+                    disease_profiles=disease_profiles,
+                    hpo_labels=hpo_labels,
+                    model_name=LLM_EXPLAINER_MODEL,
+                    top_k=TOP_K_LLM_EXPLAIN,
+                )
+
+                for original, enriched in zip(all_results[model_name], explained):
+                    original["explanation"]["llm_reasoning"] = enriched.get(
+                        "llm_explanation", ""
+                    )
+                    original["explanation"]["explainer_model"] = LLM_EXPLAINER_MODEL
+
+        except ImportError as e:
+            print(f"[transformer_pipeline] LLM explainer skipped: {e}")
+
+    # ── Save results ──────────────────────────────────────────────────────────
     summary_path = TRANSFORMER_DIR / "all_model_results_summary_canonical.json"
     save_json(all_results, summary_path)
     print(f"\nSaved combined summary to: {summary_path}")
@@ -69,4 +116,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    

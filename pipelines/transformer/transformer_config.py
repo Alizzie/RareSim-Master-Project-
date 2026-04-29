@@ -29,3 +29,8 @@ DISEASE_PROFILES_PATH = SHARED_DIR / "disease_profiles.json"
 HPO_LABELS_PATH = SHARED_DIR / "hpo_labels.json"
 PATIENT_PATH = SHARED_DIR / "example_patient.json"
 ALIAS_TO_CANONICAL_PATH = SHARED_DIR / "alias_to_canonical.json"
+
+# LLM explanation settings
+RUN_LLM_EXPLAINER = True
+LLM_EXPLAINER_MODEL = "mistral"    # Ollama model name — change to "BioMistral/BioMistral-7B" if we have a GPU server with LLM_BACKEND = "hf"
+TOP_K_LLM_EXPLAIN = 10
