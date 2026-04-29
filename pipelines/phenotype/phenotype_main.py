@@ -1,10 +1,10 @@
 import json
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 
 from phenotype_config import (
-    EXTRACTION_METHODS,
     HPO_LABELS_PATH,
+    HPO_SYNONYMS_PATH,
     OUTPUT_EXTRACTION_PATH,
     OUTPUT_PATIENT_PATH,
 )
@@ -13,10 +13,15 @@ from phenotype_extractor import build_patient_profile
 """
 Entrypoint for the phenotype extraction pipeline.
 
-Reads raw patient text, runs extraction, and saves:
-- example_patient_extracted.json   → patient profile (HPO term list)
-- example_patient_hpo_extraction.json → full extraction provenance
+Available methods:
+- "dictionary"     : fast baseline, exact HPO label matching
+- "synonyms"       : dictionary + HPO synonym expansion (requires hpo_synonyms.json)
+- "biomedical_ner" : d4data transformer NER + HPO label lookup
 
+Active methods: dictionary + synonyms + biomedical_ner
+Saves:
+- example_patient_extracted.json      → patient profile (HPO term list)
+- example_patient_hpo_extraction.json → full extraction provenance
 """
 
 
@@ -31,8 +36,20 @@ def save_json(data: Any, path: Path) -> None:
         json.dump(data, f, indent=2, ensure_ascii=False)
 
 
+def load_synonyms_if_available(path: Path) -> Optional[dict]:
+    """Load HPO synonyms if available, otherwise return None."""
+    if path.exists():
+        return load_json(path)
+    print(
+        f"[phenotype_main] hpo_synonyms.json not found at {path}\n"
+        "Synonym method will be skipped. Generate it by re-running build_shared_artifacts.py."
+    )
+    return None
+
+
 def main() -> None:
     hpo_labels = load_json(HPO_LABELS_PATH)
+    hpo_synonyms = load_synonyms_if_available(HPO_SYNONYMS_PATH)
 
     # Replace with real patient text or load from file
     raw_text = (
@@ -40,8 +57,8 @@ def main() -> None:
         "No seizures reported."
     )
 
-    # Choose methods: "dictionary", "scispacy", "biomedical_ner"
-    methods = ["dictionary", "scispacy", "biomedical_ner"]
+    # Active methods
+    methods = ["dictionary", "synonyms", "biomedical_ner"]
 
     print(f"Running phenotype extraction with methods: {methods}\n")
 
@@ -50,6 +67,7 @@ def main() -> None:
         raw_text=raw_text,
         hpo_labels=hpo_labels,
         methods=methods,
+        hpo_synonyms=hpo_synonyms,
     )
 
     save_json(patient, OUTPUT_PATIENT_PATH)
@@ -63,7 +81,7 @@ def main() -> None:
             f"method={row['method']}"
         )
 
-    print(f"\nPatient profile  → {OUTPUT_PATIENT_PATH}")
+    print(f"\nPatient profile   → {OUTPUT_PATIENT_PATH}")
     print(f"Extraction detail → {OUTPUT_EXTRACTION_PATH}")
 
 

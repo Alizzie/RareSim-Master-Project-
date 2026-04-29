@@ -4,6 +4,7 @@ from enum import Enum
 from typing import Dict, List, Optional, Tuple
 
 from phenotype_config import (
+    BIOMEDICAL_NER_MIN_CONFIDENCE,
     BIOMEDICAL_NER_MODEL,
     HPO_BLOCKLIST,
     NEGATION_WINDOW_SIZE,
@@ -15,14 +16,20 @@ Phenotype extraction pipeline.
 
 Methods:
 1. Dictionary      — exact HPO label matching (fast baseline)
-2. scispaCy        — biomedical NER + HPO concept linking
-3. Biomedical NER  — d4data/biomedical-ner-all, general biomedical
-                     entity detection + HPO label lookup
+2. Synonyms        — dictionary + HPO synonym expansion (handles variants)
+3. Biomedical NER  — d4data transformer NER + HPO label lookup
 
-Each method produces ExtractionResult objects with provenance tracking.
+Excluded methods due to dependency issues or performance on short clinical text:
+- scispaCy  : incompatible with Python 3.12 numpy/sklearn environment
+- PhenoBERT : stanza mimic model no longer publicly hosted
+- Embedding : false positives on short clinical text
+- LLM       : hallucinations without GPU server
+
 The extract_hpo_terms() function is the main entry point and merges
 results from all requested methods.
 
+Sequential pipeline:
+    raw text → extract_hpo_terms() → HPO terms → similarity methods → diseases
 """
 
 
@@ -31,7 +38,7 @@ results from all requested methods.
 
 class ExtractionMethod(str, Enum):
     DICTIONARY = "hpo_label_dictionary_match"
-    SCISPACY = "scispacy_entity_linking"
+    SYNONYMS = "hpo_synonym_expansion"
     BIOMEDICAL_NER = "biomedical_ner_d4data"
 
 
@@ -94,6 +101,31 @@ def build_label_lookup(hpo_labels: Dict[str, str]) -> Dict[str, str]:
     }
 
 
+def build_synonym_lookup(
+    hpo_labels: Dict[str, str],
+    hpo_synonyms: Dict[str, List[str]],
+) -> Dict[str, str]:
+    """
+    Build a normalized label + synonym → HPO ID lookup.
+
+    Extends the primary label lookup with synonyms from the HPO ontology.
+    hpo_synonyms format: { "HP:0001251": ["cerebellar ataxia", "ataxia, cerebellar", ...] }
+
+    This allows matching clinical variants like:
+    "difficulty walking"  → HP:0001288 (gait ataxia)
+    "delayed milestones"  → HP:0001263 (global developmental delay)
+    """
+    lookup = build_label_lookup(hpo_labels)
+
+    for hpo_id, synonyms in hpo_synonyms.items():
+        for syn in synonyms:
+            normalized = normalize_text(syn)
+            if normalized and normalized not in lookup:
+                lookup[normalized] = hpo_id
+
+    return lookup
+
+
 def deduplicate(results: List[ExtractionResult]) -> List[ExtractionResult]:
     """
     Keep the highest-confidence result per HPO ID across all methods.
@@ -121,7 +153,7 @@ def extract_dictionary(
     """
     Exact HPO label matching using regex.
 
-    Fast and deterministic. Only matches labels verbatim –
+    Fast and deterministic. Only matches labels verbatim —
     does not handle paraphrases or abbreviations.
     Use as a baseline or in combination with other methods.
     """
@@ -151,77 +183,49 @@ def extract_dictionary(
     return results
 
 
-# ── Method 2: scispaCy + HPO entity linking ───────────────────────────────────
+# ── Method 2: Synonym expansion ───────────────────────────────────────────────
 
 
-def extract_scispacy(
+def extract_synonyms(
     raw_text: str,
     hpo_labels: Dict[str, str],
+    hpo_synonyms: Dict[str, List[str]],
     skip_negated: bool = True,
 ) -> List[ExtractionResult]:
     """
-    Biomedical NER with scispaCy + HPO concept linking.
+    Dictionary matching extended with HPO ontology synonyms.
 
-    Handles paraphrases and clinical abbreviations better than
-    dictionary matching. Requires installation:
+    Handles clinical variants, abbreviations, and terms
+    that don't match primary HPO labels exactly. Example:
+    "difficulty walking" → HP:0001288 (gait ataxia)
+    "delayed milestones" → HP:0001263 (global developmental delay)
 
-        pip install scispacy
-        pip install https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.5.4/en_core_sci_sm-0.5.4.tar.gz
-        pip install scispacy[linker]
-
-    The HPO linker maps recognized entities directly to HPO IDs.
-    Confidence score comes from the linker's similarity score.
+    hpo_synonyms comes from the HPO ontology (hasExactSynonym,
+    hasBroadSynonym fields). Built by build_shared_artifacts.py
+    and saved to outputs/shared/hpo_synonyms.json.
     """
-    try:
-        import spacy
-        from scispacy.linking import EntityLinker  # noqa: F401
-    except ImportError:
-        print(
-            "[phenotype_extractor] scispaCy not installed — skipping.\n"
-            "Install with: pip install scispacy scispacy[linker]"
-        )
-        return []
-
-    nlp = spacy.load("en_core_sci_sm")
-
-    if "scispacy_linker" not in nlp.pipe_names:
-        nlp.add_pipe(
-            "scispacy_linker",
-            config={
-                "resolve_abbreviations": True,
-                "linker_name": "hpo",
-            },
-        )
-
-    doc = nlp(raw_text)
     normalized = normalize_text(raw_text)
+    lookup = build_synonym_lookup(hpo_labels, hpo_synonyms)
     results = []
 
-    for ent in doc.ents:
-        if not ent._.kb_ents:
-            continue
-
-        hpo_id, score = ent._.kb_ents[0]
-
-        if hpo_id not in hpo_labels:
-            continue
-
-        negated = is_negated(normalized, ent.start_char)
-        if skip_negated and negated:
-            continue
-
-        results.append(
-            ExtractionResult(
-                hpo_id=hpo_id,
-                label=hpo_labels[hpo_id],
-                matched_text=ent.text,
-                method=ExtractionMethod.SCISPACY,
-                confidence=float(score),
-                start=ent.start_char,
-                end=ent.end_char,
-                negated=negated,
+    for label_text, hpo_id in lookup.items():
+        pattern = rf"\b{re.escape(label_text)}\b"
+        for match in re.finditer(pattern, normalized):
+            negated = is_negated(normalized, match.start())
+            if skip_negated and negated:
+                continue
+            results.append(
+                ExtractionResult(
+                    hpo_id=hpo_id,
+                    label=hpo_labels.get(hpo_id, hpo_id),
+                    matched_text=label_text,
+                    method=ExtractionMethod.SYNONYMS,
+                    confidence=0.95,
+                    start=match.start(),
+                    end=match.end(),
+                    negated=negated,
+                )
             )
-        )
 
     return results
 
@@ -244,10 +248,10 @@ def extract_biomedical_ner(
     Two-stage matching:
     1. Exact match: normalized span == normalized HPO label
     2. Partial match: span is substring of an HPO label or vice versa
+       (skips labels shorter than 10 chars to avoid false positives)
 
     Limitation: only matches spans that closely resemble an HPO label.
-    Spans with no matching HPO label are skipped. scispaCy is stronger
-    for HPO linking — this method adds coverage for spans scispaCy misses.
+    Spans with no matching HPO label are skipped.
 
     Requires:
         pip install transformers
@@ -279,14 +283,20 @@ def extract_biomedical_ner(
         # Stage 1: exact match
         hpo_id = lookup.get(normalized_span)
 
-        # Stage 2: partial match
+        # Stage 2: partial match — skip short labels to avoid false positives
         if not hpo_id:
             for label_norm, candidate_id in lookup.items():
+                if len(label_norm) < 10:
+                    continue
                 if normalized_span in label_norm or label_norm in normalized_span:
                     hpo_id = candidate_id
                     break
 
         if not hpo_id:
+            continue
+
+        # skip low confidence NER detections
+        if float(ent["score"]) < BIOMEDICAL_NER_MIN_CONFIDENCE:
             continue
 
         negated = is_negated(normalized_full, ent["start"])
@@ -317,17 +327,19 @@ def extract_hpo_terms(
     hpo_labels: Dict[str, str],
     methods: List[str] = ("dictionary",),
     skip_negated: bool = True,
+    hpo_synonyms: Optional[Dict[str, List[str]]] = None,
 ) -> List[ExtractionResult]:
     """
     Run one or more extraction methods and merge results.
 
     Args:
-        raw_text:     Raw clinical patient text.
-        hpo_labels:   Dict mapping HPO ID → label string.
-        methods:      Subset of ["dictionary", "scispacy", "biomedical_ner"].
-                      Methods are run in order; results are merged and
-                      deduplicated keeping highest-confidence per HPO ID.
-        skip_negated: If True, skip negated mentions (e.g. "no ataxia").
+        raw_text:      Raw clinical patient text.
+        hpo_labels:    Dict mapping HPO ID → label string.
+        methods:       Subset of ["dictionary", "synonyms", "biomedical_ner"].
+                       Methods run in order; results merged and deduplicated
+                       keeping highest-confidence per HPO ID.
+        skip_negated:  If True, skip negated mentions (e.g. "no ataxia").
+        hpo_synonyms:  Required for "synonyms" method.
 
     Returns:
         Deduplicated list of ExtractionResult, sorted by position.
@@ -337,8 +349,11 @@ def extract_hpo_terms(
     if "dictionary" in methods:
         all_results += extract_dictionary(raw_text, hpo_labels, skip_negated)
 
-    if "scispacy" in methods:
-        all_results += extract_scispacy(raw_text, hpo_labels, skip_negated)
+    if "synonyms" in methods:
+        if hpo_synonyms is None:
+            print("[phenotype_extractor] hpo_synonyms required for synonym method — skipping.")
+        else:
+            all_results += extract_synonyms(raw_text, hpo_labels, hpo_synonyms, skip_negated)
 
     if "biomedical_ner" in methods:
         all_results += extract_biomedical_ner(raw_text, hpo_labels, skip_negated)
@@ -354,6 +369,7 @@ def build_patient_profile(
     raw_text: str,
     hpo_labels: Dict[str, str],
     methods: List[str] = ("dictionary",),
+    hpo_synonyms: Optional[Dict[str, List[str]]] = None,
 ) -> Tuple[dict, List[dict]]:
     """
     Build a patient profile dict from raw clinical text.
@@ -367,6 +383,7 @@ def build_patient_profile(
         raw_text=raw_text,
         hpo_labels=hpo_labels,
         methods=methods,
+        hpo_synonyms=hpo_synonyms,
     )
 
     patient = {

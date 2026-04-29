@@ -14,6 +14,7 @@ PHENOTYPE_DIR.mkdir(parents=True, exist_ok=True)
 
 # Input paths
 HPO_LABELS_PATH = SHARED_DIR / "hpo_labels.json"
+HPO_SYNONYMS_PATH = SHARED_DIR / "hpo_synonyms.json"
 
 # Output paths
 OUTPUT_PATIENT_PATH = PHENOTYPE_DIR / "example_patient_extracted.json"
@@ -33,6 +34,7 @@ NEGATION_WORDS = {
 NEGATION_WINDOW_SIZE = 50
 
 # HPO IDs that are structural/metadata terms, not phenotypes
+# These are filtered out from all extraction results
 HPO_BLOCKLIST = {
     "HP:0000005",  # Mode of inheritance
     "HP:0000001",  # All (root)
@@ -42,8 +44,14 @@ HPO_BLOCKLIST = {
     "HP:0040279",  # Frequency
 }
 
-# Available extraction methods
-EXTRACTION_METHODS = ["dictionary", "scispacy", "biomedical_ner"]
+# Active extraction methods
+# "dictionary"     — exact HPO label matching (fast baseline)
+# "synonyms"       — dictionary + HPO synonym expansion
+# "biomedical_ner" — d4data transformer NER + HPO label lookup
+EXTRACTION_METHODS = ["dictionary", "synonyms", "biomedical_ner"]
 
 # d4data biomedical NER model
 BIOMEDICAL_NER_MODEL = "d4data/biomedical-ner-all"
+
+# Minimum NER confidence threshold — detections below this are discarded
+BIOMEDICAL_NER_MIN_CONFIDENCE = 0.5

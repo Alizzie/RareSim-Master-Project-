@@ -1,4 +1,5 @@
 import json
+import xml.etree.ElementTree as ET
 from dataclasses import asdict
 from pathlib import Path
 from typing import Callable
@@ -128,12 +129,71 @@ def print_filter_stats(name: str, stats: dict) -> None:
     )
 
 
+def extract_hpo_synonyms(hpo_path: Path) -> dict[str, list[str]]:
+    """
+    Extract HPO synonyms from the OWL file already used for building artifacts.
+
+    Parses oboInOwl synonym annotations and returns:
+        { "HP:0001251": ["cerebellar ataxia", "ataxia, cerebellar", ...] }
+
+    Synonym types included:
+        hasExactSynonym, hasBroadSynonym, hasNarrowSynonym, hasRelatedSynonym
+
+    Used by phenotype_extractor.py synonym expansion method to handle
+    clinical variants and terms that exact label matching misses.
+    """
+    # OWL XML namespaces
+    OWL = "http://www.w3.org/2002/07/owl#"
+    RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    OBO_IN_OWL = "http://www.geneontology.org/formats/oboInOwl#"
+    HP_PREFIX = "http://purl.obolibrary.org/obo/HP_"
+
+    SYNONYM_TAGS = {
+        f"{{{OBO_IN_OWL}}}hasExactSynonym",
+        f"{{{OBO_IN_OWL}}}hasBroadSynonym",
+        f"{{{OBO_IN_OWL}}}hasNarrowSynonym",
+        f"{{{OBO_IN_OWL}}}hasRelatedSynonym",
+    }
+
+    print(f"Extracting HPO synonyms from OWL: {hpo_path}")
+    tree = ET.parse(hpo_path)
+    root = tree.getroot()
+
+    synonyms: dict[str, list[str]] = {}
+
+    for cls in root.iter(f"{{{OWL}}}Class"):
+        about = cls.get(f"{{{RDF}}}about", "")
+
+        # only process HP terms
+        if not about.startswith(HP_PREFIX):
+            continue
+
+        # convert URI → HPO ID: http://.../HP_0001251 → HP:0001251
+        hpo_id = "HP:" + about.split("HP_")[-1]
+
+        term_synonyms = []
+        for child in cls:
+            if child.tag in SYNONYM_TAGS:
+                text = (child.text or "").strip().lower()
+                if text:
+                    term_synonyms.append(text)
+
+        if term_synonyms:
+            synonyms[hpo_id] = term_synonyms
+
+    return synonyms
+
+
 def main() -> None:
     print("Loading HPO...")
     hpo_labels, hpo_parents = load_hpo_owl(HPO_PATH)
 
     print("Computing HPO ancestors...")
     hpo_ancestors = compute_ancestors(hpo_parents)
+
+    print("Extracting HPO synonyms from OWL...")
+    hpo_synonyms = extract_hpo_synonyms(HPO_PATH)
+    print(f"HPO terms with synonyms: {len(hpo_synonyms)}")
 
     hpoa_records = load_and_report(
         "HPOA annotations",
@@ -267,8 +327,9 @@ def main() -> None:
         "canonical_disease_profiles.json": serialize_profiles(canonical_profiles),
         "disease_profiles.json": serialize_profiles(expanded_profiles),
         "hpo_labels.json": hpo_labels,
+        "hpo_synonyms.json": hpo_synonyms,              # ← new
         "hpo_parents.json": {
-        k: sorted(v) for k, v in hpo_parents.items()
+            k: sorted(v) for k, v in hpo_parents.items()
         },
         "hpo_ancestors.json": {
             k: sorted(v) for k, v in hpo_ancestors.items()
