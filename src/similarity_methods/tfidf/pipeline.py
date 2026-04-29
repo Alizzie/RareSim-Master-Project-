@@ -20,11 +20,16 @@ from shared.pipeline import (
     sort_and_rank,
     run_pipeline_main,
 )
+from shared.explaination import (
+    expand,
+    SET_BASED_EXPLANATION,
+    with_top_idf_weighted_terms,
+)
 from similarity_methods.tfidf.methods import build_tfidf_vector, compute_idf
 
 TFIDF_DIR = PROJECT_ROOT / "outputs" / "tfidf"
 PIPELINE_NAME = "tfidf"
-METHOD_NAME = "tfidf_cosine"
+METHOD_NAME = "tfidf"
 
 
 def run(
@@ -52,9 +57,7 @@ def run(
             continue
 
         disease_vec = build_tfidf_vector(disease_terms, idf)
-        score, _ = cosine_similarity(patient_vec, disease_vec)
-
-        matching_terms = sorted(patient_terms & disease_terms)
+        score, explaination = cosine_similarity(patient_vec, disease_vec)
 
         results.append(
             SimilarityResult(
@@ -62,18 +65,15 @@ def run(
                 label=profile.get("label", ""),
                 score=score,
                 method_name=METHOD_NAME,
-                explanation={
-                    "matching_terms": matching_terms,
-                    "n_matching": len(matching_terms),
-                    "top_weighted_matches": sorted(
-                        [
-                            {"term": t, "tfidf_weight": idf.get(t, 0.0)}
-                            for t in matching_terms
-                        ],
-                        key=lambda x: x["tfidf_weight"],
-                        reverse=True,
-                    )[:5],
-                },
+                explanation=expand(
+                    explaination,
+                    patient_terms,
+                    disease_terms,
+                    expanders=[
+                        *SET_BASED_EXPLANATION,
+                        with_top_idf_weighted_terms(idf, top_n=5),
+                    ],
+                ),
                 metadata=build_metadata(
                     method_name=METHOD_NAME,
                     pipeline_name=PIPELINE_NAME,

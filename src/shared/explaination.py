@@ -83,6 +83,44 @@ def with_unmatched_terms(
     return explanation
 
 
+def with_top_idf_weighted_terms(
+    idf: dict[str, float],
+    top_n: int = 10,
+) -> ExplanationExpander:
+    """
+    Returns an expander that adds IDF-weighted shared terms.
+    Usage: expand(..., expanders=[with_top_idf_weighted_terms(idf)])
+    """
+
+    def expander(
+        explanation: dict,
+        patient_terms: set[str],
+        disease_terms: set[str],
+    ) -> dict:
+        matching_terms = sorted(patient_terms & disease_terms)
+        explanation["top_weighted_matches"] = sorted(
+            [{"term": t, "idf_weight": idf.get(t, 0.0)} for t in matching_terms],
+            key=lambda x: x["idf_weight"],
+            reverse=True,
+        )[:top_n]
+        return explanation
+
+    return expander
+
+
+def with_ic_weighted_shared(ic_values: dict[str, float]) -> ExplanationExpander:
+    """Returns an expander that adds the sum of IC values for shared terms."""
+
+    def expander(explanation, patient_terms, disease_terms):
+        shared = patient_terms & disease_terms
+        explanation["ic_weighted_shared_sum"] = sum(
+            ic_values.get(t, 0.0) for t in shared
+        )
+        return explanation
+
+    return expander
+
+
 # ── Composer ──────────────────────────────────────────────────────────────────
 
 
@@ -108,3 +146,10 @@ FULL_EXPLANATION = [
     with_unmatched_terms,
 ]
 MINIMAL_EXPLANATION = [with_shared_terms]
+TFIDF_EXPLANATION = [
+    with_top_idf_weighted_terms,
+    with_shared_terms,
+    with_coverage,
+    with_term_counts,
+    with_unmatched_terms,
+]

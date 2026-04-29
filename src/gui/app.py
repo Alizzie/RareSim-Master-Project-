@@ -30,6 +30,7 @@ from gui.utils import (
 )
 
 from similarity_methods.set_based.pipeline import run as run_set_based
+from similarity_methods.tfidf.pipeline import run as run_tfidf
 
 ALL_METHODS = [
     "semantic_resnik",
@@ -159,6 +160,17 @@ def main() -> None:
         print("  Running set-based methods...")
         all_results.update(
             run_set_based(
+                patient,
+                selected,
+                config,
+                ctx,
+            )
+        )
+
+    if any(m.startswith("tfidf") for m in selected):
+        print("  Running tfidf methods...")
+        all_results.update(
+            run_tfidf(
                 patient,
                 selected,
                 config,
