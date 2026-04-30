@@ -13,13 +13,13 @@ from shared.pipeline import (
     run_pipeline_main,
 )
 from core.schemas import PatientProfile
-from shared.methods import (
-    cosine_similarity,
-    jaccard_similarity,
-    overlap_coefficient,
-    dice_similarity,
-)
+from shared.methods import cosine_similarity
 from shared.explaination import expand, SET_BASED_EXPLANATION
+from similarity_methods.set_based.methods import (
+    jaccard_similarity,
+    dice_similarity,
+    overlap_coefficient,
+)
 
 SETBASED_DIR = PROJECT_ROOT / "outputs" / "set_based"
 PIPELINE_NAME = "set_based"

@@ -129,7 +129,7 @@ def main() -> None:
     elif args.defaults:
         selected = ALL_METHODS
     else:
-        selected = prompt_methods(DEFAULTS, ALL_METHODS)
+        selected = prompt_methods(ALL_METHODS)
 
     print(f"\nSelected methods ({len(selected)}): {', '.join(selected)}")
 
@@ -183,7 +183,7 @@ def main() -> None:
         print_results_table(method_name, results)
 
     # ── Save ──────────────────────────────────────────────────────────────────
-    save_results(all_results)
+    save_results(all_results, ctx.app_metadata.to_dict())
 
 
 if __name__ == "__main__":

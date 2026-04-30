@@ -7,6 +7,8 @@ from shared.result import SimilarityResult
 import shared.io as io
 from pathlib import Path
 
+GUI_DIR = PROJECT_ROOT / "outputs" / "gui"
+
 
 def check_artifacts_exist() -> None:
     """Fail fast with a clear message if build step hasn't been run."""
@@ -45,17 +47,25 @@ def print_results_table(method_name: str, results: list[SimilarityResult]) -> No
         )
 
 
-def save_results(all_results: dict) -> None:
+def save_results(all_results: dict, app_metadata: dict) -> None:
     """Save all results to a JSON file in the outputs directory inside gui."""
-    out_dir = PROJECT_ROOT / "outputs" / "gui"
-    out_dir.mkdir(parents=True, exist_ok=True)
-    path = out_dir / "all_results.json"
+    GUI_DIR.mkdir(parents=True, exist_ok=True)
+    path = GUI_DIR / "app_metadata.json"
+    io.save_json(app_metadata, path)
+    print(f"App metadata saved to: {path}")
+
+    path = GUI_DIR / "all_results.json"
     io.save_results(all_results, path)
     print(f"\nResults saved to: {path}")
 
+    for method_name, rows in all_results.items():
+        path = GUI_DIR / f"{method_name}_top{len(rows)}.json"
+        io.save_individual_results(rows, path)
+    print(f"Individual method results saved to: {GUI_DIR}")
+
 
 # -- Prompts ----------------------------------
-def prompt_patient(DEFAULTS: dict) -> dict:
+def prompt_patient(defaults: dict) -> dict:
     """Prompt the user to select a patient profile, either from a JSON file or using the default example."""
     print("\nNo patient file provided.")
     print("  [1] Load from JSON file path")
@@ -66,28 +76,28 @@ def prompt_patient(DEFAULTS: dict) -> dict:
         path = input("Path to patient JSON file: ").strip()
         return io.load_patient(Path(path))
 
-    print(f"Using default: {DEFAULTS['patient_path'].name}")
-    return io.load_patient(DEFAULTS["patient_path"])
+    print(f"Using default: {defaults['patient_path'].name}")
+    return io.load_patient(defaults["patient_path"])
 
 
-def prompt_methods(DEFAULTS: dict, ALL_METHODS: list[str]) -> list[str]:
+def prompt_methods(all_methods: list[str]) -> list[str]:
     """Prompt the user to select which similarity methods to run, either by choosing from a list or using all methods."""
     print("\nAvailable methods:")
-    for i, name in enumerate(ALL_METHODS, 1):
+    for i, name in enumerate(all_methods, 1):
         print(f"  [{i:>2}] {name}")
-    print(f"\n  Press Enter to select all ({len(ALL_METHODS)} methods)")
+    print(f"\n  Press Enter to select all ({len(all_methods)} methods)")
 
     raw = input("Select methods (comma-separated numbers, or Enter for all): ").strip()
 
     if not raw:
-        return ALL_METHODS
+        return all_methods
 
     selected = []
     for part in raw.split(","):
         part = part.strip()
         if part.isdigit():
             idx = int(part) - 1
-            if 0 <= idx < len(ALL_METHODS):
-                selected.append(ALL_METHODS[idx])
+            if 0 <= idx < len(all_methods):
+                selected.append(all_methods[idx])
 
-    return selected if selected else ALL_METHODS
+    return selected if selected else all_methods

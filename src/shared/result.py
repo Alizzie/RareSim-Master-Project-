@@ -55,7 +55,6 @@ class Metadata:
             "top_k": self.top_k,
             "n_patient_terms": self.n_patient_terms,
             "n_disease_terms": self.n_disease_terms,
-            "app": self.app.to_dict(),
         }
 
 

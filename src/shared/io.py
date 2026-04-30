@@ -31,7 +31,9 @@ def load_patient(path: Path) -> PatientProfile:
 
 
 def save_results(results: dict[str, list[SimilarityResult]], path: Path) -> None:
-    """Save similarity results to a JSON file, organized by method name as a whole."""
+    """
+    Save similarity results to a JSON file, organized by method name as a whole.
+    """
     save_json(
         {method: [r.to_dict() for r in rows] for method, rows in results.items()},
         path,
