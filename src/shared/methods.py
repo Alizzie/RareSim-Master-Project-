@@ -8,9 +8,6 @@ from typing import Tuple
 from shared.math import (
     TermInput,
     cosine_similarity as _cosine,
-    jaccard as _jaccard,
-    dice as _dice,
-    overlap_coefficient as _overlap,
     to_binary_vector,
 )
 
