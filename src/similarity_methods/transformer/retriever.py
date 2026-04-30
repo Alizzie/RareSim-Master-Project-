@@ -1,50 +1,41 @@
+"""
+DiseaseRetriever — transformer-based disease ranking.
+
+Handles:
+- persistent embedding cache (per model, on disk)
+- canonical deduplication (alias → canonical disease ID)
+- patient embedding caching (in-memory, by text hash)
+
+Uses methods.py for text construction and embedding backends.
+Uses shared.io for all file I/O.
+"""
+
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
-import json
+from typing import Dict, List, Tuple
 
 import numpy as np
 
+from shared.io import load_json, save_json
 from similarity_methods.transformer.config import CACHE_ROOT, MAX_LENGTH, TOP_K
-from similarity_methods.transformer.embeddings import (
+from similarity_methods.transformer.methods import (
+    build_disease_texts,
+    build_patient_text,
     embed_texts,
     get_model_type,
     hash_text,
     load_embedding_backend,
     make_safe_model_name,
 )
-from similarity_methods.transformer.text import build_disease_texts, build_patient_text
-
-"""
-Retriever logic for transformer-based disease ranking.
-
-This file handles:
-- JSON file I/O
-- persistent embedding cache
-- canonical deduplication
-- DiseaseRetriever class
-"""
 
 
-def load_json(path: Path) -> Any:
-    """Load a JSON file from disk."""
-    with path.open("r", encoding="utf-8") as f:
-        return json.load(f)
-
-
-def save_json(data: Any, path: Path) -> None:
-    """Save Python data as formatted JSON."""
-    with path.open("w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
+# ── Cache utilities ───────────────────────────────────────────────────────────
 
 
 def get_cache_paths(model_name: str) -> Dict[str, Path]:
-    """
-    Return cache file paths for one model.
-    """
+    """Return cache file paths for one model."""
     safe_name = make_safe_model_name(model_name)
     model_cache_dir = CACHE_ROOT / safe_name
     model_cache_dir.mkdir(parents=True, exist_ok=True)
-
     return {
         "ids": model_cache_dir / "disease_ids.json",
         "labels": model_cache_dir / "disease_labels.json",
@@ -54,28 +45,20 @@ def get_cache_paths(model_name: str) -> Dict[str, Path]:
 
 
 def persistent_cache_exists(cache_paths: Dict[str, Path]) -> bool:
-    """
-    Check if the full embedding cache exists for one model.
-    """
-    return (
-        cache_paths["ids"].exists()
-        and cache_paths["labels"].exists()
-        and cache_paths["texts"].exists()
-        and cache_paths["embeddings"].exists()
-    )
+    """Check if the full embedding cache exists for one model."""
+    return all(cache_paths[k].exists() for k in ["ids", "labels", "texts", "embeddings"])
 
 
 def load_persistent_cache(
     cache_paths: Dict[str, Path],
 ) -> Tuple[List[str], List[str], List[str], np.ndarray]:
-    """
-    Load disease IDs, labels, texts, and embeddings from disk cache.
-    """
-    disease_ids = load_json(cache_paths["ids"])
-    disease_labels = load_json(cache_paths["labels"])
-    disease_texts = load_json(cache_paths["texts"])
-    disease_embeddings = np.load(cache_paths["embeddings"])
-    return disease_ids, disease_labels, disease_texts, disease_embeddings
+    """Load disease IDs, labels, texts, and embeddings from disk cache."""
+    return (
+        load_json(cache_paths["ids"]),
+        load_json(cache_paths["labels"]),
+        load_json(cache_paths["texts"]),
+        np.load(cache_paths["embeddings"]),
+    )
 
 
 def save_persistent_cache(
@@ -85,13 +68,14 @@ def save_persistent_cache(
     disease_texts: List[str],
     disease_embeddings: np.ndarray,
 ) -> None:
-    """
-    Save disease metadata and embeddings to disk.
-    """
+    """Save disease metadata and embeddings to disk."""
     save_json(disease_ids, cache_paths["ids"])
     save_json(disease_labels, cache_paths["labels"])
     save_json(disease_texts, cache_paths["texts"])
     np.save(cache_paths["embeddings"], disease_embeddings)
+
+
+# ── Canonical deduplication ───────────────────────────────────────────────────
 
 
 def collapse_ranked_results_to_canonical(
@@ -108,6 +92,10 @@ def collapse_ranked_results_to_canonical(
 ) -> List[dict]:
     """
     Collapse alias-level results into canonical disease-level results.
+
+    When multiple aliases of the same canonical disease appear in the
+    ranked list, keeps the highest-scoring alias as representative
+    and collects all matched aliases.
     """
     grouped = {}
 
@@ -127,7 +115,6 @@ def collapse_ranked_results_to_canonical(
             }
         else:
             grouped[canonical_id]["matched_aliases"].append(disease_id)
-
             if score > grouped[canonical_id]["score"]:
                 grouped[canonical_id]["representative_disease_id"] = disease_id
                 grouped[canonical_id]["label"] = disease_labels[idx]
@@ -135,9 +122,7 @@ def collapse_ranked_results_to_canonical(
                 grouped[canonical_id]["disease_text_preview"] = disease_texts[idx][:300]
 
     collapsed = sorted(
-        grouped.values(),
-        key=lambda row: row["score"],
-        reverse=True,
+        grouped.values(), key=lambda row: row["score"], reverse=True
     )[:top_k]
 
     results = []
@@ -170,9 +155,14 @@ def collapse_ranked_results_to_canonical(
     return results
 
 
+# ── DiseaseRetriever ──────────────────────────────────────────────────────────
+
+
 class DiseaseRetriever:
     """
-    Main retrieval object.
+    Main retrieval object for transformer-based disease ranking.
+
+    Handles model loading, embedding caching, and ranking.
     """
 
     def __init__(
@@ -203,11 +193,9 @@ class DiseaseRetriever:
         self.patient_embedding_cache: Dict[Tuple[str, str], np.ndarray] = {}
 
     def warmup(self, preload_models: bool = True) -> None:
+        """Preload all models and build/load embedding caches."""
         for model_name in self.model_list:
-            if preload_models:
-                backend = self._get_backend(model_name)
-            else:
-                backend = None
+            backend = self._get_backend(model_name) if preload_models else None
             self._ensure_model_resources(model_name, backend=backend)
 
     def _get_backend(self, model_name: str) -> dict:
@@ -260,6 +248,7 @@ class DiseaseRetriever:
         model_name: str,
         patient_text: str,
     ) -> np.ndarray:
+        """Get patient embedding, using in-memory cache if available."""
         text_hash = hash_text(patient_text)
         cache_key = (model_name, text_hash)
 
@@ -278,6 +267,7 @@ class DiseaseRetriever:
         top_k: int = TOP_K,
         candidate_pool_size: int = 200,
     ) -> List[dict]:
+        """Rank diseases for a patient using the specified model."""
         if model_name not in self.model_list:
             raise ValueError(f"Model not available: {model_name}")
 
@@ -290,25 +280,20 @@ class DiseaseRetriever:
         patient_embedding = self._get_patient_embedding(model_name, patient_text)
 
         resources = self.model_registry[model_name]
-        disease_ids = resources["disease_ids"]
-        disease_labels = resources["disease_labels"]
-        disease_texts = resources["disease_texts"]
-        disease_embeddings = resources["disease_embeddings"]
-        model_type = resources["model_type"]
-
-        scores = disease_embeddings @ patient_embedding
+        scores = resources["disease_embeddings"] @ patient_embedding
         pool_size = min(candidate_pool_size, len(scores))
         ranked_indices = np.argsort(-scores)[:pool_size]
 
         return collapse_ranked_results_to_canonical(
             ranked_indices=ranked_indices,
             scores=scores,
-            disease_ids=disease_ids,
-            disease_labels=disease_labels,
-            disease_texts=disease_texts,
+            disease_ids=resources["disease_ids"],
+            disease_labels=resources["disease_labels"],
+            disease_texts=resources["disease_texts"],
             alias_to_canonical=self.alias_to_canonical,
             model_name=model_name,
-            model_type=model_type,
+            model_type=resources["model_type"],
             patient_text=patient_text,
             top_k=top_k,
         )
+    

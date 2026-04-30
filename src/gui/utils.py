@@ -65,7 +65,7 @@ def save_results(all_results: dict, app_metadata: dict) -> None:
 
 
 # -- Prompts ----------------------------------
-def prompt_patient(defaults: dict) -> dict:
+def prompt_patient(defaults: dict, hpo_labels: dict) -> dict:
     """Prompt the user to select a patient profile, either from a JSON file or using the default example."""
     print("\nNo patient file provided.")
     print("  [1] Load from JSON file path")
@@ -74,10 +74,10 @@ def prompt_patient(defaults: dict) -> dict:
 
     if choice == "1":
         path = input("Path to patient JSON file: ").strip()
-        return io.load_patient(Path(path))
+        return io.load_patient_with_extraction(Path(path), hpo_labels)
 
     print(f"Using default: {defaults['patient_path'].name}")
-    return io.load_patient(defaults["patient_path"])
+    return io.load_patient_with_extraction(defaults["patient_path"], hpo_labels)
 
 
 def prompt_methods(all_methods: list[str]) -> list[str]:

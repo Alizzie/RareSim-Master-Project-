@@ -153,3 +153,10 @@ TFIDF_EXPLANATION = [
     with_term_counts,
     with_unmatched_terms,
 ]
+
+SEMANTIC_EXPLANATION = [
+    with_shared_terms,
+    with_coverage,
+    with_term_counts,
+    with_unmatched_terms,
+]

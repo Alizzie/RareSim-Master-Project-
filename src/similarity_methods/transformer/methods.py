@@ -1,5 +1,10 @@
+"""
+Transformer methods — text construction and embedding backends.
+DiseaseRetriever (retriever.py) uses these to build and query embeddings.
+"""
+
 import hashlib
-from typing import List
+from typing import Dict, List, Tuple
 
 import numpy as np
 import torch
@@ -8,13 +13,101 @@ from transformers import AutoModel, BertTokenizer, BertTokenizerFast
 
 from similarity_methods.transformer.config import BATCH_SIZE, MAX_LENGTH
 
-"""
-Embedding backends for transformer retrieval.
 
-Supports:
-- Hugging Face encoder models + mean pooling
-- SentenceTransformer models + .encode()
-"""
+# ── Text construction ─────────────────────────────────────────────────────────
+
+
+def unique_preserve_order(items: List[str]) -> List[str]:
+    """Remove duplicates while preserving first occurrence order."""
+    seen = set()
+    out = []
+    for item in items:
+        if item and item not in seen:
+            seen.add(item)
+            out.append(item)
+    return out
+
+
+def hpo_terms_to_labels(
+    hpo_terms: List[str],
+    hpo_labels: Dict[str, str],
+) -> List[str]:
+    """Convert HPO IDs into readable phenotype labels, removing duplicates."""
+    labels = []
+    for term in hpo_terms:
+        label = hpo_labels.get(term)
+        if label:
+            labels.append(label.strip())
+    return unique_preserve_order(labels)
+
+
+def build_patient_text(patient: dict, hpo_labels: Dict[str, str]) -> str:
+    """
+    Build the patient text used for embedding.
+
+    Combines:
+    - raw clinical description
+    - HPO phenotype labels
+    """
+    raw_text = (patient.get("raw_text") or "").strip()
+    hpo_terms = patient.get("hpo_terms", [])
+    phenotype_labels = hpo_terms_to_labels(hpo_terms, hpo_labels)
+
+    parts = []
+    if raw_text:
+        parts.append(f"Patient description: {raw_text}")
+    if phenotype_labels:
+        parts.append(f"Patient phenotypes: {'; '.join(phenotype_labels)}")
+
+    return " ".join(parts).strip()
+
+
+def build_disease_text(profile: dict, hpo_labels: Dict[str, str]) -> str:
+    """
+    Build the disease text used for embedding.
+
+    Combines:
+    - disease label
+    - merged description
+    - HPO phenotype labels
+    """
+    label = (profile.get("label") or "").strip()
+    desc = (profile.get("merged_description") or "").strip()
+    hpo_terms = profile.get("hpo_terms", [])
+    phenotype_labels = hpo_terms_to_labels(hpo_terms, hpo_labels)
+
+    parts = []
+    if label:
+        parts.append(f"Disease: {label}")
+    if desc:
+        parts.append(f"Description: {desc}")
+    if phenotype_labels:
+        parts.append(f"Phenotypes: {'; '.join(phenotype_labels)}")
+
+    return " ".join(parts).strip()
+
+
+def build_disease_texts(
+    disease_profiles: Dict[str, dict],
+    hpo_labels: Dict[str, str],
+) -> Tuple[List[str], List[str], List[str]]:
+    """Build aligned lists of disease IDs, labels, and embedding texts."""
+    disease_ids = []
+    disease_labels = []
+    disease_texts = []
+
+    for disease_id, profile in disease_profiles.items():
+        text = build_disease_text(profile, hpo_labels)
+        if not text:
+            continue
+        disease_ids.append(disease_id)
+        disease_labels.append((profile.get("label") or "").strip())
+        disease_texts.append(text)
+
+    return disease_ids, disease_labels, disease_texts
+
+
+# ── Embedding backends ────────────────────────────────────────────────────────
 
 
 def get_device() -> str:
@@ -35,9 +128,7 @@ def make_safe_model_name(model_name: str) -> str:
 
 
 def get_model_type(model_name: str) -> str:
-    """
-    Route model names to the correct embedding backend.
-    """
+    """Route model names to the correct embedding backend."""
     if model_name.startswith("sentence-transformers/"):
         return "sentence_transformer"
     return "hf_encoder"
@@ -49,9 +140,7 @@ def hash_text(text: str) -> str:
 
 
 def load_hf_model_and_tokenizer(model_name: str):
-    """
-    Load a Hugging Face encoder model and BERT-family tokenizer.
-    """
+    """Load a Hugging Face encoder model and BERT-family tokenizer."""
     try:
         tokenizer = BertTokenizerFast.from_pretrained(model_name)
     except Exception:
@@ -67,9 +156,7 @@ def mean_pool(
     last_hidden_state: torch.Tensor,
     attention_mask: torch.Tensor,
 ) -> torch.Tensor:
-    """
-    Mean-pool token embeddings while ignoring padding tokens.
-    """
+    """Mean-pool token embeddings while ignoring padding tokens."""
     mask = attention_mask.unsqueeze(-1).expand(last_hidden_state.size()).float()
     summed = torch.sum(last_hidden_state * mask, dim=1)
     counts = torch.clamp(mask.sum(dim=1), min=1e-9)
@@ -83,9 +170,7 @@ def embed_texts_hf(
     batch_size: int = BATCH_SIZE,
     max_length: int = MAX_LENGTH,
 ) -> np.ndarray:
-    """
-    Embed texts with a Hugging Face encoder and mean pooling.
-    """
+    """Embed texts with a Hugging Face encoder and mean pooling."""
     if not texts:
         raise ValueError("No texts provided for HF embedding.")
 
@@ -95,7 +180,6 @@ def embed_texts_hf(
     with torch.no_grad():
         for start_idx in range(0, len(texts), batch_size):
             batch = texts[start_idx : start_idx + batch_size]
-
             encoded = tokenizer(
                 batch,
                 padding=True,
@@ -104,7 +188,6 @@ def embed_texts_hf(
                 return_tensors="pt",
             )
             encoded = {k: v.to(device) for k, v in encoded.items()}
-
             outputs = model(**encoded)
             pooled = mean_pool(outputs.last_hidden_state, encoded["attention_mask"])
             embeddings.append(pooled.cpu().numpy())
@@ -123,9 +206,7 @@ def embed_texts_sentence_transformer(
     texts: List[str],
     batch_size: int = BATCH_SIZE,
 ) -> np.ndarray:
-    """
-    Embed texts with a SentenceTransformer model.
-    """
+    """Embed texts with a SentenceTransformer model."""
     if not texts:
         raise ValueError("No texts provided for SentenceTransformer embedding.")
 
@@ -140,33 +221,22 @@ def embed_texts_sentence_transformer(
 
 
 def load_embedding_backend(model_name: str) -> dict:
-    """
-    Load the correct embedding backend for a model.
-    """
+    """Load the correct embedding backend for a model."""
     model_type = get_model_type(model_name)
 
     if model_type == "hf_encoder":
         tokenizer, model = load_hf_model_and_tokenizer(model_name)
-        return {
-            "model_type": model_type,
-            "tokenizer": tokenizer,
-            "model": model,
-        }
+        return {"model_type": model_type, "tokenizer": tokenizer, "model": model}
 
     if model_type == "sentence_transformer":
         model = load_sentence_transformer_model(model_name)
-        return {
-            "model_type": model_type,
-            "model": model,
-        }
+        return {"model_type": model_type, "model": model}
 
     raise ValueError(f"Unsupported model type: {model_name}")
 
 
 def embed_texts(backend: dict, texts: List[str]) -> np.ndarray:
-    """
-    Dispatch embedding calls to the appropriate backend.
-    """
+    """Dispatch embedding calls to the appropriate backend."""
     model_type = backend["model_type"]
 
     if model_type == "hf_encoder":

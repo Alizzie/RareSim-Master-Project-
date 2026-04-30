@@ -18,6 +18,11 @@ docker run -d --name neo4j-raresim \
   neo4j:5
 ```
 
+# For llm reasoning part for transformer models and llm generation for rare disease
+Now ollama is used so in another terminal 
+Install: brew install ollama
+Pull:    ollama pull mistral
+Start:   ollama serve
 
 # 2. How to Run
 ```

@@ -45,3 +45,45 @@ NEO4J_PASSWORD = "raresim123"
 NEO4J_DATABASE = "neo4j"
 
 SHARED_DIR = OUTPUT_DIR
+
+# ── Phenotype extraction settings ─────────────────────────────────────────────
+ 
+# Words that indicate negation in clinical text
+NEGATION_WORDS = {
+    "no",
+    "not",
+    "without",
+    "denies",
+    "denied",
+    "negative for",
+    "absence of",
+}
+ 
+# Window size (characters) to look back for negation words
+NEGATION_WINDOW_SIZE = 50
+ 
+# HPO IDs that are structural/metadata terms, not phenotypes
+# Filtered out from all extraction results
+HPO_BLOCKLIST = {
+    "HP:0000005",  # Mode of inheritance
+    "HP:0000001",  # All (root)
+    "HP:0000118",  # Phenotypic abnormality (too broad)
+    "HP:0012823",  # Clinical modifier
+    "HP:0031797",  # Clinical course
+    "HP:0040279",  # Frequency
+    "HP:0032316",  # Family history — not a phenotype
+    "HP:0003674",  # Onset — metadata
+    "HP:0012777",  # Biomarker — metadata
+}
+ 
+# current extraction methods
+# "dictionary"     — exact HPO label matching (fast baseline)
+# "synonyms"       — dictionary + HPO synonym expansion
+# "biomedical_ner" — d4data transformer NER + HPO label lookup
+EXTRACTION_METHODS = ["dictionary", "synonyms", "biomedical_ner"]
+ 
+# d4data biomedical NER model
+BIOMEDICAL_NER_MODEL = "d4data/biomedical-ner-all"
+ 
+# Minimum NER confidence threshold
+BIOMEDICAL_NER_MIN_CONFIDENCE = 0.6

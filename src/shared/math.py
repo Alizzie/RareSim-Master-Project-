@@ -5,11 +5,15 @@ Sets are converted to binary vectors before computation.
 """
 
 import math
-from typing import Dict, Set, Union
+from typing import Callable, Dict, List, Optional, Set, Union, Tuple
 
 TermSet = Set[str]
 TermVector = Dict[str, float]
 TermInput = Union[TermSet, TermVector]
+PairwiseSimilarityFn = Callable[
+    [str, str, Dict[str, Set[str]], Dict[str, float]],
+    Tuple[float, Optional[str]],
+]
 
 
 def to_binary_vector(terms: TermInput) -> TermVector:
@@ -95,3 +99,58 @@ def overlap_coefficient(vec_a: TermInput, vec_b: TermInput) -> float:
         return 0.0
 
     return len(a & b) / min(len(a), len(b))
+
+
+def filter_terms_by_ic(
+    terms: Set[str],
+    ic_values: Dict[str, float],
+    ic_threshold: Optional[float],
+) -> Set[str]:
+    """
+    Filter a set of HPO terms by minimum IC value.
+
+    Removes overly broad terms (low IC) that add noise to similarity scores.
+    Example: HP:0000118 (Phenotypic abnormality) has very low IC and is excluded.
+
+    Args:
+        terms:        Set of HPO term IDs.
+        ic_values:    Dict mapping HPO ID → IC value.
+        ic_threshold: Minimum IC to keep a term. None = keep all.
+    """
+    if ic_threshold is None:
+        return set(terms)
+    return {term for term in terms if ic_values.get(term, 0.0) >= ic_threshold}
+
+
+def sum_ic(terms: Set[str], ic_values: Dict[str, float]) -> float:
+    """Sum IC values for a set of HPO terms."""
+    return sum(ic_values.get(term, 0.0) for term in terms)
+
+
+def preprocess_ancestor_sets(
+    ancestors: Dict[str, List[str]],
+) -> Dict[str, Set[str]]:
+    """
+    Convert ancestor lists to inclusive ancestor sets.
+
+    Inclusive means the term itself is included in its own ancestor set.
+    Precomputed once and reused across all BMA comparisons for efficiency.
+
+    Args:
+        ancestors: Dict mapping HPO ID → list of ancestor IDs.
+
+    Returns:
+        Dict mapping HPO ID → set of ancestor IDs (including self).
+    """
+    return {
+        term: set(parent_terms) | {term}
+        for term, parent_terms in ancestors.items()
+    }
+
+
+def get_ancestors_inclusive(
+    term: str,
+    ancestor_sets: Dict[str, Set[str]],
+) -> Set[str]:
+    """Return the inclusive ancestor set for a term (includes the term itself)."""
+    return ancestor_sets.get(term, {term})

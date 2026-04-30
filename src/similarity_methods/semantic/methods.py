@@ -5,13 +5,19 @@ Core idea:
 - Terms are compared using the ontology structure (ancestors)
 - Information Content (IC) is used to measure specificity
 - More specific shared ancestors → higher similarity
+
+Methods:
+- Resnik    : IC(MICA) — specificity of shared ancestor
+- Lin       : normalized Resnik — accounts for term specificity
+- Jiang-Conrath : distance-based, converted to similarity
 """
 
 import math
 from typing import Dict, Optional, Set, Tuple
 
-from .utils import get_ancestors_inclusive, sum_ic
+from shared.math import get_ancestors_inclusive
 
+# these 2 functions below are ancestor utilities that are only used by the semantic similarity methods (Resnik, Lin, Jiang-Conrath). so not added to shared/ is it ok?
 
 def get_common_ancestors(
     term_a: str,
@@ -173,139 +179,3 @@ def jiang_conrath_similarity(
 
     score = 1.0 / (1.0 + distance)
     return score, mica_term
-
-
-def simgic_similarity(
-    patient_terms: Set[str],
-    disease_terms: Set[str],
-    ic_values: Dict[str, float],
-) -> Tuple[float, dict]:
-    """
-    simGIC similarity (set-based, IC-weighted Jaccard).
-
-    Definition:
-    sum(IC(intersection)) / sum(IC(union))
-
-    Interpretation:
-    - Extends Jaccard by weighting terms by importance (IC)
-    - Rewards matching rare/specific phenotypes more
-
-    Output:
-    - similarity score
-    - explanation with statistics
-    """
-    if not patient_terms or not disease_terms:
-        return 0.0, {
-            "intersection_size": 0,
-            "union_size": 0,
-            "intersection_ic_sum": 0.0,
-            "union_ic_sum": 0.0,
-        }
-
-    intersection = patient_terms & disease_terms
-    union = patient_terms | disease_terms
-
-    intersection_ic = sum_ic(intersection, ic_values)
-    union_ic = sum_ic(union, ic_values)
-
-    score = 0.0 if union_ic == 0.0 else intersection_ic / union_ic
-
-    explanation = {
-        "intersection_size": len(intersection),
-        "union_size": len(union),
-        "intersection_ic_sum": intersection_ic,
-        "union_ic_sum": union_ic,
-        "top_shared_terms": sorted(
-            intersection,
-            key=lambda t: ic_values.get(t, 0.0),
-            reverse=True,
-        )[:10],
-    }
-    return score, explanation
-
-
-def icto_similarity(
-    patient_terms: Set[str],
-    disease_terms: Set[str],
-    ic_values: Dict[str, float],
-) -> Tuple[float, dict]:
-    """
-    ICTO similarity (IC-weighted overlap coefficient).
-
-    Definition:
-    sum(IC(intersection)) / min(sum(IC(patient)), sum(IC(disease)))
-
-    Interpretation:
-    - Measures how much the smaller set is covered
-    - More sensitive than simGIC when sizes differ
-
-    Use case:
-    - Good when patient has few symptoms but matches disease well
-    """
-    if not patient_terms or not disease_terms:
-        return 0.0, {
-            "intersection_size": 0,
-            "patient_ic_sum": 0.0,
-            "disease_ic_sum": 0.0,
-            "intersection_ic_sum": 0.0,
-        }
-
-    intersection = patient_terms & disease_terms
-    patient_ic = sum_ic(patient_terms, ic_values)
-    disease_ic = sum_ic(disease_terms, ic_values)
-    intersection_ic = sum_ic(intersection, ic_values)
-
-    denom = min(patient_ic, disease_ic)
-    score = 0.0 if denom == 0.0 else intersection_ic / denom
-
-    explanation = {
-        "intersection_size": len(intersection),
-        "patient_ic_sum": patient_ic,
-        "disease_ic_sum": disease_ic,
-        "intersection_ic_sum": intersection_ic,
-        "top_shared_terms": sorted(
-            intersection,
-            key=lambda t: ic_values.get(t, 0.0),
-            reverse=True,
-        )[:10],
-    }
-    return score, explanation
-
-
-def jaccard_similarity(
-    patient_terms: Set[str],
-    disease_terms: Set[str],
-    ic_values: Dict[str, float],
-) -> Tuple[float, dict]:
-    """
-    Standard Jaccard similarity (baseline).
-
-    Definition:
-    |intersection| / |union|
-
-    Interpretation:
-    - Treats all terms equally (no IC weighting)
-    - Useful baseline for comparison
-
-    Note:
-    - Ignores ontology structure and term importance
-    """
-    del ic_values
-
-    if not patient_terms or not disease_terms:
-        return 0.0, {
-            "intersection_size": 0,
-            "union_size": 0,
-            "top_shared_terms": [],
-        }
-
-    intersection = patient_terms & disease_terms
-    union = patient_terms | disease_terms
-    score = 0.0 if not union else len(intersection) / len(union)
-
-    explanation = {
-        "intersection_size": len(intersection),
-        "union_size": len(union),
-        "top_shared_terms": sorted(intersection)[:10],
-    }
-    return score, explanation

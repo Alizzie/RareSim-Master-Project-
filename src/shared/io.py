@@ -30,6 +30,39 @@ def load_patient(path: Path) -> PatientProfile:
     )
 
 
+def load_patient_with_extraction(
+    patient_path: Path,
+    hpo_labels: dict,
+    methods: list = ("dictionary",),
+) -> PatientProfile:
+    data = load_json(patient_path)
+
+    if data.get("hpo_terms"):
+        return load_patient(patient_path)
+
+    raw_text = data.get("raw_text", "").strip()
+    if not raw_text:
+        raise ValueError(
+            f"Patient {data.get('patient_id')} has neither "
+            "hpo_terms nor raw_text."
+        )
+
+    from shared.phenotype import build_patient_profile
+    enriched, _ = build_patient_profile(
+        patient_id=data["patient_id"],
+        raw_text=raw_text,
+        hpo_labels=hpo_labels,
+        methods=list(methods),
+    )
+    # convert enriched dict to PatientProfile
+    return PatientProfile(
+        patient_id=enriched["patient_id"],
+        raw_text=enriched["raw_text"],
+        hpo_terms=set(enriched["hpo_terms"]),
+        propagated_hpo_terms=set(enriched.get("propagated_hpo_terms", [])),
+    )
+
+
 def save_results(results: dict[str, list[SimilarityResult]], path: Path) -> None:
     """
     Save similarity results to a JSON file, organized by method name as a whole.
