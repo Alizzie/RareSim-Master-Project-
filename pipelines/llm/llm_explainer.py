@@ -105,7 +105,6 @@ def query_llm(prompt: str, model_name: str, pipe=None) -> str:
         if pipe is None:
             pipe = load_hf_pipeline(model_name)
         output = pipe(prompt)[0]["generated_text"]
-        # guard against None
         if not output:
             return ""
         return output[len(prompt):].strip()
@@ -123,47 +122,74 @@ def build_explanation_prompt(
     transformer_rank: int = None,
 ) -> str:
     """
-    Build a structured reasoning prompt for one patient-disease pair.
-    Optionally includes transformer similarity score for richer reasoning.
+    Build a structured clinical reasoning prompt for one patient-disease pair.
+
+    Forces the LLM to:
+    1. List which patient phenotypes are present in the disease
+    2. List which patient phenotypes are absent in the disease
+    3. Note any important disease phenotypes the patient lacks
+    4. Give a clear confidence verdict with justification
     """
-    patient_labels = [
-        hpo_labels.get(t, t) for t in patient.get("hpo_terms", [])
-    ]
-    disease_labels = [
-        hpo_labels.get(t, t) for t in disease.get("hpo_terms", [])
-    ]
+    patient_terms = patient.get("hpo_terms", [])
+    disease_terms = disease.get("hpo_terms", [])
+
+    patient_labels = [hpo_labels.get(t, t) for t in patient_terms]
+    disease_labels = [hpo_labels.get(t, t) for t in disease_terms]
+
     disease_label = disease.get("label", "Unknown disease")
     disease_desc = (disease.get("merged_description") or "").strip()
 
+    # pre-compute overlap to give LLM a head start
+    patient_set = set(patient_terms)
+    disease_set = set(disease_terms)
+    matching_ids = patient_set & disease_set
+    matching_labels = [hpo_labels.get(t, t) for t in matching_ids]
+    missing_from_disease = [
+        hpo_labels.get(t, t) for t in patient_set - disease_set
+    ]
+
     prompt_parts = [
-        "You are a rare disease expert specializing in clinical phenotyping.",
+        "You are a rare disease clinical expert. Your task is to evaluate whether "
+        "a patient's phenotype profile matches a candidate rare disease.",
         "",
-        f"Patient phenotypes: {', '.join(patient_labels)}",
-        "",
-        f"Candidate disease: {disease_label}",
+        "---",
+        f"PATIENT PHENOTYPES: {', '.join(patient_labels) if patient_labels else 'None listed'}",
+        "---",
+        f"CANDIDATE DISEASE: {disease_label}",
     ]
 
     if disease_desc:
-        prompt_parts += [f"Disease description: {disease_desc[:300]}"]
+        prompt_parts += [f"DISEASE DESCRIPTION: {disease_desc[:400]}"]
 
     if disease_labels:
-        prompt_parts += [f"Disease phenotypes: {', '.join(disease_labels[:15])}"]
+        prompt_parts += [
+            f"DISEASE PHENOTYPES: {', '.join(disease_labels[:20])}",
+        ]
 
     if transformer_score is not None:
         prompt_parts += [
             "",
-            f"Embedding similarity score: {transformer_score:.4f} "
-            f"(rank #{transformer_rank})",
+            f"Embedding similarity score: {transformer_score:.4f} (rank #{transformer_rank})",
         ]
 
     prompt_parts += [
         "",
-        "In 2-3 sentences, explain:",
-        "1. Which patient phenotypes match this disease",
-        "2. Which key disease phenotypes are absent in the patient",
-        "3. Overall assessment: likely match / possible match / unlikely match",
+        "Pre-computed phenotype overlap for your reference:",
+        f"  Directly matched: {', '.join(matching_labels) if matching_labels else 'None'}",
+        f"  In patient but not in disease: {', '.join(missing_from_disease) if missing_from_disease else 'None'}",
         "",
-        "Explanation:",
+        "Provide a structured clinical assessment using EXACTLY this format:",
+        "",
+        "CLINICAL REASONING: [2-3 sentences explaining which phenotypes match, "
+        "which are missing, and any clinically important discrepancies. "
+        "Be specific — use the actual phenotype names.]",
+        "",
+        "VERDICT: [STRONG MATCH / POSSIBLE MATCH / WEAK MATCH / UNLIKELY MATCH]",
+        "",
+        "VERDICT REASON: [One sentence justifying the verdict based on phenotype "
+        "overlap quality and any key contradicting features.]",
+        "",
+        "CLINICAL REASONING:",
     ]
 
     return "\n".join(prompt_parts)
@@ -172,11 +198,55 @@ def build_explanation_prompt(
 # ── Explanation extractor ─────────────────────────────────────────────────────
 
 def extract_explanation(generated_text: str) -> str:
-    """Extract and trim explanation to 3 sentences."""
+    """
+    Extract and structure the explanation from LLM output.
+    Tries to find VERDICT and CLINICAL REASONING sections.
+    Falls back to first 3 sentences if structure is missing.
+    """
     if not generated_text:
         return "No explanation generated."
 
     generated_text = generated_text.strip()
+
+    reasoning = ""
+    verdict = ""
+    verdict_reason = ""
+
+    lines = generated_text.splitlines()
+    current_section = None
+
+    for line in lines:
+        line = line.strip()
+        if not line:
+            continue
+        if line.upper().startswith("VERDICT REASON:"):
+            current_section = "verdict_reason"
+            verdict_reason = line.split(":", 1)[-1].strip()
+        elif line.upper().startswith("VERDICT:"):
+            current_section = "verdict"
+            verdict = line.split(":", 1)[-1].strip()
+        elif line.upper().startswith("CLINICAL REASONING:"):
+            current_section = "reasoning"
+            after = line.split(":", 1)[-1].strip()
+            if after:
+                reasoning = after
+        elif current_section == "reasoning" and not verdict:
+            reasoning += " " + line
+        elif current_section == "verdict" and not verdict_reason:
+            if not line.upper().startswith("VERDICT"):
+                verdict += " " + line
+
+    # if structured output found, format it cleanly
+    if verdict:
+        parts = []
+        if reasoning:
+            parts.append(reasoning.strip())
+        parts.append(f"Verdict: {verdict.strip()}")
+        if verdict_reason:
+            parts.append(verdict_reason.strip())
+        return " | ".join(parts)
+
+    # fallback: first 3 sentences
     sentences = generated_text.split(".")
     short = ". ".join(s.strip() for s in sentences[:3] if s.strip())
     return short + "." if short and not short.endswith(".") else short
@@ -194,7 +264,7 @@ def explain_match(
     transformer_rank: int = None,
 ) -> str:
     """
-    Generate a clinical explanation for one patient-disease match.
+    Generate a structured clinical explanation for one patient-disease match.
 
     Args:
         patient:           Patient dict with hpo_terms.
@@ -206,7 +276,7 @@ def explain_match(
         transformer_rank:  Optional rank from transformer pipeline.
 
     Returns:
-        Explanation string (2-3 sentences).
+        Structured explanation string with verdict.
     """
     prompt = build_explanation_prompt(
         patient, disease, hpo_labels, transformer_score, transformer_rank
@@ -224,7 +294,7 @@ def explain_top_results(
     top_k: int = TOP_K_RERANK,
 ) -> List[dict]:
     """
-    Add LLM explanations to transformer top-K results.
+    Add structured LLM explanations to transformer top-K results.
 
     Args:
         patient:              Patient dict with hpo_terms.
@@ -237,7 +307,6 @@ def explain_top_results(
     Returns:
         Same result list with added llm_explanation field.
     """
-    # load HF pipeline once if using HF backend
     pipe = load_hf_pipeline(model_name) if LLM_BACKEND == "hf" else None
 
     candidates = transformer_results[:top_k]

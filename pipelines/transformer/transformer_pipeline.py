@@ -23,8 +23,58 @@ Main pipeline for transformer-based disease retrieval.
 
 Make sure to run this after you have the necessary data files
 coming from build_shared_artifacts.py and the transformer models downloaded.
-
 """
+
+
+def print_model_results(model_name: str, results: list) -> None:
+    """Print results for a single model in a readable format."""
+    scores = [r["score"] for r in results]
+    score_min = min(scores)
+    score_max = max(scores)
+    score_spread = score_max - score_min
+
+    print(f"\n{'═' * 70}")
+    print(f"MODEL: {model_name}")
+    print(f"Type:  {get_model_type(model_name)}")
+    print(f"Score range: {score_min:.4f} – {score_max:.4f}  (spread={score_spread:.4f})")
+    print(f"{'═' * 70}")
+
+    # track canonical IDs seen to flag duplicates
+    seen_canonical = {}
+
+    for r in results:
+        canonical_id = r["canonical_disease_id"]
+        label = r["label"]
+        score = r["score"]
+        rank = r["rank"]
+        aliases = r.get("matched_aliases", [])
+
+        # flag if this canonical disease already appeared under a different alias
+        duplicate_flag = ""
+        if canonical_id in seen_canonical:
+            duplicate_flag = f"  ⚠ duplicate of rank {seen_canonical[canonical_id]}"
+        else:
+            seen_canonical[canonical_id] = rank
+
+        print(f"\nrank={rank:>2} | {canonical_id:<15} | score={score:.4f}{duplicate_flag}")
+        print(f"        {label}")
+
+        if len(aliases) > 1:
+            print(f"        Aliases: {', '.join(aliases)}")
+
+        # print truncated LLM reasoning if available
+        llm = (
+            r.get("explanation", {}).get("llm_reasoning")
+            or r.get("llm_explanation", "")
+        )
+        if llm:
+            # first sentence only
+            first_sentence = llm.split(".")[0].strip()
+            if len(first_sentence) > 120:
+                first_sentence = first_sentence[:120] + "..."
+            print(f"        LLM: {first_sentence}.")
+
+    print(f"\n{'─' * 70}")
 
 
 def main():
@@ -46,9 +96,6 @@ def main():
     all_results = {}
 
     for model_name in MODEL_LIST:
-        print(f"\nRunning model: {model_name}")
-        print(f"Model type: {get_model_type(model_name)}")
-
         results = retriever.rank(
             model_name=model_name,
             patient=patient,
@@ -62,18 +109,10 @@ def main():
 
         all_results[model_name] = results
 
-        for r in results:
-            print(
-                f"rank={r['rank']:>2} | "
-                f"{r['canonical_disease_id']:<15} | "
-                f"score={r['score']:.4f} | "
-                f"{r['label']} | "
-                f"aliases={len(r['matched_aliases'])}"
-            )
-
+        print_model_results(model_name, results)
         print(f"Saved to: {out_path}")
 
-    # ── LLM Explanation (if we want reasoning with LLM) ────────────────────────────────────────────
+    # ── LLM Explanation ───────────────────────────────────────────────────────
     if RUN_LLM_EXPLAINER:
         try:
             import sys
@@ -83,9 +122,9 @@ def main():
             llm_dir = project_root / "pipelines" / "llm"
 
             sys.path.append(str(project_root))
-            sys.path.append(str(llm_dir))    # ← this makes llm_explainer importable directly
+            sys.path.append(str(llm_dir))
 
-            from pipelines.llm.llm_explainer import explain_top_results  
+            from pipelines.llm.llm_explainer import explain_top_results
 
             for model_name, results in all_results.items():
                 print(f"\nExplaining results for: {model_name}")
@@ -105,6 +144,12 @@ def main():
                     )
                     original["explanation"]["explainer_model"] = LLM_EXPLAINER_MODEL
 
+            # reprint results with LLM reasoning after explanation
+            print(f"\n{'═' * 70}")
+            print("RESULTS WITH LLM REASONING")
+            for model_name, results in all_results.items():
+                print_model_results(model_name, results)
+
         except ImportError as e:
             print(f"[transformer_pipeline] LLM explainer skipped: {e}")
 
@@ -116,3 +161,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    
