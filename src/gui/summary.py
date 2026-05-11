@@ -9,7 +9,6 @@ Post-processing summary of all pipeline results:
 from collections import defaultdict
 from shared.result import MethodResults
 
-
 # ── Disease co-occurrence ─────────────────────────────────────────────────────
 
 
@@ -31,7 +30,6 @@ def build_disease_summary(
         for r in method_results.rankings:
             entry = disease_map[r.disease_id]
             entry["label"] = r.label
-            entry["hpo_terms"] = 
             entry["methods"][method_name] = {
                 "rank": r.rank,
                 "score": round(r.score, 4),
