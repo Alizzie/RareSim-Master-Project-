@@ -1,9 +1,12 @@
-import json
-from dataclasses import asdict
-from pathlib import Path
-from typing import Callable
+"""Build shared artifacts for the project, including disease profiles,
+HPO parent relations, information content values, and an example patient profile.
+"""
 
-from config import (
+from dataclasses import asdict
+from typing import Callable
+from shared.io import save_json
+
+from core.config import (
     APPLY_TRUE_PATH_RULE,
     EXAMPLE_PATIENT,
     HPO_PATH,
@@ -15,13 +18,13 @@ from config import (
     ORPHADATA_PRODUCT4_PATH,
     OUTPUT_DIR,
 )
-from disease_profiles import (
+from core.disease_profiles import (
     build_canonical_disease_profiles,
     expand_alias_profiles,
 )
-from hpo_utils import compute_ancestors, propagate_hpo_terms
-from ic import compute_information_content, compute_term_frequencies
-from loaders import (
+from core.hpo_utils import compute_ancestors, propagate_hpo_terms
+from core.ic import compute_information_content, compute_term_frequencies
+from core.loaders import (
     load_hpo_owl,
     load_hpoa_annotations,
     load_hoom_hpo_annotations,
@@ -30,19 +33,10 @@ from loaders import (
     load_orphadata_product4_annotations,
     load_ordo_metadata,
 )
-from mapping_utils import build_orpha_mapping_index
-from normalizers import normalize_hpo_id, normalize_owl_local_id
-from phenotype_merge import merge_phenotype_annotation_records
-from schemas import PatientProfile
-
-"""Build shared artifacts for the project, including disease profiles,
-HPO parent relations, information content values, and an example patient profile.
-"""
-
-
-def save_json(data, output_path: Path) -> None:
-    with output_path.open("w", encoding="utf-8") as handle:
-        json.dump(data, handle, indent=2, ensure_ascii=False)
+from core.mapping_utils import build_orpha_mapping_index
+from core.normalizers import normalize_hpo_id, normalize_owl_local_id
+from core.phenotype_merge import merge_phenotype_annotation_records
+from core.schemas import PatientProfile
 
 
 def serialize_profile(profile) -> dict:
@@ -129,6 +123,8 @@ def print_filter_stats(name: str, stats: dict) -> None:
 
 
 def main() -> None:
+    print("Download ontologies")
+
     print("Loading HPO...")
     hpo_labels, hpo_parents = load_hpo_owl(HPO_PATH)
 
@@ -157,10 +153,7 @@ def main() -> None:
     )
 
     raw_phenotype_annotation_records = (
-        hpoa_records
-        + hoom_hpo_records
-        + orphadata_records
-        + monarch_records
+        hpoa_records + hoom_hpo_records + orphadata_records + monarch_records
     )
     print(
         "Total raw phenotype annotation records: "
@@ -267,12 +260,8 @@ def main() -> None:
         "canonical_disease_profiles.json": serialize_profiles(canonical_profiles),
         "disease_profiles.json": serialize_profiles(expanded_profiles),
         "hpo_labels.json": hpo_labels,
-        "hpo_parents.json": {
-        k: sorted(v) for k, v in hpo_parents.items()
-        },
-        "hpo_ancestors.json": {
-            k: sorted(v) for k, v in hpo_ancestors.items()
-        },
+        "hpo_parents.json": {k: sorted(v) for k, v in hpo_parents.items()},
+        "hpo_ancestors.json": {k: sorted(v) for k, v in hpo_ancestors.items()},
         "term_frequencies.json": term_frequencies,
         "information_content.json": ic_values,
         "example_patient.json": serialize_profile(patient),

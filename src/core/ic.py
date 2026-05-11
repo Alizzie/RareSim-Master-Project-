@@ -1,8 +1,10 @@
 import math
 from typing import Dict
 
-from schemas import DiseaseProfile
-'''Functions to compute information content (IC) values for HPO terms based on their frequencies across disease profiles.'''
+from core.schemas import DiseaseProfile
+
+"""Functions to compute information content (IC) values for HPO terms based on their frequencies across disease profiles."""
+
 
 def compute_term_frequencies(
     disease_profiles: Dict[str, DiseaseProfile],
@@ -15,9 +17,7 @@ def compute_term_frequencies(
 
     for profile in disease_profiles.values():
         terms = (
-            profile.propagated_hpo_terms
-            if use_propagated_terms
-            else profile.hpo_terms
+            profile.propagated_hpo_terms if use_propagated_terms else profile.hpo_terms
         )
         for term in terms:
             frequencies[term] = frequencies.get(term, 0) + 1

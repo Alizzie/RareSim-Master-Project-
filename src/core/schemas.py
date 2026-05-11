@@ -31,3 +31,7 @@ class PatientProfile:
     raw_text: str
     hpo_terms: Set[str] = field(default_factory=set)
     propagated_hpo_terms: Set[str] = field(default_factory=set)
+
+    def get_terms(self, use_propagated: bool = True) -> Set[str]:
+        """Return the set of HPO terms for this patient, either propagated or not."""
+        return self.propagated_hpo_terms if use_propagated else self.hpo_terms
