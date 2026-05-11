@@ -1,76 +1,52 @@
 """
-LLM methods — disease retrieval and explanation.
+LLM methods — disease retrieval and explanation via HuggingFace.
 
-Combines:
-- llm_retriever : query LLM backends, build retrieval prompts, parse output
-- llm_explainer : build explanation prompts, extract structured reasoning
-
-Supports two backends:
-- Ollama : local server, recommended for development - right now we use this for both retrieval and explanation since it's more lightweight and easier to set up
-- HF     : HuggingFace transformers, best biomedical quality on GPU server
-
-Switch backend in config.py: LLM_BACKEND = "ollama" | "hf"
+Two main functions:
+- retrieve_diseases_llm : directly asks LLM to name diseases from patient HPO terms
+- explain_top_results   : asks LLM to explain why each disease matches the patient
 """
 
+import gc
 import re
-import requests
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
+from shared.timer import timer
 from similarity_methods.llm.config import (
     DO_SAMPLE,
     EXPLAINER_MODEL,
-    LLM_BACKEND,
     MAX_NEW_TOKENS_EXPLAINER,
     MAX_NEW_TOKENS_RETRIEVAL,
-    OLLAMA_URL,
-    RETRIEVAL_MODEL,
     TEMPERATURE,
     TOP_K,
     TOP_K_RERANK,
 )
 
 
-# ── Backend loaders ───────────────────────────────────────────────────────────
-
-
-def query_ollama(
-    prompt: str,
-    model: str,
-    max_tokens: int = MAX_NEW_TOKENS_RETRIEVAL,
-) -> str:
-    """Query a local Ollama server."""
-    try:
-        response = requests.post(
-            OLLAMA_URL,
-            json={
-                "model": model,
-                "prompt": prompt,
-                "stream": False,
-                "options": {
-                    "temperature": TEMPERATURE,
-                    "num_predict": max_tokens,
-                },
-            },
-            timeout=120,
-        )
-        response.raise_for_status()
-        return response.json().get("response", "")
-    except requests.exceptions.ConnectionError:
-        raise ConnectionError(
-            "[llm] Ollama server not running.\n"
-            "Start it with: ollama serve\n"
-            "Pull model with: ollama pull mistral"
-        )
+# ── HuggingFace backend ───────────────────────────────────────────────────────
 
 
 def load_hf_pipeline(model_name: str, max_new_tokens: int = MAX_NEW_TOKENS_RETRIEVAL):
-    """Load a HuggingFace text-generation pipeline. GPU server only."""
+    """
+    Load a HuggingFace text-generation pipeline.
+
+    Tries 4-bit quantization first (less GPU memory) and falls back
+    to float16 if quantization is not available.
+
+    Args:
+        model_name:     HuggingFace model identifier.
+        max_new_tokens: Maximum tokens to generate.
+
+    Returns:
+        HuggingFace text-generation pipeline.
+    """
     try:
-        from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline
+        from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
         import torch
 
+        print(f"  [llm] Loading: {model_name}")
         tokenizer = AutoTokenizer.from_pretrained(model_name)
 
+        # Try 4-bit quantization first — uses less GPU memory
         try:
             from transformers import BitsAndBytesConfig
             quant_config = BitsAndBytesConfig(load_in_4bit=True)
@@ -79,15 +55,14 @@ def load_hf_pipeline(model_name: str, max_new_tokens: int = MAX_NEW_TOKENS_RETRI
                 quantization_config=quant_config,
                 device_map="auto",
             )
-            print(f"[llm] Loaded {model_name} with 4-bit quantization")
+            print(f"  [llm] Loaded with 4-bit quantization")
         except Exception:
             model = AutoModelForCausalLM.from_pretrained(
                 model_name,
                 device_map="auto",
-                torch_dtype=torch.float32,
-                use_safetensors=False,
+                torch_dtype=torch.float16,
             )
-            print(f"[llm] Loaded {model_name} without quantization")
+            print(f"  [llm] Loaded with float16 precision")
 
         return pipeline(
             "text-generation",
@@ -96,7 +71,9 @@ def load_hf_pipeline(model_name: str, max_new_tokens: int = MAX_NEW_TOKENS_RETRI
             max_new_tokens=max_new_tokens,
             temperature=TEMPERATURE,
             do_sample=DO_SAMPLE,
+            repetition_penalty=1.3,
         )
+
     except ImportError:
         raise ImportError(
             "transformers not installed.\n"
@@ -104,23 +81,32 @@ def load_hf_pipeline(model_name: str, max_new_tokens: int = MAX_NEW_TOKENS_RETRI
         )
 
 
-def query_llm(
+def unload_pipeline(pipe) -> None:
+    """
+    Release GPU memory after a model is done.
+
+    Deletes the pipeline, runs garbage collection, and clears CUDA cache.
+    Call this after each model finishes to free memory for the next model.
+    """
+    import torch
+    del pipe
+    gc.collect()
+    torch.cuda.empty_cache()
+    print("  [llm] GPU memory released")
+
+
+def query_hf(
     prompt: str,
-    model_name: str,
-    pipe=None,
+    pipe,
     max_tokens: int = MAX_NEW_TOKENS_RETRIEVAL,
 ) -> str:
-    """Dispatch query to the correct backend based on LLM_BACKEND."""
-    if LLM_BACKEND == "ollama":
-        return query_ollama(prompt, model_name, max_tokens)
-
-    if LLM_BACKEND == "hf":
-        if pipe is None:
-            pipe = load_hf_pipeline(model_name, max_tokens)
-        output = pipe(prompt)[0]["generated_text"]
-        return output[len(prompt):].strip() if output else ""
-
-    raise ValueError(f"Unknown LLM_BACKEND: {LLM_BACKEND}. Use 'ollama' or 'hf'.")
+    """
+    Query a loaded HuggingFace pipeline.
+    Strips the input prompt from the output — returns only generated text.
+    """
+    output = pipe(prompt, max_new_tokens=max_tokens)
+    generated = output[0]["generated_text"]
+    return generated[len(prompt):].strip() if generated else ""
 
 
 # ── Retrieval prompt builder ──────────────────────────────────────────────────
@@ -131,35 +117,38 @@ def build_retrieval_prompt(
     hpo_labels: Dict[str, str],
     top_k: int = TOP_K,
 ) -> str:
-    """Build a structured prompt for disease retrieval."""
     hpo_term_labels = [
         hpo_labels.get(t, t) for t in patient.get("hpo_terms", [])
     ]
     raw_text = patient.get("raw_text", "").strip()
 
-    prompt_parts = [
+    content_parts = [
         "You are a rare disease expert specializing in clinical phenotyping.",
-        "Answer directly without disclaimers or preamble.",
-        "",
     ]
 
     if raw_text:
-        prompt_parts += [f"Clinical description: {raw_text}", ""]
+        content_parts.append(f"Clinical description: {raw_text}")
 
-    prompt_parts += [
-        f"Patient phenotypes (HPO terms): {', '.join(hpo_term_labels)}",
+    content_parts += [
+        f"Patient phenotypes: {', '.join(hpo_term_labels)}",
         "",
+        f"You MUST list exactly {top_k} DIFFERENT rare diseases. Do not repeat the same disease.",
         f"List the top {top_k} most likely rare diseases for this patient.",
         "Format each result on a SINGLE LINE exactly like this:",
-        "DISEASE: <name> | ORDO: ORPHA:<number> | MATCH: <phenotypes> | CONFIDENCE: <level>",
+        "DISEASE: <name> | ORDO: ORPHA:<number> | MATCH: <phenotypes> | CONFIDENCE: <high/medium/low>",
         "",
         "Example:",
         "DISEASE: Friedreich Ataxia | ORDO: ORPHA:95 | MATCH: cerebellar ataxia, anemia | CONFIDENCE: high",
+        "DISEASE: Wilson Disease | ORDO: ORPHA:905 | MATCH: developmental delay, anemia | CONFIDENCE: medium",
+        "DISEASE: Gaucher Disease | ORDO: ORPHA:355 | MATCH: anemia, developmental delay | CONFIDENCE: low",
         "",
-        "Results:",
+        f"Now list {top_k} different diseases:",
     ]
 
-    return "\n".join(prompt_parts)
+    content = "\n".join(content_parts)
+
+    # Mistral/BioMistral instruction format
+    return f"[INST] {content} [/INST]"
 
 
 # ── Retrieval output parser ───────────────────────────────────────────────────
@@ -169,10 +158,12 @@ def find_disease_in_profiles(
     ordo_id: str,
     disease_name: str,
     disease_profiles: Dict[str, dict],
-) -> tuple:
+) -> Tuple[str, str, bool]:
     """
     Find a disease in profiles by ORPHA ID first, then fuzzy name match.
-    Returns (matched_id, label, validated).
+
+    Returns:
+        (matched_id, label, validated) — validated=True if found in profiles.
     """
     if ordo_id in disease_profiles:
         return ordo_id, disease_profiles[ordo_id].get("label", disease_name), True
@@ -194,14 +185,23 @@ def find_disease_in_profiles(
 def parse_retrieval_output(
     generated_text: str,
     disease_profiles: Dict[str, dict],
+    model_name: str,
     top_k: int = TOP_K,
 ) -> List[dict]:
-    """Parse LLM generated text into structured disease results."""
+    """
+    Parse LLM generated text into structured disease results.
+
+    Handles common LLM formatting variations and validates each result
+    against the disease profiles to flag hallucinated diseases.
+    """
     if not generated_text:
         return []
 
+    # Fix common LLM formatting issues
     generated_text = re.sub(r"ORPHA(\d+)", r"ORPHA:\1", generated_text)
     generated_text = re.sub(r"OMIM(\d+)", r"OMIM:\1", generated_text)
+    generated_text = re.sub(r"\[SOLUTION\]", "", generated_text)
+    generated_text = re.sub(r"\[INST\].*?\[/INST\]", "", generated_text, flags=re.DOTALL)
 
     normalized = " ".join(
         line.strip() for line in generated_text.splitlines() if line.strip()
@@ -215,11 +215,17 @@ def parse_retrieval_output(
     results = []
     rank = 1
 
+    seen_ids = set()
     for match in pattern.finditer(normalized):
         disease_name = match.group(1).strip()
         ordo_id = match.group(2).strip()
         matched_phenotypes = match.group(3).strip()
         confidence = match.group(4).strip().lower()
+
+        # Skip duplicates
+        if ordo_id in seen_ids:
+            continue
+        seen_ids.add(ordo_id)
 
         matched_id, label, validated = find_disease_in_profiles(
             ordo_id, disease_name, disease_profiles
@@ -232,8 +238,7 @@ def parse_retrieval_output(
             "matched_phenotypes": matched_phenotypes,
             "confidence": confidence,
             "validated_against_profiles": validated,
-            "model": RETRIEVAL_MODEL,
-            "backend": LLM_BACKEND,
+            "model": model_name,
             "method": "llm_retrieval",
         })
 
@@ -251,27 +256,46 @@ def retrieve_diseases_llm(
     patient: dict,
     hpo_labels: Dict[str, str],
     disease_profiles: Dict[str, dict],
-    model_name: str = RETRIEVAL_MODEL,
+    model_name: str,
     top_k: int = TOP_K,
-) -> List[dict]:
-    """Use an LLM to directly retrieve and rank rare diseases from patient HPO terms."""
+) -> Tuple[List[dict], object]:
+    """
+    Use an LLM to directly retrieve and rank rare diseases from patient HPO terms.
+
+    Loads the model, generates results, then returns both the results and the
+    pipeline object so the caller can unload it when ready.
+
+    Args:
+        patient:          Patient dict with hpo_terms.
+        hpo_labels:       HPO ID → label mapping.
+        disease_profiles: Known disease profiles for validation.
+        model_name:       HuggingFace model identifier.
+        top_k:            Number of diseases to return.
+
+    Returns:
+        Tuple of (results list, pipeline object).
+        Caller should call unload_pipeline(pipe) when done.
+    """
     prompt = build_retrieval_prompt(patient, hpo_labels, top_k)
 
-    print(f"[llm] Running disease retrieval "
-          f"(backend={LLM_BACKEND}, model={model_name})...")
+    print(f"\n[llm] Retrieving diseases with: {model_name}")
 
-    generated = query_llm(prompt, model_name, max_tokens=MAX_NEW_TOKENS_RETRIEVAL)
+    with timer(f"load {model_name}"):
+        pipe = load_hf_pipeline(model_name, MAX_NEW_TOKENS_RETRIEVAL)
+
+    with timer(f"generate {model_name}"):
+        generated = query_hf(prompt, pipe, max_tokens=MAX_NEW_TOKENS_RETRIEVAL)
 
     print("\n--- RAW LLM OUTPUT ---")
     print(generated)
     print("--- END OUTPUT ---\n")
 
-    results = parse_retrieval_output(generated, disease_profiles, top_k)
+    results = parse_retrieval_output(generated, disease_profiles, model_name, top_k)
 
-    print(f"[llm] Found {len(results)} diseases "
-          f"({sum(r['validated_against_profiles'] for r in results)} validated)")
+    n_validated = sum(r["validated_against_profiles"] for r in results)
+    print(f"[llm] Found {len(results)} diseases ({n_validated} validated against profiles)")
 
-    return results
+    return results, pipe
 
 
 # ── Explanation prompt builder ────────────────────────────────────────────────
@@ -331,13 +355,11 @@ def build_explanation_prompt(
         "Provide a structured clinical assessment using EXACTLY this format:",
         "",
         "CLINICAL REASONING: [2-3 sentences explaining which phenotypes match, "
-        "which are missing, and any clinically important discrepancies. "
-        "Be specific — use the actual phenotype names.]",
+        "which are missing, and any clinically important discrepancies.]",
         "",
         "VERDICT: [STRONG MATCH / POSSIBLE MATCH / WEAK MATCH / UNLIKELY MATCH]",
         "",
-        "VERDICT REASON: [One sentence justifying the verdict based on phenotype "
-        "overlap quality and any key contradicting features.]",
+        "VERDICT REASON: [One sentence justifying the verdict.]",
         "",
         "CLINICAL REASONING:",
     ]
@@ -349,10 +371,7 @@ def build_explanation_prompt(
 
 
 def extract_explanation(generated_text: str) -> str:
-    """
-    Extract and structure the explanation from LLM output.
-    Falls back to first 3 sentences if structure is missing.
-    """
+    """Extract and structure the explanation from LLM output."""
     if not generated_text:
         return "No explanation generated."
 
@@ -397,24 +416,7 @@ def extract_explanation(generated_text: str) -> str:
     return short + "." if short and not short.endswith(".") else short
 
 
-# ── Explanation entry points ──────────────────────────────────────────────────
-
-
-def explain_match(
-    patient: dict,
-    disease: dict,
-    hpo_labels: Dict[str, str],
-    model_name: str = EXPLAINER_MODEL,
-    pipe=None,
-    transformer_score: float = None,
-    transformer_rank: int = None,
-) -> str:
-    """Generate a structured clinical explanation for one patient-disease match."""
-    prompt = build_explanation_prompt(
-        patient, disease, hpo_labels, transformer_score, transformer_rank
-    )
-    generated = query_llm(prompt, model_name, pipe, max_tokens=MAX_NEW_TOKENS_EXPLAINER)
-    return extract_explanation(generated)
+# ── Explanation entry point ───────────────────────────────────────────────────
 
 
 def explain_top_results(
@@ -425,14 +427,25 @@ def explain_top_results(
     model_name: str = EXPLAINER_MODEL,
     top_k: int = TOP_K_RERANK,
 ) -> List[dict]:
-    """Add structured LLM explanations to transformer top-K results."""
-    pipe = load_hf_pipeline(model_name, MAX_NEW_TOKENS_EXPLAINER) if LLM_BACKEND == "hf" else None
+    """
+    Add structured LLM explanations to transformer top-K results.
+
+    Loads the explainer model once, explains all top_k results,
+    then unloads the model to free GPU memory.
+    """
+    print(f"\n[llm] Loading explainer: {model_name}")
+    with timer("load explainer"):
+        pipe = load_hf_pipeline(model_name, MAX_NEW_TOKENS_EXPLAINER)
 
     candidates = transformer_results[:top_k]
     explained = []
 
     for i, result in enumerate(candidates):
-        disease_id = result.get("canonical_disease_id") or result.get("disease_id")
+        disease_id = (
+            result.get("canonical_disease_id") 
+            or result.get("disease_id") 
+            or result.get("ordo_id")
+)
 
         if not disease_id or disease_id not in disease_profiles:
             result["llm_explanation"] = "Disease profile not found."
@@ -440,25 +453,24 @@ def explain_top_results(
             continue
 
         disease = disease_profiles[disease_id]
+        label = disease.get("label", disease_id)
 
-        print(
-            f"[llm] {i + 1}/{len(candidates)}: "
-            f"{disease.get('label', disease_id)}"
-        )
+        print(f"  [llm] {i + 1}/{len(candidates)}: {label}")
 
-        explanation = explain_match(
-            patient=patient,
-            disease=disease,
-            hpo_labels=hpo_labels,
-            model_name=model_name,
-            pipe=pipe,
-            transformer_score=result.get("score"),
-            transformer_rank=result.get("rank"),
-        )
+        with timer(f"explain {label[:40]}"):
+            prompt = build_explanation_prompt(
+                patient=patient,
+                disease=disease,
+                hpo_labels=hpo_labels,
+                transformer_score=result.get("score"),
+                transformer_rank=result.get("rank"),
+            )
+            generated = query_hf(prompt, pipe, max_tokens=MAX_NEW_TOKENS_EXPLAINER)
+            explanation = extract_explanation(generated)
 
         result["llm_explanation"] = explanation
         result["explainer_model"] = model_name
-        result["explainer_backend"] = LLM_BACKEND
         explained.append(result)
 
+    unload_pipeline(pipe)
     return explained

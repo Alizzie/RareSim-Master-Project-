@@ -5,6 +5,7 @@ Handles:
 - persistent embedding cache (per model, on disk)
 - canonical deduplication (alias → canonical disease ID)
 - patient embedding caching (in-memory, by text hash)
+- shared phenotype label explanation per result
 
 Uses methods.py for text construction and embedding backends.
 Uses shared.io for all file I/O.
@@ -23,6 +24,7 @@ from similarity_methods.transformer.methods import (
     embed_texts,
     get_model_type,
     hash_text,
+    hpo_terms_to_labels,
     load_embedding_backend,
     make_safe_model_name,
 )
@@ -75,6 +77,41 @@ def save_persistent_cache(
     np.save(cache_paths["embeddings"], disease_embeddings)
 
 
+# ── Shared phenotype labels ───────────────────────────────────────────────────
+
+
+def get_shared_phenotype_labels(
+    patient_hpo_terms: List[str],
+    disease_hpo_terms: List[str],
+    hpo_labels: Dict[str, str],
+    top_n: int = 10,
+) -> List[str]:
+    """
+    Find phenotype labels shared between patient and disease.
+
+    This gives a human-readable explanation of why the disease matched,
+    even though the transformer score comes from dense embeddings rather
+    than term overlap. Compares raw HPO term sets and returns the labels
+    of shared terms sorted alphabetically.
+
+    Args:
+        patient_hpo_terms:  Patient HPO term IDs.
+        disease_hpo_terms:  Disease HPO term IDs.
+        hpo_labels:         HPO ID → label mapping.
+        top_n:              Maximum number of shared labels to return.
+
+    Returns:
+        List of shared phenotype label strings.
+    """
+    shared_ids = set(patient_hpo_terms) & set(disease_hpo_terms)
+    shared_labels = []
+    for hpo_id in sorted(shared_ids):
+        label = hpo_labels.get(hpo_id)
+        if label:
+            shared_labels.append(label.strip())
+    return shared_labels[:top_n]
+
+
 # ── Canonical deduplication ───────────────────────────────────────────────────
 
 
@@ -84,10 +121,13 @@ def collapse_ranked_results_to_canonical(
     disease_ids: List[str],
     disease_labels: List[str],
     disease_texts: List[str],
+    disease_profiles: Dict[str, dict],
     alias_to_canonical: Dict[str, str],
     model_name: str,
     model_type: str,
     patient_text: str,
+    patient_hpo_terms: List[str],
+    hpo_labels: Dict[str, str],
     top_k: int,
 ) -> List[dict]:
     """
@@ -96,6 +136,8 @@ def collapse_ranked_results_to_canonical(
     When multiple aliases of the same canonical disease appear in the
     ranked list, keeps the highest-scoring alias as representative
     and collects all matched aliases.
+
+    Also adds shared phenotype labels to each result's explanation.
     """
     grouped = {}
 
@@ -127,10 +169,23 @@ def collapse_ranked_results_to_canonical(
 
     results = []
     for rank_idx, row in enumerate(collapsed, start=1):
+        canonical_id = row["canonical_disease_id"]
+
+        # Get disease HPO terms for shared label computation
+        disease_profile = disease_profiles.get(canonical_id, {})
+        disease_hpo_terms = disease_profile.get("hpo_terms", [])
+
+        # Compute shared phenotype labels
+        shared_labels = get_shared_phenotype_labels(
+            patient_hpo_terms=patient_hpo_terms,
+            disease_hpo_terms=disease_hpo_terms,
+            hpo_labels=hpo_labels,
+        )
+
         results.append(
             {
                 "rank": rank_idx,
-                "canonical_disease_id": row["canonical_disease_id"],
+                "canonical_disease_id": canonical_id,
                 "representative_disease_id": row["representative_disease_id"],
                 "label": row["label"],
                 "model_name": model_name,
@@ -138,10 +193,21 @@ def collapse_ranked_results_to_canonical(
                 "score": row["score"],
                 "matched_aliases": sorted(set(row["matched_aliases"])),
                 "explanation": {
+                    "method": "transformer_cosine",
+                    "score": row["score"],
+                    "score_note": (
+                        "Cosine similarity between dense embeddings. "
+                        "Range [0, 1] after L2 normalization. "
+                        "Higher = more semantically similar."
+                    ),
+                    "shared_phenotype_labels": shared_labels,
+                    "n_shared_phenotype_labels": len(shared_labels),
                     "patient_text_preview": patient_text[:300],
                     "disease_text_preview": row["disease_text_preview"],
                 },
                 "metadata": {
+                    "model_name": model_name,
+                    "model_type": model_type,
                     "top_k": top_k,
                     "embedding_normalization": "l2",
                     "max_length": MAX_LENGTH if model_type == "hf_encoder" else None,
@@ -195,6 +261,7 @@ class DiseaseRetriever:
     def warmup(self, preload_models: bool = True) -> None:
         """Preload all models and build/load embedding caches."""
         for model_name in self.model_list:
+            print(f"  Warming up: {model_name}")
             backend = self._get_backend(model_name) if preload_models else None
             self._ensure_model_resources(model_name, backend=backend)
 
@@ -214,10 +281,12 @@ class DiseaseRetriever:
         cache_paths = get_cache_paths(model_name)
 
         if persistent_cache_exists(cache_paths) and not self.rebuild_cache:
+            print(f"    Loading from cache: {model_name}")
             disease_ids, disease_labels, disease_texts, disease_embeddings = (
                 load_persistent_cache(cache_paths)
             )
         else:
+            print(f"    Building embedding cache: {model_name}")
             if backend is None:
                 backend = self._get_backend(model_name)
 
@@ -233,6 +302,7 @@ class DiseaseRetriever:
                 disease_texts=disease_texts,
                 disease_embeddings=disease_embeddings,
             )
+            print(f"    Cache saved: {cache_paths['embeddings']}")
 
         self.model_registry[model_name] = {
             "model_type": get_model_type(model_name),
@@ -277,6 +347,9 @@ class DiseaseRetriever:
         if not patient_text:
             raise ValueError("Patient text is empty.")
 
+        # Get patient HPO terms for shared label explanation
+        patient_hpo_terms = patient.get("hpo_terms", [])
+
         patient_embedding = self._get_patient_embedding(model_name, patient_text)
 
         resources = self.model_registry[model_name]
@@ -290,10 +363,13 @@ class DiseaseRetriever:
             disease_ids=resources["disease_ids"],
             disease_labels=resources["disease_labels"],
             disease_texts=resources["disease_texts"],
+            disease_profiles=self.disease_profiles,
             alias_to_canonical=self.alias_to_canonical,
             model_name=model_name,
             model_type=resources["model_type"],
             patient_text=patient_text,
+            patient_hpo_terms=patient_hpo_terms,
+            hpo_labels=self.hpo_labels,
             top_k=top_k,
         )
-    
+        

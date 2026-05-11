@@ -1,0 +1,111 @@
+# SETUP for server (first time only — skip if you already have the repo and venv):
+#
+#   1. SSH into server:
+#      ssh username@anna.ifi.uzh.ch
+#
+#   2. Clone the project:
+#      git clone https://github.com/Alizzie/RareSim-Master-Project-.git
+#      cd RareSim-Master-Project-
+#
+#   3. Switch to new-architecture branch:
+#      git checkout new-architecture
+#
+#   4. Create virtual environment:
+#      python3 -m venv venv
+#
+#   5. Activate:
+#      source venv/bin/activate
+#
+#   6. Install server dependencies:
+#      pip install -r requirements_server.txt
+#
+#   7. Install project in editable mode:
+#      pip install -e . --no-deps
+#
+# IF YOU ALREADY HAVE THE REPO:
+#
+#   git checkout new-architecture
+#   git pull origin new-architecture
+#   source venv/bin/activate
+#   pip install -r requirements_server.txt
+#   pip install -e . --no-deps
+#
+# ACTIVATE (every time you reconnect):
+#
+#   cd /home/user/your_username/RareSim-Master-Project-
+#   source venv/bin/activate
+#
+# ============================================================
+# HOW TO RUN — CHECK GPUs FIRST
+# ============================================================
+#
+# Always check which GPUs are free before running:
+#   nvidia-smi
+#
+# ============================================================
+# HOW TO RUN — TRANSFORMER PIPELINE
+# ============================================================
+#
+# Builds embedding cache for all 5 models (one-time, ~10 min on GPU).
+# After first run, cache is reused — ranking is near-instant.
+#
+# For example if GPU 4 is available:
+#   CUDA_VISIBLE_DEVICES=4 nohup python src/similarity_methods/transformer/pipeline.py \
+#     > outputs/transformer/transformer_log.txt 2>&1 &
+#
+# Monitor:
+#   tail -f outputs/transformer/transformer_log.txt
+#
+# Check if done:
+#   ps aux | grep transformer/pipeline.py
+#
+# ============================================================
+# HOW TO RUN — LLM PIPELINE
+# ============================================================
+#
+# Runs Mistral-7B-Instruct-v0.2 for disease retrieval + explanation.
+# Uses 4-bit quantization — fits in ~6GB GPU memory.
+# Takes ~3-5 min per run (retrieval + explanation for 10 results).
+#
+# For example if GPU 4 and 5 are available:
+#   CUDA_VISIBLE_DEVICES=4,5 nohup python src/similarity_methods/llm/pipeline.py \
+#     > outputs/llm/llm_log.txt 2>&1 &
+#
+# Monitor:
+#   tail -f outputs/llm/llm_log.txt
+#
+# ============================================================
+# VERSION NOTES
+# ============================================================
+#
+# torch 2.4.0+cu124    — required for CUDA 12.4 on anna server
+#                         (newer torch versions need driver update)
+# transformers 4.44.0  — newer versions require torch>=2.6
+# numpy 1.26.4         — must be <2 due to system numexpr/bottleneck conflicts
+# bitsandbytes 0.49.2  — required for 4-bit quantization of LLM models
+# accelerate 1.13.0    — required for device_map="auto" in model loading
+# sentencepiece        — required for Mistral/LLaMA tokenizers
+#
+# ============================================================
+
+# Core ML
+torch==2.4.0+cu124 --index-url https://download.pytorch.org/whl/cu124
+numpy==1.26.4
+
+# HuggingFace
+transformers==4.44.0
+tokenizers==0.19.1
+huggingface_hub==0.36.2
+safetensors==0.7.0
+sentence-transformers==5.4.1
+
+# GPU utilities
+accelerate==1.13.0
+bitsandbytes==0.49.2
+
+# Tokenizer support
+sentencepiece
+
+# Scientific
+scipy==1.17.1
+scikit-learn==1.8.0

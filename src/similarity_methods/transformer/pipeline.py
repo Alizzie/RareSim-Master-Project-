@@ -4,14 +4,12 @@ Transformer-based disease retrieval pipeline.
 Embeds patient and disease texts using biomedical language models
 and ranks diseases by cosine similarity of embeddings.
 
-Models:
-- PubMedBERT  : biomedical encoder, high scores but clustered
-- ClinicalBERT: clinical notes encoder
-- MiniLM      : general sentence transformer, more discriminative scores
-
-Does not use run_pipeline_main() — transformer has a fundamentally different
-run pattern (multiple models, embedding caches, canonical deduplication)
-that the generic shared pipeline doesn't support.
+Models (encoder-only, produce embeddings):
+- PubMedBERT  : biomedical encoder, trained on PubMed abstracts
+- ClinicalBERT: trained on clinical notes
+- MiniLM      : lightweight general sentence transformer
+- SapBERT     : trained for biomedical entity normalization
+- BioBERT     : trained on PubMed abstracts and PMC full-text articles
 """
 
 from shared.io import load_json, save_json
@@ -21,60 +19,17 @@ from shared.paths import (
     HPO_LABELS_PATH,
     PATIENT_PATH,
 )
+from shared.timer import timer
 from similarity_methods.transformer.config import (
     CANDIDATE_POOL_SIZE,
-    LLM_EXPLAINER_MODEL,
     MODEL_LIST,
-    RUN_LLM_EXPLAINER,
     TOP_K,
-    TOP_K_LLM_EXPLAIN,
     TRANSFORMER_DIR,
 )
 from similarity_methods.transformer.methods import make_safe_model_name
 from similarity_methods.transformer.retriever import DiseaseRetriever
-from similarity_methods.llm.methods import explain_top_results
-from shared.timer import Timer
 
 PIPELINE_NAME = "transformer"
-
-
-# ── LLM explanation ───────────────────────────────────────────────────────────
-
-
-def run_llm_explanation(
-    all_results: dict,
-    patient: dict,
-    disease_profiles: dict,
-    hpo_labels: dict,
-) -> None:
-    """
-    Add LLM explanations to transformer results in-place.
-    Skipped if LLM explainer is unavailable.
-    """
-    try:
-        for model_name, results in all_results.items():
-            print(f"\nExplaining results for: {model_name}")
-
-            explained = explain_top_results(
-                patient=patient,
-                transformer_results=results,
-                disease_profiles=disease_profiles,
-                hpo_labels=hpo_labels,
-                model_name=LLM_EXPLAINER_MODEL,
-                top_k=TOP_K_LLM_EXPLAIN,
-            )
-
-            for original, enriched in zip(results, explained):
-                original["explanation"]["llm_reasoning"] = enriched.get(
-                    "llm_explanation", ""
-                )
-                original["explanation"]["explainer_model"] = LLM_EXPLAINER_MODEL
-
-    except ImportError as e:
-        print(f"[transformer_pipeline] LLM explainer skipped: {e}")
-
-
-# ── Main run function ─────────────────────────────────────────────────────────
 
 
 def run(
@@ -111,19 +66,22 @@ def run(
         rebuild_cache=rebuild_cache,
     )
 
-    retriever.warmup(preload_models=True)
+    print(f"\nWarming up {len(model_list)} models...")
+    with timer("warmup all models"):
+        retriever.warmup(preload_models=True)
 
     all_results = {}
 
     for model_name in model_list:
         print(f"\nRunning model: {model_name}")
 
-        results = retriever.rank(
-            model_name=model_name,
-            patient=patient,
-            top_k=top_k,
-            candidate_pool_size=candidate_pool_size,
-        )
+        with timer(f"rank {model_name}"):
+            results = retriever.rank(
+                model_name=model_name,
+                patient=patient,
+                top_k=top_k,
+                candidate_pool_size=candidate_pool_size,
+            )
 
         all_results[model_name] = results
 
@@ -150,19 +108,12 @@ def main() -> None:
     patient = load_json(PATIENT_PATH)
     alias_to_canonical = load_json(ALIAS_TO_CANONICAL_PATH)
 
-    all_results = run(
-        disease_profiles=disease_profiles,
-        hpo_labels=hpo_labels,
-        patient=patient,
-        alias_to_canonical=alias_to_canonical,
-    )
-
-    if RUN_LLM_EXPLAINER:
-        run_llm_explanation(
-            all_results=all_results,
-            patient=patient,
+    with timer("full transformer pipeline"):
+        all_results = run(
             disease_profiles=disease_profiles,
             hpo_labels=hpo_labels,
+            patient=patient,
+            alias_to_canonical=alias_to_canonical,
         )
 
     summary_path = TRANSFORMER_DIR / f"transformer_all_models_top{TOP_K}.json"

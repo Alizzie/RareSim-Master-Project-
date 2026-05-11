@@ -1,6 +1,11 @@
 """
 Transformer methods — text construction and embedding backends.
 DiseaseRetriever (retriever.py) uses these to build and query embeddings.
+
+Supports:
+- HuggingFace encoder models (BERT-family) with mean pooling
+- SentenceTransformer models
+- AutoTokenizer for non-BERT models (SapBERT)
 """
 
 import hashlib
@@ -9,9 +14,14 @@ from typing import Dict, List, Tuple
 import numpy as np
 import torch
 from sentence_transformers import SentenceTransformer
-from transformers import AutoModel, BertTokenizer, BertTokenizerFast
+from transformers import AutoModel, AutoTokenizer, BertTokenizer, BertTokenizerFast
 
-from similarity_methods.transformer.config import BATCH_SIZE, MAX_LENGTH
+from similarity_methods.transformer.config import (
+    AUTO_TOKENIZER_MODELS,
+    BATCH_SIZE,
+    MAX_LENGTH,
+    SENTENCE_TRANSFORMER_MODELS,
+)
 
 
 # ── Text construction ─────────────────────────────────────────────────────────
@@ -46,7 +56,7 @@ def build_patient_text(patient: dict, hpo_labels: Dict[str, str]) -> str:
     Build the patient text used for embedding.
 
     Combines:
-    - raw clinical description
+    - raw clinical description (if available)
     - HPO phenotype labels
     """
     raw_text = (patient.get("raw_text") or "").strip()
@@ -128,8 +138,13 @@ def make_safe_model_name(model_name: str) -> str:
 
 
 def get_model_type(model_name: str) -> str:
-    """Route model names to the correct embedding backend."""
-    if model_name.startswith("sentence-transformers/"):
+    """
+    Route model names to the correct embedding backend.
+
+    sentence_transformer → SentenceTransformer library
+    hf_encoder           → HuggingFace AutoModel with mean pooling
+    """
+    if model_name in SENTENCE_TRANSFORMER_MODELS:
         return "sentence_transformer"
     return "hf_encoder"
 
@@ -140,11 +155,21 @@ def hash_text(text: str) -> str:
 
 
 def load_hf_model_and_tokenizer(model_name: str):
-    """Load a Hugging Face encoder model and BERT-family tokenizer."""
-    try:
-        tokenizer = BertTokenizerFast.from_pretrained(model_name)
-    except Exception:
-        tokenizer = BertTokenizer.from_pretrained(model_name)
+    """
+    Load a HuggingFace encoder model with the appropriate tokenizer.
+
+    Uses AutoTokenizer for SapBERT and PhenoBERT since they don't
+    use the standard BERT tokenizer. Falls back to BertTokenizerFast
+    for standard BERT-family models.
+    """
+    # Use AutoTokenizer for models that need it
+    if model_name in AUTO_TOKENIZER_MODELS:
+        tokenizer = AutoTokenizer.from_pretrained(model_name)
+    else:
+        try:
+            tokenizer = BertTokenizerFast.from_pretrained(model_name)
+        except Exception:
+            tokenizer = BertTokenizer.from_pretrained(model_name)
 
     model = AutoModel.from_pretrained(model_name)
     model.to(get_device())
@@ -170,7 +195,7 @@ def embed_texts_hf(
     batch_size: int = BATCH_SIZE,
     max_length: int = MAX_LENGTH,
 ) -> np.ndarray:
-    """Embed texts with a Hugging Face encoder and mean pooling."""
+    """Embed texts with a HuggingFace encoder and mean pooling."""
     if not texts:
         raise ValueError("No texts provided for HF embedding.")
 
@@ -225,10 +250,12 @@ def load_embedding_backend(model_name: str) -> dict:
     model_type = get_model_type(model_name)
 
     if model_type == "hf_encoder":
+        print(f"  Loading HF encoder: {model_name}")
         tokenizer, model = load_hf_model_and_tokenizer(model_name)
         return {"model_type": model_type, "tokenizer": tokenizer, "model": model}
 
     if model_type == "sentence_transformer":
+        print(f"  Loading SentenceTransformer: {model_name}")
         model = load_sentence_transformer_model(model_name)
         return {"model_type": model_type, "model": model}
 
