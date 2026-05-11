@@ -20,6 +20,7 @@ from similarity_methods.set_based.methods import (
     dice_similarity,
     overlap_coefficient,
 )
+from shared.timer import Timer
 
 SETBASED_DIR = PROJECT_ROOT / "outputs" / "set_based"
 PIPELINE_NAME = "set_based"
@@ -49,6 +50,7 @@ def run(
             continue
 
         results = []
+        timer = Timer(method_name).start()
         for disease_id, profile in ctx.disease_profiles.items():
             disease_terms = set(profile.get(config.terms_key, []))
             score, explaination = fn(patient_terms, disease_terms)
@@ -63,18 +65,18 @@ def run(
                     score=score,
                     method_name=method_name,
                     explanation=explaination,
-                    metadata=build_metadata(
-                        method_name=method_name,
-                        pipeline_name=PIPELINE_NAME,
-                        config=config,
-                        n_patient_terms=len(patient_terms),
-                        n_disease_terms=len(disease_terms),
-                        ctx=ctx,
-                    ),
                 )
             )
 
-        all_results[method_name] = sort_and_rank(results, config.top_k)
+        metadata = build_metadata(
+            method_name=method_name,
+            pipeline_name=PIPELINE_NAME,
+            config=config,
+            n_patient_terms=len(patient_terms),
+            n_disease_terms=len(disease_terms),
+            computation_time=timer.stop(),
+        )
+        all_results[method_name] = sort_and_rank(results, metadata, config.top_k)
 
     return all_results
 

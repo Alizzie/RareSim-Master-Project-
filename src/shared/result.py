@@ -44,7 +44,7 @@ class Metadata:
     top_k: int
     n_patient_terms: int
     n_disease_terms: int
-    app: AppMetadata
+    computation_time: float = 0.0
 
     def to_dict(self) -> dict:
         return {
@@ -53,8 +53,9 @@ class Metadata:
             "use_propagated_terms": self.use_propagated_terms,
             "ic_threshold": self.ic_threshold,
             "top_k": self.top_k,
-            "n_patient_terms": self.n_patient_terms,
-            "n_disease_terms": self.n_disease_terms,
+            "n_used_patient_terms": self.n_patient_terms,
+            "n_used_disease_terms": self.n_disease_terms,
+            "computation_time": self.computation_time,
         }
 
 
@@ -64,7 +65,6 @@ class SimilarityResult:
     label: str
     score: float
     method_name: str
-    metadata: Metadata
     rank: int = 0
     explanation: dict[str, Any] = field(default_factory=dict)
 
@@ -76,5 +76,27 @@ class SimilarityResult:
             "method_name": self.method_name,
             "score": self.score,
             "explanation": self.explanation,
+        }
+
+
+@dataclass
+class MethodResults:
+    """Groups ranked results and shared metadata for one method"""
+
+    metadata: Metadata
+    rankings: list[SimilarityResult]
+
+    def to_dict(self) -> dict:
+        return {
             "metadata": self.metadata.to_dict(),
+            "rankings": [
+                {
+                    "rank": r.rank,
+                    "disease_id": r.disease_id,
+                    "label": r.label,
+                    "score": r.score,
+                    "explanation": r.explanation,
+                }
+                for r in self.rankings
+            ],
         }

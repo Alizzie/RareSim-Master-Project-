@@ -3,7 +3,7 @@ Utility functions for the GUI application, including artifact checks, result dis
 """
 
 from shared.paths import SHARED_DIR, PROJECT_ROOT
-from shared.result import SimilarityResult
+from shared.result import AppMetadata, MethodResults
 import shared.io as io
 from pathlib import Path
 
@@ -30,37 +30,65 @@ def check_artifacts_exist() -> None:
 # -- Display helpers ----------------------------------
 
 
-def print_results_table(method_name: str, results: list[SimilarityResult]) -> None:
-    """Print the results for a given method."""
+def print_app_metadata(app_metadata: AppMetadata) -> None:
+    """Print the app-level data and patient summary."""
     print(f"\n{'─' * 64}")
-    print(f"  {method_name}")
+    print("  Run summary")
+    print(f"{'─' * 64}")
+    for key, val in app_metadata.to_dict().items():
+        print(f"  {key}: {val}")
+
+
+def print_results_table(method_results: MethodResults) -> None:
+    """Print ranked results for a single method."""
+    meta = method_results.metadata
+    print(f"\n{'─' * 64}")
+    print(f"  {meta.method_name}  ({meta.computation_time:.3f}s)")
+    print(f"{'─' * 64}")
+    if not method_results.rankings:
+        print("  No results.")
+        return
+    for r in method_results.rankings:
+        print(
+            f"  rank={r.rank:>2} | "
+            f"{r.disease_id:<15} | "
+            f"score={r.score:.4f} | "
+            f"{r.label}"
+        )
+
+
+def print_raw_results(method_name: str, results: list[dict]) -> None:
+    print(f"\n{'─' * 64}")
+    print(f"  {method_name}  (raw output)")
     print(f"{'─' * 64}")
     if not results:
         print("  No results.")
         return
-    for row in results:
-        print(
-            f"  rank={row.rank:>2} | "
-            f"{row.disease_id:<15} | "
-            f"score={row.score:.4f} | "
-            f"{row.label}"
-        )
+    for r in results:
+        disease_id = r.get("canonical_disease_id") or r.get("ordo_id", "")
+        label = r.get("label") or r.get("disease_name", "")
+        score = r.get("score") or r.get("confidence", "")
+        rank = r.get("rank", "?")
+        score_str = f"{score:.4f}" if isinstance(score, float) else str(score)
+        print(f"  rank={rank:>2} | {disease_id:<15} | score={score_str} | {label}")
 
 
-def save_results(all_results: dict, app_metadata: dict) -> None:
+def save_results(
+    all_results: dict[str, MethodResults], app_metadata: AppMetadata
+) -> None:
     """Save all results to a JSON file in the outputs directory inside gui."""
     GUI_DIR.mkdir(parents=True, exist_ok=True)
-    path = GUI_DIR / "app_metadata.json"
-    io.save_json(app_metadata, path)
-    print(f"App metadata saved to: {path}")
 
-    path = GUI_DIR / "all_results.json"
-    io.save_results(all_results, path)
-    print(f"\nResults saved to: {path}")
+    meta_path = GUI_DIR / "app_metadata.json"
+    io.save_json(app_metadata.to_dict(), meta_path)
+    print(f"App metadata saved to: {meta_path}")
 
-    for method_name, rows in all_results.items():
-        path = GUI_DIR / f"{method_name}_top{len(rows)}.json"
-        io.save_individual_results(rows, path)
+    combined_path = GUI_DIR / "all_results.json"
+    io.save_results(all_results, combined_path)
+    print(f"\nResults saved to: {combined_path}")
+
+    # one file per method
+    io.save_individual_results(all_results, GUI_DIR)
     print(f"Individual method results saved to: {GUI_DIR}")
 
 

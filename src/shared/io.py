@@ -3,7 +3,7 @@
 import json
 from pathlib import Path
 from core.schemas import PatientProfile
-from shared.result import SimilarityResult
+from shared.result import MethodResults
 
 
 def load_json(input_path: Path) -> dict:
@@ -43,11 +43,11 @@ def load_patient_with_extraction(
     raw_text = data.get("raw_text", "").strip()
     if not raw_text:
         raise ValueError(
-            f"Patient {data.get('patient_id')} has neither "
-            "hpo_terms nor raw_text."
+            f"Patient {data.get('patient_id')} has neither " "hpo_terms nor raw_text."
         )
 
     from shared.phenotype import build_patient_profile
+
     enriched, _ = build_patient_profile(
         patient_id=data["patient_id"],
         raw_text=raw_text,
@@ -63,19 +63,23 @@ def load_patient_with_extraction(
     )
 
 
-def save_results(results: dict[str, list[SimilarityResult]], path: Path) -> None:
+def save_results(results: dict[str, MethodResults], path: Path) -> None:
     """
     Save similarity results to a JSON file, organized by method name as a whole.
     """
     save_json(
-        {method: [r.to_dict() for r in rows] for method, rows in results.items()},
+        {method: mr.to_dict() for method, mr in results.items()},
         path,
     )
 
 
-def save_individual_results(results: list[SimilarityResult], path: Path) -> None:
+def save_individual_results(
+    results: dict[str, MethodResults], output_dir: Path
+) -> None:
     """Save for each method separately, with method name in the filename."""
-    save_json(
-        [r.to_dict() for r in results],
-        path,
-    )
+    output_dir.mkdir(parents=True, exist_ok=True)
+    for method_name, method_results in results.items():
+        top_k = method_results.metadata.top_k
+        save_json(
+            method_results.to_dict(), output_dir / f"{method_name}_top{top_k}.json"
+        )

@@ -31,7 +31,8 @@ from pathlib import Path
 from typing import Optional
 
 from shared.paths import OUTPUTS_DIR
-from shared.result import SimilarityResult
+from shared.pipeline import PipelineConfig
+from shared.result import AppMetadata, SimilarityResult, MethodResults
 
 CACHE_DIR = OUTPUTS_DIR / "cache"
 
@@ -40,21 +41,18 @@ CACHE_DIR = OUTPUTS_DIR / "cache"
 
 
 def _serialize_similarity_results(
-    results: dict[str, list[SimilarityResult]],
+    results: dict[str, MethodResults],
 ) -> dict[str, list[dict]]:
-    """Convert SimilarityResult objects to dicts for JSON serialization."""
-    return {
-        method: [r.to_dict() for r in rows]
-        for method, rows in results.items()
-    }
+    """Convert MethodResults objects to dicts for JSON serialization."""
+    return {method: mr.to_dict() for method, mr in results.items()}
 
 
 def save_run_cache(
     patient_id: str,
-    config,
-    similarity_results: dict[str, list[SimilarityResult]] | None = None,
+    config: PipelineConfig,
+    similarity_results: dict[str, MethodResults] | None = None,
     raw_results: dict[str, list[dict]] | None = None,
-    app_metadata: dict | None = None,
+    app_metadata: AppMetadata | None = None,
 ) -> Path:
     """
     Save all pipeline results for one run to a single cache file.
@@ -92,7 +90,7 @@ def save_run_cache(
             "ic_threshold": config.ic_threshold,
             "use_canonical_profiles": config.use_canonical_profiles,
         },
-        "app_metadata": app_metadata or {},
+        "app_metadata": app_metadata.to_dict() if app_metadata else {},
         "methods_run": sorted(all_results.keys()),
         "results": all_results,
     }
@@ -163,4 +161,3 @@ def print_cached_runs(patient_id: Optional[str] = None) -> None:
             print(f"    → {path}")
         except Exception:
             print(f"  [unreadable] {path}")
-            

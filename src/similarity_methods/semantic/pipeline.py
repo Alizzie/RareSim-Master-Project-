@@ -28,6 +28,7 @@ from similarity_methods.semantic.methods import (
     lin_similarity,
     jiang_conrath_similarity,
 )
+from shared.timer import Timer
 
 SEMANTIC_DIR = PROJECT_ROOT / "outputs" / "semantic"
 PIPELINE_NAME = "semantic"
@@ -62,6 +63,7 @@ def _run_bma_method(
     results = []
     skipped = 0
 
+    timer = Timer(method_name).start()
     for disease_id, profile in ctx.disease_profiles.items():
         disease_terms = filter_terms_by_ic(
             set(profile.get(config.terms_key, [])),
@@ -97,7 +99,9 @@ def _run_bma_method(
         }
 
         # add shared coverage expanders (shared_terms, coverage, term_counts, unmatched)
-        explanation = expand(explanation, patient_terms, disease_terms, SEMANTIC_EXPLANATION)
+        explanation = expand(
+            explanation, patient_terms, disease_terms, SEMANTIC_EXPLANATION
+        )
 
         results.append(
             SimilarityResult(
@@ -106,18 +110,19 @@ def _run_bma_method(
                 score=score,
                 method_name=method_name,
                 explanation=explanation,
-                metadata=build_metadata(
-                    method_name=method_name,
-                    pipeline_name=PIPELINE_NAME,
-                    config=config,
-                    n_patient_terms=len(patient_terms),
-                    n_disease_terms=len(disease_terms),
-                    ctx=ctx,
-                ),
             )
         )
 
-    return results
+    metadata = build_metadata(
+        method_name=method_name,
+        pipeline_name=PIPELINE_NAME,
+        config=config,
+        n_patient_terms=len(patient_terms),
+        n_disease_terms=0,
+        computation_time=timer.stop(),
+    )
+
+    return results, metadata
 
 
 def run(
@@ -156,10 +161,11 @@ def run(
     for method_name, similarity_fn in BMA_METHODS.items():
         if method_name not in selected:
             continue
-        results = _run_bma_method(
+        results, metadata = _run_bma_method(
             method_name, similarity_fn, patient_terms, config, ctx, ancestor_sets
         )
-        all_results[method_name] = sort_and_rank(results, config.top_k)
+
+        all_results[method_name] = sort_and_rank(results, metadata, config.top_k)
 
     return all_results
 

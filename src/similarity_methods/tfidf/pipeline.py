@@ -26,6 +26,7 @@ from shared.explaination import (
     with_top_idf_weighted_terms,
 )
 from similarity_methods.tfidf.methods import build_tfidf_vector, compute_idf
+from shared.timer import Timer
 
 TFIDF_DIR = PROJECT_ROOT / "outputs" / "tfidf"
 PIPELINE_NAME = "tfidf"
@@ -49,6 +50,7 @@ def run(
     idf = compute_idf(ctx.disease_profiles, propagated_term_key=config.terms_key)
     patient_vec = build_tfidf_vector(patient_terms, idf)
 
+    timer = Timer(METHOD_NAME).start()
     results = []
 
     for disease_id, profile in ctx.disease_profiles.items():
@@ -74,18 +76,19 @@ def run(
                         with_top_idf_weighted_terms(idf, top_n=5),
                     ],
                 ),
-                metadata=build_metadata(
-                    method_name=METHOD_NAME,
-                    pipeline_name=PIPELINE_NAME,
-                    config=config,
-                    n_patient_terms=len(patient_terms),
-                    n_disease_terms=len(disease_terms),
-                    ctx=ctx,
-                ),
             )
         )
 
-    return {"tfidf_cosine": sort_and_rank(results, config.top_k)}
+    metadata = build_metadata(
+        method_name=METHOD_NAME,
+        pipeline_name=PIPELINE_NAME,
+        config=config,
+        n_patient_terms=len(patient_terms),
+        n_disease_terms=len(disease_terms),
+        computation_time=timer.stop(),
+    )
+
+    return {"tfidf_cosine": sort_and_rank(results, metadata, config.top_k)}
 
 
 def main() -> None:

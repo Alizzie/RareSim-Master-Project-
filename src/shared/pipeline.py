@@ -7,7 +7,7 @@ from pathlib import Path
 from shared.context import AppContext
 from shared.io import load_patient, save_results, save_individual_results
 from shared.paths import SHARED_DIR
-from shared.result import Metadata, SimilarityResult
+from shared.result import Metadata, SimilarityResult, MethodResults
 from dataclasses import dataclass
 
 
@@ -28,7 +28,7 @@ def build_metadata(
     config: PipelineConfig,
     n_patient_terms: int,
     n_disease_terms: int,
-    ctx: AppContext,
+    computation_time: float = 0.0,
 ) -> Metadata:
     """Helper to build standardized metadata for each similarity result."""
     return Metadata(
@@ -39,19 +39,20 @@ def build_metadata(
         top_k=config.top_k,
         n_patient_terms=n_patient_terms,
         n_disease_terms=n_disease_terms,
-        app=ctx.app_metadata,
+        computation_time=computation_time,
     )
 
 
 def sort_and_rank(
     results: list[SimilarityResult],
+    metadata: Metadata,
     top_k: int,
-) -> list[SimilarityResult]:
+) -> MethodResults:
     """Sort by score descending, assign ranks, return top_k."""
     sorted_results = sorted(results, key=lambda r: r.score, reverse=True)
     for rank, result in enumerate(sorted_results, start=1):
         result.rank = rank
-    return sorted_results[:top_k]
+    return MethodResults(metadata=metadata, rankings=sorted_results[:top_k])
 
 
 def run_pipeline_main(

@@ -33,6 +33,7 @@ from similarity_methods.transformer.config import (
 from similarity_methods.transformer.methods import make_safe_model_name
 from similarity_methods.transformer.retriever import DiseaseRetriever
 from similarity_methods.llm.methods import explain_top_results
+from shared.timer import Timer
 
 PIPELINE_NAME = "transformer"
 

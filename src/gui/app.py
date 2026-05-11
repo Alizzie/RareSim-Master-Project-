@@ -20,7 +20,7 @@ from pathlib import Path
 
 from shared.cache import save_run_cache
 from shared.context import AppContext
-from shared.io import load_json, load_patient, load_patient_with_extraction
+from shared.io import load_json, load_patient_with_extraction, save_json
 from shared.paths import (
     ALIAS_TO_CANONICAL_PATH,
     HPO_LABELS_PATH,
@@ -28,13 +28,23 @@ from shared.paths import (
 )
 from shared.pipeline import PipelineConfig
 from gui.utils import (
+    GUI_DIR,
     check_artifacts_exist,
+    print_app_metadata,
     print_results_table,
+    print_raw_results,
     save_results,
     prompt_patient,
     prompt_methods,
 )
+from gui.summary import (
+    build_disease_summary,
+    build_timing_summary,
+    print_disease_summary,
+    print_timing_summary,
+)
 
+from shared.result import MethodResults
 from similarity_methods.semantic.pipeline import run as run_semantic
 from similarity_methods.set_based.pipeline import run as run_set_based
 from similarity_methods.tfidf.pipeline import run as run_tfidf
@@ -122,23 +132,6 @@ def parse_args():
     return parser.parse_args()
 
 
-def print_raw_results(method_name: str, results: list[dict]) -> None:
-    """Print raw dict results for transformer and LLM pipelines."""
-    print(f"\n{'─' * 64}")
-    print(f"  {method_name}")
-    print(f"{'─' * 64}")
-    if not results:
-        print("  No results.")
-        return
-    for r in results:
-        disease_id = r.get("canonical_disease_id") or r.get("ordo_id", "")
-        label = r.get("label") or r.get("disease_name", "")
-        score = r.get("score") or r.get("confidence", "")
-        rank = r.get("rank", "?")
-        score_str = f"{score:.4f}" if isinstance(score, float) else str(score)
-        print(f"  rank={rank:>2} | {disease_id:<15} | score={score_str} | {label}")
-
-
 def main() -> None:
     """Main function to run the terminal interface."""
     check_artifacts_exist()
@@ -187,15 +180,16 @@ def main() -> None:
     )
 
     # ── Shared context (for SimilarityResult pipelines) ───────────────────────
-    print("\nRunning pipeline...")
-    all_results = {}
-    all_raw_results = {}  # for transformer and LLM raw dict results
-
+    print("\nLoading shared context...")
     ctx = AppContext.load(patient, config.use_canonical_profiles)
+    print_app_metadata(ctx.app_metadata)
 
-    print(f"\nData summary:")
-    for key, value in ctx.app_metadata.to_dict().items():
-        print(f"  {key}: {value}")
+    # -─ Run pipelines ─────────────────────────────────────────────────────────────
+    print("\nRunning pipeline...")
+    all_results: dict[str, MethodResults] = {}
+
+    # for methods that don't fit SimilarityResult format
+    all_raw_results: dict[str, list[dict]] = {}
 
     # ── Semantic ──────────────────────────────────────────────────────────────
     if any(m in selected for m in SEMANTIC_METHODS):
@@ -221,14 +215,15 @@ def main() -> None:
             "raw_text": patient.raw_text,
             "hpo_terms": sorted(patient.hpo_terms),
         }
-        transformer_results = run_transformer(
-            disease_profiles=ctx.disease_profiles,
-            hpo_labels=hpo_labels,
-            patient=patient_dict,
-            alias_to_canonical=alias_to_canonical,
-            top_k=config.top_k,
+        all_raw_results.update(
+            run_transformer(
+                disease_profiles=ctx.disease_profiles,
+                hpo_labels=hpo_labels,
+                patient=patient_dict,
+                alias_to_canonical=alias_to_canonical,
+                top_k=config.top_k,
+            )
         )
-        all_raw_results.update(transformer_results)
 
     # ── LLM ───────────────────────────────────────────────────────────────────
     if "llm" in selected:
@@ -238,35 +233,42 @@ def main() -> None:
             "raw_text": patient.raw_text,
             "hpo_terms": sorted(patient.hpo_terms),
         }
-        llm_results = run_llm(
+
+        all_raw_results["llm"] = run_llm(
             patient=patient_dict,
             hpo_labels=hpo_labels,
             disease_profiles=ctx.disease_profiles,
             top_k=config.top_k,
         )
-        all_raw_results["llm"] = llm_results
 
     # ── Display ───────────────────────────────────────────────────────────────
-    for method_name, results in all_results.items():
-        print_results_table(method_name, results)
+    for method_results in all_results.values():
+        print_results_table(method_results)
 
     for method_name, results in all_raw_results.items():
         print_raw_results(method_name, results)
 
     # ── Save ──────────────────────────────────────────────────────────────────
-    save_results(all_results, ctx.app_metadata.to_dict())
+    save_results(all_results, ctx.app_metadata)
 
-
-  # ── Cache — save all results together for later comparison ────────────────
+    # ── Cache — save all results together for later comparison ────────────────
     save_run_cache(
         patient_id=patient.patient_id,
         config=config,
         similarity_results=all_results,
         raw_results=all_raw_results,
-        app_metadata=ctx.app_metadata.to_dict(),
+        app_metadata=ctx.app_metadata,
     )
+
+    # ── Summaries ───────────────────────────────────────────────────────────────
+    disease_summary = build_disease_summary(all_results)
+    timing_summary = build_timing_summary(all_results)
+    print_disease_summary(disease_summary)
+    print_timing_summary(timing_summary)
+
+    save_json(disease_summary, GUI_DIR / "disease_summary.json")
+    save_json(timing_summary, GUI_DIR / "timing_summary.json")
 
 
 if __name__ == "__main__":
     main()
-    
