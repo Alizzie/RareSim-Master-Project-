@@ -10,6 +10,7 @@ import json
 import csv
 import statistics
 from pathlib import Path
+from typing import TextIO
 
 # ── Dataset metadata ──────────────────────────────────────────────────────────
 
@@ -21,8 +22,6 @@ PUBLIC_TEST_DATASETS = ["MME", "HMS", "LIRICAL"]
 
 
 # ── JSON loading ──────────────────────────────────────────────────────────────
-
-
 def load_cases(json_path: Path) -> list[tuple[list[str], list[str]]]:
     """
     Load cases from a JSON file.
@@ -33,7 +32,7 @@ def load_cases(json_path: Path) -> list[tuple[list[str], list[str]]]:
     Returns:
         List of (hpo_ids, confirmed_disease_ids) tuples.
     """
-    with open(json_path) as f:
+    with open(json_path, "r", encoding="utf-8") as f:
         raw = json.load(f)
 
     cases = []
@@ -91,122 +90,12 @@ def load_all_datasets(
     return datasets
 
 
-# ── YAML generation ───────────────────────────────────────────────────────────
-
-
-def write_lirical_yaml(
-    case_id: str,
-    hpo_ids: list[str],
-    out_path: Path,
-    negated_hpo_ids: list[str] | None = None,
-) -> Path:
-    """
-    Write a LIRICAL-compatible YAML input file for a single case.
-
-    Returns:
-        The path the file was written to.
-    """
-    negated = negated_hpo_ids or []
-    lines = [
-        "---",
-        f"sampleId: {case_id}",
-        "hpoIds:",
-    ]
-    for hpo in hpo_ids:
-        lines.append(f"  - {hpo}")
-    lines.append("negatedHpoIds:")
-    for hpo in negated:
-        lines.append(f"  - {hpo}")
-    out_path.write_text("\n".join(lines) + "\n")
-    return out_path
-
-
-def write_yaml_batch(cases: list[tuple], prefix: str, yaml_dir: Path) -> list[Path]:
-    """
-    Write YAML files for a list of (hpo_ids, disease_ids) cases.
-
-    Returns:
-        List of written YAML paths (same order as cases).
-    """
-    yaml_dir.mkdir(parents=True, exist_ok=True)
-    paths = []
-    for i, (hpo_ids, _) in enumerate(cases):
-        case_id = f"{prefix}_case_{i:04d}"
-        path = yaml_dir / f"{case_id}.yaml"
-        write_lirical_yaml(case_id, hpo_ids, path)
-        paths.append(path)
-    return paths
-
-
-# ── TSV parsing ───────────────────────────────────────────────────────────────
-
-
-def parse_lirical_tsv(tsv_path: Path) -> list[dict]:
-    """
-    Parse a LIRICAL TSV output file.
-
-    Returns:
-        List of dicts with keys: rank, disease_id, disease_name, post_test_prob.
-        Empty list if file does not exist.
-    """
-    if not tsv_path.exists():
-        return []
-    rows = []
-    with open(tsv_path) as f:
-        # Skip comment lines (start with '!')
-        lines = [l for l in f if not l.startswith("!")]
-    reader = csv.DictReader(lines, delimiter="\t")
-    for row in reader:
-        disease_id = (
-            row.get("diseaseCurie")
-            or row.get("diseaseId")
-            or row.get("disease_id")
-            or ""
-        ).strip()
-        rows.append(
-            {
-                "rank": int(str(row.get("rank", 0)).replace(",", "")),
-                "disease_id": disease_id,
-                "disease_name": (
-                    row.get("diseaseName") or row.get("disease_name") or ""
-                ).strip(),
-                "post_test_prob": (
-                    row.get("posttestprob") or row.get("postTestProbability") or ""
-                ).strip(),
-            }
-        )
-    return rows
-
-
-def find_best_rank(
-    results: list[dict], confirmed_diseases: list[str]
-) -> tuple[int | None, str | None]:
-    """
-    Find the best (lowest) rank among all confirmed disease IDs.
-    Uses first-hit strategy (matching paper methodology).
-
-    Args:
-        results: Parsed LIRICAL TSV rows.
-        confirmed_diseases: List of confirmed disease IDs (e.g. ["OMIM:191900", "ORPHA:575"]).
-
-    Returns:
-        (rank, matched_disease_id) or (None, None) if none found.
-    """
-    confirmed = {d.upper() for d in confirmed_diseases}
-    for row in sorted(results, key=lambda r: r["rank"]):
-        if row["disease_id"].upper() in confirmed:
-            return row["rank"], row["disease_id"]
-    return None, None
-
-
 # ── Summary I/O ───────────────────────────────────────────────────────────────
-
-
 def save_summary_tsv(summary: list[dict], out_path: Path) -> None:
     """Write a benchmark summary to a TSV file."""
     if not summary:
         return
-    with open(out_path, "w", newline="") as f:
+    with open(out_path, "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=summary[0].keys(), delimiter="\t")
         writer.writeheader()
         writer.writerows(summary)
@@ -214,7 +103,7 @@ def save_summary_tsv(summary: list[dict], out_path: Path) -> None:
 
 def load_summary_tsv(tsv_path: Path) -> list[dict]:
     """Load a previously saved benchmark summary TSV."""
-    with open(tsv_path) as f:
+    with open(tsv_path, encoding="utf-8") as f:
         reader = csv.DictReader(f, delimiter="\t")
         return list(reader)
 
@@ -267,33 +156,30 @@ def compute_mrr(summary: list[dict]) -> float:
     return total / n
 
 
-def print_stats(label: str, stats: dict, reference: dict | None = None) -> None:
-    """
-    Pretty-print benchmark statistics, optionally comparing to a reference.
-
-    Args:
-        label:     Display name for the dataset.
-        stats:     Output of compute_stats().
-        reference: Optional dict with keys top3, top10, median_rank for comparison.
-    """
+def print_stats(
+    label: str,
+    stats: dict,
+    f: TextIO,
+    reference: dict | None = None,
+) -> None:
     n, found = stats["n"], stats["found"]
-    print(f"\n  {label}  (n={n}, found={found}/{n})")
+    f.write(f"\n  {label}  (n={n}, found={found}/{n})\n")
 
     if reference:
-        print(f"    {'Metric':<12} {'Result':>8} {'Reference':>12} {'Δ':>8}")
-        print(f"    {'─'*44}")
+        f.write(f"    {'Metric':<12} {'Result':>8} {'Reference':>12} {'Δ':>8}\n")
+        f.write(f"    {'─'*44}\n")
 
     for k, v in stats["topk"].items():
         bar = "█" * int(v * 25)
-        line = f"    top-{k:<3}  {v:.3f}  {bar}"
+        line = f"    top-{k:<3}  {v:.3f}  {bar}\n"
         if reference and f"top{k}" in reference:
             ref_v = reference[f"top{k}"]
             delta = v - ref_v
-            line = f"    {'top-'+str(k):<12} {v:>8.3f} {ref_v:>12.3f} {delta:>+8.3f}"
-        print(line)
+            line = f"    {'top-'+str(k):<12} {v:>8.3f} {ref_v:>12.3f} {delta:>+8.3f}\n"
+        f.write(line)
 
     mr = stats["median_rank"]
     if reference and "median_rank" in reference:
-        print(f"    {'median rank':<12} {mr!s:>8} {reference['median_rank']!s:>12}")
+        f.write(f"    {'median rank':<12} {mr!s:>8} {reference['median_rank']!s:>12}\n")
     else:
-        print(f"    median rank: {mr}")
+        f.write(f"    median rank: {mr}\n")

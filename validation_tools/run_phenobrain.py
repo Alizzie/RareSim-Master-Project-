@@ -3,18 +3,18 @@
 import requests
 import time
 import argparse
-import csv
 from pathlib import Path
-from utils import load_all_datasets, DATASET_NAMES
+from utils import load_all_datasets, DATASET_NAMES, save_summary_tsv
 import os
-
-TOP_K = 10
 
 
 def parse_args():
     p = argparse.ArgumentParser(description="Run Phenobrain on benchmark datasets.")
     p.add_argument(
-        "--data-dir", required=True, help="Directory containing the 6 JSON files"
+        "--data-dir",
+        required=True,
+        help="Directory containing the 6 JSON files",
+        default="validation_tools/datasets/PhenoBrainBenchmarkDatasets",
     )
     p.add_argument(
         "--datasets",
@@ -23,14 +23,20 @@ def parse_args():
         choices=DATASET_NAMES,
         help="Datasets to run (default: all)",
     )
+    p.add_argument(
+        "--topk",
+        type=int,
+        default=10,
+        help="Number of top predictions to retrieve from Phenobrain (default: 10)",
+    )
 
     return p.parse_args()
 
 
-def predict_case(hpo_list: list):
+def predict_case(hpo_list: list, topk: int):
     """Predict diseases for a case with given HPO terms using Phenobrain API."""
     url = "https://www.phenobrain.cs.tsinghua.edu.cn/predict"
-    params = {"model": "Ensemble", "hpoList[]": hpo_list, "topk": TOP_K}
+    params = {"model": "Ensemble", "hpoList[]": hpo_list, "topk": topk}
 
     response = requests.get(url, params=params, timeout=30)
     task_id = response.json().get("TASK_ID", None)
@@ -62,7 +68,7 @@ def wait_for_results(task_id: str, poll_interval: float = 3.0, timeout: float = 
         if state == "SUCCESS":
             return data.get("result")
 
-        if state not in ("MODEL_INIT", "MODEL_PREDICT"):
+        if state not in ("MODEL_INIT", "MODEL_PREDICT", "PENDING"):
             raise RuntimeError(f"Unexpected state '{state}' for task ID {task_id}.")
 
         if time.time() - start_time > timeout:
@@ -141,32 +147,15 @@ def summarize_ranking(
         {
             "case_id": case_id,
             "n_hpo": n_hpo,
-            "confirmed_diseases": disease_codes if disease_codes else "NA",
-            "rank": rank_found if rank_found is not None else "NA",
-            "matched_id": matched_id if matched_id is not None else "NA",
-            "score": f"{sim_score:.4f}" if sim_score is not None else "NA",
+            "confirmed_diseases": disease_codes if disease_codes else "None",
+            "rank": rank_found if rank_found is not None else "None",
+            "matched_id": matched_id if matched_id is not None else "None",
+            "score": f"{sim_score:.4f}" if sim_score is not None else "None",
             "status": bool(status),
         }
     )
 
     return rank_found, matched_id, sim_score
-
-
-def write_results(rows: list, output_file: str):
-    """Write all accumulated rows to a TSV file, overwriting any existing file."""
-    headers = [
-        "case_id",
-        "n_hpo",
-        "confirmed_diseases",
-        "rank",
-        "matched_id",
-        "score",
-        "status",
-    ]
-    with open(output_file, "w", newline="", encoding="utf-8") as f:  # "w" overwrites
-        writer = csv.DictWriter(f, fieldnames=headers, delimiter="\t")
-        writer.writeheader()
-        writer.writerows(rows)
 
 
 if __name__ == "__main__":
@@ -181,7 +170,7 @@ if __name__ == "__main__":
         rows = []
 
         for i, (hpo_ids, ground_truth) in enumerate(cases):
-            status, task_id = predict_case(hpo_ids)
+            status, task_id = predict_case(hpo_ids, args.topk)
             print(f"Task ID: {task_id}, Status: {status}")
 
             if status:
@@ -199,4 +188,4 @@ if __name__ == "__main__":
             else:
                 summarize_ranking(case_id, {}, ground_truth, len(hpo_ids), status, rows)
 
-        write_results(rows, output_file=f"{results_dir}/{dataset_name}_results.tsv")
+        save_summary_tsv(rows, Path(f"{results_dir}/{dataset_name}_results.tsv"))
