@@ -9,14 +9,12 @@ and produces:
   3. Per-case rank matrix
 
 Usage:
-    python3 compare_methods.py \
-        --summaries lirical=lirical_bench/MME_summary.tsv \
-                    phen2gene=phen2gene_bench/MME_summary.tsv \
-        --topk 1 5 10 \
-        --output results.txt
+    python3 compare_methods.py --summaries lirical=lirical_benchmarks/mme_summary.tsv phrank=dx29_phrank_benchmarks/mme_summary.tsv dx29=dx29_benchmarks/mme_summary.tsv phenobrain=phenobrain_benchmarks/mme_summary.tsv phenomizer=phenomizer_benchmarks/mme_summary.tsv --output mme_results.txt
 """
 
 import argparse
+import glob
+import os
 import sys
 from pathlib import Path
 from typing import TextIO
@@ -27,11 +25,9 @@ from utils import compute_stats, compute_mrr, load_summary_tsv
 def parse_args():
     p = argparse.ArgumentParser(description="Compare method benchmark summaries")
     p.add_argument(
-        "--summaries",
-        nargs="+",
+        "--dataset",
         required=True,
-        metavar="NAME=PATH",
-        help="Method summaries as name=path pairs, e.g. lirical=bench/MME_summary.tsv",
+        help="Dataset name to compare (e.g. 'mme')",
     )
     p.add_argument(
         "--topk",
@@ -56,13 +52,18 @@ def parse_args():
 
 
 # ── Loader ────────────────────────────────────────────────────────────────────
-def load_summaries(summary_args: list[str]) -> dict[str, list[dict]]:
+def load_summaries(dataset: str) -> dict[str, Path]:
+    """Find all <method>_benchmarks/<dataset>_summary.tsv files. Returns a dict mapping method name -> Path."""
+    pattern = os.path.join("./*_benchmarks", f"{dataset}_summary.tsv")
     summaries = {}
-    for arg in summary_args:
-        if "=" not in arg:
-            raise ValueError(f"Expected name=path format, got: {arg}")
-        name, path = arg.split("=", 1)
-        summaries[name] = load_summary_tsv(Path(path))
+    for path_str in glob.glob(pattern):
+        folder = Path(path_str).parent.name
+        method = folder.replace("_benchmarks", "")
+        summaries[method] = load_summary_tsv(Path(path_str))
+    if not summaries:
+        raise FileNotFoundError(
+            f"No summary files found for dataset '{dataset}' in '{pattern}'"
+        )
     return summaries
 
 
@@ -92,7 +93,7 @@ def print_recall_table(
     col_w = 35
     k_w = 7
     header = f"  {'Method':<{col_w}}" + "".join(f"{'R@'+str(k):>{k_w}}" for k in top_ks)
-    header += f"{'MRR':>{k_w}}   Found"
+    header += f"{'MRR':>{k_w}}\tFound\tAvg. Query Time (s)"
     sep = "=" * (len(header) + 2)
 
     f.write(f"\n{sep}\n")
@@ -108,7 +109,7 @@ def print_recall_table(
         line = f"  {method:<{col_w}}"
         for k in top_ks:
             line += f"{stats['topk'][k]:>{k_w}.4f}"
-        line += f"{mrr:>{k_w}.4f}  {found}/{n}"
+        line += f"{mrr:>{k_w}.4f}\t{found}/{n}\t{stats['mean_query_time']}"
         f.write(f"{line}\n")
 
     f.write(f"{sep}\n")
@@ -218,7 +219,7 @@ def print_rank_matrix(case_ids, aligned, methods, max_rank, f: TextIO):
 # ── Main ──────────────────────────────────────────────────────────────────────
 def main():
     args = parse_args()
-    summaries = load_summaries(args.summaries)
+    summaries = load_summaries(args.dataset)
     methods = list(summaries.keys())
     case_ids, aligned = align_cases(summaries)
 

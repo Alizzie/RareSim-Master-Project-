@@ -124,14 +124,20 @@ def compute_stats(summary: list[dict], top_ks: list[int] = [1, 3, 5, 10, 20]) ->
     """
     n = len(summary)
     ranks = []
+    query_times = []
     for s in summary:
         r = s["rank"]
         if r is not None and r != "" and r != "None":
             ranks.append(int(r))
 
+        qt = s["query_time_sec"]
+        if qt is not None and qt != "" and qt != "None":
+            query_times.append(float(qt))
+
     topk = {k: sum(1 for r in ranks if r <= k) / n for k in top_ks}
     median_rank = statistics.median(ranks) if ranks else None
     mean_rank = statistics.mean(ranks) if ranks else None
+    mean_query_time = statistics.mean(query_times) if query_times else None
 
     return {
         "n": n,
@@ -140,6 +146,7 @@ def compute_stats(summary: list[dict], top_ks: list[int] = [1, 3, 5, 10, 20]) ->
         "topk": topk,
         "median_rank": median_rank,
         "mean_rank": round(mean_rank, 2) if mean_rank else None,
+        "mean_query_time": round(mean_query_time, 2) if mean_query_time else None,
     }
 
 

@@ -11,10 +11,10 @@ Reference: Mao et al., npj Digital Medicine 2025 (PhenoBrain paper)
 
 
 Usage:
-python3 validation_tools/run_lirical.py \
+python3 run_lirical.py \
   --lirical-jar "/Users/eli/Documents/Uni/Master Project/Tools/LIRICAL/lirical-cli/target/lirical-cli-2.4.0.jar" \
   --lirical-data ~/lirical-data \
-  --skip-existing --datasets "HMS"
+  --skip-existing --datasets MME
 """
 
 import os
@@ -44,7 +44,7 @@ def parse_args():
     p.add_argument(
         "--data-dir",
         help="Directory containing the 6 JSON files",
-        default="validation_tools/datasets/PhenoBrainBenchmarkDatasets",
+        default="datasets/PhenoBrainBenchmarkDatasets",
     )
     p.add_argument("--lirical-jar", required=True, help="Path to LIRICAL JAR")
     p.add_argument(
@@ -243,8 +243,9 @@ def main():
     script_dir = os.path.dirname(os.path.abspath(__file__))
     workdir = Path(script_dir) / "lirical_benchmarks"
     workdir.mkdir(parents=True, exist_ok=True)
+    data_dir = Path(script_dir) / args.data_dir
 
-    all_cases = load_all_datasets(Path(args.data_dir), args.datasets)
+    all_cases = load_all_datasets(data_dir, args.datasets)
 
     all_summaries = {}
     for dataset_name, cases in all_cases.items():
