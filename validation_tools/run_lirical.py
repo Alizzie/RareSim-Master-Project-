@@ -8,8 +8,8 @@ Runs LIRICAL via `prioritize` subcommand (no YAML input).
 Reference: Mao et al., npj Digital Medicine 2025 (PhenoBrain paper)
   LIRICAL on public test set (MME+HMS+LIRICAL):
     top-3=0.407, top-10=0.560, median rank=6.0
-    
-    
+
+
 Usage:
 python3 validation_tools/run_lirical.py \
   --lirical-jar "/Users/eli/Documents/Uni/Master Project/Tools/LIRICAL/lirical-cli/target/lirical-cli-2.4.0.jar" \
@@ -20,6 +20,7 @@ python3 validation_tools/run_lirical.py \
 import os
 import subprocess
 import argparse
+import time
 from pathlib import Path
 import csv
 
@@ -82,11 +83,11 @@ def run_lirical_case(
     out_dir,
     mindiff,
     skip_existing,
-):
-    """Run LIRICAL prioritize for a single case. Returns True on success."""
+) -> tuple[bool, float | None]:
+    """Run LIRICAL prioritize for a single case. Returns (success, query_time_sec)."""
     tsv_out = out_dir / f"{case_id}.tsv"
     if skip_existing and tsv_out.exists():
-        return True
+        return True, None  # timing not available for cached results
 
     cmd = [
         java,
@@ -110,19 +111,23 @@ def run_lirical_case(
     if negated_hpo_ids:
         cmd += ["-n", ",".join(negated_hpo_ids)]
 
+    start_time = time.time()
     r = subprocess.run(cmd, capture_output=True, text=True)
+    query_time_sec = time.time() - start_time
+
     if r.returncode != 0:
         print(f"    [WARN] LIRICAL failed for {case_id}: {r.stderr[-200:]}")
-        return False
-    return True
+        return False, query_time_sec
+    return True, query_time_sec
 
 
 # ── Per-dataset pipeline ──────────────────────────────────────────────────────
-def run_lirical_all(entries, results_dir, args):
-    """Phase 1: run LIRICAL on every case. Returns dict case_id -> bool."""
+def run_lirical_all(entries, results_dir, args) -> tuple[dict, dict]:
+    """Phase 1: run LIRICAL on every case. Returns (status, request_times) dicts."""
     status = {}
+    request_times = {}
     for i, (case_id, hpo_ids, _) in enumerate(entries):
-        ok = run_lirical_case(
+        ok, query_time_sec = run_lirical_case(
             java=args.java,
             jar=args.lirical_jar,
             lirical_data=args.lirical_data,
@@ -134,9 +139,10 @@ def run_lirical_all(entries, results_dir, args):
             skip_existing=args.skip_existing,
         )
         status[case_id] = ok
+        request_times[case_id] = query_time_sec
         if (i + 1) % 50 == 0:
             print(f"  LIRICAL: {i+1}/{len(entries)} done")
-    return status
+    return status, request_times
 
 
 def parse_lirical_tsv(tsv_path: Path) -> list[dict]:
@@ -151,7 +157,6 @@ def parse_lirical_tsv(tsv_path: Path) -> list[dict]:
         return []
     rows = []
     with open(tsv_path, encoding="utf-8") as f:
-        # Skip comment lines (start with '!')
         lines = [l for l in f if not l.startswith("!")]
     reader = csv.DictReader(lines, delimiter="\t")
     for row in reader:
@@ -178,18 +183,8 @@ def parse_lirical_tsv(tsv_path: Path) -> list[dict]:
 
 def find_best_rank(
     results: list[dict], confirmed_diseases: list[str]
-) -> tuple[int | None, str | None]:
-    """
-    Find the best (lowest) rank among all confirmed disease IDs.
-    Uses first-hit strategy.
-
-    Args:
-        results: Parsed LIRICAL TSV rows.
-        confirmed_diseases: List of confirmed disease IDs (e.g. ["OMIM:191900", "ORPHA:575"]).
-
-    Returns:
-        (rank, matched_disease_id, score) or (None, None, None) if none found.
-    """
+) -> tuple[int | None, str | None, str | None]:
+    """Find the best (lowest) rank among all confirmed disease IDs."""
     confirmed = {d.upper() for d in confirmed_diseases}
     for row in sorted(results, key=lambda r: r["rank"]):
         if row["disease_id"].upper() in confirmed:
@@ -197,13 +192,14 @@ def find_best_rank(
     return None, None, None
 
 
-def collect_results(entries, results_dir, run_status):
+def collect_results(entries, results_dir, run_status, request_times) -> list[dict]:
     """Phase 2: parse TSV outputs and build summary list."""
     summary = []
     for case_id, hpo_ids, confirmed_diseases in entries:
         tsv_path = results_dir / f"{case_id}.tsv"
         lirical_results = parse_lirical_tsv(tsv_path)
         rank, matched_id, score = find_best_rank(lirical_results, confirmed_diseases)
+        query_time_sec = request_times.get(case_id)
         summary.append(
             {
                 "case_id": case_id,
@@ -213,44 +209,43 @@ def collect_results(entries, results_dir, run_status):
                 "matched_id": matched_id,
                 "score": score,
                 "status": run_status.get(case_id, False),
+                "query_time_sec": (
+                    f"{query_time_sec:.3f}" if query_time_sec is not None else "None"
+                ),
             }
         )
-
         print(
             f"  {case_id}: rank={rank}, matched_id={matched_id}, "
             f"n_hpo={len(hpo_ids)}, score={score}, "
-            f"status={run_status.get(case_id, False)}"
+            f"status={run_status.get(case_id, False)}, query_time_sec={query_time_sec}"
         )
     return summary
 
 
-def run_dataset(name, cases, args, workdir):
+def run_dataset(name, cases, args, workdir) -> list[dict]:
     """Run the full LIRICAL pipeline for one dataset. Returns summary list."""
     results_dir = workdir / "cache" / name
-    os.makedirs(results_dir, exist_ok=True)
+    results_dir.mkdir(parents=True, exist_ok=True)
 
     entries = [
         (f"{name}_case_{i:04d}", hpo_ids, diseases)
         for i, (hpo_ids, diseases) in enumerate(cases)
     ]
 
-    run_status = run_lirical_all(entries, results_dir, args)
-    summary = collect_results(entries, results_dir, run_status)
+    run_status, request_times = run_lirical_all(entries, results_dir, args)
+    summary = collect_results(entries, results_dir, run_status, request_times)
     return summary
 
 
 # ── Main ──────────────────────────────────────────────────────────────────────
 def main():
-    """Main entry point: parse args, run all datasets, print summary."""
     args = parse_args()
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    workdir = Path(os.path.join(script_dir, "lirical_benchmarks"))
-    os.makedirs(workdir, exist_ok=True)
+    workdir = Path(script_dir) / "lirical_benchmarks"
+    workdir.mkdir(parents=True, exist_ok=True)
 
-    # Load all requested datasets
     all_cases = load_all_datasets(Path(args.data_dir), args.datasets)
 
-    # Run LIRICAL and collect summaries
     all_summaries = {}
     for dataset_name, cases in all_cases.items():
         print(f"Processing dataset: {dataset_name} with {len(cases)} cases")
@@ -258,13 +253,14 @@ def main():
         all_summaries[dataset_name] = summary
         save_summary_tsv(summary, workdir / f"{dataset_name}_summary.tsv")
 
-    # Report per-dataset stats
     print("Generating final summary statistics")
     for dataset_name, summary in all_summaries.items():
-        with open(f"{dataset_name}_summary.tsv", "w", encoding="utf-8") as f:
+        out_path = workdir / f"{dataset_name}_stats.txt"
+        with open(out_path, "w", encoding="utf-8") as f:
             print_stats(
                 dataset_name, compute_stats(summary), f, reference=PAPER_LIRICAL_PUBLIC
             )
+        print(f"  Stats written to {out_path}")
 
 
 if __name__ == "__main__":

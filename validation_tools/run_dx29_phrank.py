@@ -1,8 +1,8 @@
-"""Run Phenobrain on benchmark datasets and evaluate results."""
+"""Run Dx29 Phrank on benchmark datasets and evaluate results."""
 
 import requests
-import time
 import argparse
+import time
 from pathlib import Path
 from utils import (
     load_all_datasets,
@@ -15,7 +15,7 @@ import os
 
 
 def parse_args():
-    p = argparse.ArgumentParser(description="Run Phenobrain on benchmark datasets.")
+    p = argparse.ArgumentParser(description="Run Dx29 on benchmark datasets.")
     p.add_argument(
         "--data-dir",
         help="Directory containing the 6 JSON files",
@@ -29,78 +29,48 @@ def parse_args():
         help="Datasets to run (default: all)",
     )
     p.add_argument(
+        "--host",
+        default="http://localhost:8080",
+        help="Dx29 API host (default: http://localhost:8080)",
+    )
+    p.add_argument(
+        "--lang",
+        default="en",
+        help="Language for Dx29 API (default: en)",
+    )
+    p.add_argument(
         "--topk",
         type=int,
-        default=10,
-        help="Number of top predictions to retrieve from Phenobrain (default: 10)",
+        default=1000,
+        help="Number of top predictions to retrieve from Dx29 (default: 1000)",
     )
     return p.parse_args()
 
 
-def predict_case(hpo_list: list, topk: int) -> tuple[bool, str | None]:
-    """Predict diseases for a case with given HPO terms using Phenobrain API."""
-    url = "https://www.phenobrain.cs.tsinghua.edu.cn/predict"
-    params = {"model": "Ensemble", "hpoList[]": hpo_list, "topk": topk}
+def predict_case(
+    hpo_list: list, topk: int, host: str, lang: str
+) -> tuple[bool, list | None]:
+    """Predict diseases for a case with given HPO terms using Dx29 API."""
+    url = f"{host}/api/v1/Diagnosis/phrank"
+    params = {"skip": 0, "count": topk, "lang": lang, "source": "all"}
+    json_body = {"symptoms": hpo_list, "genes": []}
 
-    response = requests.get(url, params=params, timeout=30)
-    task_id = response.json().get("TASK_ID", None)
-    status = response.status_code == 200 and task_id is not None
-    return status, task_id
-
-
-def retrieve_query_results(task_id: str):
-    """Retrieve prediction results for a given task ID."""
-    url = f"https://www.phenobrain.cs.tsinghua.edu.cn/query-predict-result?taskId={task_id}"
-    response = requests.get(url, timeout=30)
-    return response.json() if response.status_code == 200 else None
-
-
-def wait_for_results(task_id: str, poll_interval: float = 3.0, timeout: float = 300.0):
-    """Wait for prediction results to be ready by polling the API."""
-    start_time = time.time()
-    while True:
-        data = retrieve_query_results(task_id)
-        if data is None:
-            raise RuntimeError(f"Failed to retrieve results for task ID {task_id}.")
-
-        state = data.get("state")
-        print(f"  State: {state}")
-
-        if state == "SUCCESS":
-            return data.get("result")
-
-        if state not in ("MODEL_INIT", "MODEL_PREDICT", "PENDING"):
-            raise RuntimeError(f"Unexpected state '{state}' for task ID {task_id}.")
-
-        if time.time() - start_time > timeout:
-            raise TimeoutError(
-                f"Results for task ID {task_id} not available after {timeout} seconds."
-            )
-
-        time.sleep(poll_interval)
-
-
-def create_RD_code_mapper(rd_codes: list) -> dict:
-    """Create a mapping from RD codes to OMIM IDs. If not exist, ORPHA."""
-    url = "https://www.phenobrain.cs.tsinghua.edu.cn/disease-list-detail"
-    response = requests.post(url, json={"diseaseList": rd_codes}, timeout=30)
+    response = requests.post(url, params=params, json=json_body, timeout=30)
 
     if response.status_code == 200:
-        return {
-            rd_code: ";".join(details.get("SOURCE_CODES", []))
-            for rd_code, details in response.json().items()
-        }
-    raise RuntimeError(f"Failed to retrieve disease details for RD codes: {rd_codes}")
+        data = response.json()
+        return True, list(data)
+    else:
+        return False, None
 
 
-def get_disease_ranking(results: list[dict], code_mapper: dict) -> dict:
+def get_disease_ranking(results: list[dict]) -> dict:
     """Extract disease ranking from prediction results.
 
-    Returns a dict mapping rank index -> (disease_codes_str, score).
+    Returns a dict mapping rank index -> (disease_id, score).
     """
     return {
-        i: (code_mapper.get(item.get("CODE"), None), item.get("SCORE", 0.0))
-        for i, item in enumerate(results)
+        i: (item.get("id"), item.get("score", 0.0)) for i, item in enumerate(results)
     }
 
 
@@ -116,15 +86,15 @@ def summarize_ranking(
     """Summarize the ranking results for a case and append a row to the accumulator."""
     rank_found, matched_id, sim_score, disease_codes = None, None, None, None
 
-    for rank, (disease_code, score) in ranking.items():
-        if disease_code is None:
+    for rank, (disease_id, score) in ranking.items():
+        if disease_id is None:
             continue
         for ground_id in ground_truth:
-            if ground_id in disease_code.split(";"):
+            if ground_id == disease_id:
                 rank_found, matched_id, disease_codes, sim_score = (
                     rank + 1,
                     ground_id,
-                    disease_code,
+                    disease_id,
                     score,
                 )
                 break
@@ -159,7 +129,7 @@ def summarize_ranking(
 
 
 def run_dataset(name: str, cases: list, args) -> list[dict]:
-    """Run the full Phenobrain pipeline for one dataset. Returns summary list."""
+    """Run the full Dx29 pipeline for one dataset. Returns summary list."""
     entries = [
         (f"{name}_case_{i:04d}", hpo_ids, diseases)
         for i, (hpo_ids, diseases) in enumerate(cases)
@@ -168,19 +138,10 @@ def run_dataset(name: str, cases: list, args) -> list[dict]:
     rows = []
     for case_id, hpo_ids, ground_truth in entries:
         start_time = time.time()
-        status, task_id = predict_case(hpo_ids, args.topk)
-        print(f"  {case_id}: task_id={task_id}, status={status}")
+        status, results = predict_case(hpo_ids, args.topk, args.host, args.lang)
+        query_time_sec = time.time() - start_time
 
-        if status:
-            results = wait_for_results(task_id)
-            query_time_sec = time.time() - start_time
-            rd_codes = [item.get("CODE") for item in results]
-            rd_code_mapping = create_RD_code_mapper(rd_codes)
-            disease_ranking = get_disease_ranking(results, rd_code_mapping)
-        else:
-            query_time_sec = time.time() - start_time
-            disease_ranking = {}
-
+        disease_ranking = get_disease_ranking(results) if status and results else {}
         summarize_ranking(
             case_id,
             disease_ranking,
@@ -198,7 +159,7 @@ if __name__ == "__main__":
     args = parse_args()
     all_cases = load_all_datasets(Path(args.data_dir), args.datasets)
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    workdir = Path(script_dir) / "phenobrain_benchmarks"
+    workdir = Path(script_dir) / "dx29_phrank_benchmarks"
     workdir.mkdir(parents=True, exist_ok=True)
 
     all_summaries = {}

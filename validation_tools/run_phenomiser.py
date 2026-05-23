@@ -3,17 +3,18 @@
 run_phenomizer.py — Run Phenomizer on PhenoBrain benchmark datasets.
 
 Usage:
-    python3 run_phenomizer.py \
+    python3 validation_tools/run_phenomiser.py \
         --data-dir validation_tools/datasets/PhenoBrainBenchmarkDatasets \
         --phenomizer-jar ~/Phenomiser/phenomiser-cli/target/phenomiser-cli-0.0.2.jar \
         --hp-obo ~/phenomiser_data/hp.obo \
-        --hpoa ~/phenomiser_data/phenotype.hpoa
+        --hpoa ~/phenomiser_data/phenotype.hpoa --datasets MME
 """
 
 import os
 import subprocess
 import argparse
 import csv
+import time
 from pathlib import Path
 
 from utils import (
@@ -101,7 +102,9 @@ def run_phenomizer_case(
 def run_phenomizer_all(entries, results_dir, args) -> dict[str, bool]:
     """Phase 1: run Phenomizer on every case. Returns dict case_id -> bool."""
     status = {}
+    request_times = {}
     for i, (case_id, hpo_ids, _) in enumerate(entries):
+        start_time = time.time()
         ok = run_phenomizer_case(
             java=args.java,
             xmx=args.xmx,
@@ -114,9 +117,10 @@ def run_phenomizer_all(entries, results_dir, args) -> dict[str, bool]:
             skip_existing=args.skip_existing,
         )
         status[case_id] = ok
+        request_times[case_id] = time.time() - start_time
         if (i + 1) % 50 == 0:
             print(f"  Phenomizer: {i+1}/{len(entries)} done")
-    return status
+    return status, request_times
 
 
 def parse_phenomizer_output(out_path: Path) -> list[dict]:
@@ -166,7 +170,7 @@ def find_best_rank(
     return None, None, None
 
 
-def collect_results(entries, results_dir, run_status) -> list[dict]:
+def collect_results(entries, results_dir, run_status, request_times) -> list[dict]:
     """Phase 2: parse outputs and build summary list."""
     summary = []
     for case_id, hpo_ids, confirmed_diseases in entries:
@@ -182,12 +186,13 @@ def collect_results(entries, results_dir, run_status) -> list[dict]:
                 "matched_id": matched_id,
                 "score": score,
                 "status": run_status.get(case_id, False),
+                "query_time_sec": request_times.get(case_id, None),
             }
         )
         print(
             f"  {case_id}: rank={rank}, matched_id={matched_id}, "
             f"n_hpo={len(hpo_ids)}, score={score}, "
-            f"status={run_status.get(case_id, False)}"
+            f"status={run_status.get(case_id, False)}, query_time_sec={request_times.get(case_id, None)}"
         )
     return summary
 
@@ -202,8 +207,8 @@ def run_dataset(name, cases, args, workdir) -> list[dict]:
         for i, (hpo_ids, diseases) in enumerate(cases)
     ]
 
-    run_status = run_phenomizer_all(entries, results_dir, args)
-    summary = collect_results(entries, results_dir, run_status)
+    run_status, request_times = run_phenomizer_all(entries, results_dir, args)
+    summary = collect_results(entries, results_dir, run_status, request_times)
     return summary
 
 
