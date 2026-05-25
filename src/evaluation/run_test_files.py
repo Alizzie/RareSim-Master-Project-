@@ -1,5 +1,5 @@
 """
-File for running similarity pipelines on test cases and caching results. Write now, we use HMS test cases from
+File for running similarity pipelines on test cases and caching results.
 Test cases source:
     https://zenodo.org/records/10774650
     Paper: https://www.nature.com/articles/s41746-025-01452-1
@@ -11,35 +11,44 @@ Pipelines:
     cpu         → semantic/set/tfidf (CPU, ~2-4 hours for 88 cases)
     transformer → GPU required, fast after cache build (~0.05s per case)
     llm         → GPU required, slow - even with gpu, running 88 cases took 2.5 days in anna but it runs in the backgound with nohup.
+    hpo2vec     → CPU, fast after model is loaded (~0.1s per case)
 
 Cache locations:
     outputs/evaluation/cache/{test_set_name}/             ← cpu
     outputs/evaluation/cache/{test_set_name}_transformer/ ← transformer
     outputs/evaluation/cache/{test_set_name}_llm/         ← llm
+    outputs/evaluation/cache/{test_set_name}_hpo2vec/     ← hpo2vec
 
 
 Usage:
 Step 1:
 
     # To run in background semantic/set/tfidf (CPU)
-    nohup python src/evaluation/run_test_files.py \\
-        --test-set test_data/test_cases/HMS.json > run_log.txt 2>&1 &
+    nohup python src/evaluation/run_test_files.py \
+        --test-set test_data/test_cases/MME.json > run_log.txt 2>&1 &
 Step 2:
 
     # Run transformer (GPU) — make sure to set CUDA_VISIBLE_DEVICES to select GPU and change CUDA_VISIBLE_DEVICES=4 to the appropriate GPU index
-    CUDA_VISIBLE_DEVICES=4 python src/evaluation/run_test_files.py \\
-        --test-set test_data/test_cases/HMS.json --pipeline transformer
+    CUDA_VISIBLE_DEVICES=5 python src/evaluation/run_test_files.py \
+        --test-set test_data/test_cases/MME.json --pipeline transformer
 Step 3:
 
     # Run LLM (GPU) — make sure to set CUDA_VISIBLE_DEVICES to select GPU and change CUDA_VISIBLE_DEVICES=4 to the appropriate GPU index
-    CUDA_VISIBLE_DEVICES=4 python src/evaluation/run_test_files.py \\
-        --test-set test_data/test_cases/HMS.json --pipeline llm
+    CUDA_VISIBLE_DEVICES=5 python src/evaluation/run_test_files.py \
+        --test-set test_data/test_cases/MME.json --pipeline llm
 
-note: cpu can be run in parallel with transformer and llm since it doesn't require GPU. Transformer and llm should not be run at the same time on the same GPU to avoid memory issues.
-for testing, use --limit to only run on the first N cases, e.g. --limit 10 
+Step 4:
+
+    # Run HPO2Vec (CPU) — can run in parallel with transformer/llm
+    nohup python src/evaluation/run_test_files.py \
+        --test-set test_data/test_cases/MME.json --pipeline hpo2vec > run_log_hpo2vec.txt 2>&1 &
+
+note: cpu and hpo2vec can be run in parallel with transformer and llm since they don't require GPU.
+Transformer and llm should not be run at the same time on the same GPU to avoid memory issues.
+for testing, use --limit to only run on the first N cases, e.g. --limit 10
 example:
 CUDA_VISIBLE_DEVICES=4 nohup python src/evaluation/run_test_files.py \
-  --test-set test_data/test_cases/HMS.json --pipeline llm --limit 10 \
+  --test-set test_data/test_cases/MME.json --pipeline llm --limit 10 \
   > outputs/evaluation/llm_log.txt 2>&1 &
 """
 
@@ -127,7 +136,7 @@ def serialize_similarity_results(
         else:
             serialized[method] = []
     return serialized
-    
+
 
 # ── Cache helpers ─────────────────────────────────────────────────────────────
 
@@ -392,7 +401,7 @@ def run_llm_batch(
     print(f"Loaded {total} test cases.\n")
     print(f"Models   : {LLM_MODEL_LIST}")
     est = total * len(LLM_MODEL_LIST) * 3
-    print(f"Warning  : LLM is slow (~3 min/case/model). Est. total: {est} min\n")
+    print(f"Warning  : LLM is slow. Est. total: {est} min\n")
 
     hpo_labels = load_json(HPO_LABELS_PATH)
     dummy = PatientProfile("batch_init", "", set(), set())
@@ -447,6 +456,119 @@ def run_llm_batch(
     return cache_dir
 
 
+# ── HPO2Vec pipeline ──────────────────────────────────────────────────────────
+
+
+def run_hpo2vec_batch(
+    test_set_path: Path,
+    resume: bool = True,
+    limit: int | None = None,
+    top_k: int = 10,
+) -> Path:
+    """
+    Run HPO2Vec pipeline on all test cases.
+
+    Loads the pre-trained Word2Vec model from outputs/hpo2vec/hpo2vec_model
+    and ranks diseases by cosine similarity of IC-weighted HPO embeddings.
+    CPU only — fast after model is loaded.
+    """
+    from gensim.models import Word2Vec
+
+    # Add pipelines/ to path so hpo2vec_pipeline can be imported
+    pipelines_dir = str(PROJECT_ROOT / "pipelines")
+    if pipelines_dir not in sys.path:
+        sys.path.insert(0, pipelines_dir)
+
+    from hpo2vec_pipeline import rank_diseases
+
+    test_set_name = test_set_path.stem
+    cache_dir = CACHE_BASE_DIR / f"{test_set_name}_hpo2vec"
+    cache_dir.mkdir(parents=True, exist_ok=True)
+
+    print_header("hpo2vec", test_set_path, cache_dir, resume, limit)
+
+    cases = load_test_cases(test_set_path)
+    if limit:
+        cases = cases[:limit]
+    total = len(cases)
+    print(f"Loaded {total} test cases.\n")
+
+    # Load pre-trained model
+    model_path = PROJECT_ROOT / "outputs" / "hpo2vec" / "hpo2vec_model"
+    if not model_path.exists():
+        raise FileNotFoundError(
+            f"HPO2Vec model not found at {model_path}.\n"
+            "Train it first by running: python pipelines/hpo2vec_pipeline.py"
+        )
+
+    print(f"Loading HPO2Vec model from {model_path}...")
+    model = Word2Vec.load(str(model_path))
+    print(f"  Vocabulary size: {len(model.wv)} nodes")
+
+    alias_to_canonical = load_json(ALIAS_TO_CANONICAL_PATH)
+    ic_values = load_json(PROJECT_ROOT / "outputs" / "shared" / "information_content.json")
+
+    dummy = PatientProfile("batch_init", "", set(), set())
+    ctx = AppContext.load(dummy, use_canonical_profiles=True)
+    print(f"  Disease profiles : {ctx.app_metadata.n_disease_profiles}")
+
+    ancestor_sets = preprocess_ancestor_sets(ctx.ancestors)
+    print("  Ready.\n")
+
+    skipped, processed, failed = 0, 0, 0
+    total_time = 0.0
+
+    for index, (hpo_terms, ground_truth) in enumerate(cases):
+        cache_file = cache_path_for(cache_dir, index)
+
+        if resume and cache_file.exists():
+            skipped += 1
+            continue
+
+        print(f"[{index + 1:>4}/{total}] case_{index:04d} | {len(hpo_terms)} HPO terms | gt={ground_truth}")
+
+        try:
+            start = time.time()
+
+            patient = build_patient(index, hpo_terms, ancestor_sets)
+            patient_dict = {
+                "patient_id": patient.patient_id,
+                "raw_text": "",
+                "hpo_terms": list(patient.hpo_terms),
+                "propagated_hpo_terms": list(patient.propagated_hpo_terms),
+            }
+
+            rankings = rank_diseases(
+                disease_profiles=ctx.disease_profiles,
+                patient=patient_dict,
+                model=model,
+                ic_values=ic_values,
+                alias_to_canonical=alias_to_canonical,
+                use_propagated=True,
+                top_k=top_k,
+            )
+
+            elapsed = time.time() - start
+            total_time += elapsed
+
+            save_case_cache(
+                cache_file, index, hpo_terms, ground_truth,
+                {"hpo2vec": rankings}, elapsed,
+            )
+            processed += 1
+            avg = total_time / processed
+            remaining = (total - index - 1) * avg
+            print(f"           ✓ {elapsed:.1f}s | avg={avg:.1f}s | est. remaining={remaining/60:.1f}min")
+
+        except Exception as e:
+            failed += 1
+            print(f"           ✗ ERROR: {e}")
+            (cache_dir / f"case_{index:04d}.error").write_text(f"{type(e).__name__}: {e}")
+
+    print_summary(total, processed, skipped, failed, total_time, cache_dir)
+    return cache_dir
+
+
 # ── CLI ───────────────────────────────────────────────────────────────────────
 
 
@@ -464,9 +586,9 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--pipeline",
-        choices=["cpu", "transformer", "llm"],
+        choices=["cpu", "transformer", "llm", "hpo2vec"],
         default="cpu",
-        help="Pipeline to run: cpu (semantic/set/tfidf), transformer, or llm (default: cpu)",
+        help="Pipeline to run: cpu (semantic/set/tfidf), transformer, llm, or hpo2vec (default: cpu)",
     )
     parser.add_argument(
         "--no-resume",
@@ -528,7 +650,14 @@ def main() -> None:
             top_k=args.top_k,
         )
 
+    elif args.pipeline == "hpo2vec":
+        run_hpo2vec_batch(
+            test_set_path=args.test_set,
+            resume=resume,
+            limit=args.limit,
+            top_k=args.top_k,
+        )
+
 
 if __name__ == "__main__":
     main()
-    

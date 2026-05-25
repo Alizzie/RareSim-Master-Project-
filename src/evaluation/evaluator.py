@@ -14,6 +14,7 @@ Metrics:
                 Uses best rank when multiple ground truth IDs exist.
 
     Per-case rank matrix shows which method found the correct disease at what rank.
+    Method agreement analysis shows consensus/hard/easy/unique-find breakdowns.
 
 Usage:
     # Evaluate CPU methods only (semantic/set/tfidf)
@@ -21,15 +22,16 @@ Usage:
 
     # Evaluate all pipelines
     python src/evaluation/evaluator.py \
-  --cache-dir outputs/evaluation/cache/HMS \
-  --transformer-cache outputs/evaluation/cache/HMS_transformer \
-        --llm-cache outputs/evaluation/cache/HMS_llm
+  --cache-dir outputs/evaluation/cache/MME \
+  --transformer-cache outputs/evaluation/cache/MME_transformer \
+        --llm-cache outputs/evaluation/cache/MME_llm \
+        --hpo2vec-cache outputs/evaluation/cache/MME_hpo2vec
 
 Output:
-    outputs/evaluation/HMS_evaluation.json
-    outputs/evaluation/HMS_evaluation_summary.txt
-    test_data/results/evaluation/HMS_evaluation_summary.txt  ← to tracked by git
-""" 
+    outputs/evaluation/MME_evaluation.json
+    outputs/evaluation/MME_evaluation_summary.txt
+    test_data/results/evaluation/MME_evaluation_summary.txt  ← to tracked by git
+"""
 
 import argparse
 import json
@@ -112,7 +114,6 @@ def find_rank(
 
     Returns the rank (1-indexed) or None if not found.
     """
-    # Build full set of equivalent IDs for all ground truth diseases
     gt_equivalent = set()
     for gt_id in ground_truth_ids:
         gt_equivalent.update(get_all_equivalent_ids(gt_id, alias_map, reverse_map))
@@ -192,44 +193,52 @@ def merge_cases(
     cpu_cases: list[dict],
     transformer_cases: list[dict],
     llm_cases: list[dict],
+    hpo2vec_cases: list[dict] = [],
 ) -> list[dict]:
     """
-    Merge cases from all three cache directories by case index.
+    Merge cases from all cache directories by case index.
 
     Each merged case contains results from all available pipelines.
     """
-    # Index by case_index
     cpu_by_index = {c["case_index"]: c for c in cpu_cases}
     transformer_by_index = {c["case_index"]: c for c in transformer_cases}
     llm_by_index = {c["case_index"]: c for c in llm_cases}
+    hpo2vec_by_index = {c["case_index"]: c for c in hpo2vec_cases}
 
-    all_indices = set(cpu_by_index) | set(transformer_by_index) | set(llm_by_index)
+    all_indices = (
+        set(cpu_by_index)
+        | set(transformer_by_index)
+        | set(llm_by_index)
+        | set(hpo2vec_by_index)
+    )
     merged = []
 
     for index in sorted(all_indices):
         cpu_case = cpu_by_index.get(index, {})
         transformer_case = transformer_by_index.get(index, {})
         llm_case = llm_by_index.get(index, {})
+        hpo2vec_case = hpo2vec_by_index.get(index, {})
 
-        # Use ground truth from whichever cache has it
         ground_truth = (
             cpu_case.get("ground_truth")
             or transformer_case.get("ground_truth")
             or llm_case.get("ground_truth")
+            or hpo2vec_case.get("ground_truth")
             or []
         )
         hpo_terms = (
             cpu_case.get("hpo_terms")
             or transformer_case.get("hpo_terms")
             or llm_case.get("hpo_terms")
+            or hpo2vec_case.get("hpo_terms")
             or []
         )
 
-        # Merge all results
         results = {}
         results.update(cpu_case.get("results", {}))
         results.update(transformer_case.get("results", {}))
         results.update(llm_case.get("results", {}))
+        results.update(hpo2vec_case.get("results", {}))
 
         merged.append({
             "case_index": index,
@@ -239,6 +248,44 @@ def merge_cases(
         })
 
     return merged
+
+
+# ── RRF ensemble ─────────────────────────────────────────────────────────────
+
+RRF_K = 60
+RRF_METHOD_NAME = "ensemble_rrf"
+
+
+def compute_rrf(
+    case_results: dict[str, list[dict]],
+    all_methods: list[str],
+    top_k: int = 10,
+    k: int = RRF_K,
+) -> list[dict]:
+    """
+    Compute Reciprocal Rank Fusion across all methods for a single case.
+
+    RRF(d) = sum_{r in R} 1 / (k + r(d))
+
+    Each method contributes 1/(k + rank) for every disease it ranked.
+    Diseases are then re-ranked by descending RRF score.
+    Returns a list of dicts with 'disease_id' and 'rank' (1-indexed).
+    """
+    rrf_scores: dict[str, float] = defaultdict(float)
+
+    for method in all_methods:
+        for result in case_results.get(method, []):
+            disease_id = get_disease_id_from_result(result)
+            rank = result.get("rank")
+            if disease_id and rank is not None:
+                rrf_scores[disease_id] += 1.0 / (k + rank)
+
+    # Sort by descending RRF score, assign new ranks
+    sorted_diseases = sorted(rrf_scores.items(), key=lambda x: -x[1])
+    return [
+        {"disease_id": disease_id, "rank": new_rank}
+        for new_rank, (disease_id, _) in enumerate(sorted_diseases[:top_k], start=1)
+    ]
 
 
 # ── Evaluation ────────────────────────────────────────────────────────────────
@@ -255,16 +302,15 @@ def evaluate(
 
     Returns per-method metrics and per-case rank matrix.
     """
-    # Collect all method names
-    all_methods = set()
+    base_methods = set()
     for case in cases:
-        all_methods.update(case.get("results", {}).keys())
-    all_methods = sorted(all_methods)
+        base_methods.update(case.get("results", {}).keys())
+    base_methods = sorted(base_methods)
 
-    # Per-method rank lists
+    # All methods including the RRF ensemble
+    all_methods = base_methods + [RRF_METHOD_NAME]
     method_ranks: dict[str, list[int | None]] = {m: [] for m in all_methods}
 
-    # Per-case rank matrix
     rank_matrix = []
 
     for case in cases:
@@ -272,11 +318,19 @@ def evaluate(
         results = case.get("results", {})
 
         case_ranks = {}
-        for method in all_methods:
+
+        # Per-method ranks
+        for method in base_methods:
             method_results = results.get(method, [])
             rank = find_rank(ground_truth, method_results, alias_map, reverse_map)
             method_ranks[method].append(rank)
             case_ranks[method] = rank
+
+        # RRF ensemble rank
+        rrf_results = compute_rrf(results, base_methods, top_k)
+        rrf_rank = find_rank(ground_truth, rrf_results, alias_map, reverse_map)
+        method_ranks[RRF_METHOD_NAME].append(rrf_rank)
+        case_ranks[RRF_METHOD_NAME] = rrf_rank
 
         rank_matrix.append({
             "case_index": case["case_index"],
@@ -284,11 +338,9 @@ def evaluate(
             "ranks": case_ranks,
         })
 
-    # Compute metrics per method
     method_metrics = {}
     for method in all_methods:
-        ranks = method_ranks[method]
-        method_metrics[method] = compute_metrics(ranks, top_k)
+        method_metrics[method] = compute_metrics(method_ranks[method], top_k)
 
     return {
         "n_cases": len(cases),
@@ -299,7 +351,159 @@ def evaluate(
     }
 
 
+# ── Method agreement analysis ─────────────────────────────────────────────────
+
+
+def compute_agreement(results: dict) -> dict:
+    """
+    Compute method agreement statistics across all cases.
+
+    Returns consensus/hard/easy/unique counts, per-count histogram,
+    per-rank histogram, unique-find details, and hard-case IDs.
+    """
+    rank_matrix = results["rank_matrix"]
+    all_methods = results["methods"]
+    n_methods = len(all_methods)
+
+    consensus_count = 0   # all methods found it
+    hard_count = 0        # no method found it
+    easy_count = 0        # at least one method ranked it #1
+    unique_find_count = 0 # exactly one method found it
+
+    # How many methods found the correct disease per case
+    found_by_n: dict[int, int] = defaultdict(int)
+
+    # How many methods found correct disease at each rank (rank 1..top_k)
+    rank_histogram: dict[int, int] = defaultdict(int)
+
+    unique_finds: list[dict] = []   # cases where exactly one method found it
+    hard_cases: list[str] = []      # cases where no method found it
+
+    for row in rank_matrix:
+        case_id = f"case_{row['case_index']:04d}"
+        gt = row["ground_truth"]
+        ranks = row["ranks"]  # method -> rank | None
+
+        found_methods = [m for m in all_methods if ranks.get(m) is not None]
+        n_found = len(found_methods)
+        found_by_n[n_found] += 1
+
+        # Accumulate rank histogram
+        for m in all_methods:
+            r = ranks.get(m)
+            if r is not None:
+                rank_histogram[r] += 1
+
+        if n_found == n_methods:
+            consensus_count += 1
+        if n_found == 0:
+            hard_count += 1
+            hard_cases.append(case_id)
+        if any(ranks.get(m) == 1 for m in all_methods):
+            easy_count += 1
+        if n_found == 1:
+            unique_find_count += 1
+            solo_method = found_methods[0]
+            unique_finds.append({
+                "case_id": case_id,
+                "gt": gt,
+                "method": solo_method,
+                "rank": ranks[solo_method],
+            })
+
+    return {
+        "consensus_count": consensus_count,
+        "hard_count": hard_count,
+        "easy_count": easy_count,
+        "unique_find_count": unique_find_count,
+        "found_by_n": dict(found_by_n),
+        "rank_histogram": dict(rank_histogram),
+        "unique_finds": unique_finds,
+        "hard_cases": hard_cases,
+        "n_methods": n_methods,
+    }
+
+
 # ── Formatting ────────────────────────────────────────────────────────────────
+
+_BAR_FULL = "█"
+_BAR_WIDTH = 40  # max bar width in characters
+
+
+def _bar(value: int, max_value: int) -> str:
+    if max_value == 0:
+        return ""
+    filled = round(_BAR_WIDTH * value / max_value)
+    return _BAR_FULL * filled
+
+
+def format_agreement_section(agreement: dict, n_cases: int) -> str:
+    lines = []
+    w = 72
+    lines.append(f"\n{'=' * w}")
+    lines.append(f"  Method Agreement Analysis")
+    lines.append(f"{'=' * w}")
+
+    lines.append(f"  Total cases : {n_cases}")
+    lines.append(
+        f"  Consensus   : {agreement['consensus_count']} cases"
+        f" — all methods found it"
+    )
+    lines.append(
+        f"  Hard cases  : {agreement['hard_count']} cases"
+        f" — no method found it"
+    )
+    lines.append(
+        f"  Easy cases  : {agreement['easy_count']} cases"
+        f" — at least one method ranked it #1"
+    )
+    lines.append(
+        f"  Unique finds: {agreement['unique_find_count']} cases"
+        f" — only one method found it"
+    )
+
+    # Per-case histogram: how many methods found it
+    lines.append(f"\n  How many methods found the correct disease per case:")
+    found_by_n = agreement["found_by_n"]
+    n_methods = agreement["n_methods"]
+    max_val = max(found_by_n.values(), default=1)
+    for k in range(n_methods + 1):
+        count = found_by_n.get(k, 0)
+        bar = _bar(count, max_val)
+        lines.append(f"    {k} methods: {count:>3} cases  {bar}")
+
+    # Rank histogram
+    lines.append(f"\n  How many methods found correct disease at each rank:")
+    rank_hist = agreement["rank_histogram"]
+    if rank_hist:
+        max_rank = max(rank_hist.keys())
+        max_hist_val = max(rank_hist.values(), default=1)
+        for r in range(1, max_rank + 1):
+            count = rank_hist.get(r, 0)
+            bar = _bar(count, max_hist_val)
+            lines.append(f"    rank_{r}: {count:>2}  {bar}")
+
+    # Unique finds
+    lines.append(f"\n  Unique finds (only one method found it):")
+    if agreement["unique_finds"]:
+        for uf in agreement["unique_finds"]:
+            gt_str = str(uf["gt"])
+            lines.append(
+                f"    {uf['case_id']} | gt={gt_str} | {uf['method']} @ rank {uf['rank']}"
+            )
+    else:
+        lines.append("    (none)")
+
+    # Hard cases
+    lines.append(f"\n  Hard cases (no method found correct disease):")
+    if agreement["hard_cases"]:
+        for hc in agreement["hard_cases"]:
+            lines.append(f"    {hc}")
+    else:
+        lines.append("    (none)")
+
+    lines.append(f"{'=' * w}")
+    return "\n".join(lines)
 
 
 def format_summary(results: dict, test_set_name: str) -> str:
@@ -312,7 +516,7 @@ def format_summary(results: dict, test_set_name: str) -> str:
     lines.append(f"  Evaluation Summary — {test_set_name} ({n} cases)")
     lines.append(f"{'=' * 80}")
 
-    # Method comparison table
+    # ── Method comparison table ──────────────────────────────────────────────
     lines.append(f"\n{'=' * 80}")
     lines.append(f"  Method Comparison — Recall@k, MRR, NDCG@10")
     lines.append(f"{'=' * 80}")
@@ -321,7 +525,6 @@ def format_summary(results: dict, test_set_name: str) -> str:
     )
     lines.append(f"  {'-' * 78}")
 
-    # Sort by Recall@10 descending
     sorted_methods = sorted(
         metrics.items(),
         key=lambda x: (-x[1]["recall_10"], -x[1]["mrr"]),
@@ -340,12 +543,16 @@ def format_summary(results: dict, test_set_name: str) -> str:
         )
     lines.append(f"{'=' * 80}")
 
-    # Per-case rank matrix
+    # ── Method agreement analysis ────────────────────────────────────────────
+    agreement = compute_agreement(results)
+    lines.append(format_agreement_section(agreement, n))
+
+    # ── Per-case rank matrix ─────────────────────────────────────────────────
+    all_methods = results["methods"]
     lines.append(f"\n{'=' * 80}")
     lines.append(f"  Per-Case Rank Matrix  (- = not found in top 10)")
     lines.append(f"{'=' * 80}")
 
-    all_methods = results["methods"]
     method_headers = "  ".join(f"{m[:12]:>12}" for m in all_methods)
     lines.append(f"  {'Case':<12} {'GT':<25}  {method_headers}")
     lines.append(f"  {'-' * 78}")
@@ -374,13 +581,15 @@ def main() -> None:
     cpu_cases = load_cache_dir(args.cache_dir)
     transformer_cases = load_cache_dir(args.transformer_cache) if args.transformer_cache else []
     llm_cases = load_cache_dir(args.llm_cache) if args.llm_cache else []
+    hpo2vec_cases = load_cache_dir(args.hpo2vec_cache) if args.hpo2vec_cache else []
 
     print(f"  CPU cases        : {len(cpu_cases)}")
     print(f"  Transformer cases: {len(transformer_cases)}")
     print(f"  LLM cases        : {len(llm_cases)}")
+    print(f"  HPO2Vec cases    : {len(hpo2vec_cases)}")
 
     print("\nMerging cases...")
-    cases = merge_cases(cpu_cases, transformer_cases, llm_cases)
+    cases = merge_cases(cpu_cases, transformer_cases, llm_cases, hpo2vec_cases)
     print(f"  Total merged cases: {len(cases)}")
 
     print("\nLoading alias map...")
@@ -390,12 +599,9 @@ def main() -> None:
     print("\nEvaluating...")
     results = evaluate(cases, alias_map, reverse_map, top_k=args.top_k)
 
-    # Print summary
     summary = format_summary(results, test_set_name)
     print(summary)
 
-    # Save outputs
-    # Save outputs — also save to results/ for version control
     EVALUATION_DIR.mkdir(parents=True, exist_ok=True)
     RESULTS_DIR = PROJECT_ROOT / "test_data" / "results" / "evaluation"
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
@@ -409,7 +615,6 @@ def main() -> None:
     txt_path.write_text(summary)
     print(f"Saved TXT  : {txt_path}")
 
-    # Copy to results/ for git tracking
     results_txt_path = RESULTS_DIR / f"{test_set_name}_evaluation_summary.txt"
     results_txt_path.write_text(summary)
 
@@ -437,6 +642,12 @@ def parse_args() -> argparse.Namespace:
         type=Path,
         default=None,
         help="Cache directory for LLM results (optional)",
+    )
+    parser.add_argument(
+        "--hpo2vec-cache",
+        type=Path,
+        default=None,
+        help="Cache directory for HPO2Vec results (optional)",
     )
     parser.add_argument(
         "--top-k",
