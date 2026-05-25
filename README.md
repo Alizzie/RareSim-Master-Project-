@@ -22,6 +22,12 @@ docker run -d --name neo4j-raresim \
 
 The phenotype extraction pipeline (`src/shared/phenotype.py`) supports multiple methods. Some require additional setup:
 
+### Dictionary
+No setup required. Uses regex matching against HPO labels.
+
+### Biomedical NER (d4data)
+Requires `transformers` and `torch` — already in `requirements.txt`. The model (`d4data/biomedical-ner-all`) will be downloaded automatically from HuggingFace on first use.
+
 ### FastHPOCR
 Morphological HPO concept recognition (recommended):
 
@@ -40,11 +46,7 @@ Requires an OpenAI API key. Add to your `.env` file:
 OPENAI_API_KEY=sk-...
 
 ### PhenoBrain API
-No API key required. Uses the public PhenoBrain endpoint. Requires:
-
-```bash
-pip install requests
-```
+No API key required. Uses the public PhenoBrain endpoint. Requires `pip install requests` (already in `requirements.txt`).
 
 # 2. How to Run
 ```
