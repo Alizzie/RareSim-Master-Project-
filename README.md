@@ -18,11 +18,33 @@ docker run -d --name neo4j-raresim \
   neo4j:5
 ```
 
-# For llm reasoning part for transformer models and llm generation for rare disease
-Now ollama is used so in another terminal 
-Install: brew install ollama
-Pull:    ollama pull mistral
-Start:   ollama serve
+## Phenotype Extraction Setup
+
+The phenotype extraction pipeline (`src/shared/phenotype.py`) supports multiple methods. Some require additional setup:
+
+### FastHPOCR
+Morphological HPO concept recognition (recommended):
+
+```bash
+# Clone into src/
+git clone https://github.com/tudorgroza/fast_hpo_cr.git src/fast_hpo_cr
+
+# Download hp.obo (FastHPOCR uses OBO format, separate from hpo.owl)
+wget https://purl.obolibrary.org/obo/hp.obo -O ontologies/model/hp.obo
+```
+
+The index will be built automatically on first use (~12 min) and cached to `outputs/fast_hpo_cr_index/`.
+
+### ChatGPT Extraction
+Requires an OpenAI API key. Add to your `.env` file:
+OPENAI_API_KEY=sk-...
+
+### PhenoBrain API
+No API key required. Uses the public PhenoBrain endpoint. Requires:
+
+```bash
+pip install requests
+```
 
 # 2. How to Run
 ```
