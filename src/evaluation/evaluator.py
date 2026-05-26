@@ -254,6 +254,9 @@ def merge_cases(
 
 RRF_K = 60
 RRF_METHOD_NAME = "ensemble_rrf"
+RRF_WEIGHTED_NAME = "ensemble_rrf_weighted"
+RRF_TOP_NAME = "ensemble_rrf_top"
+RRF_MIN_RECALL10 = 0.10  # minimum R@10 for a method to enter top ensemble
 
 
 def compute_rrf(
@@ -261,26 +264,30 @@ def compute_rrf(
     all_methods: list[str],
     top_k: int = 10,
     k: int = RRF_K,
+    weights: dict[str, float] | None = None,
 ) -> list[dict]:
     """
     Compute Reciprocal Rank Fusion across all methods for a single case.
 
-    RRF(d) = sum_{r in R} 1 / (k + r(d))
+    RRF(d) = sum_{r in R} w_r / (k + r(d))
 
-    Each method contributes 1/(k + rank) for every disease it ranked.
+    If weights is None, all methods are weighted equally (w_r = 1.0).
+    If weights is provided, each method is weighted by its R@10 score.
     Diseases are then re-ranked by descending RRF score.
     Returns a list of dicts with 'disease_id' and 'rank' (1-indexed).
     """
     rrf_scores: dict[str, float] = defaultdict(float)
 
     for method in all_methods:
+        w = weights[method] if weights else 1.0
+        if w == 0:
+            continue
         for result in case_results.get(method, []):
             disease_id = get_disease_id_from_result(result)
             rank = result.get("rank")
             if disease_id and rank is not None:
-                rrf_scores[disease_id] += 1.0 / (k + rank)
+                rrf_scores[disease_id] += w / (k + rank)
 
-    # Sort by descending RRF score, assign new ranks
     sorted_diseases = sorted(rrf_scores.items(), key=lambda x: -x[1])
     return [
         {"disease_id": disease_id, "rank": new_rank}
@@ -301,36 +308,67 @@ def evaluate(
     Evaluate all methods across all cases.
 
     Returns per-method metrics and per-case rank matrix.
+    Three RRF ensemble variants are computed to try to see if different configurations improve performance for the ensemble method:
+      - ensemble_rrf         : equal weights, all methods
+      - ensemble_rrf_weighted: weighted by each method's R@10
+      - ensemble_rrf_top     : equal weights, only methods with R@10 >= threshold
     """
     base_methods = set()
     for case in cases:
         base_methods.update(case.get("results", {}).keys())
     base_methods = sorted(base_methods)
 
-    # All methods including the RRF ensemble
-    all_methods = base_methods + [RRF_METHOD_NAME]
+    all_methods = base_methods + [RRF_METHOD_NAME, RRF_WEIGHTED_NAME, RRF_TOP_NAME]
     method_ranks: dict[str, list[int | None]] = {m: [] for m in all_methods}
 
-    rank_matrix = []
-
+    # ── Pass 1: compute per-method ranks ─────────────────────────────────────
+    rank_matrix_pass1 = []
     for case in cases:
         ground_truth = case.get("ground_truth", [])
         results = case.get("results", {})
-
         case_ranks = {}
-
-        # Per-method ranks
         for method in base_methods:
             method_results = results.get(method, [])
             rank = find_rank(ground_truth, method_results, alias_map, reverse_map)
             method_ranks[method].append(rank)
             case_ranks[method] = rank
+        rank_matrix_pass1.append((case, case_ranks))
 
-        # RRF ensemble rank
+    # ── Compute per-method R@10 for weighting ─────────────────────────────────
+    n = len(cases)
+    method_recall10 = {
+        method: sum(1 for r in method_ranks[method] if r is not None and r <= 10) / n
+        for method in base_methods
+    }
+
+    # Top methods: only those above the minimum R@10 threshold
+    top_methods = [m for m in base_methods if method_recall10[m] >= RRF_MIN_RECALL10]
+    if not top_methods:
+        top_methods = base_methods  # fallback: use all if none qualify
+
+    # ── Pass 2: compute RRF variants ─────────────────────────────────────────
+    rank_matrix = []
+    for case, case_ranks in rank_matrix_pass1:
+        ground_truth = case.get("ground_truth", [])
+        results = case.get("results", {})
+
+        # Variant 1: equal weights, all methods
         rrf_results = compute_rrf(results, base_methods, top_k)
         rrf_rank = find_rank(ground_truth, rrf_results, alias_map, reverse_map)
         method_ranks[RRF_METHOD_NAME].append(rrf_rank)
         case_ranks[RRF_METHOD_NAME] = rrf_rank
+
+        # Variant 2: weighted by R@10, all methods
+        rrf_w_results = compute_rrf(results, base_methods, top_k, weights=method_recall10)
+        rrf_w_rank = find_rank(ground_truth, rrf_w_results, alias_map, reverse_map)
+        method_ranks[RRF_WEIGHTED_NAME].append(rrf_w_rank)
+        case_ranks[RRF_WEIGHTED_NAME] = rrf_w_rank
+
+        # Variant 3: equal weights, top methods only (R@10 >= threshold)
+        rrf_top_results = compute_rrf(results, top_methods, top_k)
+        rrf_top_rank = find_rank(ground_truth, rrf_top_results, alias_map, reverse_map)
+        method_ranks[RRF_TOP_NAME].append(rrf_top_rank)
+        case_ranks[RRF_TOP_NAME] = rrf_top_rank
 
         rank_matrix.append({
             "case_index": case["case_index"],
@@ -348,6 +386,8 @@ def evaluate(
         "methods": all_methods,
         "method_metrics": method_metrics,
         "rank_matrix": rank_matrix,
+        "rrf_top_methods": top_methods,
+        "rrf_method_weights": method_recall10,
     }
 
 
@@ -541,6 +581,18 @@ def format_summary(results: dict, test_set_name: str) -> str:
             f"{m['ndcg']:>6.4f}  "
             f"{found_str}"
         )
+    lines.append(f"{'=' * 80}")
+
+    # ── RRF Ensemble Configuration ───────────────────────────────────────────
+    lines.append(f"\n{'=' * 80}")
+    lines.append(f"  RRF Ensemble Configuration")
+    lines.append(f"{'=' * 80}")
+    top_methods = results.get("rrf_top_methods", [])
+    weights = results.get("rrf_method_weights", {})
+    lines.append(f"  Threshold  : R@10 >= {RRF_MIN_RECALL10} for ensemble_rrf_top")
+    lines.append(f"  Top methods: {len(top_methods)} / {results['n_methods'] - 3} base methods")
+    for m in top_methods:
+        lines.append(f"    {m:<45} R@10={weights.get(m, 0):.4f}")
     lines.append(f"{'=' * 80}")
 
     # ── Method agreement analysis ────────────────────────────────────────────
