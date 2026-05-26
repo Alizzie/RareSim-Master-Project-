@@ -65,6 +65,9 @@ def print_raw_results(method_name: str, results: list[dict]) -> None:
         print("  No results.")
         return
     for r in results:
+        if not isinstance(r, dict):
+            print(f"  {r}")
+            continue
         disease_id = r.get("canonical_disease_id") or r.get("ordo_id", "")
         label = r.get("label") or r.get("disease_name", "")
         score = r.get("score") or r.get("confidence", "")

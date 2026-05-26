@@ -61,7 +61,9 @@ from shared.paths import (
     PATIENT_PATH,
     PHENOTYPE_DIR,
     PROJECT_ROOT,
+    HPO_ANCESTORS_PATH
 )
+from shared.math import preprocess_ancestor_sets, get_ancestors_inclusive
 
 # ── FastHPOCR paths ────────────────────────────────────────────────────────────
 _FAST_HPO_CR_SRC     = PROJECT_ROOT / "src" / "fast_hpo_cr"
@@ -650,7 +652,8 @@ def build_patient_profile(
     Build a patient profile dict from raw clinical text.
 
     Returns:
-        patient:         Dict with patient_id, raw_text, hpo_terms, methods_used.
+        patient:         Dict with patient_id, raw_text, hpo_terms,
+                         propagated_hpo_terms, methods_used.
         extracted_terms: List of dicts with full extraction provenance.
     """
     extracted = extract_hpo_terms(
@@ -659,10 +662,25 @@ def build_patient_profile(
         methods=methods,
     )
 
+    hpo_terms = sorted({r.hpo_id for r in extracted})
+
+    # Compute propagated terms using HPO ancestor hierarchy
+    try:
+        ancestors = load_json(HPO_ANCESTORS_PATH)
+        ancestor_sets = preprocess_ancestor_sets(ancestors)
+        propagated = set()
+        for term in hpo_terms:
+            propagated |= get_ancestors_inclusive(term, ancestor_sets)
+        propagated_hpo_terms = sorted(propagated)
+    except Exception as e:
+        print(f"[phenotype] Warning: could not compute propagated terms: {e}")
+        propagated_hpo_terms = hpo_terms
+
     patient = {
         "patient_id": patient_id,
         "raw_text": raw_text,
-        "hpo_terms": sorted({r.hpo_id for r in extracted}),
+        "hpo_terms": hpo_terms,
+        "propagated_hpo_terms": propagated_hpo_terms,
         "methods_used": list(methods),
     }
 
