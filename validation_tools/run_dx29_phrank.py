@@ -77,7 +77,8 @@ def get_disease_ranking(results: list[dict]) -> dict:
     Returns a dict mapping rank index -> (disease_id, score).
     """
     return {
-        i: (item.get("id"), item.get("score", 0.0)) for i, item in enumerate(results)
+        i: (item.get("id"), item.get("scoreDx29", 0.0))
+        for i, item in enumerate(results)
     }
 
 

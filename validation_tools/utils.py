@@ -115,7 +115,7 @@ def load_all_datasets(
 
         cases = load_cases(path)
         print(f"Loaded dataset '{name}': {len(cases)} cases from {path.name}")
-        datasets[name] = cases
+        datasets[name.lower()] = cases
 
     return datasets
 
