@@ -5,20 +5,65 @@ Handles loading, YAML generation, TSV parsing, and stats computation.
 Designed to be reusable across LIRICAL, Phen2Gene, Exomiser, etc.
 """
 
-import glob
 import json
 import csv
 import statistics
 from pathlib import Path
 from typing import TextIO
 
-# ── Dataset metadata ──────────────────────────────────────────────────────────
+# ── Dataset Discovery ──────────────────────────────────────────────────────────
 
-# Datasets from: Mao et al., npj Digital Medicine 2025 (PhenoBrain paper)
-DATASET_NAMES = ["RAMEDIS", "MME", "HMS", "LIRICAL", "PUMCH_L", "PUMCH-ADM"]
 
-# MME + HMS + LIRICAL = "Public test set" as defined in the paper
-PUBLIC_TEST_DATASETS = ["MME", "HMS", "LIRICAL"]
+def discover_datasets(data_dir: Path) -> list[str]:
+    """
+    Discover available datasets by scanning for JSON files in data_dir.
+
+    Returns:
+        Sorted list of dataset name stems (e.g. ['HMS', 'MME', 'RAMEDIS']).
+    """
+    return sorted(p.stem for p in data_dir.glob("*.json"))
+
+
+def resolve_datasets(data_dir: Path, requested: list[str] | None) -> list[str]:
+    """
+    Resolve the final list of datasets to run.
+
+    If requested is None, returns all datasets found in data_dir.
+    If requested is provided, validates each name against what exists and
+    warns about any that are missing.
+
+    Args:
+        data_dir:  Directory to scan for JSON files.
+        requested: Names passed via --datasets, or None for auto-discover.
+
+    Returns:
+        List of valid dataset name stems to process.
+    """
+    available = discover_datasets(data_dir)
+
+    if not available:
+        print(f"[WARN] No JSON datasets found in {data_dir}")
+        return []
+
+    if requested is None:
+        print(
+            f"No --datasets specified. Running all {len(available)} found in {data_dir}:"
+        )
+        for name in available:
+            print(f"  - {name}")
+        return available
+
+    resolved = []
+    for name in requested:
+        match = next((a for a in available if a.lower() == name.lower()), None)
+        if match:
+            resolved.append(match)
+        else:
+            print(
+                f"[WARN] Requested dataset '{name}' not found in {data_dir}, skipping."
+            )
+            print(f"  Available datasets: {', '.join(available)}")
+    return resolved
 
 
 # ── JSON loading ──────────────────────────────────────────────────────────────
@@ -44,45 +89,30 @@ def load_cases(json_path: Path) -> list[tuple[list[str], list[str]]]:
     return cases
 
 
-def find_dataset_json(data_dir: Path, name: str) -> Path | None:
-    """
-    Locate a dataset JSON file by name, tolerating case differences.
-    Tries: <name>.json, <name.lower()>.json
-    """
-    for candidate in [data_dir / f"{name}.json", data_dir / f"{name.lower()}.json"]:
-        if candidate.exists():
-            return candidate
-    return None
-
-
 def load_all_datasets(
     data_dir: Path, names: list[str] | None = None
 ) -> dict[str, list]:
     """
-    Load datasets from a directory.
-    If names is provided, only load those datasets, otherwise load all JSON files.
+    Load the given dataset names from data_dir.
+
+    Args:
+        data_dir: Directory containing dataset JSON files.
+        names:    List of dataset stems to load (already resolved by resolve_datasets).
+
+    Returns:
+        Dict mapping dataset name → list of (hpo_ids, disease_ids) tuples.
     """
-    all_paths = {
-        Path(p).stem.lower(): Path(p) for p in glob.glob(str(data_dir / "*.json"))
-    }
-
-    if not all_paths:
-        print("No JSON datasets found in", data_dir)
-        return {}
-
-    selected = (
-        {n.lower(): all_paths[n.lower()] for n in names if n.lower() in all_paths}
-        if names
-        else all_paths
-    )
-
-    if names:
-        for n in names:
-            if n.lower() not in all_paths:
-                print("Dataset '%s' not found in %s, skipping", n, data_dir)
-
     datasets = {}
-    for name, path in selected.items():
+    for name in names:
+        path = data_dir / f"{name}.json"
+
+        if not path.exists():
+            path = data_dir / f"{name.lower()}.json"
+
+        if not path.exists():
+            print(f"[WARN] Could not find file for dataset '{name}', skipping")
+            continue
+
         cases = load_cases(path)
         print(f"Loaded dataset '{name}': {len(cases)} cases from {path.name}")
         datasets[name] = cases
@@ -167,26 +197,14 @@ def print_stats(
     label: str,
     stats: dict,
     f: TextIO,
-    reference: dict | None = None,
 ) -> None:
+    """
+    Print benchmark statistics to a file if specified, or to stdout.
+    """
     n, found = stats["n"], stats["found"]
     f.write(f"\n  {label}  (n={n}, found={found}/{n})\n")
-
-    if reference:
-        f.write(f"    {'Metric':<12} {'Result':>8} {'Reference':>12} {'Δ':>8}\n")
-        f.write(f"    {'─'*44}\n")
 
     for k, v in stats["topk"].items():
         bar = "█" * int(v * 25)
         line = f"    top-{k:<3}  {v:.3f}  {bar}\n"
-        if reference and f"top{k}" in reference:
-            ref_v = reference[f"top{k}"]
-            delta = v - ref_v
-            line = f"    {'top-'+str(k):<12} {v:>8.3f} {ref_v:>12.3f} {delta:>+8.3f}\n"
         f.write(line)
-
-    mr = stats["median_rank"]
-    if reference and "median_rank" in reference:
-        f.write(f"    {'median rank':<12} {mr!s:>8} {reference['median_rank']!s:>12}\n")
-    else:
-        f.write(f"    median rank: {mr}\n")

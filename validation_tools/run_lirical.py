@@ -5,19 +5,15 @@ Uses utils.py for all file handling and statistics.
 
 Runs LIRICAL via `prioritize` subcommand (no YAML input).
 
-Reference: Mao et al., npj Digital Medicine 2025 (PhenoBrain paper)
-  LIRICAL on public test set (MME+HMS+LIRICAL):
-    top-3=0.407, top-10=0.560, median rank=6.0
-
-
 Usage:
-python3 run_lirical.py \
-  --lirical-jar "/Users/eli/Documents/Uni/Master Project/Tools/LIRICAL/lirical-cli/target/lirical-cli-2.4.0.jar" \
-  --lirical-data ~/lirical-data \
-  --skip-existing --datasets MME
+  python3 run_lirical.py \\
+    --lirical-jar path/to/lirical-cli.jar \\
+    --lirical-data ~/lirical-data \\
+    --datasets HMS MME
+    
+My path: "/Users/eli/Documents/Uni/Master Project/Tools/LIRICAL/lirical-cli/target/lirical-cli-2.4.0.jar"
 """
 
-import os
 import subprocess
 import argparse
 import time
@@ -25,37 +21,40 @@ from pathlib import Path
 import csv
 
 from utils import (
-    DATASET_NAMES,
+    resolve_datasets,
     load_all_datasets,
     save_summary_tsv,
     compute_stats,
     print_stats,
 )
 
-# ── Reference numbers from paper (Supp Table 7) ───────────────────────────────
-PAPER_LIRICAL_PUBLIC = {"top3": 0.407, "top10": 0.560, "median_rank": 6.0}
+SCRIPT_DIR = Path(__file__).parent
+DEFAULT_DATA_DIR = SCRIPT_DIR / "datasets" / "PhenoBrainBenchmarkDatasets"
 
 
 # ── CLI ───────────────────────────────────────────────────────────────────────
 def parse_args():
     p = argparse.ArgumentParser(
-        description="Run LIRICAL on PhenoBrain benchmark datasets"
+        description="Run LIRICAL on benchmark datasets",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=__doc__,
     )
     p.add_argument(
         "--data-dir",
-        help="Directory containing the 6 JSON files",
-        default="datasets/PhenoBrainBenchmarkDatasets",
-    )
-    p.add_argument("--lirical-jar", required=True, help="Path to LIRICAL JAR")
-    p.add_argument(
-        "--lirical-data", required=True, help="Path to LIRICAL data directory"
+        type=Path,
+        default=DEFAULT_DATA_DIR,
+        help=f"Directory containing dataset JSON files (default: {DEFAULT_DATA_DIR})",
     )
     p.add_argument(
         "--datasets",
         nargs="+",
-        default=DATASET_NAMES,
-        choices=DATASET_NAMES,
+        default=None,
+        metavar="NAME",
         help="Datasets to run (default: all)",
+    )
+    p.add_argument("--lirical-jar", required=True, help="Path to LIRICAL JAR")
+    p.add_argument(
+        "--lirical-data", required=True, help="Path to LIRICAL data directory"
     )
     p.add_argument(
         "--mindiff",
@@ -87,7 +86,7 @@ def run_lirical_case(
     """Run LIRICAL prioritize for a single case. Returns (success, query_time_sec)."""
     tsv_out = out_dir / f"{case_id}.tsv"
     if skip_existing and tsv_out.exists():
-        return True, None  # timing not available for cached results
+        return True  # timing not available for cached results
 
     cmd = [
         java,
@@ -111,14 +110,11 @@ def run_lirical_case(
     if negated_hpo_ids:
         cmd += ["-n", ",".join(negated_hpo_ids)]
 
-    start_time = time.time()
     r = subprocess.run(cmd, capture_output=True, text=True)
-    query_time_sec = time.time() - start_time
-
     if r.returncode != 0:
         print(f"    [WARN] LIRICAL failed for {case_id}: {r.stderr[-200:]}")
-        return False, query_time_sec
-    return True, query_time_sec
+        return False
+    return True
 
 
 # ── Per-dataset pipeline ──────────────────────────────────────────────────────
@@ -127,7 +123,8 @@ def run_lirical_all(entries, results_dir, args) -> tuple[dict, dict]:
     status = {}
     request_times = {}
     for i, (case_id, hpo_ids, _) in enumerate(entries):
-        ok, query_time_sec = run_lirical_case(
+        start_time = time.time()
+        ok = run_lirical_case(
             java=args.java,
             jar=args.lirical_jar,
             lirical_data=args.lirical_data,
@@ -139,26 +136,34 @@ def run_lirical_all(entries, results_dir, args) -> tuple[dict, dict]:
             skip_existing=args.skip_existing,
         )
         status[case_id] = ok
-        request_times[case_id] = query_time_sec
-        if (i + 1) % 50 == 0:
+        request_times[case_id] = time.time() - start_time
+        if (i + 1) % 25 == 0:
             print(f"  LIRICAL: {i+1}/{len(entries)} done")
     return status, request_times
 
 
-def parse_lirical_tsv(tsv_path: Path) -> list[dict]:
+def parse_lirical_tsv(out_path: Path) -> list[dict]:
     """
-    Parse a LIRICAL TSV output file.
+    Parse a LIRICAL output file.
 
     Returns:
         List of dicts with keys: rank, disease_id, disease_name, post_test_prob.
         Empty list if file does not exist.
     """
-    if not tsv_path.exists():
+    if not out_path.exists():
         return []
-    rows = []
-    with open(tsv_path, encoding="utf-8") as f:
-        lines = [l for l in f if not l.startswith("!")]
+
+    lines = [
+        l
+        for l in out_path.read_text(encoding="utf-8").splitlines()
+        if l.strip() and not l.startswith("!")
+    ]
+
+    if not lines:
+        return []
+
     reader = csv.DictReader(lines, delimiter="\t")
+    rows = []
     for row in reader:
         disease_id = (
             row.get("diseaseCurie")
@@ -210,7 +215,7 @@ def collect_results(entries, results_dir, run_status, request_times) -> list[dic
                 "score": score,
                 "status": run_status.get(case_id, False),
                 "query_time_sec": (
-                    f"{query_time_sec:.3f}" if query_time_sec is not None else "None"
+                    f"{query_time_sec:.3f}" if query_time_sec is not None else "skipped"
                 ),
             }
         )
@@ -240,12 +245,15 @@ def run_dataset(name, cases, args, workdir) -> list[dict]:
 # ── Main ──────────────────────────────────────────────────────────────────────
 def main():
     args = parse_args()
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    workdir = Path(script_dir) / "lirical_benchmarks"
+    workdir = SCRIPT_DIR / "lirical_benchmarks"
     workdir.mkdir(parents=True, exist_ok=True)
-    data_dir = Path(script_dir) / args.data_dir
 
-    all_cases = load_all_datasets(data_dir, args.datasets)
+    selected = resolve_datasets(args.data_dir, args.datasets)
+    if not selected:
+        print("No datasets to process. Exiting.")
+        return
+
+    all_cases = load_all_datasets(args.data_dir, selected)
 
     all_summaries = {}
     for dataset_name, cases in all_cases.items():
@@ -258,9 +266,7 @@ def main():
     for dataset_name, summary in all_summaries.items():
         out_path = workdir / f"{dataset_name}_stats.txt"
         with open(out_path, "w", encoding="utf-8") as f:
-            print_stats(
-                dataset_name, compute_stats(summary), f, reference=PAPER_LIRICAL_PUBLIC
-            )
+            print_stats(dataset_name, compute_stats(summary), f)
         print(f"  Stats written to {out_path}")
 
 

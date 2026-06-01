@@ -10,7 +10,6 @@ Usage:
         --hpoa ~/phenomiser_data/phenotype.hpoa --datasets MME
 """
 
-import os
 import subprocess
 import argparse
 import csv
@@ -18,35 +17,41 @@ import time
 from pathlib import Path
 
 from utils import (
-    DATASET_NAMES,
+    resolve_datasets,
     load_all_datasets,
     save_summary_tsv,
     compute_stats,
     print_stats,
 )
 
+SCRIPT_DIR = Path(__file__).parent
+DEFAULT_DATA_DIR = SCRIPT_DIR / "datasets" / "PhenoBrainBenchmarkDatasets"
+
 
 # ── CLI ───────────────────────────────────────────────────────────────────────
 def parse_args():
     p = argparse.ArgumentParser(
-        description="Run Phenomizer on PhenoBrain benchmark datasets"
+        description="Run Phenomizer on PhenoBrain benchmark datasets",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=__doc__,
     )
     p.add_argument(
         "--data-dir",
-        default="validation_tools/datasets/PhenoBrainBenchmarkDatasets",
-        help="Directory containing the JSON dataset files",
+        type=Path,
+        default=DEFAULT_DATA_DIR,
+        help=f"Directory containing dataset JSON files (default: {DEFAULT_DATA_DIR})",
+    )
+    p.add_argument(
+        "--datasets",
+        nargs="+",
+        default=None,
+        metavar="NAME",
+        help="Datasets to run (default: all)",
     )
     p.add_argument("--phenomizer-jar", required=True, help="Path to Phenomizer JAR")
     p.add_argument("--hp-obo", required=True, help="Path to hp.obo ontology file")
     p.add_argument(
         "--hpoa", required=True, help="Path to phenotype.hpoa annotations file"
-    )
-    p.add_argument(
-        "--datasets",
-        nargs="+",
-        default=DATASET_NAMES,
-        choices=DATASET_NAMES,
-        help="Datasets to run (default: all)",
     )
     p.add_argument("--java", default="java", help="Path to java executable")
     p.add_argument("--xmx", default="32g", help="Java heap size (default: 32g)")
@@ -118,7 +123,7 @@ def run_phenomizer_all(entries, results_dir, args) -> dict[str, bool]:
         )
         status[case_id] = ok
         request_times[case_id] = time.time() - start_time
-        if (i + 1) % 50 == 0:
+        if (i + 1) % 25 == 0:
             print(f"  Phenomizer: {i+1}/{len(entries)} done")
     return status, request_times
 
@@ -215,11 +220,15 @@ def run_dataset(name, cases, args, workdir) -> list[dict]:
 # ── Main ──────────────────────────────────────────────────────────────────────
 def main():
     args = parse_args()
-    script_dir = Path(os.path.dirname(os.path.abspath(__file__)))
-    workdir = script_dir / "phenomizer_benchmarks"
+    workdir = SCRIPT_DIR / "phenomizer_benchmarks"
     workdir.mkdir(parents=True, exist_ok=True)
 
-    all_cases = load_all_datasets(Path(args.data_dir), args.datasets)
+    selected = resolve_datasets(args.data_dir, args.datasets)
+    if not selected:
+        print("No datasets selected, exiting.")
+        return
+
+    all_cases = load_all_datasets(args.data_dir, selected)
 
     all_summaries = {}
     for dataset_name, cases in all_cases.items():

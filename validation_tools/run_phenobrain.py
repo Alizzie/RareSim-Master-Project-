@@ -5,34 +5,41 @@ import time
 import argparse
 from pathlib import Path
 from utils import (
+    resolve_datasets,
     load_all_datasets,
-    DATASET_NAMES,
     save_summary_tsv,
     compute_stats,
     print_stats,
 )
-import os
+
+SCRIPT_DIR = Path(__file__).parent
+DEFAULT_DATA_DIR = SCRIPT_DIR / "datasets" / "PhenoBrainBenchmarkDatasets"
 
 
 def parse_args():
-    p = argparse.ArgumentParser(description="Run Phenobrain on benchmark datasets.")
+    p = argparse.ArgumentParser(
+        description="Run Phenobrain on benchmark datasets.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=__doc__,
+    )
     p.add_argument(
         "--data-dir",
-        help="Directory containing the 6 JSON files",
-        default="validation_tools/datasets/PhenoBrainBenchmarkDatasets",
+        type=Path,
+        default=DEFAULT_DATA_DIR,
+        help=f"Directory containing dataset JSON files (default: {DEFAULT_DATA_DIR})",
     )
     p.add_argument(
         "--datasets",
         nargs="+",
-        default=DATASET_NAMES,
-        choices=DATASET_NAMES,
+        default=None,
+        metavar="NAME",
         help="Datasets to run (default: all)",
     )
     p.add_argument(
         "--topk",
         type=int,
-        default=10,
-        help="Number of top predictions to retrieve from Phenobrain (default: 10)",
+        default=200,
+        help="Number of top predictions to retrieve from Phenobrain (default & max: 200)",
     )
     return p.parse_args()
 
@@ -194,12 +201,18 @@ def run_dataset(name: str, cases: list, args) -> list[dict]:
     return rows
 
 
-if __name__ == "__main__":
+# ── Main ──────────────────────────────────────────────────────────────────────
+def main():
     args = parse_args()
-    all_cases = load_all_datasets(Path(args.data_dir), args.datasets)
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    workdir = Path(script_dir) / "phenobrain_benchmarks"
+    workdir = SCRIPT_DIR / "phenobrain_benchmarks"
     workdir.mkdir(parents=True, exist_ok=True)
+
+    selected = resolve_datasets(args.data_dir, args.datasets)
+    if not selected:
+        print("No datasets selected, exiting.")
+        return
+
+    all_cases = load_all_datasets(args.data_dir, selected)
 
     all_summaries = {}
     for dataset_name, cases in all_cases.items():
@@ -214,3 +227,7 @@ if __name__ == "__main__":
         with open(out_path, "w", encoding="utf-8") as f:
             print_stats(dataset_name, compute_stats(summary), f)
         print(f"  Stats written to {out_path}")
+
+
+if __name__ == "__main__":
+    main()
