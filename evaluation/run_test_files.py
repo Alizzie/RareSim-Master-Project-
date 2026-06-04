@@ -8,13 +8,13 @@ Runs similarity pipelines on test cases and caches results to disk.
 Each pipeline is run separately and cached in its own directory.
 
 Pipelines:
-    cpu         → semantic/set/tfidf (CPU, ~2-4 hours for 88 cases)
-    transformer → GPU required, fast after cache build (~0.05s per case)
-    llm         → GPU required, slow - even with gpu, running 88 cases took 2.5 days in anna but it runs in the backgound with nohup.
-    hpo2vec     → CPU, fast after model is loaded (~0.1s per case)
+    cpu         → semantic/set/tfidf
+    transformer → GPU required, fast after cache build
+    llm         → GPU required, slow
+    hpo2vec     → CPU, fast after model is loaded
 
 Cache locations:
-    outputs/evaluation/cache/{test_set_name}/             ← cpu
+    outputs/evaluation/cache/{test_set_name}/             ← cpu (semantic/set/tfidf)
     outputs/evaluation/cache/{test_set_name}_transformer/ ← transformer
     outputs/evaluation/cache/{test_set_name}_llm/         ← llm
     outputs/evaluation/cache/{test_set_name}_hpo2vec/     ← hpo2vec
@@ -28,12 +28,12 @@ Step 1:
         --test-set test_data/test_cases/MME.json > run_log.txt 2>&1 &
 Step 2:
 
-    # Run transformer (GPU) — make sure to set CUDA_VISIBLE_DEVICES to select GPU and change CUDA_VISIBLE_DEVICES=4 to the appropriate GPU index
+    # Run transformer (GPU) — make sure to set CUDA_VISIBLE_DEVICES to select GPU and change CUDA_VISIBLE_DEVICES=5 to the appropriate GPU index
     CUDA_VISIBLE_DEVICES=5 python src/evaluation/run_test_files.py \
         --test-set test_data/test_cases/MME.json --pipeline transformer
 Step 3:
 
-    # Run LLM (GPU) — make sure to set CUDA_VISIBLE_DEVICES to select GPU and change CUDA_VISIBLE_DEVICES=4 to the appropriate GPU index
+    # Run LLM (GPU) — make sure to set CUDA_VISIBLE_DEVICES to select GPU and change CUDA_VISIBLE_DEVICES=5 to the appropriate GPU index
     CUDA_VISIBLE_DEVICES=5 python src/evaluation/run_test_files.py \
         --test-set test_data/test_cases/MME.json --pipeline llm
 
@@ -47,7 +47,7 @@ note: cpu and hpo2vec can be run in parallel with transformer and llm since they
 Transformer and llm should not be run at the same time on the same GPU to avoid memory issues.
 for testing, use --limit to only run on the first N cases, e.g. --limit 10
 example:
-CUDA_VISIBLE_DEVICES=4 nohup python src/evaluation/run_test_files.py \
+CUDA_VISIBLE_DEVICES=5 nohup python src/evaluation/run_test_files.py \
   --test-set test_data/test_cases/MME.json --pipeline llm --limit 10 \
   > outputs/evaluation/llm_log.txt 2>&1 &
 """
@@ -381,12 +381,15 @@ def run_llm_batch(
     """
     Run LLM pipeline on all test cases.
 
-    Each model is loaded, run, then unloaded per case to free GPU memory.
-    Warning: slow — ~3 min per case per model. Use --limit for testing.
+    Model is loaded once per model, runs all cases, then unloaded.
+    Warning: slow. Use --limit for testing.
     Requires GPU.
     """
-    from similarity_methods.llm.methods import retrieve_diseases_llm, unload_pipeline
-    from similarity_methods.llm.config import LLM_MODEL_LIST
+    from similarity_methods.llm.methods import (
+        unload_pipeline, load_hf_pipeline,
+        build_retrieval_prompt, query_hf, parse_retrieval_output
+    )
+    from similarity_methods.llm.config import LLM_MODEL_LIST, MAX_NEW_TOKENS_RETRIEVAL
 
     test_set_name = test_set_path.stem
     cache_dir = CACHE_BASE_DIR / f"{test_set_name}_llm"
@@ -410,51 +413,47 @@ def run_llm_batch(
     skipped, processed, failed = 0, 0, 0
     total_time = 0.0
 
-    for index, (hpo_terms, ground_truth) in enumerate(cases):
-        cache_file = cache_path_for(cache_dir, index)
+    for model_name in LLM_MODEL_LIST:
+        print(f"\n[llm] Loading model once: {model_name}")
+        pipe = load_hf_pipeline(model_name, MAX_NEW_TOKENS_RETRIEVAL)
 
-        if resume and cache_file.exists():
-            skipped += 1
-            continue
+        for index, (hpo_terms, ground_truth) in enumerate(cases):
+            cache_file = cache_path_for(cache_dir, index)
+            if resume and cache_file.exists():
+                skipped += 1
+                continue
 
-        print(f"[{index + 1:>4}/{total}] case_{index:04d} | {len(hpo_terms)} HPO terms | gt={ground_truth}")
+            print(f"[{index + 1:>4}/{total}] case_{index:04d} | {len(hpo_terms)} HPO terms | gt={ground_truth}")
 
-        try:
-            start = time.time()
-            patient_dict = {
-                "patient_id": f"eval_case_{index:04d}",
-                "raw_text": "",
-                "hpo_terms": list(hpo_terms),
-            }
+            try:
+                start = time.time()
+                patient_dict = {
+                    "patient_id": f"eval_case_{index:04d}",
+                    "raw_text": "",
+                    "hpo_terms": list(hpo_terms),
+                }
 
-            results = {}
-            for model_name in LLM_MODEL_LIST:
-                model_results, pipe = retrieve_diseases_llm(
-                    patient=patient_dict,
-                    hpo_labels=hpo_labels,
-                    disease_profiles=ctx.disease_profiles,
-                    model_name=model_name,
-                    top_k=top_k,
-                )
-                unload_pipeline(pipe)
-                results[model_name] = model_results
+                prompt = build_retrieval_prompt(patient_dict, hpo_labels, top_k)
+                generated = query_hf(prompt, pipe, max_tokens=MAX_NEW_TOKENS_RETRIEVAL)
+                model_results = parse_retrieval_output(generated, ctx.disease_profiles, model_name, top_k)
 
-            elapsed = time.time() - start
-            total_time += elapsed
-            save_case_cache(cache_file, index, hpo_terms, ground_truth, results, elapsed)
-            processed += 1
-            avg = total_time / processed
-            remaining = (total - index - 1) * avg
-            print(f"           ✓ {elapsed:.1f}s | avg={avg:.1f}s | est. remaining={remaining/60:.1f}min")
+                elapsed = time.time() - start
+                total_time += elapsed
+                save_case_cache(cache_file, index, hpo_terms, ground_truth, {model_name: model_results}, elapsed)
+                processed += 1
+                avg = total_time / processed
+                remaining = (total - index - 1) * avg
+                print(f"           ✓ {elapsed:.1f}s | avg={avg:.1f}s | est. remaining={remaining/60:.1f}min")
 
-        except Exception as e:
-            failed += 1
-            print(f"           ✗ ERROR: {e}")
-            (cache_dir / f"case_{index:04d}.error").write_text(f"{type(e).__name__}: {e}")
+            except Exception as e:
+                failed += 1
+                print(f"           ✗ ERROR: {e}")
+                (cache_dir / f"case_{index:04d}.error").write_text(f"{type(e).__name__}: {e}")
+
+        unload_pipeline(pipe)
 
     print_summary(total, processed, skipped, failed, total_time, cache_dir)
     return cache_dir
-
 
 # ── HPO2Vec pipeline ──────────────────────────────────────────────────────────
 
