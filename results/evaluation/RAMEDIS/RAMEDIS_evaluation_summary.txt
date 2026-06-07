@@ -1,0 +1,719 @@
+
+================================================================================
+  Evaluation Summary — RAMEDIS  (375 cases)
+================================================================================
+
+================================================================================
+  Method Comparison — Recall@k, MRR, NDCG@10, Avg time/case
+================================================================================
+  Method                                           R@1    R@3    R@5   R@10   R@20    MRR   NDCG  Found       Avg(s)
+  ------------------------------------------------------------------------------
+  ensemble_rrf_top                              0.0613 0.1227 0.1840 0.2747 0.2747 0.1122 0.1499  103/375         n/a
+  hpo2vec                                       0.0373 0.0933 0.1467 0.2533 0.2533 0.0853 0.1240  95/375      16.854
+  ensemble_rrf_weighted                         0.0400 0.1173 0.1627 0.2453 0.2453 0.0965 0.1315  92/375         n/a
+  cambridgeltl/SapBERT-from-PubMedBERT-fulltext 0.0453 0.0907 0.1573 0.2053 0.2053 0.0867 0.1146  77/375       0.114
+  tfidf_cosine                                  0.0160 0.0693 0.1093 0.2053 0.2053 0.0580 0.0917  77/375         n/a
+  ensemble_rrf                                  0.0213 0.0693 0.0960 0.1493 0.1493 0.0546 0.0767  56/375         n/a
+  set_cosine                                    0.0133 0.0373 0.0533 0.0960 0.0960 0.0317 0.0465  36/375       4.061
+  mistralai/Mistral-7B-Instruct-v0.2            0.0533 0.0747 0.0800 0.0880 0.0880 0.0637 0.0695  33/375      55.451
+  sentence-transformers/all-MiniLM-L6-v2        0.0187 0.0427 0.0587 0.0827 0.0827 0.0350 0.0461  31/375       0.114
+  set_dice                                      0.0187 0.0347 0.0533 0.0667 0.0667 0.0301 0.0387  25/375       4.061
+  set_jaccard                                   0.0187 0.0347 0.0533 0.0667 0.0667 0.0301 0.0387  25/375       4.061
+  semantic_lin_bma                              0.0107 0.0133 0.0213 0.0480 0.0480 0.0172 0.0241  18/375     165.974
+  semantic_resnik_bma                           0.0027 0.0133 0.0293 0.0480 0.0480 0.0121 0.0203  18/375     165.974
+  semantic_jiang_conrath_bma                    0.0053 0.0160 0.0267 0.0400 0.0400 0.0136 0.0198  15/375     165.974
+  emilyalsentzer/Bio_ClinicalBERT               0.0027 0.0107 0.0107 0.0133 0.0133 0.0062 0.0079  5/375       0.118
+  dmis-lab/biobert-v1.1                         0.0027 0.0080 0.0080 0.0107 0.0107 0.0056 0.0068  4/375       0.114
+  microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext 0.0027 0.0053 0.0080 0.0107 0.0107 0.0045 0.0059  4/375       0.120
+  set_overlap                                   0.0027 0.0053 0.0053 0.0053 0.0053 0.0040 0.0043  2/375       4.061
+================================================================================
+
+================================================================================
+  RRF Ensemble Configuration
+================================================================================
+  Threshold  : R@10 >= 0.1  for ensemble_rrf_top
+  Top methods: 3 / 15 base methods
+    cambridgeltl/SapBERT-from-PubMedBERT-fulltext R@10=0.2053
+    hpo2vec                                       R@10=0.2533
+    tfidf_cosine                                  R@10=0.2053
+================================================================================
+
+========================================================================
+  Method Agreement Analysis
+========================================================================
+  Total cases : 375
+  Consensus   : 0 cases — all methods found it
+  Hard cases  : 196 cases — no method found it
+  Easy cases  : 71 cases — at least one method ranked it #1
+  Unique finds: 55 cases — only one method found it
+
+  How many methods found the correct disease per case:
+    0 methods: 196 cases  ████████████████████████████████████████
+    1 methods:  55 cases  ███████████
+    2 methods:  27 cases  ██████
+    3 methods:  13 cases  ███
+    4 methods:  17 cases  ███
+    5 methods:  12 cases  ██
+    6 methods:  12 cases  ██
+    7 methods:  14 cases  ███
+    8 methods:  13 cases  ███
+    9 methods:   5 cases  █
+    10 methods:   4 cases  █
+    11 methods:   5 cases  █
+    12 methods:   0 cases  
+    13 methods:   2 cases  
+    14 methods:   0 cases  
+    15 methods:   0 cases  
+    16 methods:   0 cases  
+    17 methods:   0 cases  
+    18 methods:   0 cases  
+
+  How many methods found correct disease at each rank:
+    rank_ 1: 140  ████████████████████████████████████████
+    rank_ 2:  82  ███████████████████████
+    rank_ 3: 100  █████████████████████████████
+    rank_ 4:  68  ███████████████████
+    rank_ 5:  84  ████████████████████████
+    rank_ 6:  54  ███████████████
+    rank_ 7:  65  ███████████████████
+    rank_ 8:  39  ███████████
+    rank_ 9:  39  ███████████
+    rank_10:  45  █████████████
+
+  Unique finds (only one method found it):
+    case_0004 | gt=['OMIM:271900', 'ORPHA:141'] | mistralai/Mistral-7B-Instruct-v0.2 @ rank 3
+    case_0009 | gt=['OMIM:266500', 'ORPHA:773'] | tfidf_cosine @ rank 7
+    case_0010 | gt=['OMIM:220110', 'ORPHA:254905'] | set_overlap @ rank 1
+    case_0019 | gt=['CCRD:13', 'OMIM:253260', 'ORPHA:79241'] | mistralai/Mistral-7B-Instruct-v0.2 @ rank 10
+    case_0029 | gt=['CCRD:90', 'OMIM:261600', 'ORPHA:716'] | cambridgeltl/SapBERT-from-PubMedBERT-fulltext @ rank 4
+    case_0035 | gt=['CCRD:90', 'OMIM:261600', 'ORPHA:716'] | mistralai/Mistral-7B-Instruct-v0.2 @ rank 3
+    case_0047 | gt=['CCRD:58', 'OMIM:243500', 'ORPHA:33'] | mistralai/Mistral-7B-Instruct-v0.2 @ rank 6
+    case_0056 | gt=['OMIM:266130', 'ORPHA:289846'] | emilyalsentzer/Bio_ClinicalBERT @ rank 3
+    case_0057 | gt=['OMIM:271900', 'ORPHA:141'] | mistralai/Mistral-7B-Instruct-v0.2 @ rank 3
+    case_0060 | gt=['CCRD:85', 'OMIM:311250', 'ORPHA:664'] | hpo2vec @ rank 6
+    case_0061 | gt=['CCRD:71', 'OMIM:251000', 'ORPHA:27'] | cambridgeltl/SapBERT-from-PubMedBERT-fulltext @ rank 8
+    case_0062 | gt=['CCRD:30', 'OMIM:230400', 'ORPHA:352', 'ORPHA:79239'] | sentence-transformers/all-MiniLM-L6-v2 @ rank 6
+    case_0071 | gt=['CCRD:115.1', 'OMIM:276700', 'ORPHA:882'] | hpo2vec @ rank 8
+    case_0072 | gt=['CCRD:90', 'OMIM:261600', 'ORPHA:716'] | cambridgeltl/SapBERT-from-PubMedBERT-fulltext @ rank 4
+    case_0075 | gt=['CCRD:71', 'OMIM:251000', 'ORPHA:27'] | tfidf_cosine @ rank 9
+    case_0078 | gt=['CCRD:90', 'OMIM:261600', 'ORPHA:716'] | emilyalsentzer/Bio_ClinicalBERT @ rank 7
+    case_0081 | gt=['OMIM:207900', 'ORPHA:23'] | hpo2vec @ rank 6
+    case_0083 | gt=['CCRD:34.1', 'OMIM:231670', 'ORPHA:25'] | cambridgeltl/SapBERT-from-PubMedBERT-fulltext @ rank 4
+    case_0085 | gt=['OMIM:271900', 'ORPHA:141'] | mistralai/Mistral-7B-Instruct-v0.2 @ rank 4
+    case_0087 | gt=['OMIM:210200', 'ORPHA:6'] | hpo2vec @ rank 5
+    case_0088 | gt=['CCRD:99', 'OMIM:606054', 'ORPHA:35'] | mistralai/Mistral-7B-Instruct-v0.2 @ rank 3
+    case_0090 | gt=['CCRD:70', 'OMIM:201450', 'ORPHA:42'] | cambridgeltl/SapBERT-from-PubMedBERT-fulltext @ rank 6
+    case_0123 | gt=['OMIM:212065', 'ORPHA:79318'] | hpo2vec @ rank 6
+    case_0127 | gt=['CCRD:90', 'OMIM:261600', 'ORPHA:716'] | dmis-lab/biobert-v1.1 @ rank 10
+    case_0133 | gt=['CCRD:30', 'OMIM:230400', 'ORPHA:352', 'ORPHA:79239'] | cambridgeltl/SapBERT-from-PubMedBERT-fulltext @ rank 10
+    case_0145 | gt=['OMIM:207900', 'ORPHA:23'] | hpo2vec @ rank 9
+    case_0156 | gt=['CCRD:90', 'OMIM:261600', 'ORPHA:716'] | cambridgeltl/SapBERT-from-PubMedBERT-fulltext @ rank 6
+    case_0157 | gt=['OMIM:237300', 'ORPHA:147'] | cambridgeltl/SapBERT-from-PubMedBERT-fulltext @ rank 9
+    case_0171 | gt=['CCRD:34.1', 'OMIM:231670', 'ORPHA:25'] | cambridgeltl/SapBERT-from-PubMedBERT-fulltext @ rank 7
+    case_0176 | gt=['CCRD:90', 'OMIM:261600', 'ORPHA:716'] | cambridgeltl/SapBERT-from-PubMedBERT-fulltext @ rank 4
+    case_0182 | gt=['CCRD:71', 'OMIM:251000', 'ORPHA:27'] | cambridgeltl/SapBERT-from-PubMedBERT-fulltext @ rank 8
+    case_0189 | gt=['CCRD:90', 'OMIM:261600', 'ORPHA:716'] | cambridgeltl/SapBERT-from-PubMedBERT-fulltext @ rank 8
+    case_0190 | gt=['OMIM:201470', 'ORPHA:26792'] | hpo2vec @ rank 9
+    case_0201 | gt=['CCRD:15', 'OMIM:212140', 'ORPHA:158'] | tfidf_cosine @ rank 9
+    case_0202 | gt=['OMIM:220110', 'ORPHA:254905'] | semantic_resnik_bma @ rank 5
+    case_0211 | gt=['CCRD:92', 'OMIM:176000', 'ORPHA:738', 'ORPHA:79276'] | hpo2vec @ rank 5
+    case_0214 | gt=['CCRD:115.1', 'OMIM:276700', 'ORPHA:882'] | hpo2vec @ rank 7
+    case_0224 | gt=['CCRD:99', 'OMIM:606054', 'ORPHA:35'] | hpo2vec @ rank 10
+    case_0227 | gt=['CCRD:13', 'OMIM:253260', 'ORPHA:79241'] | sentence-transformers/all-MiniLM-L6-v2 @ rank 5
+    case_0236 | gt=['CCRD:34.1', 'OMIM:231670', 'ORPHA:25'] | cambridgeltl/SapBERT-from-PubMedBERT-fulltext @ rank 10
+    case_0253 | gt=['OMIM:271980', 'ORPHA:22'] | set_cosine @ rank 6
+    case_0265 | gt=['CCRD:34.1', 'OMIM:231670', 'ORPHA:25'] | cambridgeltl/SapBERT-from-PubMedBERT-fulltext @ rank 9
+    case_0274 | gt=['CCRD:34.1', 'OMIM:231670', 'ORPHA:25'] | cambridgeltl/SapBERT-from-PubMedBERT-fulltext @ rank 6
+    case_0277 | gt=['OMIM:246450', 'ORPHA:20'] | sentence-transformers/all-MiniLM-L6-v2 @ rank 10
+    case_0281 | gt=['OMIM:270400', 'ORPHA:818'] | mistralai/Mistral-7B-Instruct-v0.2 @ rank 1
+    case_0288 | gt=['CCRD:71', 'OMIM:251000', 'ORPHA:27'] | hpo2vec @ rank 10
+    case_0291 | gt=['OMIM:212065', 'ORPHA:79318'] | hpo2vec @ rank 4
+    case_0297 | gt=['CCRD:99', 'OMIM:606054', 'ORPHA:35'] | tfidf_cosine @ rank 5
+    case_0312 | gt=['OMIM:271980', 'ORPHA:22'] | set_cosine @ rank 9
+    case_0313 | gt=['OMIM:270400', 'ORPHA:818'] | mistralai/Mistral-7B-Instruct-v0.2 @ rank 1
+    case_0322 | gt=['OMIM:246450', 'ORPHA:20'] | set_overlap @ rank 2
+    case_0333 | gt=['CCRD:67', 'OMIM:248600', 'ORPHA:511'] | mistralai/Mistral-7B-Instruct-v0.2 @ rank 1
+    case_0348 | gt=['CCRD:34.1', 'OMIM:231670', 'ORPHA:25'] | cambridgeltl/SapBERT-from-PubMedBERT-fulltext @ rank 5
+    case_0351 | gt=['OMIM:271900', 'ORPHA:141'] | mistralai/Mistral-7B-Instruct-v0.2 @ rank 1
+    case_0368 | gt=['OMIM:210200', 'ORPHA:6'] | hpo2vec @ rank 10
+
+  Hard cases (no method found the correct disease):
+    case_0000
+    case_0002
+    case_0003
+    case_0006
+    case_0007
+    case_0008
+    case_0011
+    case_0012
+    case_0014
+    case_0015
+    case_0016
+    case_0018
+    case_0020
+    case_0022
+    case_0023
+    case_0024
+    case_0025
+    case_0026
+    case_0027
+    case_0028
+    case_0030
+    case_0031
+    case_0032
+    case_0033
+    case_0034
+    case_0036
+    case_0037
+    case_0038
+    case_0039
+    case_0040
+    case_0043
+    case_0045
+    case_0048
+    case_0049
+    case_0053
+    case_0054
+    case_0055
+    case_0058
+    case_0065
+    case_0066
+    case_0067
+    case_0069
+    case_0073
+    case_0074
+    case_0076
+    case_0077
+    case_0080
+    case_0082
+    case_0086
+    case_0091
+    case_0092
+    case_0093
+    case_0094
+    case_0095
+    case_0096
+    case_0098
+    case_0099
+    case_0100
+    case_0101
+    case_0102
+    case_0103
+    case_0104
+    case_0105
+    case_0106
+    case_0108
+    case_0109
+    case_0110
+    case_0111
+    case_0112
+    case_0113
+    case_0114
+    case_0115
+    case_0116
+    case_0117
+    case_0120
+    case_0121
+    case_0122
+    case_0124
+    case_0125
+    case_0126
+    case_0129
+    case_0130
+    case_0131
+    case_0132
+    case_0134
+    case_0137
+    case_0138
+    case_0139
+    case_0141
+    case_0143
+    case_0147
+    case_0149
+    case_0151
+    case_0152
+    case_0159
+    case_0160
+    case_0161
+    case_0164
+    case_0165
+    case_0166
+    case_0167
+    case_0168
+    case_0169
+    case_0172
+    case_0173
+    case_0174
+    case_0175
+    case_0177
+    case_0178
+    case_0185
+    case_0188
+    case_0191
+    case_0192
+    case_0193
+    case_0194
+    case_0195
+    case_0196
+    case_0197
+    case_0198
+    case_0199
+    case_0206
+    case_0207
+    case_0209
+    case_0215
+    case_0216
+    case_0217
+    case_0218
+    case_0219
+    case_0221
+    case_0222
+    case_0223
+    case_0226
+    case_0230
+    case_0232
+    case_0233
+    case_0237
+    case_0238
+    case_0240
+    case_0241
+    case_0243
+    case_0248
+    case_0251
+    case_0261
+    case_0262
+    case_0271
+    case_0272
+    case_0275
+    case_0279
+    case_0280
+    case_0282
+    case_0283
+    case_0284
+    case_0286
+    case_0287
+    case_0289
+    case_0292
+    case_0293
+    case_0294
+    case_0300
+    case_0304
+    case_0308
+    case_0311
+    case_0318
+    case_0321
+    case_0324
+    case_0326
+    case_0327
+    case_0329
+    case_0332
+    case_0336
+    case_0337
+    case_0339
+    case_0340
+    case_0341
+    case_0342
+    case_0343
+    case_0344
+    case_0345
+    case_0347
+    case_0349
+    case_0350
+    case_0354
+    case_0356
+    case_0357
+    case_0358
+    case_0359
+    case_0360
+    case_0361
+    case_0362
+    case_0364
+    case_0366
+    case_0369
+    case_0370
+    case_0372
+    case_0373
+    case_0374
+========================================================================
+
+================================================================================
+  Per-Case Rank Matrix  (- = not found in top 10)
+================================================================================
+  Case         GT                         cambridgeltl  dmis-lab/bio  emilyalsentz       hpo2vec  microsoft/Bi  mistralai/Mi  semantic_jia  semantic_lin  semantic_res  sentence-tra    set_cosine      set_dice   set_jaccard   set_overlap  tfidf_cosine  ensemble_rrf  ensemble_rrf  ensemble_rrf
+  ------------------------------------------------------------------------------
+  case_0000    OMIM:203500,ORPHA:56                  -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0001    CCRD:30,OMIM:230400,ORPH              -             -             -             -             -             6             -             -             -             6             -             -             -             -             -             -             -             -
+  case_0002    CCRD:18,OMIM:215700,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0003    CCRD:40,OMIM:229600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0004    OMIM:271900,ORPHA:141                 -             -             -             -             -             3             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0005    CCRD:13,OMIM:253260,ORPH              5             -             -             -             -             5             -             7             -             -             -             -             -             -             -             -             -             -
+  case_0006    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0007    OMIM:261750,ORPHA:79240               -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0008    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0009    OMIM:266500,ORPHA:773                 -             -             -             -             -             -             -             -             -             -             -             -             -             -             7             -             -             -
+  case_0010    OMIM:220110,ORPHA:254905              -             -             -             -             -             -             -             -             -             -             -             -             -             1             -             -             -             -
+  case_0011    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0012    CCRD:12,OMIM:203750,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0013    OMIM:222748,ORPHA:38874               2             -             -             1             -             -             -             -             9             -             -             -             -             -             3             3             1             1
+  case_0014    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0015    CCRD:44,OMIM:253270,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0016    CCRD:70,OMIM:201450,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0017    OMIM:236250,ORPHA:395                 -             -             -             1             -             -             -             9            10             -             -             -             -             -             2             5             2             2
+  case_0018    OMIM:212065,ORPHA:79318               -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0019    CCRD:13,OMIM:253260,ORPH              -             -             -             -             -            10             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0020    CCRD:70,OMIM:201450,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0021    CCRD:44,OMIM:253270,ORPH              1             -             -             -             -             -             5             6             -             1             3             3             3             -             6             3             4             5
+  case_0022    CCRD:34.1,OMIM:231670,OR              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0023    CCRD:70,OMIM:201450,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0024    OMIM:237300,ORPHA:147                 -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0025    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0026    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0027    OMIM:212065,ORPHA:79318               -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0028    OMIM:212065,ORPHA:79318               -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0029    CCRD:90,OMIM:261600,ORPH              4             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0030    OMIM:210200,ORPHA:6                   -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0031    OMIM:212065,ORPHA:79318               -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0032    OMIM:271900,ORPHA:141                 -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0033    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0034    CCRD:70,OMIM:201450,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0035    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             3             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0036    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0037    OMIM:266130,ORPHA:289846              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0038    OMIM:271900,ORPHA:141                 -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0039    CCRD:34.1,OMIM:231670,OR              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0040    OMIM:258870,ORPHA:414                 -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0041    OMIM:274270,ORPHA:1675                4             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             9
+  case_0042    OMIM:276710,ORPHA:69723               1             -             -             3             -             -             7             9             8             -            10             -             -             -             3             3             2             1
+  case_0043    CCRD:70,OMIM:201450,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0044    CCRD:44,OMIM:253270,ORPH              1             -             -             -             -             -             -             -             -             1             -             -             -             -            10             -             9             6
+  case_0045    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0046    CCRD:6,OMIM:207800,ORPHA              4             -             -             7             -             -             4             2             -             -             3             3             3             -             4             3             1             1
+  case_0047    CCRD:58,OMIM:243500,ORPH              -             -             -             -             -             6             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0048    OMIM:210200,ORPHA:6                   -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0049    OMIM:251880,ORPHA:279934              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0050    OMIM:128230,ORPHA:98808               6             -             -             8             -             -             -             -             -             -             -             -             -             -             -             -             6             6
+  case_0051    OMIM:220100,ORPHA:214                 -             -             -             -             -             -             -             -             -             1             -             -             -             -             3             -             -             -
+  case_0052    OMIM:201810,ORPHA:90791               -             -             -             4             -             -             -             5             1             -             7             4             4             -             1             1             1             1
+  case_0053    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0054    CCRD:116,OMIM:201475,ORP              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0055    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0056    OMIM:266130,ORPHA:289846              -             -             3             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0057    OMIM:271900,ORPHA:141                 -             -             -             -             -             3             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0058    OMIM:227810,ORPHA:2088                -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0059    OMIM:236792,ORPHA:79314               6             -             -             5             -             -             -             -             -             1             -             -             -             -             3             4             2             1
+  case_0060    CCRD:85,OMIM:311250,ORPH              -             -             -             6             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0061    CCRD:71,OMIM:251000,ORPH              8             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0062    CCRD:30,OMIM:230400,ORPH              -             -             -             -             -             -             -             -             -             6             -             -             -             -             -             -             -             -
+  case_0063    CCRD:92,OMIM:176000,ORPH              2             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             4
+  case_0064    CCRD:85,OMIM:311250,ORPH              -             -             -             3             -             -             -             9             5             -             -             -             -             -             -             -            10             9
+  case_0065    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0066    OMIM:201470,ORPHA:26792               -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0067    CCRD:85,OMIM:311250,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0068    CCRD:99,OMIM:606054,ORPH              -             -             -             1             -             -             1             1             -             -             2             1             1             -             1             1             1             1
+  case_0069    OMIM:220110,ORPHA:254905              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0070    CCRD:92,OMIM:176000,ORPH              3             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             8
+  case_0071    CCRD:115.1,OMIM:276700,O              -             -             -             8             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0072    CCRD:90,OMIM:261600,ORPH              4             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0073    OMIM:220100,ORPHA:214                 -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0074    CCRD:30,OMIM:230400,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0075    CCRD:71,OMIM:251000,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             9             -             -             -
+  case_0076    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0077    CCRD:85,OMIM:311250,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0078    CCRD:90,OMIM:261600,ORPH              -             -             7             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0079    CCRD:34.1,OMIM:231670,OR              1             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             7
+  case_0080    OMIM:237300,ORPHA:147                 -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0081    OMIM:207900,ORPHA:23                  -             -             -             6             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0082    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0083    CCRD:34.1,OMIM:231670,OR              4             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0084    OMIM:237300,ORPHA:147                 -             -             -             7             -             -             3             1             3             -             1             1             1             -            10             1             1             4
+  case_0085    OMIM:271900,ORPHA:141                 -             -             -             -             -             4             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0086    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0087    OMIM:210200,ORPHA:6                   -             -             -             5             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0088    CCRD:99,OMIM:606054,ORPH              -             -             -             -             -             3             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0089    OMIM:237300,ORPHA:147                 -             -             -             -             -             -             5             8             -             -             1             1             1             -             8             2             4             -
+  case_0090    CCRD:70,OMIM:201450,ORPH              6             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0091    OMIM:210200,ORPHA:6                   -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0092    OMIM:212065,ORPHA:79318               -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0093    CCRD:13,OMIM:253260,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0094    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0095    OMIM:207900,ORPHA:23                  -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0096    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0097    CCRD:34.1,OMIM:231670,OR              2             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             9
+  case_0098    CCRD:70,OMIM:201450,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0099    CCRD:99,OMIM:606054,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0100    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0101    OMIM:250951,ORPHA:67048               -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0102    CCRD:70,OMIM:201450,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0103    OMIM:212065,ORPHA:79318               -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0104    OMIM:212065,ORPHA:79318               -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0105    CCRD:58,OMIM:243500,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0106    OMIM:212065,ORPHA:79318               -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0107    OMIM:203500,ORPHA:56                  -             -             -             -             -             2             -             -             8             -             -             -             -             -             -             -             -             -
+  case_0108    CCRD:45,OMIM:236200,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0109    OMIM:125850,ORPHA:552                 -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0110    OMIM:220110,ORPHA:254905              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0111    OMIM:220110,ORPHA:254905              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0112    CCRD:71,OMIM:251000,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0113    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0114    OMIM:271980,ORPHA:22                  -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0115    CCRD:34.1,OMIM:231670,OR              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0116    CCRD:70,OMIM:201450,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0117    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0118    CCRD:90,OMIM:261600,ORPH              5             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -            10
+  case_0119    CCRD:18,OMIM:215700,ORPH              1             -             -             9             -             -             -             -             -             5             -             -             -             -             -            10             3             1
+  case_0120    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0121    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0122    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0123    OMIM:212065,ORPHA:79318               -             -             -             6             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0124    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0125    CCRD:70,OMIM:201450,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0126    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0127    CCRD:90,OMIM:261600,ORPH              -            10             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0128    CCRD:85,OMIM:311250,ORPH              -             -             -             2             -             -             -             -             -             -             -             -             -             -             -             -             9             5
+  case_0129    CCRD:67,OMIM:248600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0130    CCRD:71,OMIM:251000,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0131    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0132    OMIM:237300,ORPHA:147                 -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0133    CCRD:30,OMIM:230400,ORPH             10             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0134    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0135    CCRD:85,OMIM:311250,ORPH              5             -             -             7             -             -             8             -             9             3             -             -             -             -             5             4             1             2
+  case_0136    CCRD:18,OMIM:215700,ORPH              1             -             -             -             -             -             -             -             -             -             -             -             -             -             7             -            10             1
+  case_0137    CCRD:34.1,OMIM:231670,OR              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0138    CCRD:70,OMIM:201450,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0139    CCRD:70,OMIM:201450,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0140    CCRD:85,OMIM:311250,ORPH              6             -             -             3             -             -             3             5             3             4             -             -             -             -             6             2             1             1
+  case_0141    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0142    OMIM:237300,ORPHA:147                 4             -             -             3             -             -             -             -             -             -             -             -             -             -             -             -             6             3
+  case_0143    CCRD:70,OMIM:201450,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0144    CCRD:30,OMIM:230400,ORPH              6             -             -             -             -             -             -             -             -             1             -             -             -             -             -             -             -             -
+  case_0145    OMIM:207900,ORPHA:23                  -             -             -             9             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0146    CCRD:71,OMIM:251000,ORPH              4             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -            10
+  case_0147    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0148    CCRD:71,OMIM:251000,ORPH              4             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -            10
+  case_0149    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0150    CCRD:13,OMIM:253260,ORPH              -             -             -             7             -             -             -             -             -             5             -             -             -             -             -             -             9             -
+  case_0151    OMIM:271900,ORPHA:141                 -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0152    CCRD:13,OMIM:253260,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0153    CCRD:71,OMIM:251000,ORPH              3             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -            10
+  case_0154    CCRD:71,OMIM:251000,ORPH              -             -             -             5             -             -             3             7             5             -             -             -             -             -             9             5             4             5
+  case_0155    OMIM:600721,ORPHA:79315               2             -             -             4             -             -             -             -             -             2             -             -             -             -             2             6             2             1
+  case_0156    CCRD:90,OMIM:261600,ORPH              6             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0157    OMIM:237300,ORPHA:147                 9             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0158    CCRD:34.1,OMIM:231670,OR              1             -             -             -             -             -             8             -             5             -             -             -             -             -             -             -            10             5
+  case_0159    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0160    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0161    CCRD:13,OMIM:253260,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0162    CCRD:30,OMIM:230400,ORPH              2             -             -             -             -             -             -             -             -            10             -             -             -             -             -             -             -             8
+  case_0163    CCRD:115.1,OMIM:276700,O              -             -             -             5             -             -             -             -             -             -             -             -             -             -            10             -             6             5
+  case_0164    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0165    CCRD:70,OMIM:201450,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0166    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0167    CCRD:70,OMIM:201450,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0168    CCRD:70,OMIM:201450,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0169    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0170    OMIM:276600,ORPHA:28378               3             -             -             1             -             -             -             9             -             -             -             -             -             -             5             6             2             1
+  case_0171    CCRD:34.1,OMIM:231670,OR              7             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0172    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0173    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0174    OMIM:307030,ORPHA:408                 -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0175    OMIM:261750,ORPHA:79240               -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0176    CCRD:90,OMIM:261600,ORPH              4             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0177    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0178    CCRD:34.1,OMIM:231670,OR              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0179    OMIM:236792,ORPHA:79314               -             -             -             -             -             -             -             -             -             -             -             -             -             -             3             -             -            10
+  case_0180    OMIM:220110,ORPHA:254905              -             -             -             -             -             -             6             -             5             -             -             -             -             -             -             -             -             -
+  case_0181    CCRD:85,OMIM:311250,ORPH              -             -             -             1             -             -             -             -             -             -             -             -             -             -             5             -             7             5
+  case_0182    CCRD:71,OMIM:251000,ORPH              8             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0183    CCRD:90,OMIM:261600,ORPH              3             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             8
+  case_0184    OMIM:229700,ORPHA:348                 1             -             -             5             -             -             -             7             -             2             -             -             -             -             -             8             3             3
+  case_0185    OMIM:236792,ORPHA:79314               -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0186    CCRD:90,OMIM:261600,ORPH              4             -             -             -             -             -             -             -             -             -             -             -             -             -             8             -            10             7
+  case_0187    CCRD:116,OMIM:201475,ORP              7             -             -             -             -             -             2             1             2            10             -             -             -             -             -             8             8             -
+  case_0188    CCRD:99,OMIM:606054,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0189    CCRD:90,OMIM:261600,ORPH              8             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0190    OMIM:201470,ORPHA:26792               -             -             -             9             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0191    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0192    CCRD:13,OMIM:253260,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0193    OMIM:207900,ORPHA:23                  -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0194    CCRD:13,OMIM:253260,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0195    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0196    CCRD:13,OMIM:253260,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0197    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0198    OMIM:237300,ORPHA:147                 -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0199    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0200    CCRD:115.1,OMIM:276700,O              5             -             -            10             -             -             -             -             -             -             -             -             -             -             -             -             6             6
+  case_0201    CCRD:15,OMIM:212140,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             9             -             -             -
+  case_0202    OMIM:220110,ORPHA:254905              -             -             -             -             -             -             -             -             5             -             -             -             -             -             -             -             -             -
+  case_0203    CCRD:85,OMIM:311250,ORPH              -             -             -             2             -             -             4             4             3             -             -             -             -             -             -             7             7             8
+  case_0204    CCRD:71,OMIM:251000,ORPH              -             -             -             2             -             -             -             -             -             -             -             -             -             -             -             -             9             8
+  case_0205    CCRD:34.1,OMIM:231670,OR              2             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             7
+  case_0206    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0207    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0208    OMIM:140350,ORPHA:2118                -             -             -             3             -             -             -             -             -             5             -             -             -             -             4             -             4             2
+  case_0209    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0210    OMIM:274270,ORPHA:1675                -             -             -             -             -             -             -             -             -             -             -             -             -             -             2             -             -             5
+  case_0211    CCRD:92,OMIM:176000,ORPH              -             -             -             5             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0212    CCRD:73,OMIM:309900,ORPH              -             -             -             -             -             -             -             7             7             -             -             -             -             -             -             -             -             -
+  case_0213    OMIM:237300,ORPHA:147                 -             -             -             1             -             -             1             1             5             -             1             1             1             -             1             2             2             4
+  case_0214    CCRD:115.1,OMIM:276700,O              -             -             -             7             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0215    CCRD:116,OMIM:201475,ORP              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0216    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0217    CCRD:13,OMIM:253260,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0218    OMIM:210200,ORPHA:6                   -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0219    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0220    CCRD:71,OMIM:251000,ORPH              4             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -            10
+  case_0221    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0222    OMIM:255110,ORPHA:228302              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0223    CCRD:13,OMIM:253260,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0224    CCRD:99,OMIM:606054,ORPH              -             -             -            10             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0225    CCRD:37,OMIM:277900,ORPH              4             -             -             -             -             1             -             -             -             -             -             -             -             -             -             -             -            10
+  case_0226    CCRD:13,OMIM:253260,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0227    CCRD:13,OMIM:253260,ORPH              -             -             -             -             -             -             -             -             -             5             -             -             -             -             -             -             -             -
+  case_0228    OMIM:270400,ORPHA:818                 -             -             -             -             -             1             -             -             9             -             -             -             -             -             -             -             -             -
+  case_0229    OMIM:246450,ORPHA:20                  -             -             -             5             -             -             7             -             -             -             -             -             -             -             -             -             -             -
+  case_0230    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0231    CCRD:37,OMIM:277900,ORPH              -             -             -             3             -             1             -             -             -             -             -             -             -             -            10             -             6             6
+  case_0232    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0233    CCRD:71,OMIM:251000,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0234    CCRD:115.1,OMIM:276700,O              5             -             -             6             -             -             -             -             -             -             -             -             -             -            10             -             5             1
+  case_0235    CCRD:115.1,OMIM:276700,O              2             -             -             6             -             -             -             -             -             -             -             -             -             -             -             -             7             3
+  case_0236    CCRD:34.1,OMIM:231670,OR             10             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0237    CCRD:30,OMIM:230400,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0238    OMIM:270400,ORPHA:818                 -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0239    CCRD:85,OMIM:311250,ORPH              -             -             -             4             -             -             -             -             -             -             -             -             -             -            10             -             5             5
+  case_0240    OMIM:246450,ORPHA:20                  -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0241    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0242    CCRD:34.1,OMIM:231670,OR              3             -             -             -             -             -             -             -             -             -             -             -             -             -             9             -             7             3
+  case_0243    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0244    CCRD:67,OMIM:248600,ORPH              -             -             -             7             -             1             -             -             -             -             -             -             -             -            10             9             4             9
+  case_0245    CCRD:34.1,OMIM:231670,OR              5             -             -             -             -             -             -             -             -             -             -             -             -             -             9             -            10             7
+  case_0246    CCRD:99,OMIM:606054,ORPH              -             -             -             1             -             -             -             -             -             -             -             -             -             -             3             -             4             1
+  case_0247    CCRD:99,OMIM:606054,ORPH              -             -             -             9             -             -             -             -             -             -             3             4             4             -             2             3             2             3
+  case_0248    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0249    OMIM:270400,ORPHA:818                 -             -             -             5             -             1             -             -             -             -             -             -             -             -            10             9             2             4
+  case_0250    OMIM:220100,ORPHA:214                 2             2             2             7             4             -             -             -             -             1             7             -             -             -             5             3             2             2
+  case_0251    OMIM:271900,ORPHA:141                 -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0252    CCRD:67,OMIM:248600,ORPH              -             -             -             2             -             1             -             -             -             -             -             -             -             -             7            10             3             4
+  case_0253    OMIM:271980,ORPHA:22                  -             -             -             -             -             -             -             -             -             -             6             -             -             -             -             -             -             -
+  case_0254    CCRD:67,OMIM:248600,ORPH              -             -             -             5             -             1             -             -             -             -             -             -             -             -             7             5             3             6
+  case_0255    CCRD:67,OMIM:248600,ORPH              -             -             -             4             -             1             -             -             -             -             8             -             -             -             -             8             8             -
+  case_0256    OMIM:220100,ORPHA:214                 1             1             1             4             1             -             -             -             -             3             4             3             3             -             5             1             2             2
+  case_0257    OMIM:270400,ORPHA:818                 -             -             -             8             -             1             -             -             -             -             -             -             -             -             -             -             7             -
+  case_0258    CCRD:67,OMIM:248600,ORPH              -             -             -             1             -             3             -             -             -             -             8             7             7             -             7             1             1             3
+  case_0259    CCRD:99,OMIM:606054,ORPH              -             -             -             2             -             -             -             -             -             -            10             -             -             -             2             7             2             2
+  case_0260    CCRD:67,OMIM:248600,ORPH              -             -             -             7             -             1             -             -             -             -            10             -             -             -             9             8             7             7
+  case_0261    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0262    CCRD:99,OMIM:606054,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0263    CCRD:34.1,OMIM:231670,OR              1             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             4
+  case_0264    OMIM:212138,ORPHA:159                 6             -             -            10             -             -             -             -             -             -             7             -             -             -             5             7             1             1
+  case_0265    CCRD:34.1,OMIM:231670,OR              9             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0266    CCRD:67,OMIM:248600,ORPH              -             -             -             2             -             -             -             -             -             -             5             5             5             -             7             2             2             4
+  case_0267    OMIM:246450,ORPHA:20                  -             -             -             1             -             -             -             -             -             6             -             -             -             -             8             -             7             5
+  case_0268    CCRD:67,OMIM:248600,ORPH              -             -             -             1             -             1             -             -             -             -             -             -             -             -             6             6             4             3
+  case_0269    CCRD:15,OMIM:212140,ORPH              5             -             -             6             -             -             -             -             -             6             -             -             -             -             -             -             7             7
+  case_0270    CCRD:71,OMIM:277400,ORPH              -             -             -             6             -             -             -             -             -             -             8             -             -             -             6             -             6             6
+  case_0271    OMIM:271980,ORPHA:22                  -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0272    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0273    CCRD:71,OMIM:251000,ORPH              -             -             -             3             -             -             -             -             -             -             7             -             -             -             4             9             8             5
+  case_0274    CCRD:34.1,OMIM:231670,OR              6             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0275    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0276    CCRD:70,OMIM:201450,ORPH              4             -             -             -             -             -             -             -             -             4             -             -             -             -             -             -             -             -
+  case_0277    OMIM:246450,ORPHA:20                  -             -             -             -             -             -             -             -             -            10             -             -             -             -             -             -             -             -
+  case_0278    OMIM:270400,ORPHA:818                 -             -             -             1             -             -             -             -             -             -             -             -             -             -             3             -             3             1
+  case_0279    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0280    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0281    OMIM:270400,ORPHA:818                 -             -             -             -             -             1             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0282    CCRD:34.1,OMIM:231670,OR              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0283    OMIM:307030,ORPHA:408                 -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0284    CCRD:34.1,OMIM:231670,OR              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0285    OMIM:236792,ORPHA:79314               1             -             -             5             -             -             -             -             -             1             -             -             -             -             3             2             2             2
+  case_0286    CCRD:71,OMIM:277400,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0287    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0288    CCRD:71,OMIM:251000,ORPH              -             -             -            10             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0289    OMIM:246450,ORPHA:20                  -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0290    CCRD:37,OMIM:277900,ORPH              -             -             -             5             -             1             -             -             -             -             -             -             -             -             -             -             5             -
+  case_0291    OMIM:212065,ORPHA:79318               -             -             -             4             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0292    OMIM:271980,ORPHA:22                  -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0293    OMIM:271980,ORPHA:22                  -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0294    CCRD:45,OMIM:236200,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0295    OMIM:258870,ORPHA:414                 1             -             -             8             -             -             -             -             -             -             -             -             -             -             2             4             1             1
+  case_0296    OMIM:246450,ORPHA:20                  -             -             -             3             -             -             -             -             -             -             -             -             -             -             5             -             8             2
+  case_0297    CCRD:99,OMIM:606054,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             5             -             -             -
+  case_0298    OMIM:270400,ORPHA:818                 -             -             -             9             -             1             -             -             -             -             -             -             -             -             -             -             8             -
+  case_0299    CCRD:71,OMIM:251100,ORPH              5             -             -             -             -             -             -             -             -             -             8             7             7             -             9             6             6             7
+  case_0300    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0301    OMIM:236792,ORPHA:79314               1             2             3             2             3             -             -             -             -             3             3             3             3             -             1             1             1             1
+  case_0302    CCRD:67,OMIM:248600,ORPH              -             -             -             6             -             1             -             -             -             -             7             5             5             -             7             3             3             7
+  case_0303    CCRD:34.1,OMIM:231670,OR              1             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             3
+  case_0304    OMIM:246450,ORPHA:20                  -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0305    CCRD:67,OMIM:248600,ORPH              -             -             -             6             -             3             -             -             -             -             4             3             3             -             7             1             2             7
+  case_0306    CCRD:45,OMIM:236200,ORPH              -             -             -             5             -             -             -             -             -             -             -             -             -             -            10             -             4             2
+  case_0307    CCRD:71,OMIM:251000,ORPH              -             -             -             2             -             -             -             -             -             -             7             5             5             -             6             2             2             2
+  case_0308    CCRD:115.1,OMIM:276700,O              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0309    CCRD:67,OMIM:248600,ORPH              -             -             -             1             -             -             -             -             -             -             2             1             1             -             2             1             1             1
+  case_0310    CCRD:115.1,OMIM:276700,O              5             -             -             4             -             -             -             -             -             -             -             -             -             -             -             -             4             5
+  case_0311    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0312    OMIM:271980,ORPHA:22                  -             -             -             -             -             -             -             -             -             -             9             -             -             -             -             -             -             -
+  case_0313    OMIM:270400,ORPHA:818                 -             -             -             -             -             1             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0314    OMIM:236792,ORPHA:79314               2             -             -             3             -             -             -             -             -            10             -             -             -             -             2             3             1             1
+  case_0315    CCRD:15,OMIM:212140,ORPH              -             -             -             9             -             -             -             -             -             -             4             4             4             -             6             6             4             6
+  case_0316    CCRD:18,OMIM:215700,ORPH              2             -             -             3             -             -             -             -             -             -             5             6             6             -             5             2             1             1
+  case_0317    OMIM:220100,ORPHA:214                 -             -             -             9            10             -             -             -             -             -             -             -             -             -             5             -             7             5
+  case_0318    CCRD:34.1,OMIM:231670,OR              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0319    CCRD:115.1,OMIM:276700,O              5             -             -             7             -             -             -             -             -             -             -             -             -             -             9             -             4             3
+  case_0320    CCRD:18,OMIM:605814,ORPH              1             -             -             -             -             -             -             -             -             2             -             -             -             -             -             -             -             5
+  case_0321    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0322    OMIM:246450,ORPHA:20                  -             -             -             -             -             -             -             -             -             -             -             -             -             2             -             -             -             -
+  case_0323    CCRD:13,OMIM:253260,ORPH              -             -             -             9             -             2             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0324    CCRD:58,OMIM:243500,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0325    OMIM:237300,ORPHA:147                 -             -             -             1             -             -             -             -             -             -             1             1             1             -             1             3             3             4
+  case_0326    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0327    OMIM:212065,ORPHA:79318               -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0328    CCRD:15,OMIM:212140,ORPH              3             -             -             8             -             -             -             -             -             3             -             -             -             -            10             4             3             1
+  case_0329    OMIM:256730,ORPHA:228329              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0330    CCRD:85,OMIM:311250,ORPH             10             -             -             5             -             -             -             -             -             -             -             -             -             -             8             9             3             3
+  case_0331    CCRD:71,OMIM:251110,ORPH              -             -             -             7             -             -             -             -             -             -             1             1             1             -             1             2             2             3
+  case_0332    CCRD:71,OMIM:251000,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0333    CCRD:67,OMIM:248600,ORPH              -             -             -             -             -             1             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0334    CCRD:18,OMIM:215700,ORPH              1             -             -             3             -             -             -             -             -             -            10             -             -             -             4             5             2             1
+  case_0335    CCRD:85,OMIM:311250,ORPH              -             -             -             8             -             -             -             -             -             -             3             7             7             -             3             4             2             4
+  case_0336    OMIM:255120,ORPHA:156                 -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0337    CCRD:6,OMIM:207800,ORPHA              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0338    CCRD:71,OMIM:251000,ORPH              3             -             -             -             -             -             -             -             -            10             -             -             -             -             -             -             -             8
+  case_0339    CCRD:35.1,OMIM:232200,OR              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0340    CCRD:30,OMIM:230400,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0341    OMIM:220110,ORPHA:254905              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0342    CCRD:70,OMIM:201450,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0343    OMIM:203500,ORPHA:56                  -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0344    CCRD:92,OMIM:176000,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0345    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0346    CCRD:67,OMIM:248600,ORPH              -             -             -             3             -             1             -             -             -             -             -             -             -             -             5             6             5             3
+  case_0347    CCRD:70,OMIM:201450,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0348    CCRD:34.1,OMIM:231670,OR              5             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0349    CCRD:115.1,OMIM:276700,O              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0350    CCRD:70,OMIM:201450,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0351    OMIM:271900,ORPHA:141                 -             -             -             -             -             1             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0352    OMIM:270400,ORPHA:818                 -             -             -             7             -             1             -             -             -             -             -             -             -             -             -             -             2             -
+  case_0353    OMIM:236792,ORPHA:79314               -             -             -             -             -             -             -             -             -             3             -             -             -             -             3             -             4             8
+  case_0354    CCRD:71,OMIM:251000,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0355    CCRD:85,OMIM:311250,ORPH              -             -             -             1             -             -             -             -             -             -             5             7             7             -             3             2             2             2
+  case_0356    OMIM:210200,ORPHA:6                   -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0357    OMIM:307030,ORPHA:408                 -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0358    CCRD:71,OMIM:251000,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0359    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0360    CCRD:70,OMIM:201450,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0361    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0362    CCRD:45,OMIM:236200,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0363    CCRD:99,OMIM:606054,ORPH              -             -             -             9             -             -             -             -             -             -             2             5             5             -             -             5             4             -
+  case_0364    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0365    CCRD:71,OMIM:251000,ORPH              -             -             -             3             -             -             -             -             -             -             3             3             3             -             3             7             1             1
+  case_0366    OMIM:271980,ORPHA:22                  -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0367    CCRD:34.1,OMIM:231670,OR              1             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             4
+  case_0368    OMIM:210200,ORPHA:6                   -             -             -            10             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0369    OMIM:125850,ORPHA:552                 -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0370    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0371    CCRD:30,OMIM:230400,ORPH              5             -             -             -             -             -             -             -             -             2             -             -             -             -             -             -             8             -
+  case_0372    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0373    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0374    CCRD:90,OMIM:261600,ORPH              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+================================================================================

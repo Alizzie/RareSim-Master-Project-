@@ -1,0 +1,651 @@
+
+================================================================================
+  Evaluation Summary — LIRICAL  (370 cases)
+================================================================================
+
+================================================================================
+  Method Comparison — Recall@k, MRR, NDCG@10, Avg time/case
+================================================================================
+  Method                                           R@1    R@3    R@5   R@10   R@20    MRR   NDCG  Found       Avg(s)
+  ------------------------------------------------------------------------------
+  ensemble_rrf_weighted                         0.1595 0.2405 0.3189 0.4189 0.4189 0.2278 0.2725  155/370         n/a
+  hpo2vec                                       0.1757 0.2784 0.3297 0.4054 0.4054 0.2387 0.2780  150/370      12.160
+  ensemble_rrf_top                              0.1568 0.2351 0.2811 0.3919 0.3919 0.2161 0.2569  145/370         n/a
+  tfidf_cosine                                  0.1730 0.2541 0.3135 0.3811 0.3811 0.2323 0.2675  141/370         n/a
+  ensemble_rrf                                  0.1405 0.2270 0.2784 0.3676 0.3676 0.2032 0.2418  136/370         n/a
+  semantic_resnik_bma                           0.1135 0.1838 0.2189 0.2865 0.2865 0.1593 0.1891  106/370     263.389
+  set_cosine                                    0.1486 0.1919 0.2189 0.2541 0.2541 0.1785 0.1962  94/370       3.429
+  semantic_jiang_conrath_bma                    0.1351 0.1946 0.2162 0.2514 0.2514 0.1701 0.1894  93/370     263.389
+  semantic_lin_bma                              0.1162 0.1486 0.1784 0.2162 0.2162 0.1430 0.1602  80/370     263.389
+  cambridgeltl/SapBERT-from-PubMedBERT-fulltext 0.0649 0.1189 0.1432 0.1892 0.1892 0.0978 0.1193  70/370       0.102
+  set_dice                                      0.1108 0.1432 0.1541 0.1811 0.1811 0.1332 0.1446  67/370       3.429
+  set_jaccard                                   0.1108 0.1432 0.1541 0.1811 0.1811 0.1332 0.1446  67/370       3.429
+  set_overlap                                   0.0865 0.1270 0.1595 0.1757 0.1757 0.1144 0.1292  65/370       3.429
+  sentence-transformers/all-MiniLM-L6-v2        0.0595 0.0703 0.0973 0.1432 0.1432 0.0764 0.0917  53/370       0.102
+  microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext 0.0378 0.0514 0.0595 0.0811 0.0811 0.0481 0.0557  30/370       0.100
+  dmis-lab/biobert-v1.1                         0.0243 0.0270 0.0459 0.0568 0.0568 0.0315 0.0374  21/370       0.105
+  mistralai/Mistral-7B-Instruct-v0.2            0.0135 0.0378 0.0514 0.0541 0.0541 0.0285 0.0348  20/370      52.765
+  emilyalsentzer/Bio_ClinicalBERT               0.0162 0.0270 0.0324 0.0459 0.0459 0.0242 0.0293  17/370       0.107
+================================================================================
+
+================================================================================
+  RRF Ensemble Configuration
+================================================================================
+  Threshold  : R@10 >= 0.1  for ensemble_rrf_top
+  Top methods: 11 / 15 base methods
+    cambridgeltl/SapBERT-from-PubMedBERT-fulltext R@10=0.1892
+    hpo2vec                                       R@10=0.4054
+    semantic_jiang_conrath_bma                    R@10=0.2514
+    semantic_lin_bma                              R@10=0.2162
+    semantic_resnik_bma                           R@10=0.2865
+    sentence-transformers/all-MiniLM-L6-v2        R@10=0.1432
+    set_cosine                                    R@10=0.2541
+    set_dice                                      R@10=0.1811
+    set_jaccard                                   R@10=0.1811
+    set_overlap                                   R@10=0.1757
+    tfidf_cosine                                  R@10=0.3811
+================================================================================
+
+========================================================================
+  Method Agreement Analysis
+========================================================================
+  Total cases : 370
+  Consensus   : 0 cases — all methods found it
+  Hard cases  : 117 cases — no method found it
+  Easy cases  : 144 cases — at least one method ranked it #1
+  Unique finds: 63 cases — only one method found it
+
+  How many methods found the correct disease per case:
+    0 methods: 117 cases  ████████████████████████████████████████
+    1 methods:  63 cases  ██████████████████████
+    2 methods:  25 cases  █████████
+    3 methods:  17 cases  ██████
+    4 methods:   9 cases  ███
+    5 methods:   5 cases  ██
+    6 methods:  12 cases  ████
+    7 methods:  20 cases  ███████
+    8 methods:  23 cases  ████████
+    9 methods:  22 cases  ████████
+    10 methods:  11 cases  ████
+    11 methods:  18 cases  ██████
+    12 methods:  10 cases  ███
+    13 methods:   7 cases  ██
+    14 methods:   2 cases  █
+    15 methods:   1 cases  
+    16 methods:   7 cases  ██
+    17 methods:   1 cases  
+    18 methods:   0 cases  
+
+  How many methods found correct disease at each rank:
+    rank_ 1: 682  ████████████████████████████████████████
+    rank_ 2: 204  ████████████
+    rank_ 3: 113  ███████
+    rank_ 4: 115  ███████
+    rank_ 5:  89  █████
+    rank_ 6:  78  █████
+    rank_ 7:  62  ████
+    rank_ 8:  66  ████
+    rank_ 9:  50  ███
+    rank_10:  51  ███
+
+  Unique finds (only one method found it):
+    case_0020 | gt=['OMIM:616900', 'ORPHA:488632'] | semantic_resnik_bma @ rank 10
+    case_0030 | gt=['OMIM:617516'] | semantic_resnik_bma @ rank 2
+    case_0034 | gt=['OMIM:236200', 'ORPHA:394'] | set_overlap @ rank 4
+    case_0046 | gt=['OMIM:614021'] | set_overlap @ rank 3
+    case_0049 | gt=['OMIM:616900', 'ORPHA:488632'] | semantic_resnik_bma @ rank 9
+    case_0056 | gt=['OMIM:616247'] | set_overlap @ rank 6
+    case_0067 | gt=['OMIM:612840', 'ORPHA:99844'] | cambridgeltl/SapBERT-from-PubMedBERT-fulltext @ rank 9
+    case_0074 | gt=['OMIM:617402'] | semantic_jiang_conrath_bma @ rank 5
+    case_0075 | gt=['OMIM:133540'] | set_overlap @ rank 4
+    case_0077 | gt=['OMIM:614185'] | semantic_jiang_conrath_bma @ rank 5
+    case_0078 | gt=['OMIM:615066'] | semantic_resnik_bma @ rank 8
+    case_0092 | gt=['OMIM:609053'] | semantic_resnik_bma @ rank 5
+    case_0097 | gt=['OMIM:226700', 'ORPHA:79404'] | set_overlap @ rank 1
+    case_0111 | gt=['OMIM:122470', 'ORPHA:199'] | set_overlap @ rank 2
+    case_0115 | gt=['OMIM:617516'] | sentence-transformers/all-MiniLM-L6-v2 @ rank 8
+    case_0116 | gt=['OMIM:277300'] | set_overlap @ rank 1
+    case_0133 | gt=['OMIM:617730'] | cambridgeltl/SapBERT-from-PubMedBERT-fulltext @ rank 3
+    case_0136 | gt=['OMIM:159550', 'ORPHA:2585'] | cambridgeltl/SapBERT-from-PubMedBERT-fulltext @ rank 1
+    case_0138 | gt=['OMIM:604213', 'ORPHA:314597'] | tfidf_cosine @ rank 3
+    case_0155 | gt=['OMIM:159550', 'ORPHA:2585'] | semantic_lin_bma @ rank 1
+    case_0157 | gt=['OMIM:617425'] | tfidf_cosine @ rank 9
+    case_0164 | gt=['OMIM:604187', 'ORPHA:100991'] | semantic_jiang_conrath_bma @ rank 8
+    case_0168 | gt=['OMIM:613224'] | semantic_resnik_bma @ rank 9
+    case_0169 | gt=['OMIM:236200', 'ORPHA:394'] | semantic_resnik_bma @ rank 6
+    case_0174 | gt=['OMIM:613454'] | emilyalsentzer/Bio_ClinicalBERT @ rank 5
+    case_0177 | gt=['OMIM:167320', 'ORPHA:52430'] | hpo2vec @ rank 1
+    case_0182 | gt=['OMIM:160800'] | cambridgeltl/SapBERT-from-PubMedBERT-fulltext @ rank 1
+    case_0199 | gt=['OMIM:604173', 'ORPHA:221046'] | cambridgeltl/SapBERT-from-PubMedBERT-fulltext @ rank 2
+    case_0200 | gt=['OMIM:616638', 'ORPHA:457485'] | hpo2vec @ rank 4
+    case_0206 | gt=['OMIM:201300'] | cambridgeltl/SapBERT-from-PubMedBERT-fulltext @ rank 4
+    case_0208 | gt=['OMIM:617516'] | set_overlap @ rank 1
+    case_0215 | gt=['OMIM:209900'] | set_overlap @ rank 1
+    case_0227 | gt=['OMIM:617402'] | set_overlap @ rank 4
+    case_0232 | gt=['OMIM:616975'] | hpo2vec @ rank 9
+    case_0238 | gt=['OMIM:608393'] | set_overlap @ rank 8
+    case_0240 | gt=['OMIM:162500', 'ORPHA:640'] | hpo2vec @ rank 10
+    case_0244 | gt=['OMIM:613254'] | set_overlap @ rank 1
+    case_0246 | gt=['OMIM:120970', 'ORPHA:1872'] | set_overlap @ rank 5
+    case_0250 | gt=['OMIM:214500', 'ORPHA:167'] | mistralai/Mistral-7B-Instruct-v0.2 @ rank 4
+    case_0254 | gt=['OMIM:174300', 'ORPHA:2919'] | tfidf_cosine @ rank 6
+    case_0273 | gt=['OMIM:615516', 'ORPHA:329195'] | set_cosine @ rank 10
+    case_0283 | gt=['OMIM:616840'] | hpo2vec @ rank 7
+    case_0284 | gt=['OMIM:606889'] | cambridgeltl/SapBERT-from-PubMedBERT-fulltext @ rank 6
+    case_0293 | gt=['OMIM:615983'] | mistralai/Mistral-7B-Instruct-v0.2 @ rank 3
+    case_0295 | gt=['OMIM:617402'] | set_overlap @ rank 1
+    case_0305 | gt=['OMIM:305100', 'ORPHA:181'] | hpo2vec @ rank 3
+    case_0308 | gt=['OMIM:616900', 'ORPHA:488632'] | set_overlap @ rank 4
+    case_0318 | gt=['OMIM:203290', 'ORPHA:79433'] | hpo2vec @ rank 2
+    case_0330 | gt=['OMIM:300867'] | tfidf_cosine @ rank 3
+    case_0333 | gt=['OMIM:612653'] | set_overlap @ rank 1
+    case_0334 | gt=['OMIM:613990'] | hpo2vec @ rank 4
+    case_0337 | gt=['OMIM:616907', 'ORPHA:488594'] | set_overlap @ rank 4
+    case_0340 | gt=['OMIM:223800', 'ORPHA:239'] | set_overlap @ rank 4
+    case_0342 | gt=['OMIM:216550', 'ORPHA:193'] | tfidf_cosine @ rank 2
+    case_0343 | gt=['OMIM:600373', 'ORPHA:1458'] | tfidf_cosine @ rank 9
+    case_0346 | gt=['OMIM:616975'] | tfidf_cosine @ rank 3
+    case_0347 | gt=['OMIM:182290', 'ORPHA:819'] | set_overlap @ rank 5
+    case_0350 | gt=['OMIM:159550', 'ORPHA:2585'] | sentence-transformers/all-MiniLM-L6-v2 @ rank 9
+    case_0351 | gt=['CCRD:14.4', 'OMIM:604772', 'ORPHA:3286'] | cambridgeltl/SapBERT-from-PubMedBERT-fulltext @ rank 6
+    case_0360 | gt=['OMIM:616900', 'ORPHA:488632'] | set_overlap @ rank 4
+    case_0364 | gt=['OMIM:227645'] | set_overlap @ rank 1
+    case_0365 | gt=['OMIM:616900', 'ORPHA:488632'] | set_overlap @ rank 9
+    case_0367 | gt=['OMIM:617560', 'ORPHA:527497'] | tfidf_cosine @ rank 2
+
+  Hard cases (no method found the correct disease):
+    case_0002
+    case_0005
+    case_0015
+    case_0023
+    case_0026
+    case_0029
+    case_0032
+    case_0033
+    case_0035
+    case_0036
+    case_0039
+    case_0043
+    case_0045
+    case_0048
+    case_0050
+    case_0051
+    case_0054
+    case_0060
+    case_0064
+    case_0072
+    case_0082
+    case_0084
+    case_0089
+    case_0096
+    case_0103
+    case_0104
+    case_0107
+    case_0108
+    case_0109
+    case_0113
+    case_0117
+    case_0118
+    case_0121
+    case_0123
+    case_0125
+    case_0132
+    case_0142
+    case_0143
+    case_0145
+    case_0148
+    case_0150
+    case_0154
+    case_0160
+    case_0163
+    case_0171
+    case_0175
+    case_0181
+    case_0187
+    case_0189
+    case_0191
+    case_0195
+    case_0198
+    case_0203
+    case_0204
+    case_0211
+    case_0213
+    case_0214
+    case_0222
+    case_0223
+    case_0225
+    case_0228
+    case_0229
+    case_0230
+    case_0235
+    case_0237
+    case_0239
+    case_0243
+    case_0248
+    case_0251
+    case_0252
+    case_0258
+    case_0260
+    case_0261
+    case_0262
+    case_0263
+    case_0264
+    case_0265
+    case_0266
+    case_0269
+    case_0277
+    case_0278
+    case_0279
+    case_0280
+    case_0285
+    case_0287
+    case_0288
+    case_0289
+    case_0291
+    case_0294
+    case_0296
+    case_0300
+    case_0301
+    case_0304
+    case_0306
+    case_0307
+    case_0310
+    case_0311
+    case_0312
+    case_0315
+    case_0316
+    case_0317
+    case_0319
+    case_0321
+    case_0322
+    case_0324
+    case_0329
+    case_0332
+    case_0336
+    case_0345
+    case_0348
+    case_0352
+    case_0353
+    case_0355
+    case_0357
+    case_0359
+    case_0363
+    case_0369
+========================================================================
+
+================================================================================
+  Per-Case Rank Matrix  (- = not found in top 10)
+================================================================================
+  Case         GT                         cambridgeltl  dmis-lab/bio  emilyalsentz       hpo2vec  microsoft/Bi  mistralai/Mi  semantic_jia  semantic_lin  semantic_res  sentence-tra    set_cosine      set_dice   set_jaccard   set_overlap  tfidf_cosine  ensemble_rrf  ensemble_rrf  ensemble_rrf
+  ------------------------------------------------------------------------------
+  case_0000    OMIM:191900,ORPHA:575                 -             -             -             7             -             -             5             -            10             -             -             -             -             -             2            10             7             8
+  case_0001    CCRD:34.1,OMIM:231670,OR              2             -             -             1             -             -             1             1             1             9             -             -             -             1             4             1             1             1
+  case_0002    OMIM:147060,ORPHA:2314                -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0003    OMIM:256540,ORPHA:351                 -             -             -             4             -             -             6             -             8             4             1             1             1             -             1             2             2             2
+  case_0004    OMIM:614104,ORPHA:464306              -             -             -             -             -             -             1             -             3             -             -             -             -             -             1             7             6             7
+  case_0005    OMIM:616973                           -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0006    OMIM:102500,ORPHA:955                 -             -             -             3             -             -             3             -             7             -             -             -             -             -             -             7             4             7
+  case_0007    OMIM:275400,ORPHA:3363                -             -             -             1             -             -             1             1             1             -             1             1             1             -             1             1             1             1
+  case_0008    OMIM:617425                           -             -             -             2             -             -             -             6             3             -             -             -             -             -             5             3             2             2
+  case_0009    OMIM:616829,ORPHA:466703              1             1             2             1             1             -             1             1             1             1             1             1             1             -             1             1             1             1
+  case_0010    OMIM:617146                           2             -             -             8             -             -             2             2             -             -             4             6             6             -             2             2             2             2
+  case_0011    OMIM:130010                           7             -             -             1             -             -             -             -             -             -             -             -             -             -             5             -            10             -
+  case_0012    OMIM:271640,ORPHA:93359               -             -             -             1             -             -             1             1             1             -             1             1             1             -             1             1             1             1
+  case_0013    OMIM:615502,ORPHA:363611              -             -             -             -             -             -             1             3             1             -             -             -             -             -             2             6             6             6
+  case_0014    OMIM:616354,ORPHA:397709              -             -             -             7             -             -             -             -             -             -             -             -             -             -             8             -             4             -
+  case_0015    OMIM:616395                           -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0016    OMIM:616878,ORPHA:480864              -             -             -             1             -             -             2             1             2             -            10             -             -             -             1             3             2             2
+  case_0017    OMIM:154700,ORPHA:284963              8             -             -             4             -             1             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0018    OMIM:131300,ORPHA:1328                -             -             -             1             -             -             -             1             3             -             -             -             -             -             7             3             2             3
+  case_0019    OMIM:616900,ORPHA:488632              -             -             -             6             -             -             1             5             1             -             -             -             -             -             2             2             2             2
+  case_0020    OMIM:616900,ORPHA:488632              -             -             -             -             -             -             -             -            10             -             -             -             -             -             -             -             -             -
+  case_0021    OMIM:228600                           -             -             -             -             3             -             -             -             -             6             1             1             1             -             -             1             2             1
+  case_0022    OMIM:618000,ORPHA:536532              9             -             -             3             7             -             1             1             1             -             3             6             6             -             1             3             2             2
+  case_0023    OMIM:616900,ORPHA:488632              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0024    OMIM:602400,ORPHA:91132               1             4             6             1             4             -             1             2             1             1             2             2             2             2             2             1             1             1
+  case_0025    OMIM:215470,ORPHA:1180                -             -             -             -             -             -             1             1             2             -             1             4             4             2             4             4             5             4
+  case_0026    OMIM:149400,ORPHA:3197                -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0027    OMIM:214800,ORPHA:138                 -             -             -             4             -             -             -             -             8             -             -             -             -             -             -             -             8             -
+  case_0028    OMIM:613454                           3             -             -             2             -             -             5             -             8             -             -             -             -             -             7             9             5             8
+  case_0029    OMIM:606324                           -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0030    OMIM:617516                           -             -             -             -             -             -             -             -             2             -             -             -             -             -             -             -             -             -
+  case_0031    OMIM:245000,ORPHA:678                 3             7             -             3             2             -             6             -             4             -             -             -             -             -             4             3             5             8
+  case_0032    OMIM:616907,ORPHA:488594              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0033    OMIM:616840                           -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0034    OMIM:236200,ORPHA:394                 -             -             -             -             -             -             -             -             -             -             -             -             -             4             -             -             -             -
+  case_0035    OMIM:609528,ORPHA:66631               -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0036    OMIM:613115                           -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0037    OMIM:306955                           -             -             -             7             -             -             -             -             8             -             -             -             -             -             -             -             -             -
+  case_0038    OMIM:601553,ORPHA:1573                3             -            10             1             1             -             1             1             1             1             1             1             1             -             1             1             1             1
+  case_0039    OMIM:608716                           -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0040    OMIM:130000,ORPHA:287                 4             3             3             6             5             -            10            10             5             -             -             -             -             1             -             9             7             6
+  case_0041    OMIM:601098,ORPHA:101083              -             -             -             2             -             -             2             4             3             -             1             2             2             -             1             2             1             1
+  case_0042    OMIM:616975                           -             -             -             1             -             -             1             1             1             1             1             1             1             -             1             2             1             1
+  case_0043    OMIM:603553                           -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0044    OMIM:613684,ORPHA:353284              -             -             -             3             -             -             1             -             1             -             -             -             -             -             4             7             6             7
+  case_0045    OMIM:616840                           -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0046    OMIM:614021                           -             -             -             -             -             -             -             -             -             -             -             -             -             3             -             -             -             -
+  case_0047    OMIM:613162,ORPHA:320396              -             -             -             -             -             -             1             1             1             -             1             2             2             -             2             3             3             2
+  case_0048    OMIM:158810,ORPHA:610                 -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0049    OMIM:616900,ORPHA:488632              -             -             -             -             -             -             -             -             9             -             -             -             -             -             -             -             -             -
+  case_0050    OMIM:616907,ORPHA:488594              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0051    OMIM:610915                           -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0052    OMIM:616878,ORPHA:480864              -             -             -             1             -             -             1             1             1             -             5             -             -             -             2             1             1             1
+  case_0053    OMIM:617527,ORPHA:521426              -             -             -             4             -             -             1             1             3             -             2             -             -             -             3             1             1             1
+  case_0054    OMIM:602849,ORPHA:53271               -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0055    OMIM:617403                           -             -             -             -             -             -             2             7             5             -             -             -             -             -             -             8             8             8
+  case_0056    OMIM:616247                           -             -             -             -             -             -             -             -             -             -             -             -             -             6             -             -             -             -
+  case_0057    OMIM:616325                           -             -             -             9             -             -             -             7             6             -             -             -             -             -             -             -            10             -
+  case_0058    OMIM:608776,ORPHA:79328               -             -             -             -             -             -             2             9             6             -             -             -             -             -             9             5             4             5
+  case_0059    OMIM:609637                           -             -             -             -             -             -             8             -             -             -             -             -             -             1             -             -             -             -
+  case_0060    OMIM:617560,ORPHA:527497              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0061    OMIM:177170,ORPHA:750                 -             -             -             -             -             -            10             -             4             -             -             -             -             -             -             -             -             -
+  case_0062    OMIM:614321,ORPHA:488650              -             -             -             1             -             -             2             2             2             -             1             1             1             -             1             1             1             1
+  case_0063    OMIM:606693,ORPHA:306674              -             -             -             1             -             -             -             -            10             -             -             -             -             -             -             -             9             -
+  case_0064    OMIM:602875,ORPHA:40                  -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0065    OMIM:600373,ORPHA:1458                -             -             -             -             -             -             8             4             5             -             -             -             -             -             -             9             9             8
+  case_0066    OMIM:261100,ORPHA:35858               8             -             -             5             -             -             4             -             8             -             -             -             -             1             7             7             6             7
+  case_0067    OMIM:612840,ORPHA:99844               9             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0068    OMIM:604841,ORPHA:90654               -             -             -             1             -             -             1             1             1             -             1             7             7             1             1             1             1             1
+  case_0069    OMIM:131100,ORPHA:652                 5             -             -             1             -             -             1             1             1             5             2             9             9             -             3             1             1             1
+  case_0070    OMIM:617478                           1             1             1             1             1             -             1             1             1             1             1             1             1             -             1             1             1             1
+  case_0071    OMIM:616907,ORPHA:488594              -             -             -             1             -             -             2             6             3             -             4             9             9             -             6             4             4             4
+  case_0072    OMIM:616907,ORPHA:488594              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0073    OMIM:605282,ORPHA:363417              -             -             -             -             -             -             1             2             1             -             4             -             -             -             2             4             4             4
+  case_0074    OMIM:617402                           -             -             -             -             -             -             5             -             -             -             -             -             -             -             -             -             -             -
+  case_0075    OMIM:133540                           -             -             -             -             -             -             -             -             -             -             -             -             -             4             -             -             -             -
+  case_0076    OMIM:200150,ORPHA:2388                -             -             -             -             -             -             3             4             7             -             -             -             -             1             -             6             6             5
+  case_0077    OMIM:614185                           -             -             -             -             -             -             5             -             -             -             -             -             -             -             -             -             -             -
+  case_0078    OMIM:615066                           -             -             -             -             -             -             -             -             8             -             -             -             -             -             -             -             -             -
+  case_0079    OMIM:613454                           1             4             -             4             -             -             2             -             8             -             -             -             -             3             4             6             5             5
+  case_0080    OMIM:309300,ORPHA:91489               1             -             -             2             -             -             1             1             1             1             -             -             -             2             1             1             1             1
+  case_0081    OMIM:230400,ORPHA:79239               -             -             -             2             -             -             5             8             8             -             -             -             -             3             -             4             4             4
+  case_0082    OMIM:232700,ORPHA:369                 -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0083    OMIM:615688,ORPHA:404553              -             -             -             1             -             -             1             1             1             -             1             -             -             -             4             2             1             2
+  case_0084    OMIM:269150,ORPHA:798                 -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0085    OMIM:148820,ORPHA:896                 -             -             -             1             -             -             1             1             1             -             5             -             -             4             1             1             1             1
+  case_0086    OMIM:268310,ORPHA:1507                -             -             -             -             -             -             2             6             1             -             -             -             -             -             -             8             8             8
+  case_0087    OMIM:617668                           -             1             6             1             1             -             1             1             1             -             1             1             1             -             1             1             1             1
+  case_0088    OMIM:135100,ORPHA:337                 -             -             -             1             -             -             -             -             -             -             -             -             -             -            10             -            10             -
+  case_0089    OMIM:160150,ORPHA:169189              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0090    OMIM:616900,ORPHA:488632              -             -             -             5             -             -             1             1             2             -             -             -             -             -             1             6             3             6
+  case_0091    OMIM:139210,ORPHA:2588                -             -             -             1             -             -             1             4             1             -             -             -             -             -             1             1             1             1
+  case_0092    OMIM:609053                           -             -             -             -             -             -             -             -             5             -             -             -             -             -             -             -             -             -
+  case_0093    OMIM:305400,ORPHA:915                 9             -             -             -             -             -             -             -             5             -             -             -             -             -             -             -             -             -
+  case_0094    OMIM:102370,ORPHA:969                 -             -             -             -             1             -             -             -             -             -             3             2             2             -             -             5            10             8
+  case_0095    OMIM:616907,ORPHA:488594              -             -             -             3             -             -             8             8             5             -             -             -             -             -             -             9             6             8
+  case_0096    OMIM:216400                           -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0097    OMIM:226700,ORPHA:79404               -             -             -             -             -             -             -             -             -             -             -             -             -             1             -             -             -             -
+  case_0098    OMIM:616878,ORPHA:480864              -             -             -             2             -             -             3             5             -             -             7             -             -             -             6             4             1             1
+  case_0099    OMIM:615193                           3             -             -             -            10             -             -             -             -             7             -             -             -             -             -             -             -             -
+  case_0100    OMIM:154700,ORPHA:284963              3             -             -             -             -             -             3             4             2             -            10             -             -             -             -             8             6             6
+  case_0101    OMIM:600138                           -             -             -             -             -             2             -             -             -             -             -             -             -             1             -             -             -             -
+  case_0102    OMIM:203200,ORPHA:79432              10             -             -             -             -             -             -             -             5             -             -             -             -             7             -             -             -             -
+  case_0103    OMIM:616900,ORPHA:488632              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0104    OMIM:617560,ORPHA:527497              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0105    OMIM:617425                           -             -             -             -             -             -             -             2             3             -             -             -             -             -             -             8            10             8
+  case_0106    OMIM:617425                           -             -             -             1             -             -             1             1             1             -             -             -             -             -             -             4             2             3
+  case_0107    OMIM:616900,ORPHA:488632              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0108    OMIM:609200,ORPHA:98911               -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0109    OMIM:610759                           -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0110    OMIM:193700,ORPHA:2053                5             -             -             1             -             -             2             9             1             -             -             -             -             1             4             2             2             2
+  case_0111    OMIM:122470,ORPHA:199                 -             -             -             -             -             -             -             -             -             -             -             -             -             2             -             -             -             -
+  case_0112    OMIM:171400,ORPHA:247698              -             4             -             2             -             -             5             -             3             8             -             -             -             1             4             5             6             6
+  case_0113    OMIM:252500,ORPHA:576                 -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0114    OMIM:617180                           3             1             4             -             2             -             2             2             2             -             1             1             1             -             1             2             2             2
+  case_0115    OMIM:617516                           -             -             -             -             -             -             -             -             -             8             -             -             -             -             -             -             -             -
+  case_0116    OMIM:277300                           -             -             -             -             -             -             -             -             -             -             -             -             -             1             -             -             -             -
+  case_0117    OMIM:222470,ORPHA:84064               -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0118    OMIM:231200,ORPHA:274                 -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0119    OMIM:119600,ORPHA:1452                -             -             -             3             -             2             1             2             1             -             -             -             -             -             2             2             2             2
+  case_0120    OMIM:617425                           -             -             -             1             -             -             1             1             1             3             3             -             -             -             2             1             1             1
+  case_0121    OMIM:601859,ORPHA:3261                -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0122    OMIM:277700,ORPHA:902                 -             -             -            10             -             -             1             1             1             -             3             -             -             -             5             3             3             3
+  case_0123    OMIM:161800                           -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0124    OMIM:616829,ORPHA:466703              1             1             1             1             1             -             1             1             1             1             1             1             1             -             1             1             1             1
+  case_0125    OMIM:615982                           -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0126    OMIM:617478                           1             1             1             1             1             -             1             1             1             1             1             1             1             -             1             1             1             1
+  case_0127    OMIM:604145                           -             -             -             -             -             -             -             -             -            10             -             -             -             1             -             -             -             -
+  case_0128    OMIM:118450,ORPHA:52                  -             -             -             1             -             -             -             1             8             -             -             -             -             -             -             -             -             -
+  case_0129    OMIM:617622                           -             -             -             -             -             4             -             -             -             -             -             -             -             9             -             -             -             -
+  case_0130    OMIM:616975                           -             -             -             1             -             -             1             1             1             1             1             1             1             -             1             1             1             1
+  case_0131    OMIM:600920,ORPHA:2460                -             -             -             3             -             -             1             2             1             -             1             4             4             -             1             1             1             1
+  case_0132    OMIM:251260,ORPHA:647                 -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0133    OMIM:617730                           3             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0134    OMIM:241850,ORPHA:1226                1             -             -             1             -             -             1             1             -             -             1             5             5             -             1             1             1             1
+  case_0135    OMIM:230740,ORPHA:2067                -             -             -             8             -             -             1             5             2             -             -             -             -             -             2             3             2             3
+  case_0136    OMIM:159550,ORPHA:2585                1             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0137    OMIM:614931                           -             -             -             4             -             -             4             7             2             4            10             -             -             -             5             6             5             5
+  case_0138    OMIM:604213,ORPHA:314597              -             -             -             -             -             -             -             -             -             -             -             -             -             -             3             -             -             -
+  case_0139    OMIM:610168                           -             -             -             3             -             -             3             7             4             -             5             -             -             -             8             4             4             4
+  case_0140    OMIM:162000,ORPHA:88950               1             4             -             7             9             -             6             5             3             3             7             7             7             3             8             4             5             5
+  case_0141    OMIM:119600,ORPHA:1452                -             -             -             3             -             2             1             1             1             -             1             1             1             -             1             2             2             2
+  case_0142    OMIM:616975                           -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0143    OMIM:609285                           -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0144    OMIM:607259,ORPHA:99013               -             -             -             6             -             -            10             -             8             -             -             -             -             -             -             -             -             -
+  case_0145    OMIM:616907,ORPHA:488594              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0146    OMIM:214800,ORPHA:138                 -             -             -             -             -             4             6             5             4             -             -             -             -             -             -             4             7             9
+  case_0147    OMIM:616907,ORPHA:488594              -             -             -             9             -             -             -             -            10             -             -             -             -             -            10             -             8             -
+  case_0148    OMIM:610217                           -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0149    OMIM:230650,ORPHA:79257               1             -             -             2             7             -             1             1             2             -             2             2             2             -             2             2             2             2
+  case_0150    OMIM:148600                           -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0151    OMIM:162200,ORPHA:363700              9             4             -             5             6             -             -             -             -             6             -             -             -             -             -             8            10            10
+  case_0152    OMIM:616829,ORPHA:466703              1             1             1             1             1             -             1             1             1             1             1             1             1             -             1             1             1             1
+  case_0153    OMIM:617433                           -             -             -             -             -             2             -             -             -             -             -             -             -             1             -             -             -             -
+  case_0154    OMIM:617560,ORPHA:527497              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0155    OMIM:159550,ORPHA:2585                -             -             -             -             -             -             -             1             -             -             -             -             -             -             -             -             -             -
+  case_0156    OMIM:159950,ORPHA:2590                -             -             -             1             -             -             2             1             3             -             9             -             -             -             2             1             1             1
+  case_0157    OMIM:617425                           -             -             -             -             -             -             -             -             -             -             -             -             -             -             9             -             -             -
+  case_0158    OMIM:601399                           1             -             -             3             3             -             6             -             2             1             -             -             -             1             5             2             3             4
+  case_0159    OMIM:616516                           -             -             -             -             -             -             9             3             1             -             -             -             -             -             -             -             -             -
+  case_0160    OMIM:616975                           -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0161    OMIM:616878,ORPHA:480864              -             -             -             1             -             -             1             1             1             -             1             2             2             -             1             2             2             2
+  case_0162    OMIM:601776,ORPHA:2953                -             -             -             -             -             -             3             -             7             -             -             -             -             -             6             -             7             -
+  case_0163    OMIM:616907,ORPHA:488594              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0164    OMIM:604187,ORPHA:100991              -             -             -             -             -             -             8             -             -             -             -             -             -             -             -             -             -             -
+  case_0165    OMIM:256300,ORPHA:839                 1             -             -             1             1             -             3             6             7             1             9             -             -             -             2             2             3             3
+  case_0166    OMIM:250410,ORPHA:166035              -             -             -             9             -             -             1             1             3             -             1             -             -             2             2             1             1             1
+  case_0167    OMIM:616900,ORPHA:488632              -             -             -             -             -             -             1             1             1             -             4             -             -             -             1             7             7             7
+  case_0168    OMIM:613224                           -             -             -             -             -             -             -             -             9             -             -             -             -             -             -             -             -             -
+  case_0169    OMIM:236200,ORPHA:394                 -             -             -             -             -             -             -             -             6             -             -             -             -             -             -             -             -             -
+  case_0170    OMIM:617425                           -             -             -             1             -             -             1             1             2             -             2             2             2             -             1             2             2             2
+  case_0171    OMIM:609260,ORPHA:99947               -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0172    OMIM:613717                           -             -             -             -             -             4             -             -             -             -             -             -             -             2             -             -             -             -
+  case_0173    OMIM:142946                           -             -             -             5             -             -             -             -             4             -             -             -             -             3             -             -             -             -
+  case_0174    OMIM:613454                           -             -             5             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0175    OMIM:617333                           -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0176    OMIM:219100                           -             -             -             3             -             -             -             5             -             -             -             -             -             -             -             -             -             -
+  case_0177    OMIM:167320,ORPHA:52430               -             -             -             1             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0178    OMIM:300707,ORPHA:140952              -             -             -             1             -             -             1             1             1             -             1             2             2             -             1             1             1             1
+  case_0179    OMIM:617403                           -             -             -             -             -             -             3             -             6             -             -             -             -             1             5             5             4             3
+  case_0180    OMIM:616900,ORPHA:488632              -             -             -             1             -             -             2             6             5             -             -             -             -             -             2             2             1             2
+  case_0181    OMIM:242840,ORPHA:1493                -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0182    OMIM:160800                           1             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0183    OMIM:130600                           1             -             -             -             -             -             -             -             -            10             -             -             -             -             -             -             -             -
+  case_0184    OMIM:616829,ORPHA:466703              2             4             2             1             1             -             1             3             3             2             4             1             1             -             1             1             1             1
+  case_0185    OMIM:105400                           -             -             -             -             -             -             -             -             7             -             -             -             -             1             -             -             -             -
+  case_0186    OMIM:616974,ORPHA:478042              7             -             -             5             -             -             1             1             1             1             1             1             1             -             1             1             1             1
+  case_0187    OMIM:615878,ORPHA:480483              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0188    OMIM:612690                           -             -             -            10             -             -             -             -             -            10             -             -             -             2             -             -             -             -
+  case_0189    OMIM:616975                           -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0190    OMIM:616900,ORPHA:488632              -             -             -             -             -             -             1             -             2             -             -             -             -             -             3             -            10            10
+  case_0191    OMIM:610968                           -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0192    OMIM:250410,ORPHA:166035              9             -             -             5             -             -             3             2             3             -             -             -             -             -            10             3             2             3
+  case_0193    OMIM:266265,ORPHA:99843               5             -             -             1             -             -             1             1             1             -             1             1             1             2             1             1             1             1
+  case_0194    OMIM:215700,ORPHA:247525              1             -             -             7             -             -             -             -             -             1             -             -             -             -             4            10             7             7
+  case_0195    OMIM:616900,ORPHA:488632              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0196    OMIM:616975                           -             -             -             1             -             -             1             1             1             5             1             1             1             -             1             1             1             1
+  case_0197    OMIM:616878,ORPHA:480864              -             -             -             2             -             -             1             1             1             -             3             -             -             -             1             1             1             1
+  case_0198    OMIM:260300,ORPHA:171695              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0199    OMIM:604173,ORPHA:221046              2             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0200    OMIM:616638,ORPHA:457485              -             -             -             4             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0201    CCRD:25,OMIM:105650,ORPH              -             -             -             -             -             3             -             -             -             -             -             -             -             1             -             -             -             -
+  case_0202    OMIM:240300,ORPHA:3453                -             -             -             1             -             -             -             -             -             4             -             -             -             -             -             -             -             9
+  case_0203    OMIM:101200,ORPHA:87                  -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0204    OMIM:137920,ORPHA:93111               -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0205    OMIM:610687                           -             -             -            10             -             -             -             -             -             -             -             -             -             -             5             -             7             -
+  case_0206    OMIM:201300                           4             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0207    OMIM:116920,ORPHA:99842               2             -             -             -             -             -             -             -             -             -             -             -             -             -             9             -             -             -
+  case_0208    OMIM:617516                           -             -             -             -             -             -             -             -             -             -             -             -             -             1             -             -             -             -
+  case_0209    OMIM:617527,ORPHA:521426              3             -             -             -             -             -             -             -             -             4             1             2             2             -             1             1             1             1
+  case_0210    OMIM:260000,ORPHA:93599               -             -             -             1             -             -             -             -             -             7             1             1             1             -             1             1             1             1
+  case_0211    OMIM:616975                           -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0212    OMIM:161200,ORPHA:2614                -             -             -             1             -             -             -             -             -             2             -             -             -             -             -             -             -             -
+  case_0213    OMIM:105120,ORPHA:85448               -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0214    OMIM:617527,ORPHA:521426              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0215    OMIM:209900                           -             -             -             -             -             -             -             -             -             -             -             -             -             1             -             -             -             -
+  case_0216    OMIM:154700,ORPHA:284963              5             -             -             7             -             -             -             -             -             -             -             -             -             -             -             -            10             -
+  case_0217    OMIM:611182,ORPHA:95428               -             -             -             -             -             -             -             -             -             -             1             1             1             -             1             6             5             4
+  case_0218    OMIM:182290,ORPHA:819                 -             -             -             8             -             -             -             -             -             -             1             -             -             -             4             5             2             5
+  case_0219    OMIM:231200,ORPHA:274                 -             -             -             8             -             8             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0220    OMIM:608013,ORPHA:85212               -             -             -             1             -             -             -             -             -             -             -             -             -             -             7             -             6             9
+  case_0221    OMIM:616975                           -             -             -             1             -             -             -             -             -             1             1             1             1             -             1             1             1             1
+  case_0222    OMIM:604804                           -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0223    OMIM:616211                           -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0224    OMIM:612940,ORPHA:357064              -             -             -             1             -             -             -             -             -             -             2             8             8             -             1             2             2             2
+  case_0225    OMIM:231050                           -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0226    OMIM:616907,ORPHA:488594              -             -             -             5             -             -             -             -             -             -             6             -             -             -             6             -             5             9
+  case_0227    OMIM:617402                           -             -             -             -             -             -             -             -             -             -             -             -             -             4             -             -             -             -
+  case_0228    OMIM:101200,ORPHA:87                  -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0229    OMIM:617425                           -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0230    OMIM:609942                           -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0231    OMIM:617403                           -             -             -             6             -             -             -             -             -             -             -             -             -             -             4             -             7            10
+  case_0232    OMIM:616975                           -             -             -             9             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0233    CCRD:89,OMIM:175200,ORPH              -             -             -             1             -             1             -             -             -             -             -             -             -             1             2             2             2             8
+  case_0234    OMIM:144200,ORPHA:2199                1             -             -             -             6             -             -             -             -             4             -             -             -             1             -             8             -             9
+  case_0235    OMIM:612164                           -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0236    OMIM:616249                           -             -             -             -             -             -             -             -             -             6             -             -             -             1             -             -             -             -
+  case_0237    OMIM:113620,ORPHA:1297                -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0238    OMIM:608393                           -             -             -             -             -             -             -             -             -             -             -             -             -             8             -             -             -             -
+  case_0239    OMIM:613849                           -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0240    OMIM:162500,ORPHA:640                 -             -             -            10             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0241    OMIM:103500,ORPHA:42665               1             4             -             1             4             -             -             -             -             -             1             1             1             5             1             1             1             1
+  case_0242    OMIM:616975                           -             -             -             1             -             -             -             -             -             1             1             1             1             -             1             2             2             1
+  case_0243    OMIM:602342,ORPHA:487825              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0244    OMIM:613254                           -             -             -             -             -             -             -             -             -             -             -             -             -             1             -             -             -             -
+  case_0245    OMIM:119600,ORPHA:1452                -             -             -             3             -             -             -             -             -             -             1             5             5             -             1             2             2             2
+  case_0246    OMIM:120970,ORPHA:1872                -             -             -             -             -             -             -             -             -             -             -             -             -             5             -             -             -             -
+  case_0247    OMIM:616974,ORPHA:478042              5             -             -             2             -             -             -             -             -             -             1             1             1             -             1             1             1             1
+  case_0248    OMIM:614959                           -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0249    OMIM:163800                           -             -             -             3             -             -             -             -             -             -             -             -             -             2             6            10             5             6
+  case_0250    OMIM:214500,ORPHA:167                 -             -             -             -             -             4             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0251    OMIM:616907,ORPHA:488594              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0252    OMIM:259440                           -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0253    OMIM:614739,ORPHA:352328              2             -             -             -             -             -             -             -             -             -             1             1             1             -             1             2             1             1
+  case_0254    OMIM:174300,ORPHA:2919                -             -             -             -             -             -             -             -             -             -             -             -             -             -             6             -             -             -
+  case_0255    OMIM:616829,ORPHA:466703              1             1             1             1             1             -             -             -             -             1             1             1             1             -             1             1             1             1
+  case_0256    OMIM:616975                           -             -             -             1             -             -             -             -             -             1             1             1             1             -             1             1             1             1
+  case_0257    OMIM:617433                           -             -             -             -             -             2             -             -             -             -             -             -             -             1             -             -             -             -
+  case_0258    OMIM:616900,ORPHA:488632              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0259    OMIM:617694                           -             6             7             1             1             -             -             -             -             -             1             1             1             -             1             1             1             1
+  case_0260    OMIM:614249                           -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0261    OMIM:615120                           -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0262    OMIM:234200,ORPHA:157850              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0263    OMIM:616975                           -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0264    OMIM:190350                           -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0265    OMIM:617516                           -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0266    OMIM:617560,ORPHA:527497              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0267    OMIM:191100                           -             -             -             5             -             -             -             -             -             -             -             -             -             -             9             -             5             -
+  case_0268    OMIM:220400,ORPHA:90647               2             -             -             -             -             4             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0269    OMIM:301040,ORPHA:847                 -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0270    OMIM:613684,ORPHA:353284              -             -             -             2             -             -             -             -             -             -             -             -             -             -             4             -             8             -
+  case_0271    OMIM:159550,ORPHA:2585                6             -             -             1             -             -             -             -             -             -             2             1             1             -             -             1             1             1
+  case_0272    OMIM:616829,ORPHA:466703              1             1             1             1             1             -             -             -             -             4             1             1             1             -             1             1             1             1
+  case_0273    OMIM:615516,ORPHA:329195              -             -             -             -             -             -             -             -             -             -            10             -             -             -             -             -             -             -
+  case_0274    OMIM:304110,ORPHA:1520                -             -             -             1             -             -             -             -             -             -             -             -             -             -             1            10             4            10
+  case_0275    OMIM:616975                           -             -             -             1             -             -             -             -             -             1             1             1             1             -             1             1             1             1
+  case_0276    OMIM:617616,ORPHA:513456              5             -             -             1             1             -             -             -             -             8             1             1             1             -             1             1             1             1
+  case_0277    OMIM:115150,ORPHA:1340                -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0278    OMIM:614833,ORPHA:468631              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0279    OMIM:606854,ORPHA:101070              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0280    OMIM:159550,ORPHA:2585                -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0281    OMIM:613750                           -             -             -             -             -             1             -             -             -             -             -             -             -             1             -             -             -             -
+  case_0282    OMIM:250410,ORPHA:166035              -             7             -             1             -             -             -             -             -             1             1             -             -             -             3             1             1             1
+  case_0283    OMIM:616840                           -             -             -             7             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0284    OMIM:606889                           6             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0285    OMIM:614816                           -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0286    OMIM:159550,ORPHA:2585                1             -             -             3             -             -             -             -             -             -             -             -             -             -             -             -             9            10
+  case_0287    OMIM:616900,ORPHA:488632              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0288    OMIM:616975                           -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0289    OMIM:133540                           -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0290    OMIM:613454                           3             9             -             2             -             -             -             -             -             -             -             -             -             4             4             8             4             7
+  case_0291    OMIM:268310,ORPHA:1507                -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0292    OMIM:270400,ORPHA:818                 -             -             -             5             -             2             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0293    OMIM:615983                           -             -             -             -             -             3             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0294    OMIM:616224                           -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0295    OMIM:617402                           -             -             -             -             -             -             -             -             -             -             -             -             -             1             -             -             -             -
+  case_0296    OMIM:102700,ORPHA:277                 -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0297    OMIM:108300,ORPHA:90653               -             -             -             -             -             -             -             -             -             -             1             1             1             -             1             1             1             1
+  case_0298    OMIM:212050,ORPHA:457088              3             -             2             8            10             -             -             -             -             4             1             1             1             -             1             1             1             1
+  case_0299    OMIM:121050,ORPHA:115                 -             -             -             5             -             -             -             -             -             -             -             -             -             1             -             -            10            10
+  case_0300    OMIM:615981                           -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0301    OMIM:154700,ORPHA:284963              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0302    OMIM:616868                           6             -             -             3             -             -             -             -             -             -             2             2             2             -             1             3             3             3
+  case_0303    OMIM:246200,ORPHA:508                 1             -             -             1             -             -             -             -             -             -             1             1             1             -             1             1             1             1
+  case_0304    OMIM:616878,ORPHA:480864              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0305    OMIM:305100,ORPHA:181                 -             -             -             3             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0306    OMIM:159550,ORPHA:2585                -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0307    OMIM:618089                           -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0308    OMIM:616900,ORPHA:488632              -             -             -             -             -             -             -             -             -             -             -             -             -             4             -             -             -             -
+  case_0309    CCRD:14.3,OMIM:601144,OR              -             -             -             -             -             2             -             -             -             -             -             -             -             2             -             -             -             -
+  case_0310    OMIM:605130,ORPHA:319182              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0311    OMIM:617425                           -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0312    OMIM:309000,ORPHA:534                 -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0313    OMIM:609192,ORPHA:60030               -             -             -             3             -             -             -             -             -             -            10             -             -             -             6             -             8            10
+  case_0314    OMIM:146000,ORPHA:429                 -             -             -             2             -             -             -             -             -             -             8             -             -             -             2             7             5             6
+  case_0315    OMIM:616840                           -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0316    OMIM:122470,ORPHA:199                 -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0317    OMIM:270420                           -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0318    OMIM:203290,ORPHA:79433               -             -             -             2             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0319    OMIM:159550,ORPHA:2585                -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0320    OMIM:601414                           -             -             -             -             -             1             -             -             -             -             -             -             -             1             -             -             -             -
+  case_0321    OMIM:616975                           -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0322    OMIM:615220                           -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0323    OMIM:616900,ORPHA:488632              -             -             -             7             -             -             -             -             -             -             1             -             -             -             1             9             5             8
+  case_0324    OMIM:616907,ORPHA:488594              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0325    OMIM:302350,ORPHA:627                 1             -             -             1             -             -             -             -             -             -             1             1             1             1             1             1             1             1
+  case_0326    OMIM:150250,ORPHA:503                 3             -             -             2             -             -             -             -             -             -             2             -             -             -             1             4             3             3
+  case_0327    OMIM:616975                          10             -             9             1             6             -             -             -             -             1             1             1             1             -             1             1             1             1
+  case_0328    OMIM:277600                           -             -             -             2             -             -             -             -             -             -             4             6             6             -             3             4             4             4
+  case_0329    OMIM:107480                           -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0330    OMIM:300867                           -             -             -             -             -             -             -             -             -             -             -             -             -             -             3             -             -             -
+  case_0331    OMIM:617560,ORPHA:527497              -             -             -             -             -             -             -             -             -             6             2             2             2             -             5             2             4             2
+  case_0332    OMIM:617425                           -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0333    OMIM:612653                           -             -             -             -             -             -             -             -             -             -             -             -             -             1             -             -             -             -
+  case_0334    OMIM:613990                           -             -             -             4             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0335    OMIM:300352,ORPHA:52503               3             -             -             3             -             -             -             -             -             -             -             -             -             -             6            10             8             9
+  case_0336    OMIM:609284                           -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0337    OMIM:616907,ORPHA:488594              -             -             -             -             -             -             -             -             -             -             -             -             -             4             -             -             -             -
+  case_0338    OMIM:616975                           -             -             -             1             -             -             -             -             -             1             1             1             1             -             1             1             1             1
+  case_0339    OMIM:187900                           6             -             -             3             -             -             -             -             -             8             -             -             -             -             6             8             4             5
+  case_0340    OMIM:223800,ORPHA:239                 -             -             -             -             -             -             -             -             -             -             -             -             -             4             -             -             -             -
+  case_0341    OMIM:150250,ORPHA:503                 -             -             -             1             -             -             -             -             -             -             5             -             -             -             1             7             1             6
+  case_0342    OMIM:216550,ORPHA:193                 -             -             -             -             -             -             -             -             -             -             -             -             -             -             2             -             -             -
+  case_0343    OMIM:600373,ORPHA:1458                -             -             -             -             -             -             -             -             -             -             -             -             -             -             9             -             -             -
+  case_0344    OMIM:191100                           2             -             -             3             -             -             -             -             -             8             -             -             -             1             -             6             5             6
+  case_0345    OMIM:617452,ORPHA:505237              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0346    OMIM:616975                           -             -             -             -             -             -             -             -             -             -             -             -             -             -             3             -             -             -
+  case_0347    OMIM:182290,ORPHA:819                 -             -             -             -             -             -             -             -             -             -             -             -             -             5             -             -             -             -
+  case_0348    OMIM:610031                           -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0349    OMIM:177170,ORPHA:750                 -             -             -             5             -             1             -             -             -             -             6             8             8             -             5             4             4             5
+  case_0350    OMIM:159550,ORPHA:2585                -             -             -             -             -             -             -             -             -             9             -             -             -             -             -             -             -             -
+  case_0351    CCRD:14.4,OMIM:604772,OR              6             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0352    OMIM:245200,ORPHA:487                 -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0353    OMIM:208920,ORPHA:1168                -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0354    OMIM:602522                           4             -             -             9             -             -             -             -             -             9            10             -             -             -             9             7             5             5
+  case_0355    OMIM:617425                           -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0356    OMIM:273900                           8             -             -             1             -             -             -             -             -             4             1             1             1             -             1             4             1             1
+  case_0357    OMIM:617560,ORPHA:527497              -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0358    CCRD:82.3,OMIM:257220,OR              -             -             -             3             3             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0359    OMIM:216400                           -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0360    OMIM:616900,ORPHA:488632              -             -             -             -             -             -             -             -             -             -             -             -             -             4             -             -             -             -
+  case_0361    OMIM:616900,ORPHA:488632              -             -             -             8             -             -             -             -             -             -             -             -             -             6             -             -             -             -
+  case_0362    OMIM:617232,ORPHA:480682              -             -             -             -             -             -             -             -             -             -             2             2             2             -             2             4             4             3
+  case_0363    OMIM:602398,ORPHA:35107               -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+  case_0364    OMIM:227645                           -             -             -             -             -             -             -             -             -             -             -             -             -             1             -             -             -             -
+  case_0365    OMIM:616900,ORPHA:488632              -             -             -             -             -             -             -             -             -             -             -             -             -             9             -             -             -             -
+  case_0366    OMIM:616900,ORPHA:488632              -             -             -             9             -             -             -             -             -             -             -             -             -             -             3             -             6            10
+  case_0367    OMIM:617560,ORPHA:527497              -             -             -             -             -             -             -             -             -             -             -             -             -             -             2             -             -             -
+  case_0368    OMIM:119600,ORPHA:1452                -             -             -             2             -             -             -             -             -             -             1             7             7             -             1             1             1             1
+  case_0369    OMIM:252650,ORPHA:578                 -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -             -
+================================================================================
