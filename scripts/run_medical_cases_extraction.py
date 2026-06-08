@@ -11,19 +11,19 @@ Output: outputs/evaluation/medical_cases/
 
 Usage:
     # Run with fast methods only
-    python run_medical_cases_extraction.py --methods dictionary fast_hpo_cr
+    python scripts/run_medical_cases_extraction.py --methods dictionary fast_hpo_cr
 
     # Test on first 10 cases with dictionary + fast_hpo_cr
-    python run_medical_cases_extraction.py --methods dictionary fast_hpo_cr --limit 10
+    python scripts/run_medical_cases_extraction.py --methods dictionary fast_hpo_cr --limit 10
 
     # Run all methods for first 10 cases
-    python run_medical_cases_extraction.py \
+    python scripts/run_medical_cases_extraction.py \
     --methods dictionary biomedical_ner fast_hpo_cr chatgpt phenobrain_api \
     --limit 10
 
     # Run chatgpt method for first 5 cases - hallucinations possible - from input
     # text it produces hpo labels and then we map to hpo ids with hpo_labels json.
-    python run_medical_cases_extraction.py --methods chatgpt --limit 5
+    python scripts/run_medical_cases_extraction.py --methods chatgpt --limit 5
 
 """
 
@@ -33,16 +33,11 @@ import sys
 import time
 from pathlib import Path
 
-PROJECT_ROOT = Path(__file__).resolve().parent
-SRC_DIR = PROJECT_ROOT / "src"
-if str(SRC_DIR) not in sys.path:
-    sys.path.insert(0, str(SRC_DIR))
-
 from shared.io import load_json, save_json
 from shared.paths import HPO_LABELS_PATH, OUTPUTS_DIR
-from shared.phenotype import build_patient_profile
+from hpo_extraction import build_patient_profile
 
-INPUT_PATH = PROJECT_ROOT / "test_data" / "medicalCases.json"
+INPUT_PATH = Path("test_data") / "medicalCases.json"
 OUTPUT_DIR = OUTPUTS_DIR / "evaluation" / "medical_cases"
 
 
