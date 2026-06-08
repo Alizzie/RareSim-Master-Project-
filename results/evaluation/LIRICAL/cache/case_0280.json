@@ -13,7 +13,7 @@
     "OMIM:159550",
     "ORPHA:2585"
   ],
-  "total_elapsed_seconds": 74.205,
+  "total_elapsed_seconds": 250.128,
   "method_elapsed_seconds": {
     "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext": 0.101,
     "emilyalsentzer/Bio_ClinicalBERT": 0.092,
@@ -26,7 +26,10 @@
     "set_jaccard": 2.552,
     "set_dice": 2.552,
     "set_overlap": 2.552,
-    "mistralai/Mistral-7B-Instruct-v0.2": 48.65
+    "mistralai/Mistral-7B-Instruct-v0.2": 48.65,
+    "semantic_resnik_bma": 58.641,
+    "semantic_lin_bma": 58.641,
+    "semantic_jiang_conrath_bma": 58.641
   },
   "methods_run": [
     "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
@@ -35,6 +38,9 @@
     "hpo2vec",
     "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
     "mistralai/Mistral-7B-Instruct-v0.2",
+    "semantic_jiang_conrath_bma",
+    "semantic_lin_bma",
+    "semantic_resnik_bma",
     "sentence-transformers/all-MiniLM-L6-v2",
     "set_cosine",
     "set_dice",
@@ -3932,6 +3938,3102 @@
         "validated_against_profiles": false,
         "model": "mistralai/Mistral-7B-Instruct-v0.2",
         "method": "llm_retrieval"
+      }
+    ],
+    "semantic_resnik_bma": [
+      {
+        "rank": 1,
+        "disease_id": "MONDO:0032865",
+        "label": "pulmonary fibrosis and/or bone marrow failure, telomere-related, 5",
+        "method_name": "semantic_resnik_bma",
+        "score": 3.175967467674023,
+        "explanation": {
+          "method": "semantic_resnik_bma",
+          "patient_to_disease_avg": 3.1227461221589765,
+          "disease_to_patient_avg": 3.229188813189069,
+          "ic_threshold_used": 1.5,
+          "n_patient_terms_after_ic_filter": 16,
+          "n_disease_terms_after_ic_filter": 14,
+          "top_patient_to_disease_matches": [
+            {
+              "source_term": "HP:0031413",
+              "best_target_term": "HP:0031413",
+              "mica_term": "HP:0031413",
+              "score": 6.574428091504997
+            },
+            {
+              "source_term": "HP:0031412",
+              "best_target_term": "HP:0031412",
+              "mica_term": "HP:0031411",
+              "score": 6.539336771693727
+            },
+            {
+              "source_term": "HP:0031411",
+              "best_target_term": "HP:0031412",
+              "mica_term": "HP:0031411",
+              "score": 6.539336771693727
+            },
+            {
+              "source_term": "HP:0005528",
+              "best_target_term": "HP:0005528",
+              "mica_term": "HP:0005528",
+              "score": 5.28165978839593
+            },
+            {
+              "source_term": "HP:0025461",
+              "best_target_term": "HP:0031412",
+              "mica_term": "HP:0025461",
+              "score": 4.902686295734742
+            }
+          ],
+          "top_disease_to_patient_matches": [
+            {
+              "source_term": "HP:0031413",
+              "best_target_term": "HP:0031413",
+              "mica_term": "HP:0031413",
+              "score": 6.574428091504997
+            },
+            {
+              "source_term": "HP:0031412",
+              "best_target_term": "HP:0031412",
+              "mica_term": "HP:0031411",
+              "score": 6.539336771693727
+            },
+            {
+              "source_term": "HP:0031411",
+              "best_target_term": "HP:0031412",
+              "mica_term": "HP:0031411",
+              "score": 6.539336771693727
+            },
+            {
+              "source_term": "HP:0005528",
+              "best_target_term": "HP:0005528",
+              "mica_term": "HP:0005528",
+              "score": 5.28165978839593
+            },
+            {
+              "source_term": "HP:0025461",
+              "best_target_term": "HP:0031412",
+              "mica_term": "HP:0025461",
+              "score": 4.902686295734742
+            }
+          ],
+          "top_shared_terms": [
+            "HP:0001871",
+            "HP:0005528",
+            "HP:0005561",
+            "HP:0012145",
+            "HP:0025354",
+            "HP:0025461",
+            "HP:0031411",
+            "HP:0031412",
+            "HP:0031413"
+          ],
+          "n_shared_terms": 9,
+          "patient_coverage": 0.5625,
+          "disease_coverage": 0.6428571428571429,
+          "n_patient_terms": 16,
+          "n_disease_terms": 14,
+          "n_union_terms": 21,
+          "unmatched_patient_terms": [
+            "HP:0000119",
+            "HP:0001507",
+            "HP:0001510",
+            "HP:0001876",
+            "HP:0002715",
+            "HP:0002721",
+            "HP:0010978"
+          ],
+          "n_unmatched_patient_terms": 7
+        }
+      },
+      {
+        "rank": 2,
+        "disease_id": "OMIM:618674",
+        "label": "Pulmonary fibrosis and/or bone marrow failure, telomere-related, 5",
+        "method_name": "semantic_resnik_bma",
+        "score": 3.0815118803247383,
+        "explanation": {
+          "method": "semantic_resnik_bma",
+          "patient_to_disease_avg": 3.1227461221589765,
+          "disease_to_patient_avg": 3.0402776384904997,
+          "ic_threshold_used": 1.5,
+          "n_patient_terms_after_ic_filter": 16,
+          "n_disease_terms_after_ic_filter": 15,
+          "top_patient_to_disease_matches": [
+            {
+              "source_term": "HP:0031413",
+              "best_target_term": "HP:0031413",
+              "mica_term": "HP:0031413",
+              "score": 6.574428091504997
+            },
+            {
+              "source_term": "HP:0031412",
+              "best_target_term": "HP:0031412",
+              "mica_term": "HP:0031411",
+              "score": 6.539336771693727
+            },
+            {
+              "source_term": "HP:0031411",
+              "best_target_term": "HP:0031412",
+              "mica_term": "HP:0031411",
+              "score": 6.539336771693727
+            },
+            {
+              "source_term": "HP:0005528",
+              "best_target_term": "HP:0005528",
+              "mica_term": "HP:0005528",
+              "score": 5.28165978839593
+            },
+            {
+              "source_term": "HP:0025461",
+              "best_target_term": "HP:0025461",
+              "mica_term": "HP:0025461",
+              "score": 4.902686295734742
+            }
+          ],
+          "top_disease_to_patient_matches": [
+            {
+              "source_term": "HP:0031413",
+              "best_target_term": "HP:0031413",
+              "mica_term": "HP:0031413",
+              "score": 6.574428091504997
+            },
+            {
+              "source_term": "HP:0031412",
+              "best_target_term": "HP:0031412",
+              "mica_term": "HP:0031411",
+              "score": 6.539336771693727
+            },
+            {
+              "source_term": "HP:0031411",
+              "best_target_term": "HP:0031412",
+              "mica_term": "HP:0031411",
+              "score": 6.539336771693727
+            },
+            {
+              "source_term": "HP:0005528",
+              "best_target_term": "HP:0005528",
+              "mica_term": "HP:0005528",
+              "score": 5.28165978839593
+            },
+            {
+              "source_term": "HP:0025461",
+              "best_target_term": "HP:0031412",
+              "mica_term": "HP:0025461",
+              "score": 4.902686295734742
+            }
+          ],
+          "top_shared_terms": [
+            "HP:0001871",
+            "HP:0005528",
+            "HP:0005561",
+            "HP:0012145",
+            "HP:0025354",
+            "HP:0025461",
+            "HP:0031411",
+            "HP:0031412",
+            "HP:0031413"
+          ],
+          "n_shared_terms": 9,
+          "patient_coverage": 0.5625,
+          "disease_coverage": 0.6,
+          "n_patient_terms": 16,
+          "n_disease_terms": 15,
+          "n_union_terms": 22,
+          "unmatched_patient_terms": [
+            "HP:0000119",
+            "HP:0001507",
+            "HP:0001510",
+            "HP:0001876",
+            "HP:0002715",
+            "HP:0002721",
+            "HP:0010978"
+          ],
+          "n_unmatched_patient_terms": 7
+        }
+      },
+      {
+        "rank": 3,
+        "disease_id": "ORPHA:182040",
+        "label": "Aplastic anemia",
+        "method_name": "semantic_resnik_bma",
+        "score": 2.883434319773188,
+        "explanation": {
+          "method": "semantic_resnik_bma",
+          "patient_to_disease_avg": 1.5607615052257309,
+          "disease_to_patient_avg": 4.2061071343206455,
+          "ic_threshold_used": 1.5,
+          "n_patient_terms_after_ic_filter": 16,
+          "n_disease_terms_after_ic_filter": 6,
+          "top_patient_to_disease_matches": [
+            {
+              "source_term": "HP:0005528",
+              "best_target_term": "HP:0005528",
+              "mica_term": "HP:0005528",
+              "score": 5.28165978839593
+            },
+            {
+              "source_term": "HP:0001876",
+              "best_target_term": "HP:0001915",
+              "mica_term": "HP:0001876",
+              "score": 4.724849051388116
+            },
+            {
+              "source_term": "HP:0012145",
+              "best_target_term": "HP:0005528",
+              "mica_term": "HP:0012145",
+              "score": 4.3498045399806635
+            },
+            {
+              "source_term": "HP:0005561",
+              "best_target_term": "HP:0005561",
+              "mica_term": "HP:0005561",
+              "score": 4.110574850914829
+            },
+            {
+              "source_term": "HP:0001871",
+              "best_target_term": "HP:0005561",
+              "mica_term": "HP:0001871",
+              "score": 2.04490552385622
+            }
+          ],
+          "top_disease_to_patient_matches": [
+            {
+              "source_term": "HP:0005528",
+              "best_target_term": "HP:0005528",
+              "mica_term": "HP:0005528",
+              "score": 5.28165978839593
+            },
+            {
+              "source_term": "HP:0001915",
+              "best_target_term": "HP:0001876",
+              "mica_term": "HP:0001876",
+              "score": 4.724849051388116
+            },
+            {
+              "source_term": "HP:0001876",
+              "best_target_term": "HP:0001876",
+              "mica_term": "HP:0001876",
+              "score": 4.724849051388116
+            },
+            {
+              "source_term": "HP:0012145",
+              "best_target_term": "HP:0005528",
+              "mica_term": "HP:0012145",
+              "score": 4.3498045399806635
+            },
+            {
+              "source_term": "HP:0005561",
+              "best_target_term": "HP:0005561",
+              "mica_term": "HP:0005561",
+              "score": 4.110574850914829
+            }
+          ],
+          "top_shared_terms": [
+            "HP:0001871",
+            "HP:0001876",
+            "HP:0005528",
+            "HP:0005561",
+            "HP:0012145"
+          ],
+          "n_shared_terms": 5,
+          "patient_coverage": 0.3125,
+          "disease_coverage": 0.8333333333333334,
+          "n_patient_terms": 16,
+          "n_disease_terms": 6,
+          "n_union_terms": 17,
+          "unmatched_patient_terms": [
+            "HP:0000119",
+            "HP:0001507",
+            "HP:0001510",
+            "HP:0002715",
+            "HP:0002721",
+            "HP:0010978",
+            "HP:0025354",
+            "HP:0025461",
+            "HP:0031411",
+            "HP:0031412"
+          ],
+          "n_unmatched_patient_terms": 11
+        }
+      },
+      {
+        "rank": 4,
+        "disease_id": "MONDO:0015909",
+        "label": "aplastic anemia",
+        "method_name": "semantic_resnik_bma",
+        "score": 2.883434319773188,
+        "explanation": {
+          "method": "semantic_resnik_bma",
+          "patient_to_disease_avg": 1.5607615052257309,
+          "disease_to_patient_avg": 4.2061071343206455,
+          "ic_threshold_used": 1.5,
+          "n_patient_terms_after_ic_filter": 16,
+          "n_disease_terms_after_ic_filter": 6,
+          "top_patient_to_disease_matches": [
+            {
+              "source_term": "HP:0005528",
+              "best_target_term": "HP:0005528",
+              "mica_term": "HP:0005528",
+              "score": 5.28165978839593
+            },
+            {
+              "source_term": "HP:0001876",
+              "best_target_term": "HP:0001915",
+              "mica_term": "HP:0001876",
+              "score": 4.724849051388116
+            },
+            {
+              "source_term": "HP:0012145",
+              "best_target_term": "HP:0005528",
+              "mica_term": "HP:0012145",
+              "score": 4.3498045399806635
+            },
+            {
+              "source_term": "HP:0005561",
+              "best_target_term": "HP:0005561",
+              "mica_term": "HP:0005561",
+              "score": 4.110574850914829
+            },
+            {
+              "source_term": "HP:0001871",
+              "best_target_term": "HP:0005561",
+              "mica_term": "HP:0001871",
+              "score": 2.04490552385622
+            }
+          ],
+          "top_disease_to_patient_matches": [
+            {
+              "source_term": "HP:0005528",
+              "best_target_term": "HP:0005528",
+              "mica_term": "HP:0005528",
+              "score": 5.28165978839593
+            },
+            {
+              "source_term": "HP:0001915",
+              "best_target_term": "HP:0001876",
+              "mica_term": "HP:0001876",
+              "score": 4.724849051388116
+            },
+            {
+              "source_term": "HP:0001876",
+              "best_target_term": "HP:0001876",
+              "mica_term": "HP:0001876",
+              "score": 4.724849051388116
+            },
+            {
+              "source_term": "HP:0012145",
+              "best_target_term": "HP:0005528",
+              "mica_term": "HP:0012145",
+              "score": 4.3498045399806635
+            },
+            {
+              "source_term": "HP:0005561",
+              "best_target_term": "HP:0005561",
+              "mica_term": "HP:0005561",
+              "score": 4.110574850914829
+            }
+          ],
+          "top_shared_terms": [
+            "HP:0001871",
+            "HP:0001876",
+            "HP:0005528",
+            "HP:0005561",
+            "HP:0012145"
+          ],
+          "n_shared_terms": 5,
+          "patient_coverage": 0.3125,
+          "disease_coverage": 0.8333333333333334,
+          "n_patient_terms": 16,
+          "n_disease_terms": 6,
+          "n_union_terms": 17,
+          "unmatched_patient_terms": [
+            "HP:0000119",
+            "HP:0001507",
+            "HP:0001510",
+            "HP:0002715",
+            "HP:0002721",
+            "HP:0010978",
+            "HP:0025354",
+            "HP:0025461",
+            "HP:0031411",
+            "HP:0031412"
+          ],
+          "n_unmatched_patient_terms": 11
+        }
+      },
+      {
+        "rank": 5,
+        "disease_id": "OMIM:515000",
+        "label": "Chloramphenicol toxicity",
+        "method_name": "semantic_resnik_bma",
+        "score": 2.746758577852683,
+        "explanation": {
+          "method": "semantic_resnik_bma",
+          "patient_to_disease_avg": 1.5025205521997766,
+          "disease_to_patient_avg": 3.9909966035055886,
+          "ic_threshold_used": 1.5,
+          "n_patient_terms_after_ic_filter": 16,
+          "n_disease_terms_after_ic_filter": 5,
+          "top_patient_to_disease_matches": [
+            {
+              "source_term": "HP:0001876",
+              "best_target_term": "HP:0001915",
+              "mica_term": "HP:0001876",
+              "score": 4.724849051388116
+            },
+            {
+              "source_term": "HP:0005528",
+              "best_target_term": "HP:0001915",
+              "mica_term": "HP:0012145",
+              "score": 4.3498045399806635
+            },
+            {
+              "source_term": "HP:0012145",
+              "best_target_term": "HP:0001915",
+              "mica_term": "HP:0012145",
+              "score": 4.3498045399806635
+            },
+            {
+              "source_term": "HP:0005561",
+              "best_target_term": "HP:0005561",
+              "mica_term": "HP:0005561",
+              "score": 4.110574850914829
+            },
+            {
+              "source_term": "HP:0001871",
+              "best_target_term": "HP:0005561",
+              "mica_term": "HP:0001871",
+              "score": 2.04490552385622
+            }
+          ],
+          "top_disease_to_patient_matches": [
+            {
+              "source_term": "HP:0001915",
+              "best_target_term": "HP:0001876",
+              "mica_term": "HP:0001876",
+              "score": 4.724849051388116
+            },
+            {
+              "source_term": "HP:0001876",
+              "best_target_term": "HP:0001876",
+              "mica_term": "HP:0001876",
+              "score": 4.724849051388116
+            },
+            {
+              "source_term": "HP:0012145",
+              "best_target_term": "HP:0005528",
+              "mica_term": "HP:0012145",
+              "score": 4.3498045399806635
+            },
+            {
+              "source_term": "HP:0005561",
+              "best_target_term": "HP:0005561",
+              "mica_term": "HP:0005561",
+              "score": 4.110574850914829
+            },
+            {
+              "source_term": "HP:0001871",
+              "best_target_term": "HP:0005561",
+              "mica_term": "HP:0001871",
+              "score": 2.04490552385622
+            }
+          ],
+          "top_shared_terms": [
+            "HP:0001871",
+            "HP:0001876",
+            "HP:0005561",
+            "HP:0012145"
+          ],
+          "n_shared_terms": 4,
+          "patient_coverage": 0.25,
+          "disease_coverage": 0.8,
+          "n_patient_terms": 16,
+          "n_disease_terms": 5,
+          "n_union_terms": 17,
+          "unmatched_patient_terms": [
+            "HP:0000119",
+            "HP:0001507",
+            "HP:0001510",
+            "HP:0002715",
+            "HP:0002721",
+            "HP:0005528",
+            "HP:0010978",
+            "HP:0025354",
+            "HP:0025461",
+            "HP:0031411"
+          ],
+          "n_unmatched_patient_terms": 12
+        }
+      },
+      {
+        "rank": 6,
+        "disease_id": "MONDO:0010784",
+        "label": "chloramphenicol toxicity",
+        "method_name": "semantic_resnik_bma",
+        "score": 2.746758577852683,
+        "explanation": {
+          "method": "semantic_resnik_bma",
+          "patient_to_disease_avg": 1.5025205521997766,
+          "disease_to_patient_avg": 3.9909966035055886,
+          "ic_threshold_used": 1.5,
+          "n_patient_terms_after_ic_filter": 16,
+          "n_disease_terms_after_ic_filter": 5,
+          "top_patient_to_disease_matches": [
+            {
+              "source_term": "HP:0001876",
+              "best_target_term": "HP:0001915",
+              "mica_term": "HP:0001876",
+              "score": 4.724849051388116
+            },
+            {
+              "source_term": "HP:0005528",
+              "best_target_term": "HP:0001915",
+              "mica_term": "HP:0012145",
+              "score": 4.3498045399806635
+            },
+            {
+              "source_term": "HP:0012145",
+              "best_target_term": "HP:0001915",
+              "mica_term": "HP:0012145",
+              "score": 4.3498045399806635
+            },
+            {
+              "source_term": "HP:0005561",
+              "best_target_term": "HP:0005561",
+              "mica_term": "HP:0005561",
+              "score": 4.110574850914829
+            },
+            {
+              "source_term": "HP:0001871",
+              "best_target_term": "HP:0005561",
+              "mica_term": "HP:0001871",
+              "score": 2.04490552385622
+            }
+          ],
+          "top_disease_to_patient_matches": [
+            {
+              "source_term": "HP:0001915",
+              "best_target_term": "HP:0001876",
+              "mica_term": "HP:0001876",
+              "score": 4.724849051388116
+            },
+            {
+              "source_term": "HP:0001876",
+              "best_target_term": "HP:0001876",
+              "mica_term": "HP:0001876",
+              "score": 4.724849051388116
+            },
+            {
+              "source_term": "HP:0012145",
+              "best_target_term": "HP:0005528",
+              "mica_term": "HP:0012145",
+              "score": 4.3498045399806635
+            },
+            {
+              "source_term": "HP:0005561",
+              "best_target_term": "HP:0005561",
+              "mica_term": "HP:0005561",
+              "score": 4.110574850914829
+            },
+            {
+              "source_term": "HP:0001871",
+              "best_target_term": "HP:0005561",
+              "mica_term": "HP:0001871",
+              "score": 2.04490552385622
+            }
+          ],
+          "top_shared_terms": [
+            "HP:0001871",
+            "HP:0001876",
+            "HP:0005561",
+            "HP:0012145"
+          ],
+          "n_shared_terms": 4,
+          "patient_coverage": 0.25,
+          "disease_coverage": 0.8,
+          "n_patient_terms": 16,
+          "n_disease_terms": 5,
+          "n_union_terms": 17,
+          "unmatched_patient_terms": [
+            "HP:0000119",
+            "HP:0001507",
+            "HP:0001510",
+            "HP:0002715",
+            "HP:0002721",
+            "HP:0005528",
+            "HP:0010978",
+            "HP:0025354",
+            "HP:0025461",
+            "HP:0031411"
+          ],
+          "n_unmatched_patient_terms": 12
+        }
+      },
+      {
+        "rank": 7,
+        "disease_id": "ORPHA:169079",
+        "label": "Cernunnos-XLF deficiency",
+        "method_name": "semantic_resnik_bma",
+        "score": 2.6376059955625575,
+        "explanation": {
+          "method": "semantic_resnik_bma",
+          "patient_to_disease_avg": 3.72203286214756,
+          "disease_to_patient_avg": 1.553179128977555,
+          "ic_threshold_used": 1.5,
+          "n_patient_terms_after_ic_filter": 16,
+          "n_disease_terms_after_ic_filter": 201,
+          "top_patient_to_disease_matches": [
+            {
+              "source_term": "HP:0031413",
+              "best_target_term": "HP:0031413",
+              "mica_term": "HP:0031413",
+              "score": 6.574428091504997
+            },
+            {
+              "source_term": "HP:0031412",
+              "best_target_term": "HP:0031412",
+              "mica_term": "HP:0031411",
+              "score": 6.539336771693727
+            },
+            {
+              "source_term": "HP:0031411",
+              "best_target_term": "HP:0031412",
+              "mica_term": "HP:0031411",
+              "score": 6.539336771693727
+            },
+            {
+              "source_term": "HP:0005528",
+              "best_target_term": "HP:0005528",
+              "mica_term": "HP:0005528",
+              "score": 5.28165978839593
+            },
+            {
+              "source_term": "HP:0025461",
+              "best_target_term": "HP:0031412",
+              "mica_term": "HP:0025461",
+              "score": 4.902686295734742
+            }
+          ],
+          "top_disease_to_patient_matches": [
+            {
+              "source_term": "HP:0031413",
+              "best_target_term": "HP:0031413",
+              "mica_term": "HP:0031413",
+              "score": 6.574428091504997
+            },
+            {
+              "source_term": "HP:0031412",
+              "best_target_term": "HP:0031412",
+              "mica_term": "HP:0031411",
+              "score": 6.539336771693727
+            },
+            {
+              "source_term": "HP:0031411",
+              "best_target_term": "HP:0031412",
+              "mica_term": "HP:0031411",
+              "score": 6.539336771693727
+            },
+            {
+              "source_term": "HP:0005528",
+              "best_target_term": "HP:0005528",
+              "mica_term": "HP:0005528",
+              "score": 5.28165978839593
+            },
+            {
+              "source_term": "HP:0025461",
+              "best_target_term": "HP:0031412",
+              "mica_term": "HP:0025461",
+              "score": 4.902686295734742
+            }
+          ],
+          "top_shared_terms": [
+            "HP:0001507",
+            "HP:0001510",
+            "HP:0001871",
+            "HP:0001876",
+            "HP:0002715",
+            "HP:0002721",
+            "HP:0005528",
+            "HP:0005561",
+            "HP:0010978",
+            "HP:0012145"
+          ],
+          "n_shared_terms": 15,
+          "patient_coverage": 0.9375,
+          "disease_coverage": 0.07462686567164178,
+          "n_patient_terms": 16,
+          "n_disease_terms": 201,
+          "n_union_terms": 202,
+          "unmatched_patient_terms": [
+            "HP:0000119"
+          ],
+          "n_unmatched_patient_terms": 1
+        }
+      },
+      {
+        "rank": 8,
+        "disease_id": "MONDO:0030690",
+        "label": "pulmonary fibrosis and/or bone marrow failure, telomere-related, 6",
+        "method_name": "semantic_resnik_bma",
+        "score": 2.5719930151037076,
+        "explanation": {
+          "method": "semantic_resnik_bma",
+          "patient_to_disease_avg": 3.4122976300409062,
+          "disease_to_patient_avg": 1.7316884001665092,
+          "ic_threshold_used": 1.5,
+          "n_patient_terms_after_ic_filter": 16,
+          "n_disease_terms_after_ic_filter": 61,
+          "top_patient_to_disease_matches": [
+            {
+              "source_term": "HP:0031413",
+              "best_target_term": "HP:0031413",
+              "mica_term": "HP:0031413",
+              "score": 6.574428091504997
+            },
+            {
+              "source_term": "HP:0031412",
+              "best_target_term": "HP:0031411",
+              "mica_term": "HP:0031411",
+              "score": 6.539336771693727
+            },
+            {
+              "source_term": "HP:0031411",
+              "best_target_term": "HP:0031411",
+              "mica_term": "HP:0031411",
+              "score": 6.539336771693727
+            },
+            {
+              "source_term": "HP:0005528",
+              "best_target_term": "HP:0005528",
+              "mica_term": "HP:0005528",
+              "score": 5.28165978839593
+            },
+            {
+              "source_term": "HP:0025461",
+              "best_target_term": "HP:0031411",
+              "mica_term": "HP:0025461",
+              "score": 4.902686295734742
+            }
+          ],
+          "top_disease_to_patient_matches": [
+            {
+              "source_term": "HP:0031413",
+              "best_target_term": "HP:0031413",
+              "mica_term": "HP:0031413",
+              "score": 6.574428091504997
+            },
+            {
+              "source_term": "HP:0031411",
+              "best_target_term": "HP:0031412",
+              "mica_term": "HP:0031411",
+              "score": 6.539336771693727
+            },
+            {
+              "source_term": "HP:0031412",
+              "best_target_term": "HP:0031412",
+              "mica_term": "HP:0031411",
+              "score": 6.539336771693727
+            },
+            {
+              "source_term": "HP:0005528",
+              "best_target_term": "HP:0005528",
+              "mica_term": "HP:0005528",
+              "score": 5.28165978839593
+            },
+            {
+              "source_term": "HP:0025461",
+              "best_target_term": "HP:0031412",
+              "mica_term": "HP:0025461",
+              "score": 4.902686295734742
+            }
+          ],
+          "top_shared_terms": [
+            "HP:0001871",
+            "HP:0001876",
+            "HP:0002715",
+            "HP:0005528",
+            "HP:0005561",
+            "HP:0010978",
+            "HP:0012145",
+            "HP:0025354",
+            "HP:0025461",
+            "HP:0031411"
+          ],
+          "n_shared_terms": 12,
+          "patient_coverage": 0.75,
+          "disease_coverage": 0.19672131147540983,
+          "n_patient_terms": 16,
+          "n_disease_terms": 61,
+          "n_union_terms": 65,
+          "unmatched_patient_terms": [
+            "HP:0000119",
+            "HP:0001507",
+            "HP:0001510",
+            "HP:0002721"
+          ],
+          "n_unmatched_patient_terms": 4
+        }
+      },
+      {
+        "rank": 9,
+        "disease_id": "MONDO:0013520",
+        "label": "dyskeratosis congenita, autosomal recessive 3",
+        "method_name": "semantic_resnik_bma",
+        "score": 2.531892389213713,
+        "explanation": {
+          "method": "semantic_resnik_bma",
+          "patient_to_disease_avg": 3.1461864041219423,
+          "disease_to_patient_avg": 1.917598374305483,
+          "ic_threshold_used": 1.5,
+          "n_patient_terms_after_ic_filter": 16,
+          "n_disease_terms_after_ic_filter": 29,
+          "top_patient_to_disease_matches": [
+            {
+              "source_term": "HP:0031413",
+              "best_target_term": "HP:0031413",
+              "mica_term": "HP:0031413",
+              "score": 6.574428091504997
+            },
+            {
+              "source_term": "HP:0031412",
+              "best_target_term": "HP:0031411",
+              "mica_term": "HP:0031411",
+              "score": 6.539336771693727
+            },
+            {
+              "source_term": "HP:0031411",
+              "best_target_term": "HP:0031411",
+              "mica_term": "HP:0031411",
+              "score": 6.539336771693727
+            },
+            {
+              "source_term": "HP:0005528",
+              "best_target_term": "HP:0005528",
+              "mica_term": "HP:0005528",
+              "score": 5.28165978839593
+            },
+            {
+              "source_term": "HP:0025461",
+              "best_target_term": "HP:0031411",
+              "mica_term": "HP:0025461",
+              "score": 4.902686295734742
+            }
+          ],
+          "top_disease_to_patient_matches": [
+            {
+              "source_term": "HP:0031413",
+              "best_target_term": "HP:0031413",
+              "mica_term": "HP:0031413",
+              "score": 6.574428091504997
+            },
+            {
+              "source_term": "HP:0031411",
+              "best_target_term": "HP:0031412",
+              "mica_term": "HP:0031411",
+              "score": 6.539336771693727
+            },
+            {
+              "source_term": "HP:0031412",
+              "best_target_term": "HP:0031412",
+              "mica_term": "HP:0031411",
+              "score": 6.539336771693727
+            },
+            {
+              "source_term": "HP:0005528",
+              "best_target_term": "HP:0005528",
+              "mica_term": "HP:0005528",
+              "score": 5.28165978839593
+            },
+            {
+              "source_term": "HP:0025461",
+              "best_target_term": "HP:0031412",
+              "mica_term": "HP:0025461",
+              "score": 4.902686295734742
+            }
+          ],
+          "top_shared_terms": [
+            "HP:0001871",
+            "HP:0001876",
+            "HP:0005528",
+            "HP:0005561",
+            "HP:0012145",
+            "HP:0025354",
+            "HP:0025461",
+            "HP:0031411",
+            "HP:0031412",
+            "HP:0031413"
+          ],
+          "n_shared_terms": 10,
+          "patient_coverage": 0.625,
+          "disease_coverage": 0.3448275862068966,
+          "n_patient_terms": 16,
+          "n_disease_terms": 29,
+          "n_union_terms": 35,
+          "unmatched_patient_terms": [
+            "HP:0000119",
+            "HP:0001507",
+            "HP:0001510",
+            "HP:0002715",
+            "HP:0002721",
+            "HP:0010978"
+          ],
+          "n_unmatched_patient_terms": 6
+        }
+      },
+      {
+        "rank": 10,
+        "disease_id": "MONDO:0957294",
+        "label": "pulmonary fibrosis and/or bone marrow failure syndrome, telomere-related, 9",
+        "method_name": "semantic_resnik_bma",
+        "score": 2.5065034159179955,
+        "explanation": {
+          "method": "semantic_resnik_bma",
+          "patient_to_disease_avg": 2.746115616892854,
+          "disease_to_patient_avg": 2.266891214943137,
+          "ic_threshold_used": 1.5,
+          "n_patient_terms_after_ic_filter": 16,
+          "n_disease_terms_after_ic_filter": 21,
+          "top_patient_to_disease_matches": [
+            {
+              "source_term": "HP:0031413",
+              "best_target_term": "HP:0031413",
+              "mica_term": "HP:0031413",
+              "score": 6.574428091504997
+            },
+            {
+              "source_term": "HP:0031412",
+              "best_target_term": "HP:0031411",
+              "mica_term": "HP:0031411",
+              "score": 6.539336771693727
+            },
+            {
+              "source_term": "HP:0031411",
+              "best_target_term": "HP:0031411",
+              "mica_term": "HP:0031411",
+              "score": 6.539336771693727
+            },
+            {
+              "source_term": "HP:0025461",
+              "best_target_term": "HP:0031411",
+              "mica_term": "HP:0025461",
+              "score": 4.902686295734742
+            },
+            {
+              "source_term": "HP:0025354",
+              "best_target_term": "HP:0031411",
+              "mica_term": "HP:0025354",
+              "score": 2.838460601292159
+            }
+          ],
+          "top_disease_to_patient_matches": [
+            {
+              "source_term": "HP:0031413",
+              "best_target_term": "HP:0031413",
+              "mica_term": "HP:0031413",
+              "score": 6.574428091504997
+            },
+            {
+              "source_term": "HP:0031411",
+              "best_target_term": "HP:0031412",
+              "mica_term": "HP:0031411",
+              "score": 6.539336771693727
+            },
+            {
+              "source_term": "HP:0031412",
+              "best_target_term": "HP:0031412",
+              "mica_term": "HP:0031411",
+              "score": 6.539336771693727
+            },
+            {
+              "source_term": "HP:0025461",
+              "best_target_term": "HP:0031412",
+              "mica_term": "HP:0025461",
+              "score": 4.902686295734742
+            },
+            {
+              "source_term": "HP:0025354",
+              "best_target_term": "HP:0025354",
+              "mica_term": "HP:0025354",
+              "score": 2.838460601292159
+            }
+          ],
+          "top_shared_terms": [
+            "HP:0001871",
+            "HP:0002715",
+            "HP:0025354",
+            "HP:0025461",
+            "HP:0031411",
+            "HP:0031412",
+            "HP:0031413"
+          ],
+          "n_shared_terms": 7,
+          "patient_coverage": 0.4375,
+          "disease_coverage": 0.3333333333333333,
+          "n_patient_terms": 16,
+          "n_disease_terms": 21,
+          "n_union_terms": 30,
+          "unmatched_patient_terms": [
+            "HP:0000119",
+            "HP:0001507",
+            "HP:0001510",
+            "HP:0001876",
+            "HP:0002721",
+            "HP:0005528",
+            "HP:0005561",
+            "HP:0010978",
+            "HP:0012145"
+          ],
+          "n_unmatched_patient_terms": 9
+        }
+      }
+    ],
+    "semantic_lin_bma": [
+      {
+        "rank": 1,
+        "disease_id": "MONDO:0009826",
+        "label": "obsolete PA polymorphism of alpha-2-globulin",
+        "method_name": "semantic_lin_bma",
+        "score": 0.7766619205082532,
+        "explanation": {
+          "method": "semantic_lin_bma",
+          "patient_to_disease_avg": 0.6474408894004406,
+          "disease_to_patient_avg": 0.9058829516160657,
+          "ic_threshold_used": 1.5,
+          "n_patient_terms_after_ic_filter": 16,
+          "n_disease_terms_after_ic_filter": 10,
+          "top_patient_to_disease_matches": [
+            {
+              "source_term": "HP:0025354",
+              "best_target_term": "HP:0025354",
+              "mica_term": "HP:0025354",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0001871",
+              "best_target_term": "HP:0001871",
+              "mica_term": "HP:0001871",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0002715",
+              "best_target_term": "HP:0002715",
+              "mica_term": "HP:0002715",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0010978",
+              "best_target_term": "HP:0010978",
+              "mica_term": "HP:0010978",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0025461",
+              "best_target_term": "HP:0025354",
+              "mica_term": "HP:0025354",
+              "score": 0.7333436864199827
+            }
+          ],
+          "top_disease_to_patient_matches": [
+            {
+              "source_term": "HP:0025354",
+              "best_target_term": "HP:0025354",
+              "mica_term": "HP:0025354",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0001871",
+              "best_target_term": "HP:0001871",
+              "mica_term": "HP:0001871",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0002715",
+              "best_target_term": "HP:0002715",
+              "mica_term": "HP:0002715",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0010978",
+              "best_target_term": "HP:0010978",
+              "mica_term": "HP:0010978",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0011017",
+              "best_target_term": "HP:0025354",
+              "mica_term": "HP:0025354",
+              "score": 0.9797460144051601
+            }
+          ],
+          "top_shared_terms": [
+            "HP:0001871",
+            "HP:0002715",
+            "HP:0010978",
+            "HP:0025354"
+          ],
+          "n_shared_terms": 4,
+          "patient_coverage": 0.25,
+          "disease_coverage": 0.4,
+          "n_patient_terms": 16,
+          "n_disease_terms": 10,
+          "n_union_terms": 22,
+          "unmatched_patient_terms": [
+            "HP:0000119",
+            "HP:0001507",
+            "HP:0001510",
+            "HP:0001876",
+            "HP:0002721",
+            "HP:0005528",
+            "HP:0005561",
+            "HP:0012145",
+            "HP:0025461",
+            "HP:0031411"
+          ],
+          "n_unmatched_patient_terms": 12
+        }
+      },
+      {
+        "rank": 2,
+        "disease_id": "MONDO:0044223",
+        "label": "obsolete radin blood group antigen",
+        "method_name": "semantic_lin_bma",
+        "score": 0.7766619205082532,
+        "explanation": {
+          "method": "semantic_lin_bma",
+          "patient_to_disease_avg": 0.6474408894004406,
+          "disease_to_patient_avg": 0.9058829516160657,
+          "ic_threshold_used": 1.5,
+          "n_patient_terms_after_ic_filter": 16,
+          "n_disease_terms_after_ic_filter": 10,
+          "top_patient_to_disease_matches": [
+            {
+              "source_term": "HP:0025354",
+              "best_target_term": "HP:0025354",
+              "mica_term": "HP:0025354",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0001871",
+              "best_target_term": "HP:0001871",
+              "mica_term": "HP:0001871",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0002715",
+              "best_target_term": "HP:0002715",
+              "mica_term": "HP:0002715",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0010978",
+              "best_target_term": "HP:0010978",
+              "mica_term": "HP:0010978",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0025461",
+              "best_target_term": "HP:0025354",
+              "mica_term": "HP:0025354",
+              "score": 0.7333436864199827
+            }
+          ],
+          "top_disease_to_patient_matches": [
+            {
+              "source_term": "HP:0025354",
+              "best_target_term": "HP:0025354",
+              "mica_term": "HP:0025354",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0001871",
+              "best_target_term": "HP:0001871",
+              "mica_term": "HP:0001871",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0002715",
+              "best_target_term": "HP:0002715",
+              "mica_term": "HP:0002715",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0010978",
+              "best_target_term": "HP:0010978",
+              "mica_term": "HP:0010978",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0011017",
+              "best_target_term": "HP:0025354",
+              "mica_term": "HP:0025354",
+              "score": 0.9797460144051601
+            }
+          ],
+          "top_shared_terms": [
+            "HP:0001871",
+            "HP:0002715",
+            "HP:0010978",
+            "HP:0025354"
+          ],
+          "n_shared_terms": 4,
+          "patient_coverage": 0.25,
+          "disease_coverage": 0.4,
+          "n_patient_terms": 16,
+          "n_disease_terms": 10,
+          "n_union_terms": 22,
+          "unmatched_patient_terms": [
+            "HP:0000119",
+            "HP:0001507",
+            "HP:0001510",
+            "HP:0001876",
+            "HP:0002721",
+            "HP:0005528",
+            "HP:0005561",
+            "HP:0012145",
+            "HP:0025461",
+            "HP:0031411"
+          ],
+          "n_unmatched_patient_terms": 12
+        }
+      },
+      {
+        "rank": 3,
+        "disease_id": "MONDO:0015517",
+        "label": "common variable immunodeficiency",
+        "method_name": "semantic_lin_bma",
+        "score": 0.7731216204693262,
+        "explanation": {
+          "method": "semantic_lin_bma",
+          "patient_to_disease_avg": 0.6474408894004406,
+          "disease_to_patient_avg": 0.8988023515382118,
+          "ic_threshold_used": 1.5,
+          "n_patient_terms_after_ic_filter": 16,
+          "n_disease_terms_after_ic_filter": 11,
+          "top_patient_to_disease_matches": [
+            {
+              "source_term": "HP:0025354",
+              "best_target_term": "HP:0025354",
+              "mica_term": "HP:0025354",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0001871",
+              "best_target_term": "HP:0001871",
+              "mica_term": "HP:0001871",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0002715",
+              "best_target_term": "HP:0002715",
+              "mica_term": "HP:0002715",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0010978",
+              "best_target_term": "HP:0010978",
+              "mica_term": "HP:0010978",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0025461",
+              "best_target_term": "HP:0025354",
+              "mica_term": "HP:0025354",
+              "score": 0.7333436864199827
+            }
+          ],
+          "top_disease_to_patient_matches": [
+            {
+              "source_term": "HP:0025354",
+              "best_target_term": "HP:0025354",
+              "mica_term": "HP:0025354",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0001871",
+              "best_target_term": "HP:0001871",
+              "mica_term": "HP:0001871",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0002715",
+              "best_target_term": "HP:0002715",
+              "mica_term": "HP:0002715",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0010978",
+              "best_target_term": "HP:0010978",
+              "mica_term": "HP:0010978",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0011017",
+              "best_target_term": "HP:0025354",
+              "mica_term": "HP:0025354",
+              "score": 0.9797460144051601
+            }
+          ],
+          "top_shared_terms": [
+            "HP:0001871",
+            "HP:0002715",
+            "HP:0010978",
+            "HP:0025354"
+          ],
+          "n_shared_terms": 4,
+          "patient_coverage": 0.25,
+          "disease_coverage": 0.36363636363636365,
+          "n_patient_terms": 16,
+          "n_disease_terms": 11,
+          "n_union_terms": 23,
+          "unmatched_patient_terms": [
+            "HP:0000119",
+            "HP:0001507",
+            "HP:0001510",
+            "HP:0001876",
+            "HP:0002721",
+            "HP:0005528",
+            "HP:0005561",
+            "HP:0012145",
+            "HP:0025461",
+            "HP:0031411"
+          ],
+          "n_unmatched_patient_terms": 12
+        }
+      },
+      {
+        "rank": 4,
+        "disease_id": "MONDO:0007814",
+        "label": "immune deficiency, familial variable",
+        "method_name": "semantic_lin_bma",
+        "score": 0.7690781723817379,
+        "explanation": {
+          "method": "semantic_lin_bma",
+          "patient_to_disease_avg": 0.6715582464876872,
+          "disease_to_patient_avg": 0.8665980982757886,
+          "ic_threshold_used": 1.5,
+          "n_patient_terms_after_ic_filter": 16,
+          "n_disease_terms_after_ic_filter": 18,
+          "top_patient_to_disease_matches": [
+            {
+              "source_term": "HP:0025354",
+              "best_target_term": "HP:0025354",
+              "mica_term": "HP:0025354",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0002721",
+              "best_target_term": "HP:0002721",
+              "mica_term": "HP:0002721",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0001871",
+              "best_target_term": "HP:0001871",
+              "mica_term": "HP:0001871",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0002715",
+              "best_target_term": "HP:0002715",
+              "mica_term": "HP:0002715",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0010978",
+              "best_target_term": "HP:0010978",
+              "mica_term": "HP:0010978",
+              "score": 1.0
+            }
+          ],
+          "top_disease_to_patient_matches": [
+            {
+              "source_term": "HP:0025354",
+              "best_target_term": "HP:0025354",
+              "mica_term": "HP:0025354",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0002721",
+              "best_target_term": "HP:0002721",
+              "mica_term": "HP:0002721",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0001871",
+              "best_target_term": "HP:0001871",
+              "mica_term": "HP:0001871",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0002715",
+              "best_target_term": "HP:0002715",
+              "mica_term": "HP:0002715",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0010978",
+              "best_target_term": "HP:0010978",
+              "mica_term": "HP:0010978",
+              "score": 1.0
+            }
+          ],
+          "top_shared_terms": [
+            "HP:0001871",
+            "HP:0002715",
+            "HP:0002721",
+            "HP:0010978",
+            "HP:0025354"
+          ],
+          "n_shared_terms": 5,
+          "patient_coverage": 0.3125,
+          "disease_coverage": 0.2777777777777778,
+          "n_patient_terms": 16,
+          "n_disease_terms": 18,
+          "n_union_terms": 29,
+          "unmatched_patient_terms": [
+            "HP:0000119",
+            "HP:0001507",
+            "HP:0001510",
+            "HP:0001876",
+            "HP:0005528",
+            "HP:0005561",
+            "HP:0012145",
+            "HP:0025461",
+            "HP:0031411",
+            "HP:0031412"
+          ],
+          "n_unmatched_patient_terms": 11
+        }
+      },
+      {
+        "rank": 5,
+        "disease_id": "MONDO:0008835",
+        "label": "asthma, short stature, and elevated IgA",
+        "method_name": "semantic_lin_bma",
+        "score": 0.7671685324746484,
+        "explanation": {
+          "method": "semantic_lin_bma",
+          "patient_to_disease_avg": 0.7434897690160268,
+          "disease_to_patient_avg": 0.79084729593327,
+          "ic_threshold_used": 1.5,
+          "n_patient_terms_after_ic_filter": 16,
+          "n_disease_terms_after_ic_filter": 21,
+          "top_patient_to_disease_matches": [
+            {
+              "source_term": "HP:0025354",
+              "best_target_term": "HP:0025354",
+              "mica_term": "HP:0025354",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0001507",
+              "best_target_term": "HP:0001507",
+              "mica_term": "HP:0001507",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0001871",
+              "best_target_term": "HP:0001871",
+              "mica_term": "HP:0001871",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0002715",
+              "best_target_term": "HP:0002715",
+              "mica_term": "HP:0002715",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0010978",
+              "best_target_term": "HP:0010978",
+              "mica_term": "HP:0010978",
+              "score": 1.0
+            }
+          ],
+          "top_disease_to_patient_matches": [
+            {
+              "source_term": "HP:0001871",
+              "best_target_term": "HP:0001871",
+              "mica_term": "HP:0001871",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0001507",
+              "best_target_term": "HP:0001507",
+              "mica_term": "HP:0001507",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0010978",
+              "best_target_term": "HP:0010978",
+              "mica_term": "HP:0010978",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0001510",
+              "best_target_term": "HP:0001510",
+              "mica_term": "HP:0001510",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0002715",
+              "best_target_term": "HP:0002715",
+              "mica_term": "HP:0002715",
+              "score": 1.0
+            }
+          ],
+          "top_shared_terms": [
+            "HP:0001507",
+            "HP:0001510",
+            "HP:0001871",
+            "HP:0002715",
+            "HP:0010978",
+            "HP:0025354"
+          ],
+          "n_shared_terms": 6,
+          "patient_coverage": 0.375,
+          "disease_coverage": 0.2857142857142857,
+          "n_patient_terms": 16,
+          "n_disease_terms": 21,
+          "n_union_terms": 31,
+          "unmatched_patient_terms": [
+            "HP:0000119",
+            "HP:0001876",
+            "HP:0002721",
+            "HP:0005528",
+            "HP:0005561",
+            "HP:0012145",
+            "HP:0025461",
+            "HP:0031411",
+            "HP:0031412",
+            "HP:0031413"
+          ],
+          "n_unmatched_patient_terms": 10
+        }
+      },
+      {
+        "rank": 6,
+        "disease_id": "OMIM:208600",
+        "label": "Asthma, short stature, and elevated iga",
+        "method_name": "semantic_lin_bma",
+        "score": 0.7544282559653941,
+        "explanation": {
+          "method": "semantic_lin_bma",
+          "patient_to_disease_avg": 0.7434897690160268,
+          "disease_to_patient_avg": 0.7653667429147614,
+          "ic_threshold_used": 1.5,
+          "n_patient_terms_after_ic_filter": 16,
+          "n_disease_terms_after_ic_filter": 22,
+          "top_patient_to_disease_matches": [
+            {
+              "source_term": "HP:0025354",
+              "best_target_term": "HP:0025354",
+              "mica_term": "HP:0025354",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0001507",
+              "best_target_term": "HP:0001507",
+              "mica_term": "HP:0001507",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0001871",
+              "best_target_term": "HP:0001871",
+              "mica_term": "HP:0001871",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0002715",
+              "best_target_term": "HP:0002715",
+              "mica_term": "HP:0002715",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0010978",
+              "best_target_term": "HP:0010978",
+              "mica_term": "HP:0010978",
+              "score": 1.0
+            }
+          ],
+          "top_disease_to_patient_matches": [
+            {
+              "source_term": "HP:0001871",
+              "best_target_term": "HP:0001871",
+              "mica_term": "HP:0001871",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0001507",
+              "best_target_term": "HP:0001507",
+              "mica_term": "HP:0001507",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0010978",
+              "best_target_term": "HP:0010978",
+              "mica_term": "HP:0010978",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0001510",
+              "best_target_term": "HP:0001510",
+              "mica_term": "HP:0001510",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0002715",
+              "best_target_term": "HP:0002715",
+              "mica_term": "HP:0002715",
+              "score": 1.0
+            }
+          ],
+          "top_shared_terms": [
+            "HP:0001507",
+            "HP:0001510",
+            "HP:0001871",
+            "HP:0002715",
+            "HP:0010978",
+            "HP:0025354"
+          ],
+          "n_shared_terms": 6,
+          "patient_coverage": 0.375,
+          "disease_coverage": 0.2727272727272727,
+          "n_patient_terms": 16,
+          "n_disease_terms": 22,
+          "n_union_terms": 32,
+          "unmatched_patient_terms": [
+            "HP:0000119",
+            "HP:0001876",
+            "HP:0002721",
+            "HP:0005528",
+            "HP:0005561",
+            "HP:0012145",
+            "HP:0025461",
+            "HP:0031411",
+            "HP:0031412",
+            "HP:0031413"
+          ],
+          "n_unmatched_patient_terms": 10
+        }
+      },
+      {
+        "rank": 7,
+        "disease_id": "OMIM:146830",
+        "label": "Immune deficiency, familial variable",
+        "method_name": "semantic_lin_bma",
+        "score": 0.7521120918396644,
+        "explanation": {
+          "method": "semantic_lin_bma",
+          "patient_to_disease_avg": 0.6715582464876872,
+          "disease_to_patient_avg": 0.8326659371916417,
+          "ic_threshold_used": 1.5,
+          "n_patient_terms_after_ic_filter": 16,
+          "n_disease_terms_after_ic_filter": 19,
+          "top_patient_to_disease_matches": [
+            {
+              "source_term": "HP:0025354",
+              "best_target_term": "HP:0025354",
+              "mica_term": "HP:0025354",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0002721",
+              "best_target_term": "HP:0002721",
+              "mica_term": "HP:0002721",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0001871",
+              "best_target_term": "HP:0001871",
+              "mica_term": "HP:0001871",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0002715",
+              "best_target_term": "HP:0002715",
+              "mica_term": "HP:0002715",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0010978",
+              "best_target_term": "HP:0010978",
+              "mica_term": "HP:0010978",
+              "score": 1.0
+            }
+          ],
+          "top_disease_to_patient_matches": [
+            {
+              "source_term": "HP:0001871",
+              "best_target_term": "HP:0001871",
+              "mica_term": "HP:0001871",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0010978",
+              "best_target_term": "HP:0010978",
+              "mica_term": "HP:0010978",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0002721",
+              "best_target_term": "HP:0002721",
+              "mica_term": "HP:0002721",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0002715",
+              "best_target_term": "HP:0002715",
+              "mica_term": "HP:0002715",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0025354",
+              "best_target_term": "HP:0025354",
+              "mica_term": "HP:0025354",
+              "score": 1.0
+            }
+          ],
+          "top_shared_terms": [
+            "HP:0001871",
+            "HP:0002715",
+            "HP:0002721",
+            "HP:0010978",
+            "HP:0025354"
+          ],
+          "n_shared_terms": 5,
+          "patient_coverage": 0.3125,
+          "disease_coverage": 0.2631578947368421,
+          "n_patient_terms": 16,
+          "n_disease_terms": 19,
+          "n_union_terms": 30,
+          "unmatched_patient_terms": [
+            "HP:0000119",
+            "HP:0001507",
+            "HP:0001510",
+            "HP:0001876",
+            "HP:0005528",
+            "HP:0005561",
+            "HP:0012145",
+            "HP:0025461",
+            "HP:0031411",
+            "HP:0031412"
+          ],
+          "n_unmatched_patient_terms": 11
+        }
+      },
+      {
+        "rank": 8,
+        "disease_id": "OMIM:260100",
+        "label": "Pa polymorphism of alpha-2-globulin",
+        "method_name": "semantic_lin_bma",
+        "score": 0.7459524740496175,
+        "explanation": {
+          "method": "semantic_lin_bma",
+          "patient_to_disease_avg": 0.6474408894004406,
+          "disease_to_patient_avg": 0.8444640586987945,
+          "ic_threshold_used": 1.5,
+          "n_patient_terms_after_ic_filter": 16,
+          "n_disease_terms_after_ic_filter": 11,
+          "top_patient_to_disease_matches": [
+            {
+              "source_term": "HP:0025354",
+              "best_target_term": "HP:0025354",
+              "mica_term": "HP:0025354",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0001871",
+              "best_target_term": "HP:0001871",
+              "mica_term": "HP:0001871",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0002715",
+              "best_target_term": "HP:0002715",
+              "mica_term": "HP:0002715",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0010978",
+              "best_target_term": "HP:0010978",
+              "mica_term": "HP:0010978",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0025461",
+              "best_target_term": "HP:0025354",
+              "mica_term": "HP:0025354",
+              "score": 0.7333436864199827
+            }
+          ],
+          "top_disease_to_patient_matches": [
+            {
+              "source_term": "HP:0025354",
+              "best_target_term": "HP:0025354",
+              "mica_term": "HP:0025354",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0001871",
+              "best_target_term": "HP:0001871",
+              "mica_term": "HP:0001871",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0002715",
+              "best_target_term": "HP:0002715",
+              "mica_term": "HP:0002715",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0010978",
+              "best_target_term": "HP:0010978",
+              "mica_term": "HP:0010978",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0011017",
+              "best_target_term": "HP:0025354",
+              "mica_term": "HP:0025354",
+              "score": 0.9797460144051601
+            }
+          ],
+          "top_shared_terms": [
+            "HP:0001871",
+            "HP:0002715",
+            "HP:0010978",
+            "HP:0025354"
+          ],
+          "n_shared_terms": 4,
+          "patient_coverage": 0.25,
+          "disease_coverage": 0.36363636363636365,
+          "n_patient_terms": 16,
+          "n_disease_terms": 11,
+          "n_union_terms": 23,
+          "unmatched_patient_terms": [
+            "HP:0000119",
+            "HP:0001507",
+            "HP:0001510",
+            "HP:0001876",
+            "HP:0002721",
+            "HP:0005528",
+            "HP:0005561",
+            "HP:0012145",
+            "HP:0025461",
+            "HP:0031411"
+          ],
+          "n_unmatched_patient_terms": 12
+        }
+      },
+      {
+        "rank": 9,
+        "disease_id": "MONDO:0009336",
+        "label": "hemosiderosis, pulmonary, with deficiency of gamma-a globulin",
+        "method_name": "semantic_lin_bma",
+        "score": 0.7385043728962208,
+        "explanation": {
+          "method": "semantic_lin_bma",
+          "patient_to_disease_avg": 0.6474408894004406,
+          "disease_to_patient_avg": 0.8295678563920011,
+          "ic_threshold_used": 1.5,
+          "n_patient_terms_after_ic_filter": 16,
+          "n_disease_terms_after_ic_filter": 14,
+          "top_patient_to_disease_matches": [
+            {
+              "source_term": "HP:0025354",
+              "best_target_term": "HP:0025354",
+              "mica_term": "HP:0025354",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0001871",
+              "best_target_term": "HP:0001871",
+              "mica_term": "HP:0001871",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0002715",
+              "best_target_term": "HP:0002715",
+              "mica_term": "HP:0002715",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0010978",
+              "best_target_term": "HP:0010978",
+              "mica_term": "HP:0010978",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0025461",
+              "best_target_term": "HP:0025354",
+              "mica_term": "HP:0025354",
+              "score": 0.7333436864199827
+            }
+          ],
+          "top_disease_to_patient_matches": [
+            {
+              "source_term": "HP:0025354",
+              "best_target_term": "HP:0025354",
+              "mica_term": "HP:0025354",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0001871",
+              "best_target_term": "HP:0001871",
+              "mica_term": "HP:0001871",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0002715",
+              "best_target_term": "HP:0002715",
+              "mica_term": "HP:0002715",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0010978",
+              "best_target_term": "HP:0010978",
+              "mica_term": "HP:0010978",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0011017",
+              "best_target_term": "HP:0025354",
+              "mica_term": "HP:0025354",
+              "score": 0.9797460144051601
+            }
+          ],
+          "top_shared_terms": [
+            "HP:0001871",
+            "HP:0002715",
+            "HP:0010978",
+            "HP:0025354"
+          ],
+          "n_shared_terms": 4,
+          "patient_coverage": 0.25,
+          "disease_coverage": 0.2857142857142857,
+          "n_patient_terms": 16,
+          "n_disease_terms": 14,
+          "n_union_terms": 26,
+          "unmatched_patient_terms": [
+            "HP:0000119",
+            "HP:0001507",
+            "HP:0001510",
+            "HP:0001876",
+            "HP:0002721",
+            "HP:0005528",
+            "HP:0005561",
+            "HP:0012145",
+            "HP:0025461",
+            "HP:0031411"
+          ],
+          "n_unmatched_patient_terms": 12
+        }
+      },
+      {
+        "rank": 10,
+        "disease_id": "MONDO:0014985",
+        "label": "Fanconi anemia complementation group V",
+        "method_name": "semantic_lin_bma",
+        "score": 0.7332169077139574,
+        "explanation": {
+          "method": "semantic_lin_bma",
+          "patient_to_disease_avg": 0.8308228046880395,
+          "disease_to_patient_avg": 0.6356110107398755,
+          "ic_threshold_used": 1.5,
+          "n_patient_terms_after_ic_filter": 16,
+          "n_disease_terms_after_ic_filter": 43,
+          "top_patient_to_disease_matches": [
+            {
+              "source_term": "HP:0025354",
+              "best_target_term": "HP:0025354",
+              "mica_term": "HP:0025354",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0005561",
+              "best_target_term": "HP:0005561",
+              "mica_term": "HP:0005561",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0005528",
+              "best_target_term": "HP:0005528",
+              "mica_term": "HP:0005528",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0001507",
+              "best_target_term": "HP:0001507",
+              "mica_term": "HP:0001507",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0001871",
+              "best_target_term": "HP:0001871",
+              "mica_term": "HP:0001871",
+              "score": 1.0
+            }
+          ],
+          "top_disease_to_patient_matches": [
+            {
+              "source_term": "HP:0001871",
+              "best_target_term": "HP:0001871",
+              "mica_term": "HP:0001871",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0012145",
+              "best_target_term": "HP:0012145",
+              "mica_term": "HP:0012145",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0001507",
+              "best_target_term": "HP:0001507",
+              "mica_term": "HP:0001507",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0001510",
+              "best_target_term": "HP:0001510",
+              "mica_term": "HP:0001510",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0005528",
+              "best_target_term": "HP:0005528",
+              "mica_term": "HP:0005528",
+              "score": 1.0
+            }
+          ],
+          "top_shared_terms": [
+            "HP:0001507",
+            "HP:0001510",
+            "HP:0001871",
+            "HP:0002715",
+            "HP:0005528",
+            "HP:0005561",
+            "HP:0012145",
+            "HP:0025354"
+          ],
+          "n_shared_terms": 8,
+          "patient_coverage": 0.5,
+          "disease_coverage": 0.18604651162790697,
+          "n_patient_terms": 16,
+          "n_disease_terms": 43,
+          "n_union_terms": 51,
+          "unmatched_patient_terms": [
+            "HP:0000119",
+            "HP:0001876",
+            "HP:0002721",
+            "HP:0010978",
+            "HP:0025461",
+            "HP:0031411",
+            "HP:0031412",
+            "HP:0031413"
+          ],
+          "n_unmatched_patient_terms": 8
+        }
+      }
+    ],
+    "semantic_jiang_conrath_bma": [
+      {
+        "rank": 1,
+        "disease_id": "MONDO:0032865",
+        "label": "pulmonary fibrosis and/or bone marrow failure, telomere-related, 5",
+        "method_name": "semantic_jiang_conrath_bma",
+        "score": 0.7115580764099508,
+        "explanation": {
+          "method": "semantic_jiang_conrath_bma",
+          "patient_to_disease_avg": 0.702767153343084,
+          "disease_to_patient_avg": 0.7203489994768176,
+          "ic_threshold_used": 1.5,
+          "n_patient_terms_after_ic_filter": 16,
+          "n_disease_terms_after_ic_filter": 14,
+          "top_patient_to_disease_matches": [
+            {
+              "source_term": "HP:0025354",
+              "best_target_term": "HP:0025354",
+              "mica_term": "HP:0025354",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0005561",
+              "best_target_term": "HP:0005561",
+              "mica_term": "HP:0005561",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0031412",
+              "best_target_term": "HP:0031412",
+              "mica_term": "HP:0031411",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0005528",
+              "best_target_term": "HP:0005528",
+              "mica_term": "HP:0005528",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0031411",
+              "best_target_term": "HP:0031412",
+              "mica_term": "HP:0031411",
+              "score": 1.0
+            }
+          ],
+          "top_disease_to_patient_matches": [
+            {
+              "source_term": "HP:0025354",
+              "best_target_term": "HP:0025354",
+              "mica_term": "HP:0025354",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0005561",
+              "best_target_term": "HP:0005561",
+              "mica_term": "HP:0005561",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0031412",
+              "best_target_term": "HP:0031412",
+              "mica_term": "HP:0031411",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0005528",
+              "best_target_term": "HP:0005528",
+              "mica_term": "HP:0005528",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0031411",
+              "best_target_term": "HP:0031412",
+              "mica_term": "HP:0031411",
+              "score": 1.0
+            }
+          ],
+          "top_shared_terms": [
+            "HP:0001871",
+            "HP:0005528",
+            "HP:0005561",
+            "HP:0012145",
+            "HP:0025354",
+            "HP:0025461",
+            "HP:0031411",
+            "HP:0031412",
+            "HP:0031413"
+          ],
+          "n_shared_terms": 9,
+          "patient_coverage": 0.5625,
+          "disease_coverage": 0.6428571428571429,
+          "n_patient_terms": 16,
+          "n_disease_terms": 14,
+          "n_union_terms": 21,
+          "unmatched_patient_terms": [
+            "HP:0000119",
+            "HP:0001507",
+            "HP:0001510",
+            "HP:0001876",
+            "HP:0002715",
+            "HP:0002721",
+            "HP:0010978"
+          ],
+          "n_unmatched_patient_terms": 7
+        }
+      },
+      {
+        "rank": 2,
+        "disease_id": "OMIM:618674",
+        "label": "Pulmonary fibrosis and/or bone marrow failure, telomere-related, 5",
+        "method_name": "semantic_jiang_conrath_bma",
+        "score": 0.6963787448396317,
+        "explanation": {
+          "method": "semantic_jiang_conrath_bma",
+          "patient_to_disease_avg": 0.702767153343084,
+          "disease_to_patient_avg": 0.6899903363361793,
+          "ic_threshold_used": 1.5,
+          "n_patient_terms_after_ic_filter": 16,
+          "n_disease_terms_after_ic_filter": 15,
+          "top_patient_to_disease_matches": [
+            {
+              "source_term": "HP:0025354",
+              "best_target_term": "HP:0025354",
+              "mica_term": "HP:0025354",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0005561",
+              "best_target_term": "HP:0005561",
+              "mica_term": "HP:0005561",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0031412",
+              "best_target_term": "HP:0031412",
+              "mica_term": "HP:0031411",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0005528",
+              "best_target_term": "HP:0005528",
+              "mica_term": "HP:0005528",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0031411",
+              "best_target_term": "HP:0031412",
+              "mica_term": "HP:0031411",
+              "score": 1.0
+            }
+          ],
+          "top_disease_to_patient_matches": [
+            {
+              "source_term": "HP:0025354",
+              "best_target_term": "HP:0025354",
+              "mica_term": "HP:0025354",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0005561",
+              "best_target_term": "HP:0005561",
+              "mica_term": "HP:0005561",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0025461",
+              "best_target_term": "HP:0025461",
+              "mica_term": "HP:0025461",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0031412",
+              "best_target_term": "HP:0031412",
+              "mica_term": "HP:0031411",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0005528",
+              "best_target_term": "HP:0005528",
+              "mica_term": "HP:0005528",
+              "score": 1.0
+            }
+          ],
+          "top_shared_terms": [
+            "HP:0001871",
+            "HP:0005528",
+            "HP:0005561",
+            "HP:0012145",
+            "HP:0025354",
+            "HP:0025461",
+            "HP:0031411",
+            "HP:0031412",
+            "HP:0031413"
+          ],
+          "n_shared_terms": 9,
+          "patient_coverage": 0.5625,
+          "disease_coverage": 0.6,
+          "n_patient_terms": 16,
+          "n_disease_terms": 15,
+          "n_union_terms": 22,
+          "unmatched_patient_terms": [
+            "HP:0000119",
+            "HP:0001507",
+            "HP:0001510",
+            "HP:0001876",
+            "HP:0002715",
+            "HP:0002721",
+            "HP:0010978"
+          ],
+          "n_unmatched_patient_terms": 7
+        }
+      },
+      {
+        "rank": 3,
+        "disease_id": "ORPHA:182040",
+        "label": "Aplastic anemia",
+        "method_name": "semantic_jiang_conrath_bma",
+        "score": 0.6715068979790357,
+        "explanation": {
+          "method": "semantic_jiang_conrath_bma",
+          "patient_to_disease_avg": 0.4441719186396315,
+          "disease_to_patient_avg": 0.89884187731844,
+          "ic_threshold_used": 1.5,
+          "n_patient_terms_after_ic_filter": 16,
+          "n_disease_terms_after_ic_filter": 6,
+          "top_patient_to_disease_matches": [
+            {
+              "source_term": "HP:0005561",
+              "best_target_term": "HP:0005561",
+              "mica_term": "HP:0005561",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0005528",
+              "best_target_term": "HP:0005528",
+              "mica_term": "HP:0005528",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0001871",
+              "best_target_term": "HP:0001871",
+              "mica_term": "HP:0001871",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0012145",
+              "best_target_term": "HP:0012145",
+              "mica_term": "HP:0012145",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0001876",
+              "best_target_term": "HP:0001876",
+              "mica_term": "HP:0001876",
+              "score": 1.0
+            }
+          ],
+          "top_disease_to_patient_matches": [
+            {
+              "source_term": "HP:0005561",
+              "best_target_term": "HP:0005561",
+              "mica_term": "HP:0005561",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0005528",
+              "best_target_term": "HP:0005528",
+              "mica_term": "HP:0005528",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0001871",
+              "best_target_term": "HP:0001871",
+              "mica_term": "HP:0001871",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0012145",
+              "best_target_term": "HP:0012145",
+              "mica_term": "HP:0012145",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0001876",
+              "best_target_term": "HP:0001876",
+              "mica_term": "HP:0001876",
+              "score": 1.0
+            }
+          ],
+          "top_shared_terms": [
+            "HP:0001871",
+            "HP:0001876",
+            "HP:0005528",
+            "HP:0005561",
+            "HP:0012145"
+          ],
+          "n_shared_terms": 5,
+          "patient_coverage": 0.3125,
+          "disease_coverage": 0.8333333333333334,
+          "n_patient_terms": 16,
+          "n_disease_terms": 6,
+          "n_union_terms": 17,
+          "unmatched_patient_terms": [
+            "HP:0000119",
+            "HP:0001507",
+            "HP:0001510",
+            "HP:0002715",
+            "HP:0002721",
+            "HP:0010978",
+            "HP:0025354",
+            "HP:0025461",
+            "HP:0031411",
+            "HP:0031412"
+          ],
+          "n_unmatched_patient_terms": 11
+        }
+      },
+      {
+        "rank": 4,
+        "disease_id": "MONDO:0015909",
+        "label": "aplastic anemia",
+        "method_name": "semantic_jiang_conrath_bma",
+        "score": 0.6715068979790357,
+        "explanation": {
+          "method": "semantic_jiang_conrath_bma",
+          "patient_to_disease_avg": 0.4441719186396315,
+          "disease_to_patient_avg": 0.89884187731844,
+          "ic_threshold_used": 1.5,
+          "n_patient_terms_after_ic_filter": 16,
+          "n_disease_terms_after_ic_filter": 6,
+          "top_patient_to_disease_matches": [
+            {
+              "source_term": "HP:0005561",
+              "best_target_term": "HP:0005561",
+              "mica_term": "HP:0005561",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0005528",
+              "best_target_term": "HP:0005528",
+              "mica_term": "HP:0005528",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0001871",
+              "best_target_term": "HP:0001871",
+              "mica_term": "HP:0001871",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0012145",
+              "best_target_term": "HP:0012145",
+              "mica_term": "HP:0012145",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0001876",
+              "best_target_term": "HP:0001876",
+              "mica_term": "HP:0001876",
+              "score": 1.0
+            }
+          ],
+          "top_disease_to_patient_matches": [
+            {
+              "source_term": "HP:0005561",
+              "best_target_term": "HP:0005561",
+              "mica_term": "HP:0005561",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0005528",
+              "best_target_term": "HP:0005528",
+              "mica_term": "HP:0005528",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0001871",
+              "best_target_term": "HP:0001871",
+              "mica_term": "HP:0001871",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0012145",
+              "best_target_term": "HP:0012145",
+              "mica_term": "HP:0012145",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0001876",
+              "best_target_term": "HP:0001876",
+              "mica_term": "HP:0001876",
+              "score": 1.0
+            }
+          ],
+          "top_shared_terms": [
+            "HP:0001871",
+            "HP:0001876",
+            "HP:0005528",
+            "HP:0005561",
+            "HP:0012145"
+          ],
+          "n_shared_terms": 5,
+          "patient_coverage": 0.3125,
+          "disease_coverage": 0.8333333333333334,
+          "n_patient_terms": 16,
+          "n_disease_terms": 6,
+          "n_union_terms": 17,
+          "unmatched_patient_terms": [
+            "HP:0000119",
+            "HP:0001507",
+            "HP:0001510",
+            "HP:0002715",
+            "HP:0002721",
+            "HP:0010978",
+            "HP:0025354",
+            "HP:0025461",
+            "HP:0031411",
+            "HP:0031412"
+          ],
+          "n_unmatched_patient_terms": 11
+        }
+      },
+      {
+        "rank": 5,
+        "disease_id": "MONDO:0003947",
+        "label": "hyper-IgM syndrome",
+        "method_name": "semantic_jiang_conrath_bma",
+        "score": 0.669972583894764,
+        "explanation": {
+          "method": "semantic_jiang_conrath_bma",
+          "patient_to_disease_avg": 0.339945167789528,
+          "disease_to_patient_avg": 1.0,
+          "ic_threshold_used": 1.5,
+          "n_patient_terms_after_ic_filter": 16,
+          "n_disease_terms_after_ic_filter": 3,
+          "top_patient_to_disease_matches": [
+            {
+              "source_term": "HP:0002721",
+              "best_target_term": "HP:0002721",
+              "mica_term": "HP:0002721",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0002715",
+              "best_target_term": "HP:0002715",
+              "mica_term": "HP:0002715",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0010978",
+              "best_target_term": "HP:0010978",
+              "mica_term": "HP:0010978",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0000119",
+              "best_target_term": "HP:0002715",
+              "mica_term": "HP:0000118",
+              "score": 0.29445663701555064
+            },
+            {
+              "source_term": "HP:0001507",
+              "best_target_term": "HP:0002715",
+              "mica_term": "HP:0000118",
+              "score": 0.29349951994433043
+            }
+          ],
+          "top_disease_to_patient_matches": [
+            {
+              "source_term": "HP:0002721",
+              "best_target_term": "HP:0002721",
+              "mica_term": "HP:0002721",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0002715",
+              "best_target_term": "HP:0002715",
+              "mica_term": "HP:0002715",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0010978",
+              "best_target_term": "HP:0010978",
+              "mica_term": "HP:0010978",
+              "score": 1.0
+            }
+          ],
+          "top_shared_terms": [
+            "HP:0002715",
+            "HP:0002721",
+            "HP:0010978"
+          ],
+          "n_shared_terms": 3,
+          "patient_coverage": 0.1875,
+          "disease_coverage": 1.0,
+          "n_patient_terms": 16,
+          "n_disease_terms": 3,
+          "n_union_terms": 16,
+          "unmatched_patient_terms": [
+            "HP:0000119",
+            "HP:0001507",
+            "HP:0001510",
+            "HP:0001871",
+            "HP:0001876",
+            "HP:0005528",
+            "HP:0005561",
+            "HP:0012145",
+            "HP:0025354",
+            "HP:0025461"
+          ],
+          "n_unmatched_patient_terms": 13
+        }
+      },
+      {
+        "rank": 6,
+        "disease_id": "MONDO:0024572",
+        "label": "immunodeficiency-related disorder",
+        "method_name": "semantic_jiang_conrath_bma",
+        "score": 0.669972583894764,
+        "explanation": {
+          "method": "semantic_jiang_conrath_bma",
+          "patient_to_disease_avg": 0.339945167789528,
+          "disease_to_patient_avg": 1.0,
+          "ic_threshold_used": 1.5,
+          "n_patient_terms_after_ic_filter": 16,
+          "n_disease_terms_after_ic_filter": 3,
+          "top_patient_to_disease_matches": [
+            {
+              "source_term": "HP:0002721",
+              "best_target_term": "HP:0002721",
+              "mica_term": "HP:0002721",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0002715",
+              "best_target_term": "HP:0002715",
+              "mica_term": "HP:0002715",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0010978",
+              "best_target_term": "HP:0010978",
+              "mica_term": "HP:0010978",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0000119",
+              "best_target_term": "HP:0002715",
+              "mica_term": "HP:0000118",
+              "score": 0.29445663701555064
+            },
+            {
+              "source_term": "HP:0001507",
+              "best_target_term": "HP:0002715",
+              "mica_term": "HP:0000118",
+              "score": 0.29349951994433043
+            }
+          ],
+          "top_disease_to_patient_matches": [
+            {
+              "source_term": "HP:0002721",
+              "best_target_term": "HP:0002721",
+              "mica_term": "HP:0002721",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0002715",
+              "best_target_term": "HP:0002715",
+              "mica_term": "HP:0002715",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0010978",
+              "best_target_term": "HP:0010978",
+              "mica_term": "HP:0010978",
+              "score": 1.0
+            }
+          ],
+          "top_shared_terms": [
+            "HP:0002715",
+            "HP:0002721",
+            "HP:0010978"
+          ],
+          "n_shared_terms": 3,
+          "patient_coverage": 0.1875,
+          "disease_coverage": 1.0,
+          "n_patient_terms": 16,
+          "n_disease_terms": 3,
+          "n_union_terms": 16,
+          "unmatched_patient_terms": [
+            "HP:0000119",
+            "HP:0001507",
+            "HP:0001510",
+            "HP:0001871",
+            "HP:0001876",
+            "HP:0005528",
+            "HP:0005561",
+            "HP:0012145",
+            "HP:0025354",
+            "HP:0025461"
+          ],
+          "n_unmatched_patient_terms": 13
+        }
+      },
+      {
+        "rank": 7,
+        "disease_id": "MONDO:0008989",
+        "label": "citrulline transport defect",
+        "method_name": "semantic_jiang_conrath_bma",
+        "score": 0.6464891301364533,
+        "explanation": {
+          "method": "semantic_jiang_conrath_bma",
+          "patient_to_disease_avg": 0.29297826027290647,
+          "disease_to_patient_avg": 1.0,
+          "ic_threshold_used": 1.5,
+          "n_patient_terms_after_ic_filter": 16,
+          "n_disease_terms_after_ic_filter": 2,
+          "top_patient_to_disease_matches": [
+            {
+              "source_term": "HP:0001507",
+              "best_target_term": "HP:0001507",
+              "mica_term": "HP:0001507",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0001510",
+              "best_target_term": "HP:0001510",
+              "mica_term": "HP:0001510",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0000119",
+              "best_target_term": "HP:0001507",
+              "mica_term": "HP:0000118",
+              "score": 0.31128494854047817
+            },
+            {
+              "source_term": "HP:0002715",
+              "best_target_term": "HP:0001507",
+              "mica_term": "HP:0000118",
+              "score": 0.29349951994433043
+            },
+            {
+              "source_term": "HP:0010978",
+              "best_target_term": "HP:0001507",
+              "mica_term": "HP:0000118",
+              "score": 0.2783202211097941
+            }
+          ],
+          "top_disease_to_patient_matches": [
+            {
+              "source_term": "HP:0001507",
+              "best_target_term": "HP:0001507",
+              "mica_term": "HP:0001507",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0001510",
+              "best_target_term": "HP:0001510",
+              "mica_term": "HP:0001510",
+              "score": 1.0
+            }
+          ],
+          "top_shared_terms": [
+            "HP:0001507",
+            "HP:0001510"
+          ],
+          "n_shared_terms": 2,
+          "patient_coverage": 0.125,
+          "disease_coverage": 1.0,
+          "n_patient_terms": 16,
+          "n_disease_terms": 2,
+          "n_union_terms": 16,
+          "unmatched_patient_terms": [
+            "HP:0000119",
+            "HP:0001871",
+            "HP:0001876",
+            "HP:0002715",
+            "HP:0002721",
+            "HP:0005528",
+            "HP:0005561",
+            "HP:0010978",
+            "HP:0012145",
+            "HP:0025354"
+          ],
+          "n_unmatched_patient_terms": 14
+        }
+      },
+      {
+        "rank": 8,
+        "disease_id": "OMIM:515000",
+        "label": "Chloramphenicol toxicity",
+        "method_name": "semantic_jiang_conrath_bma",
+        "score": 0.6463172459204166,
+        "explanation": {
+          "method": "semantic_jiang_conrath_bma",
+          "patient_to_disease_avg": 0.4140242390587053,
+          "disease_to_patient_avg": 0.878610252782128,
+          "ic_threshold_used": 1.5,
+          "n_patient_terms_after_ic_filter": 16,
+          "n_disease_terms_after_ic_filter": 5,
+          "top_patient_to_disease_matches": [
+            {
+              "source_term": "HP:0005561",
+              "best_target_term": "HP:0005561",
+              "mica_term": "HP:0005561",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0001871",
+              "best_target_term": "HP:0001871",
+              "mica_term": "HP:0001871",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0012145",
+              "best_target_term": "HP:0012145",
+              "mica_term": "HP:0012145",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0001876",
+              "best_target_term": "HP:0001876",
+              "mica_term": "HP:0001876",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0005528",
+              "best_target_term": "HP:0012145",
+              "mica_term": "HP:0012145",
+              "score": 0.5176371267051796
+            }
+          ],
+          "top_disease_to_patient_matches": [
+            {
+              "source_term": "HP:0005561",
+              "best_target_term": "HP:0005561",
+              "mica_term": "HP:0005561",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0001871",
+              "best_target_term": "HP:0001871",
+              "mica_term": "HP:0001871",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0012145",
+              "best_target_term": "HP:0012145",
+              "mica_term": "HP:0012145",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0001876",
+              "best_target_term": "HP:0001876",
+              "mica_term": "HP:0001876",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0001915",
+              "best_target_term": "HP:0001876",
+              "mica_term": "HP:0001876",
+              "score": 0.3930512639106399
+            }
+          ],
+          "top_shared_terms": [
+            "HP:0001871",
+            "HP:0001876",
+            "HP:0005561",
+            "HP:0012145"
+          ],
+          "n_shared_terms": 4,
+          "patient_coverage": 0.25,
+          "disease_coverage": 0.8,
+          "n_patient_terms": 16,
+          "n_disease_terms": 5,
+          "n_union_terms": 17,
+          "unmatched_patient_terms": [
+            "HP:0000119",
+            "HP:0001507",
+            "HP:0001510",
+            "HP:0002715",
+            "HP:0002721",
+            "HP:0005528",
+            "HP:0010978",
+            "HP:0025354",
+            "HP:0025461",
+            "HP:0031411"
+          ],
+          "n_unmatched_patient_terms": 12
+        }
+      },
+      {
+        "rank": 9,
+        "disease_id": "MONDO:0010784",
+        "label": "chloramphenicol toxicity",
+        "method_name": "semantic_jiang_conrath_bma",
+        "score": 0.6463172459204166,
+        "explanation": {
+          "method": "semantic_jiang_conrath_bma",
+          "patient_to_disease_avg": 0.4140242390587053,
+          "disease_to_patient_avg": 0.878610252782128,
+          "ic_threshold_used": 1.5,
+          "n_patient_terms_after_ic_filter": 16,
+          "n_disease_terms_after_ic_filter": 5,
+          "top_patient_to_disease_matches": [
+            {
+              "source_term": "HP:0005561",
+              "best_target_term": "HP:0005561",
+              "mica_term": "HP:0005561",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0001871",
+              "best_target_term": "HP:0001871",
+              "mica_term": "HP:0001871",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0012145",
+              "best_target_term": "HP:0012145",
+              "mica_term": "HP:0012145",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0001876",
+              "best_target_term": "HP:0001876",
+              "mica_term": "HP:0001876",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0005528",
+              "best_target_term": "HP:0012145",
+              "mica_term": "HP:0012145",
+              "score": 0.5176371267051796
+            }
+          ],
+          "top_disease_to_patient_matches": [
+            {
+              "source_term": "HP:0005561",
+              "best_target_term": "HP:0005561",
+              "mica_term": "HP:0005561",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0001871",
+              "best_target_term": "HP:0001871",
+              "mica_term": "HP:0001871",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0012145",
+              "best_target_term": "HP:0012145",
+              "mica_term": "HP:0012145",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0001876",
+              "best_target_term": "HP:0001876",
+              "mica_term": "HP:0001876",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0001915",
+              "best_target_term": "HP:0001876",
+              "mica_term": "HP:0001876",
+              "score": 0.3930512639106399
+            }
+          ],
+          "top_shared_terms": [
+            "HP:0001871",
+            "HP:0001876",
+            "HP:0005561",
+            "HP:0012145"
+          ],
+          "n_shared_terms": 4,
+          "patient_coverage": 0.25,
+          "disease_coverage": 0.8,
+          "n_patient_terms": 16,
+          "n_disease_terms": 5,
+          "n_union_terms": 17,
+          "unmatched_patient_terms": [
+            "HP:0000119",
+            "HP:0001507",
+            "HP:0001510",
+            "HP:0002715",
+            "HP:0002721",
+            "HP:0005528",
+            "HP:0010978",
+            "HP:0025354",
+            "HP:0025461",
+            "HP:0031411"
+          ],
+          "n_unmatched_patient_terms": 12
+        }
+      },
+      {
+        "rank": 10,
+        "disease_id": "ORPHA:3322",
+        "label": "Dyskeratosis congenita, X-linked",
+        "method_name": "semantic_jiang_conrath_bma",
+        "score": 0.643921233375428,
+        "explanation": {
+          "method": "semantic_jiang_conrath_bma",
+          "patient_to_disease_avg": 1.0,
+          "disease_to_patient_avg": 0.28784246675085584,
+          "ic_threshold_used": 1.5,
+          "n_patient_terms_after_ic_filter": 16,
+          "n_disease_terms_after_ic_filter": 323,
+          "top_patient_to_disease_matches": [
+            {
+              "source_term": "HP:0025354",
+              "best_target_term": "HP:0025354",
+              "mica_term": "HP:0025354",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0002721",
+              "best_target_term": "HP:0002721",
+              "mica_term": "HP:0002721",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0005561",
+              "best_target_term": "HP:0005561",
+              "mica_term": "HP:0005561",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0031412",
+              "best_target_term": "HP:0031412",
+              "mica_term": "HP:0031411",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0005528",
+              "best_target_term": "HP:0005528",
+              "mica_term": "HP:0005528",
+              "score": 1.0
+            }
+          ],
+          "top_disease_to_patient_matches": [
+            {
+              "source_term": "HP:0005561",
+              "best_target_term": "HP:0005561",
+              "mica_term": "HP:0005561",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0002715",
+              "best_target_term": "HP:0002715",
+              "mica_term": "HP:0002715",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0001871",
+              "best_target_term": "HP:0001871",
+              "mica_term": "HP:0001871",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0000119",
+              "best_target_term": "HP:0000119",
+              "mica_term": "HP:0000119",
+              "score": 1.0
+            },
+            {
+              "source_term": "HP:0001510",
+              "best_target_term": "HP:0001510",
+              "mica_term": "HP:0001510",
+              "score": 1.0
+            }
+          ],
+          "top_shared_terms": [
+            "HP:0000119",
+            "HP:0001507",
+            "HP:0001510",
+            "HP:0001871",
+            "HP:0001876",
+            "HP:0002715",
+            "HP:0002721",
+            "HP:0005528",
+            "HP:0005561",
+            "HP:0010978"
+          ],
+          "n_shared_terms": 16,
+          "patient_coverage": 1.0,
+          "disease_coverage": 0.04953560371517028,
+          "n_patient_terms": 16,
+          "n_disease_terms": 323,
+          "n_union_terms": 323,
+          "unmatched_patient_terms": [],
+          "n_unmatched_patient_terms": 0
+        }
       }
     ]
   }
