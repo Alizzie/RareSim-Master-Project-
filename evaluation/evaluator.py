@@ -25,9 +25,6 @@ Usage:
     python evaluation/evaluator.py \\
         --cache-dir results/evaluation/MME/cache
 
-Output (not git-tracked, local only):
-    outputs/evaluation/MME_evaluation.json         ← full JSON dump
-
 Output (git-tracked, committed to results/):
     results/evaluation/MME/cache/case_NNNN.json    ← cached pipeline results
     results/evaluation/MME/MME_evaluation_summary.txt
