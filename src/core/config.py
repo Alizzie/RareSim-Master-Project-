@@ -47,7 +47,7 @@ NEO4J_DATABASE = "neo4j"
 SHARED_DIR = OUTPUT_DIR
 
 # ── Phenotype extraction settings ─────────────────────────────────────────────
- 
+
 # Words that indicate negation in clinical text
 NEGATION_WORDS = {
     "no",
@@ -58,10 +58,10 @@ NEGATION_WORDS = {
     "negative for",
     "absence of",
 }
- 
+
 # Window size (characters) to look back for negation words
 NEGATION_WINDOW_SIZE = 50
- 
+
 # HPO IDs that are structural/metadata terms, not phenotypes
 # Filtered out from all extraction results
 HPO_BLOCKLIST = {
@@ -74,16 +74,19 @@ HPO_BLOCKLIST = {
     "HP:0032316",  # Family history — not a phenotype
     "HP:0003674",  # Onset — metadata
     "HP:0012777",  # Biomarker — metadata
+    "HP:0003676",  # Progressive — too generic
 }
- 
+
 # current extraction methods
 # "dictionary"     — exact HPO label matching (fast baseline)
-# "synonyms"       — dictionary + HPO synonym expansion
 # "biomedical_ner" — d4data transformer NER + HPO label lookup
-EXTRACTION_METHODS = ["dictionary", "synonyms", "biomedical_ner"]
- 
+# "fast_hpo_cr"    — morphological token cluster matching
+# "chatgpt"        — GPT-4o-mini prompted extraction
+# "phenobrain_api" — PhenoBrain public API
+EXTRACTION_METHODS = ["dictionary", "biomedical_ner", "fast_hpo_cr", "chatgpt", "phenobrain_api"]
+
 # d4data biomedical NER model
 BIOMEDICAL_NER_MODEL = "d4data/biomedical-ner-all"
- 
+
 # Minimum NER confidence threshold
 BIOMEDICAL_NER_MIN_CONFIDENCE = 0.6

@@ -1,15 +1,30 @@
 """
 Terminal interface for the rare disease similarity pipeline.
 
-Usage:
-    # Skip all prompts — use example patient, all methods:
-    python src/gui/app.py --defaults
+Two input modes:
+    --text   Raw clinical text → extract HPO terms → run similarity
+    --hpo    Pre-extracted HPO terms (list or JSON file) → run similarity directly
 
-    # Pass a patient JSON file:
+Usage:
+    # From raw clinical text (extraction + similarity):
+    python src/gui/app.py --text "Patient with cerebellar ataxia and macrocephaly."
+
+    # From raw text with specific extraction methods:
+    python src/gui/app.py \\
+        --text "Patient with cerebellar ataxia and macrocephaly." \\
+        --extraction-methods fast_hpo_cr chatgpt
+
+    # From pre-extracted HPO terms (comma-separated):
+    python src/gui/app.py --hpo HP:0001251,HP:0000256
+
+    # From a patient JSON file:
     python src/gui/app.py --patient outputs/shared/example_patient.json
 
-    # Select specific methods:
-    python src/gui/app.py --patient outputs/shared/example_patient.json --methods semantic_resnik tfidf
+    # Use example patient, all methods:
+    python src/gui/app.py --defaults
+
+    # Select specific similarity methods:
+    python src/gui/app.py --text "..." --methods semantic_resnik_bma tfidf
 
     # Change top-k:
     python src/gui/app.py --defaults --top-k 5
@@ -27,6 +42,7 @@ from shared.paths import (
     SHARED_DIR,
 )
 from shared.pipeline import PipelineConfig
+from hpo_extraction import build_patient_profile
 from gui.utils import (
     GUI_DIR,
     check_artifacts_exist,
@@ -79,6 +95,14 @@ ALL_METHODS = (
     + LLM_METHODS
 )
 
+EXTRACTION_METHODS = [
+    "dictionary",
+    "biomedical_ner",
+    "fast_hpo_cr",
+    "chatgpt",
+    "phenobrain_api",
+]
+
 DEFAULTS = {
     "patient_path": SHARED_DIR / "example_patient.json",
     "methods": ALL_METHODS,
@@ -96,16 +120,50 @@ def parse_args():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=__doc__,
     )
-    parser.add_argument(
+
+    # ── Input mode  ───────────────────────────────────────
+    input_group = parser.add_mutually_exclusive_group()
+    input_group.add_argument(
+        "--text",
+        type=str,
+        default=None,
+        metavar="CLINICAL_TEXT",
+        help="Raw clinical text — extract HPO terms then run similarity",
+    )
+    input_group.add_argument(
+        "--hpo",
+        type=str,
+        default=None,
+        metavar="HP:XXXXXXX,...",
+        help="Comma-separated HPO term IDs — skip extraction, run similarity directly",
+    )
+    input_group.add_argument(
         "--patient",
         type=Path,
-        help="Path to patient JSON file",
+        default=None,
+        help="Path to patient JSON file with pre-extracted HPO terms",
     )
+    input_group.add_argument(
+        "--defaults",
+        action="store_true",
+        help="Skip all prompts: use example patient and all methods",
+    )
+
+    # ── Extraction settings (only used with --text) ───────────────────────────
+    parser.add_argument(
+        "--extraction-methods",
+        nargs="+",
+        default=["dictionary", "fast_hpo_cr"],
+        choices=EXTRACTION_METHODS,
+        help="Phenotype extraction methods (only used with --text, default: dictionary fast_hpo_cr)",
+    )
+
+    # ── Similarity settings ───────────────────────────────────────────────────
     parser.add_argument(
         "--methods",
         nargs="+",
         choices=ALL_METHODS,
-        help="Methods to run (default: all)",
+        help="Similarity methods to run (default: all)",
     )
     parser.add_argument(
         "--top-k",
@@ -124,11 +182,7 @@ def parse_args():
         default=DEFAULTS["ic_threshold"],
         help=f"Minimum IC value to include a term (default: {DEFAULTS['ic_threshold']})",
     )
-    parser.add_argument(
-        "--defaults",
-        action="store_true",
-        help="Skip all prompts: use example patient and all methods",
-    )
+
     return parser.parse_args()
 
 
@@ -143,14 +197,72 @@ def main() -> None:
     print("  Rare Disease Similarity Pipeline")
     print("=" * 64)
 
-    # ── Patient ───────────────────────────────────────────────────────────────
-    if args.patient:
+    # ── Input mode ────────────────────────────────────────────────────────────
+
+    if args.text:
+        # Mode 1: raw clinical text → extract HPO terms → similarity
+        print(f"\nInput mode : raw text")
+        print(f"Extraction : {args.extraction_methods}")
+        print(f"\nExtracting HPO terms...")
+
+        patient_dict, extracted_terms = build_patient_profile(
+            patient_id="text_input_patient",
+            raw_text=args.text,
+            hpo_labels=hpo_labels,
+            methods=args.extraction_methods,
+        )
+
+        print(f"\nExtracted {len(patient_dict['hpo_terms'])} HPO terms:")
+        for t in extracted_terms:
+            print(f"  {t['hpo_id']} | {t['label']} | method={t['method']}")
+
+        if not patient_dict["hpo_terms"]:
+            print("\n[warning] No HPO terms extracted — check your text or try different extraction methods.")
+            return
+
+        # Save to temp file for load_patient_with_extraction
+        tmp_path = SHARED_DIR / "extracted_patient.json"
+        save_json(patient_dict, tmp_path)
+        patient = load_patient_with_extraction(tmp_path, hpo_labels)
+
+    elif args.hpo:
+        hpo_terms = [t.strip() for t in args.hpo.split(",") if t.strip()]
+        print(f"\nInput mode : HPO terms")
+        print(f"HPO terms  : {hpo_terms}")
+
+        # Build a minimal patient profile with propagation
+        from shared.math import preprocess_ancestor_sets, get_ancestors_inclusive
+        from shared.paths import HPO_ANCESTORS_PATH
+        ancestors = load_json(HPO_ANCESTORS_PATH)
+        ancestor_sets = preprocess_ancestor_sets(ancestors)
+        propagated = set()
+        for term in hpo_terms:
+            propagated |= get_ancestors_inclusive(term, ancestor_sets)
+
+        patient_dict = {
+            "patient_id": "hpo_input_patient",
+            "raw_text": "",
+            "hpo_terms": hpo_terms,
+            "propagated_hpo_terms": sorted(propagated),
+            "methods_used": ["direct_input"],
+        }
+        tmp_path = SHARED_DIR / "hpo_input_patient.json"
+        save_json(patient_dict, tmp_path)
+        patient = load_patient_with_extraction(tmp_path, hpo_labels)
+
+    elif args.patient:
+        # Mode 3: patient JSON file
+        print(f"\nInput mode : patient file")
         patient = load_patient_with_extraction(args.patient, hpo_labels)
-        print(f"\nPatient: {args.patient.name}")
+        print(f"Patient    : {args.patient.name}")
+
     elif args.defaults:
+        # Mode 4: example patient
+        print(f"\nInput mode : default example patient")
         patient = load_patient_with_extraction(DEFAULTS["patient_path"], hpo_labels)
-        print(f"\nPatient: {DEFAULTS['patient_path'].name} (default)")
+
     else:
+        # Mode 5: interactive prompt
         patient = prompt_patient(DEFAULTS, hpo_labels)
 
     print(f"  HPO terms: {len(patient.hpo_terms)}")
@@ -233,7 +345,6 @@ def main() -> None:
             "raw_text": patient.raw_text,
             "hpo_terms": sorted(patient.hpo_terms),
         }
-
         all_raw_results["llm"] = run_llm(
             patient=patient_dict,
             hpo_labels=hpo_labels,
@@ -246,7 +357,10 @@ def main() -> None:
         print_results_table(method_results)
 
     for method_name, results in all_raw_results.items():
-        print_raw_results(method_name, results)
+        try:
+            print_raw_results(method_name, results)
+        except Exception as e:
+            print(f"  [warning] Could not print results for {method_name}: {e}")
 
     # ── Save ──────────────────────────────────────────────────────────────────
     save_results(all_results, ctx.app_metadata)

@@ -46,7 +46,7 @@ def load_patient_with_extraction(
             f"Patient {data.get('patient_id')} has neither " "hpo_terms nor raw_text."
         )
 
-    from shared.phenotype import build_patient_profile
+    from hpo_extraction import build_patient_profile
 
     enriched, _ = build_patient_profile(
         patient_id=data["patient_id"],
