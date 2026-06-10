@@ -8,7 +8,7 @@ Run with:
 import json
 import pytest
 
-from utils import (
+from scripts.validation_tools._utils import (
     discover_datasets,
     resolve_datasets,
     load_cases,

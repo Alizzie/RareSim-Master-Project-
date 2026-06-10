@@ -25,7 +25,7 @@ import glob
 import sys
 from pathlib import Path
 from typing import TextIO
-from utils import compute_stats, compute_mrr, load_summary_tsv
+from _utils import compute_stats, compute_mrr, load_summary_tsv
 from raresim.utils.paths import OUTPUTS_DIR
 
 VAL_OUTPUTS_DIR = OUTPUTS_DIR / "validation_tools"
