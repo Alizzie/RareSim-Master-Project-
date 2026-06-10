@@ -19,7 +19,7 @@ from pydantic import BaseModel
 
 # ── RareSim imports ───────────────────────────────────────────────────────────
 import sys
-SRC_DIR = Path(__file__).resolve().parents[3]
+SRC_DIR = Path(__file__).resolve().parents[2]
 if str(SRC_DIR) not in sys.path:
     sys.path.insert(0, str(SRC_DIR))
 
@@ -44,7 +44,7 @@ app = FastAPI(title="RareSim API", version="0.1.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["http://localhost:3000", "http://localhost:3001"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -111,144 +111,152 @@ def diagnose(req: DiagnoseRequest):
         mode='text' — use req.raw_text for transformer/llm,
                       req.hpo_terms for semantic/set-based (pre-extracted)
     """
-    if not req.methods:
-        raise HTTPException(status_code=400, detail="At least one method is required")
+    import traceback
+    try:
+        if not req.methods:
+            raise HTTPException(status_code=400, detail="At least one method is required")
 
-    if req.mode == 'hpo' and not req.hpo_terms:
-        raise HTTPException(status_code=400, detail="hpo_terms required for HPO mode")
+        if req.mode == 'hpo' and not req.hpo_terms:
+            raise HTTPException(status_code=400, detail="hpo_terms required for HPO mode")
 
-    if req.mode == 'text' and not req.raw_text:
-        raise HTTPException(status_code=400, detail="raw_text required for text mode")
+        if req.mode == 'text' and not req.raw_text:
+            raise HTTPException(status_code=400, detail="raw_text required for text mode")
 
-    start = time.time()
+        start = time.time()
 
-    # ── Build patient dict ────────────────────────────────────────────────────
-    from shared.math import preprocess_ancestor_sets, get_ancestors_inclusive
-    from shared.paths import HPO_ANCESTORS_PATH
+        # ── Build patient dict ────────────────────────────────────────────────────
+        from shared.math import preprocess_ancestor_sets, get_ancestors_inclusive
+        from shared.paths import HPO_ANCESTORS_PATH
 
-    ancestors = load_json(HPO_ANCESTORS_PATH)
-    ancestor_sets = preprocess_ancestor_sets(ancestors)
+        ancestors = load_json(HPO_ANCESTORS_PATH)
+        ancestor_sets = preprocess_ancestor_sets(ancestors)
 
-    hpo_terms = req.hpo_terms
-    propagated: set = set()
-    for term in hpo_terms:
-        propagated |= get_ancestors_inclusive(term, ancestor_sets)
+        hpo_terms = req.hpo_terms
+        propagated: set = set()
+        for term in hpo_terms:
+            propagated |= get_ancestors_inclusive(term, ancestor_sets)
 
-    patient_dict = {
-        "patient_id":           "web_patient",
-        "raw_text":             req.raw_text or "",
-        "hpo_terms":            sorted(hpo_terms),
-        "propagated_hpo_terms": sorted(propagated),
-        "methods_used":         ["web_input"],
-    }
+        patient_dict = {
+            "patient_id":           "web_patient",
+            "raw_text":             req.raw_text or "",
+            "hpo_terms":            sorted(hpo_terms),
+            "propagated_hpo_terms": sorted(propagated),
+            "methods_used":         ["web_input"],
+        }
 
-    tmp_path = SHARED_DIR / "web_patient_tmp.json"
-    save_json(patient_dict, tmp_path)
-    patient = load_patient_with_extraction(tmp_path, hpo_labels)
+        tmp_path = SHARED_DIR / "web_patient_tmp.json"
+        save_json(patient_dict, tmp_path)
+        patient = load_patient_with_extraction(tmp_path, hpo_labels)
 
-    # ── Config ────────────────────────────────────────────────────────────────
-    config = PipelineConfig(
-        top_k=req.top_k,
-        use_propagated_terms=True,
-        ic_threshold=1.5,
-        use_canonical_profiles=True,
-    )
-
-    # ── AppContext ────────────────────────────────────────────────────────────
-    ctx = AppContext.load(patient, config.use_canonical_profiles)
-
-    # ── Run selected methods ──────────────────────────────────────────────────
-    all_results = {}
-    all_raw_results = {}
-    selected = set(req.methods)
-
-    if selected & SEMANTIC_METHODS:
-        all_results.update(run_semantic(patient, list(selected), config, ctx))
-
-    if selected & SET_BASED_METHODS:
-        all_results.update(run_set_based(patient, list(selected), config, ctx))
-
-    if selected & TFIDF_METHODS:
-        all_results.update(run_tfidf(patient, list(selected), config, ctx))
-
-    if selected & TRANSFORMER_METHODS:
-        alias_to_canonical = load_json(ALIAS_TO_CANONICAL_PATH)
-        raw = run_transformer(
-            disease_profiles=ctx.disease_profiles,
-            hpo_labels=hpo_labels,
-            patient=patient_dict,
-            alias_to_canonical=alias_to_canonical,
-            top_k=config.top_k,
-        )
-        all_raw_results.update(raw)
-
-    if selected & LLM_METHODS:
-        all_raw_results["llm"] = run_llm(
-            patient=patient_dict,
-            hpo_labels=hpo_labels,
-            disease_profiles=ctx.disease_profiles,
-            top_k=config.top_k,
+        # ── Config ────────────────────────────────────────────────────────────────
+        config = PipelineConfig(
+            top_k=req.top_k,
+            use_propagated_terms=True,
+            ic_threshold=1.5,
+            use_canonical_profiles=True,
         )
 
-    # ── Flatten to unified result list ────────────────────────────────────────
-    flat_results = []
+        # ── AppContext ────────────────────────────────────────────────────────────
+        ctx = AppContext.load(patient, config.use_canonical_profiles)
+        print(f"DEBUG: disease profiles loaded: {len(ctx.disease_profiles)}")
 
-    # SimilarityResult objects → dicts
-    for method_results in all_results.values():
-        ranked = method_results.ranked if hasattr(method_results, 'ranked') else method_results
-        for r in ranked:
-            flat_results.append({
-                "rank":                   r.rank,
-                "disease_id":             r.disease_id,
-                "label":                  r.label,
-                "score":                  r.score,
-                "method_name":            r.method_name,
-                "shared_phenotype_labels": [],
-                "explanation":            r.explanation if hasattr(r, 'explanation') else {},
-            })
+        # ── Run selected methods ──────────────────────────────────────────────────
+        all_results = {}
+        all_raw_results = {}
+        selected = set(req.methods)
 
-    # Raw results (transformer, llm) → same shape
-    for method_name, results_list in all_raw_results.items():
-        if isinstance(results_list, dict):
-            # transformer returns {model_name: [...]}
-            for model_name, model_results in results_list.items():
-                for r in model_results:
-                    flat_results.append({
-                        "rank":       r.get("rank", 0),
-                        "disease_id": r.get("canonical_disease_id") or r.get("disease_id", ""),
-                        "label":      r.get("label", ""),
-                        "score":      r.get("score", 0.0),
-                        "method_name": f"{method_name}_{model_name}",
-                        "shared_phenotype_labels": r.get("explanation", {}).get("shared_phenotype_labels", []),
-                        "explanation": r.get("explanation", {}),
-                    })
-        elif isinstance(results_list, list):
-            for r in results_list:
+        if selected & SEMANTIC_METHODS:
+            all_results.update(run_semantic(patient, list(selected), config, ctx))
+
+        if selected & SET_BASED_METHODS:
+            all_results.update(run_set_based(patient, list(selected), config, ctx))
+
+        if selected & TFIDF_METHODS:
+            all_results.update(run_tfidf(patient, list(selected), config, ctx))
+
+        if selected & TRANSFORMER_METHODS:
+            alias_to_canonical = load_json(ALIAS_TO_CANONICAL_PATH)
+            raw = run_transformer(
+                disease_profiles=ctx.disease_profiles,
+                hpo_labels=hpo_labels,
+                patient=patient_dict,
+                alias_to_canonical=alias_to_canonical,
+                top_k=config.top_k,
+            )
+            all_raw_results.update(raw)
+
+        if selected & LLM_METHODS:
+            all_raw_results["llm"] = run_llm(
+                patient=patient_dict,
+                hpo_labels=hpo_labels,
+                disease_profiles=ctx.disease_profiles,
+                top_k=config.top_k,
+            )
+
+        # ── Flatten to unified result list ────────────────────────────────────────
+        flat_results = []
+
+        # SimilarityResult objects → dicts
+        for method_results in all_results.values():
+            # MethodResults has a .rankings attribute, not .ranked
+            ranked = getattr(method_results, 'rankings', None) \
+                or getattr(method_results, 'ranked', None) \
+                or method_results
+            for r in ranked:
                 flat_results.append({
-                    "rank":       r.get("rank", 0),
-                    "disease_id": r.get("disease_id", ""),
-                    "label":      r.get("label", ""),
-                    "score":      r.get("score", 0.0),
-                    "method_name": method_name,
+                    "rank":                    r.rank,
+                    "disease_id":              r.disease_id,
+                    "label":                   r.label,
+                    "score":                   r.score,
+                    "method_name":             r.method_name,
                     "shared_phenotype_labels": [],
-                    "explanation": {},
+                    "explanation":             r.explanation if hasattr(r, 'explanation') else {},
                 })
 
-    # Sort by score descending, re-rank
-    flat_results.sort(key=lambda x: x["score"], reverse=True)
-    for i, r in enumerate(flat_results):
-        r["rank"] = i + 1
+        # Raw results (transformer, llm) → same shape
+        for method_name, results_list in all_raw_results.items():
+            if isinstance(results_list, dict):
+                # transformer returns {model_name: [...]}
+                for model_name, model_results in results_list.items():
+                    for r in model_results:
+                        flat_results.append({
+                            "rank":       r.get("rank", 0),
+                            "disease_id": r.get("canonical_disease_id") or r.get("disease_id", ""),
+                            "label":      r.get("label", ""),
+                            "score":      r.get("score", 0.0),
+                            "method_name": f"{method_name}_{model_name}",
+                            "shared_phenotype_labels": r.get("explanation", {}).get("shared_phenotype_labels", []),
+                            "explanation": r.get("explanation", {}),
+                        })
+            elif isinstance(results_list, list):
+                for r in results_list:
+                    flat_results.append({
+                        "rank":       r.get("rank", 0),
+                        "disease_id": r.get("disease_id", ""),
+                        "label":      r.get("label", ""),
+                        "score":      r.get("score", 0.0),
+                        "method_name": method_name,
+                        "shared_phenotype_labels": [],
+                        "explanation": {},
+                    })
 
-    return {
-        "results": flat_results[:req.top_k],
-        "meta": {
-            "n_patient_terms": len(hpo_terms),
-            "n_diseases":      len(ctx.disease_profiles),
-            "methods_run":     list(selected),
-            "runtime_seconds": round(time.time() - start, 2),
+        # Sort by score descending, re-rank
+        flat_results.sort(key=lambda x: x["score"], reverse=True)
+        for i, r in enumerate(flat_results):
+            r["rank"] = i + 1
+
+        return {
+            "results": flat_results[:req.top_k],
+            "meta": {
+                "n_patient_terms": len(hpo_terms),
+                "n_diseases":      len(ctx.disease_profiles),
+                "methods_run":     list(selected),
+                "runtime_seconds": round(time.time() - start, 2),
+            }
         }
-    }
-
+    except Exception as e:
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/api/health")
 def health():
