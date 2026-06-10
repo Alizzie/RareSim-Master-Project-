@@ -44,6 +44,10 @@ def main():
             "url": "https://purl.obolibrary.org/obo/hp.owl",
             "path": ONTOLOGY_DIR / "hpo.owl",
         },
+        "hpo_obo": {
+            "url": "https://purl.obolibrary.org/obo/hp.obo",
+            "path": ONTOLOGY_DIR / "hpo.obo",
+        },
         "mondo_rare": {
             "url": "https://purl.obolibrary.org/obo/mondo/subsets/mondo-rare.owl",
             "path": ONTOLOGY_DIR / "mondo_rare.owl",
@@ -58,7 +62,7 @@ def main():
         },
         "phenotype_hpoa": {
             "url": "https://github.com/obophenotype/human-phenotype-ontology/releases/download/v2023-10-09/phenotype.hpoa",
-            "path": ONTOLOGY_DIR / "phenotype.hpoa.owl",
+            "path": ONTOLOGY_DIR / "phenotype.hpoa",
         },
         "orphadata_product4": {
             "url": "https://www.orphadata.com/data/xml/en_product4.xml",
