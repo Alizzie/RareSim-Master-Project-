@@ -10,6 +10,13 @@ Methods:
 - Resnik    : IC(MICA) — specificity of shared ancestor
 - Lin       : normalized Resnik — accounts for term specificity
 - Jiang-Conrath : distance-based, converted to similarity
+
+Performance:
+- get_mica() results are cached at module level in _mica_cache.
+- Since ancestor_sets and ic_values are fixed for the entire batch run,
+  the same (term_a, term_b) pair always produces the same result.
+- This avoids recomputing ancestor intersections across 20k diseases.
+- Call clear_mica_cache() between patients if memory becomes a concern.
 """
 
 import math
@@ -17,7 +24,32 @@ from typing import Dict, Optional, Set, Tuple
 
 from shared.math import get_ancestors_inclusive
 
-# these 2 functions below are ancestor utilities that are only used by the semantic similarity methods (Resnik, Lin, Jiang-Conrath). so not added to shared/ is it ok?
+# ── MICA cache ────────────────────────────────────────────────────────────────
+# Keyed on (term_a, term_b) — valid as long as ancestor_sets and ic_values
+# don't change, which is true for the entire batch evaluation run.
+
+_mica_cache: dict[tuple[str, str], tuple[Optional[str], float]] = {}
+
+
+def clear_mica_cache() -> None:
+    """
+    Clear the MICA cache.
+
+    Call this between patients if memory usage becomes a concern.
+    Not needed for normal batch runs — the cache only grows to the size
+    of unique (term_a, term_b) pairs seen, which is bounded by the
+    HPO vocabulary size.
+    """
+    _mica_cache.clear()
+
+
+def cache_stats() -> dict:
+    """Return current cache size for debugging."""
+    return {"mica_cache_size": len(_mica_cache)}
+
+
+# ── Ancestor utilities ────────────────────────────────────────────────────────
+
 
 def get_common_ancestors(
     term_a: str,
@@ -59,14 +91,33 @@ def get_mica(
     Returns:
     - mica_term: the ancestor term
     - mica_ic: its IC value
+
+    Performance:
+    - Results are cached in _mica_cache keyed on (term_a, term_b).
+    - Subsequent calls with the same pair return instantly.
     """
+    key = (term_a, term_b)
+    if key in _mica_cache:
+        return _mica_cache[key]
+
+    # Also check reversed pair — MICA is symmetric
+    key_rev = (term_b, term_a)
+    if key_rev in _mica_cache:
+        return _mica_cache[key_rev]
+
     common = get_common_ancestors(term_a, term_b, ancestor_sets)
     if not common:
-        return None, 0.0
+        result = (None, 0.0)
+    else:
+        mica_term = max(common, key=lambda t: ic_values.get(t, 0.0))
+        mica_ic = ic_values.get(mica_term, 0.0)
+        result = (mica_term, mica_ic)
 
-    mica_term = max(common, key=lambda t: ic_values.get(t, 0.0))
-    mica_ic = ic_values.get(mica_term, 0.0)
-    return mica_term, mica_ic
+    _mica_cache[key] = result
+    return result
+
+
+# ── Similarity functions ──────────────────────────────────────────────────────
 
 
 def resnik_similarity(
@@ -179,3 +230,4 @@ def jiang_conrath_similarity(
 
     score = 1.0 / (1.0 + distance)
     return score, mica_term
+    

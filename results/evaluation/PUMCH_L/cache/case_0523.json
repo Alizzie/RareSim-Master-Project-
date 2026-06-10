@@ -1,0 +1,4344 @@
+{
+  "case_index": 523,
+  "hpo_terms": [
+    "HP:0000822",
+    "HP:0001644",
+    "HP:0001711",
+    "HP:0001750",
+    "HP:0001961",
+    "HP:0002094",
+    "HP:0002355",
+    "HP:0002360",
+    "HP:0002362",
+    "HP:0003076",
+    "HP:0003077",
+    "HP:0003115",
+    "HP:0005978",
+    "HP:0006699",
+    "HP:0010980",
+    "HP:0011458",
+    "HP:0011537",
+    "HP:0011687",
+    "HP:0011703",
+    "HP:0011711",
+    "HP:0012050",
+    "HP:0012735",
+    "HP:0030148",
+    "HP:0030223",
+    "HP:0030831"
+  ],
+  "ground_truth": [
+    "CCRD:52.1",
+    "OMIM:115200",
+    "OMIM:302045",
+    "OMIM:600884",
+    "OMIM:601154",
+    "OMIM:601419",
+    "OMIM:601493",
+    "OMIM:601494",
+    "OMIM:604145",
+    "OMIM:604765",
+    "OMIM:605362",
+    "OMIM:605676",
+    "OMIM:606685",
+    "OMIM:607482",
+    "OMIM:608569",
+    "OMIM:609909",
+    "OMIM:610198",
+    "OMIM:611407",
+    "OMIM:611615",
+    "OMIM:611878",
+    "OMIM:611879",
+    "OMIM:611880",
+    "OMIM:612877",
+    "OMIM:613122",
+    "OMIM:613172",
+    "OMIM:613252",
+    "OMIM:613286",
+    "OMIM:613424",
+    "OMIM:613426",
+    "OMIM:613642",
+    "OMIM:613694",
+    "OMIM:613697",
+    "OMIM:613881",
+    "OMIM:614672",
+    "OMIM:615184",
+    "OMIM:615235",
+    "OMIM:615248",
+    "OMIM:615373",
+    "OMIM:615396",
+    "OMIM:615821",
+    "OMIM:615916",
+    "OMIM:616117",
+    "OMIM:618189",
+    "ORPHA:154",
+    "ORPHA:217607",
+    "ORPHA:217622",
+    "ORPHA:300751",
+    "ORPHA:436242",
+    "ORPHA:65282",
+    "ORPHA:66634",
+    "ORPHA:98909"
+  ],
+  "total_elapsed_seconds": 78.806,
+  "method_elapsed_seconds": {
+    "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext": 0.119,
+    "emilyalsentzer/Bio_ClinicalBERT": 0.12,
+    "sentence-transformers/all-MiniLM-L6-v2": 0.091,
+    "cambridgeltl/SapBERT-from-PubMedBERT-fulltext": 0.095,
+    "dmis-lab/biobert-v1.1": 0.106,
+    "mistralai/Mistral-7B-Instruct-v0.2": 44.916,
+    "tfidf": 7.089,
+    "hpo2vec": 10.57,
+    "set_cosine": 3.921,
+    "set_jaccard": 3.921,
+    "set_dice": 3.921,
+    "set_overlap": 3.921,
+    "denoising_autoencoder": 0.015
+  },
+  "methods_run": [
+    "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+    "denoising_autoencoder",
+    "dmis-lab/biobert-v1.1",
+    "emilyalsentzer/Bio_ClinicalBERT",
+    "hpo2vec",
+    "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+    "mistralai/Mistral-7B-Instruct-v0.2",
+    "sentence-transformers/all-MiniLM-L6-v2",
+    "set_cosine",
+    "set_dice",
+    "set_jaccard",
+    "set_overlap",
+    "tfidf_cosine"
+  ],
+  "results": {
+    "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext": [
+      {
+        "rank": 1,
+        "canonical_disease_id": "ORPHA:99105",
+        "representative_disease_id": "ORPHA:99105",
+        "label": "Atrial septal defect, sinus venosus type",
+        "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.9927442073822021,
+        "matched_aliases": [
+          "ORPHA:99105"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9927442073822021,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Dyspnea",
+            "Premature atrial contractions"
+          ],
+          "n_shared_phenotype_labels": 2,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Dilated cardiomyopathy; Abnormal left ventricle morphology; Single ventricle; Hypoplastic ventricle; Dyspnea; obsolete Difficulty walking; Sleep disturbance; Shuffling gait; Glycosuria; Hyperlipidemia; Abnormal EKG; Type II diabetes mellitus; Premature atrial contra",
+          "disease_text_preview": "Disease: Atrial septal defect, sinus venosus type Phenotypes: Stroke; Congestive heart failure; Atrial arrhythmia; Thromboembolism; Palpitations; Pulmonary arterial hypertension; Dyspnea; Exertional dyspnea; Exercise intolerance; Atrial flutter; Supraventricular tachycardia; Atrial fibrillation; Sup"
+        },
+        "metadata": {
+          "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 2,
+        "canonical_disease_id": "ORPHA:439232",
+        "representative_disease_id": "ORPHA:439232",
+        "label": "AApoAIV amyloidosis",
+        "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.9924278259277344,
+        "matched_aliases": [
+          "ORPHA:439232"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9924278259277344,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Hypertension",
+            "Hyperlipidemia"
+          ],
+          "n_shared_phenotype_labels": 2,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Dilated cardiomyopathy; Abnormal left ventricle morphology; Single ventricle; Hypoplastic ventricle; Dyspnea; obsolete Difficulty walking; Sleep disturbance; Shuffling gait; Glycosuria; Hyperlipidemia; Abnormal EKG; Type II diabetes mellitus; Premature atrial contra",
+          "disease_text_preview": "Disease: AApoAIV amyloidosis Phenotypes: Proteinuria; Glomerular sclerosis; Diabetes mellitus; Hypertension; Hypertrophic cardiomyopathy; Coronary artery atherosclerosis; Sinus bradycardia; Left ventricular hypertrophy; Renal amyloidosis; Abnormal lung morphology; Hyperlipidemia; Elevated circulatin"
+        },
+        "metadata": {
+          "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 3,
+        "canonical_disease_id": "ORPHA:293910",
+        "representative_disease_id": "ORPHA:293910",
+        "label": "Arrhythmogenic right ventricular dysplasia, familial, 14",
+        "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.9923589825630188,
+        "matched_aliases": [
+          "ORPHA:293910"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9923589825630188,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [],
+          "n_shared_phenotype_labels": 0,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Dilated cardiomyopathy; Abnormal left ventricle morphology; Single ventricle; Hypoplastic ventricle; Dyspnea; obsolete Difficulty walking; Sleep disturbance; Shuffling gait; Glycosuria; Hyperlipidemia; Abnormal EKG; Type II diabetes mellitus; Premature atrial contra",
+          "disease_text_preview": "Disease: Arrhythmogenic right ventricular dysplasia, familial, 14 Phenotypes: Autosomal dominant inheritance; Sudden cardiac death; Palpitations; Woolly hair; Late onset; Middle age onset; Juvenile onset; Ventricular arrhythmia; Ventricular tachycardia; Right ventricular dilatation; Premature ventri"
+        },
+        "metadata": {
+          "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 4,
+        "canonical_disease_id": "ORPHA:99095",
+        "representative_disease_id": "ORPHA:99095",
+        "label": "Congenital Gerbode defect",
+        "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.9922806024551392,
+        "matched_aliases": [
+          "ORPHA:99095"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9922806024551392,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Dyspnea"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Dilated cardiomyopathy; Abnormal left ventricle morphology; Single ventricle; Hypoplastic ventricle; Dyspnea; obsolete Difficulty walking; Sleep disturbance; Shuffling gait; Glycosuria; Hyperlipidemia; Abnormal EKG; Type II diabetes mellitus; Premature atrial contra",
+          "disease_text_preview": "Disease: Congenital Gerbode defect Phenotypes: Muscle weakness; Ventricular septal defect; Congestive heart failure; Pulmonic stenosis; Right ventricular hypertrophy; Right ventricular failure; Ankle swelling; Fever; Palpitations; Pulmonary arterial hypertension; Dyspnea; Constrictive pericarditis; "
+        },
+        "metadata": {
+          "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 5,
+        "canonical_disease_id": "ORPHA:101016",
+        "representative_disease_id": "ORPHA:101016",
+        "label": "Long QT syndrome 16",
+        "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.9921662211418152,
+        "matched_aliases": [
+          "ORPHA:101016"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9921662211418152,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [],
+          "n_shared_phenotype_labels": 0,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Dilated cardiomyopathy; Abnormal left ventricle morphology; Single ventricle; Hypoplastic ventricle; Dyspnea; obsolete Difficulty walking; Sleep disturbance; Shuffling gait; Glycosuria; Hyperlipidemia; Abnormal EKG; Type II diabetes mellitus; Premature atrial contra",
+          "disease_text_preview": "Disease: Long QT syndrome 16 Phenotypes: Autosomal dominant inheritance; Hearing impairment; Abnormality of prenatal development or birth; Seizure; Syncope; Sudden cardiac death; Bradycardia; Torsade de pointes; Sinus bradycardia; Hypokalemia; Congenital onset; Ventricular arrhythmia; Abnormal T-wav"
+        },
+        "metadata": {
+          "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 6,
+        "canonical_disease_id": "ORPHA:99106",
+        "representative_disease_id": "ORPHA:99106",
+        "label": "Atrial septal defect, ostium primum type",
+        "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.9920951128005981,
+        "matched_aliases": [
+          "ORPHA:99106"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9920951128005981,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Dyspnea"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Dilated cardiomyopathy; Abnormal left ventricle morphology; Single ventricle; Hypoplastic ventricle; Dyspnea; obsolete Difficulty walking; Sleep disturbance; Shuffling gait; Glycosuria; Hyperlipidemia; Abnormal EKG; Type II diabetes mellitus; Premature atrial contra",
+          "disease_text_preview": "Disease: Atrial septal defect, ostium primum type Description: Atrioventricular septal defect with communication at the atrial level only. Phenotypes: Cyanosis; Syncope; Failure to thrive; Congestive heart failure; Mitral regurgitation; Atrioventricular block; Right-to-left shunt; Left ventricular h"
+        },
+        "metadata": {
+          "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 7,
+        "canonical_disease_id": "OMIM:115197",
+        "representative_disease_id": "OMIM:115197",
+        "label": "Cardiomyopathy, familial hypertrophic, 4",
+        "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.9919904470443726,
+        "matched_aliases": [
+          "OMIM:115197"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9919904470443726,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Dyspnea"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Dilated cardiomyopathy; Abnormal left ventricle morphology; Single ventricle; Hypoplastic ventricle; Dyspnea; obsolete Difficulty walking; Sleep disturbance; Shuffling gait; Glycosuria; Hyperlipidemia; Abnormal EKG; Type II diabetes mellitus; Premature atrial contra",
+          "disease_text_preview": "Disease: Cardiomyopathy, familial hypertrophic, 4 Phenotypes: Autosomal dominant inheritance; Autosomal recessive inheritance; Syncope; Stroke; Ascites; Congestive heart failure; Hypertrophic cardiomyopathy; Cardiomegaly; Sudden cardiac death; Ventricular fibrillation; Atrioventricular block; Cardia"
+        },
+        "metadata": {
+          "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 8,
+        "canonical_disease_id": "ORPHA:439854",
+        "representative_disease_id": "ORPHA:439854",
+        "label": "Glycogen storage disease of heart, lethal congenital",
+        "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.991968035697937,
+        "matched_aliases": [
+          "ORPHA:439854"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.991968035697937,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Anasarca"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Dilated cardiomyopathy; Abnormal left ventricle morphology; Single ventricle; Hypoplastic ventricle; Dyspnea; obsolete Difficulty walking; Sleep disturbance; Shuffling gait; Glycosuria; Hyperlipidemia; Abnormal EKG; Type II diabetes mellitus; Premature atrial contra",
+          "disease_text_preview": "Disease: Glycogen storage disease of heart, lethal congenital Description: Any glycogen storage disease in which the cause of the disease is a mutation in the PRKAG2 gene. Phenotypes: Autosomal dominant inheritance; Enlarged kidney; Macroglossia; Hydrocephalus; Cataract; Cyanosis; Seizure; Ascites; "
+        },
+        "metadata": {
+          "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 9,
+        "canonical_disease_id": "ORPHA:615",
+        "representative_disease_id": "ORPHA:615",
+        "label": "Myxoma, intracardiac",
+        "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.9919645190238953,
+        "matched_aliases": [
+          "ORPHA:615"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9919645190238953,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Heart murmur"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Dilated cardiomyopathy; Abnormal left ventricle morphology; Single ventricle; Hypoplastic ventricle; Dyspnea; obsolete Difficulty walking; Sleep disturbance; Shuffling gait; Glycosuria; Hyperlipidemia; Abnormal EKG; Type II diabetes mellitus; Premature atrial contra",
+          "disease_text_preview": "Disease: Myxoma, intracardiac Phenotypes: Autosomal dominant inheritance; Jaundice; Cholestasis; Ascites; Congestive heart failure; Cardiomegaly; Thromboembolism; Fever; Vascular dilatation; Exertional dyspnea; Easy fatigability; Dilatation of the cerebral artery; Tricuspid regurgitation; Bacterial "
+        },
+        "metadata": {
+          "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 10,
+        "canonical_disease_id": "ORPHA:60041",
+        "representative_disease_id": "ORPHA:60041",
+        "label": "Heart block, congenital",
+        "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.9919388294219971,
+        "matched_aliases": [
+          "ORPHA:60041"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9919388294219971,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [],
+          "n_shared_phenotype_labels": 0,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Dilated cardiomyopathy; Abnormal left ventricle morphology; Single ventricle; Hypoplastic ventricle; Dyspnea; obsolete Difficulty walking; Sleep disturbance; Shuffling gait; Glycosuria; Hyperlipidemia; Abnormal EKG; Type II diabetes mellitus; Premature atrial contra",
+          "disease_text_preview": "Disease: Heart block, congenital Description: Heart block that occurs on or before 28 days of life. Phenotypes: Autosomal recessive inheritance; Cyanosis; Hyperhidrosis; Pallor; Syncope; Intrauterine growth retardation; Oligohydramnios; Weak cry; Premature birth; Congestive heart failure; Cardiomyop"
+        },
+        "metadata": {
+          "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      }
+    ],
+    "emilyalsentzer/Bio_ClinicalBERT": [
+      {
+        "rank": 1,
+        "canonical_disease_id": "OMIM:613838",
+        "representative_disease_id": "OMIM:613838",
+        "label": "Cardiomyopathy, familial hypertrophic, 16",
+        "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+        "model_type": "hf_encoder",
+        "score": 0.9822878837585449,
+        "matched_aliases": [
+          "OMIM:613838"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9822878837585449,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Dyspnea"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Dilated cardiomyopathy; Abnormal left ventricle morphology; Single ventricle; Hypoplastic ventricle; Dyspnea; obsolete Difficulty walking; Sleep disturbance; Shuffling gait; Glycosuria; Hyperlipidemia; Abnormal EKG; Type II diabetes mellitus; Premature atrial contra",
+          "disease_text_preview": "Disease: Cardiomyopathy, familial hypertrophic, 16 Phenotypes: Autosomal dominant inheritance; Syncope; Hypertrophic cardiomyopathy; Sudden cardiac death; Asymmetric septal hypertrophy; Left ventricular hypertrophy; Palpitations; Dyspnea; Juvenile onset; Ventricular tachycardia; Atrial fibrillation;"
+        },
+        "metadata": {
+          "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 2,
+        "canonical_disease_id": "ORPHA:439232",
+        "representative_disease_id": "ORPHA:439232",
+        "label": "AApoAIV amyloidosis",
+        "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+        "model_type": "hf_encoder",
+        "score": 0.9788635969161987,
+        "matched_aliases": [
+          "ORPHA:439232"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9788635969161987,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Hypertension",
+            "Hyperlipidemia"
+          ],
+          "n_shared_phenotype_labels": 2,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Dilated cardiomyopathy; Abnormal left ventricle morphology; Single ventricle; Hypoplastic ventricle; Dyspnea; obsolete Difficulty walking; Sleep disturbance; Shuffling gait; Glycosuria; Hyperlipidemia; Abnormal EKG; Type II diabetes mellitus; Premature atrial contra",
+          "disease_text_preview": "Disease: AApoAIV amyloidosis Phenotypes: Proteinuria; Glomerular sclerosis; Diabetes mellitus; Hypertension; Hypertrophic cardiomyopathy; Coronary artery atherosclerosis; Sinus bradycardia; Left ventricular hypertrophy; Renal amyloidosis; Abnormal lung morphology; Hyperlipidemia; Elevated circulatin"
+        },
+        "metadata": {
+          "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 3,
+        "canonical_disease_id": "OMIM:600858",
+        "representative_disease_id": "OMIM:600858",
+        "label": "Cardiomyopathy, familial hypertrophic, 6",
+        "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+        "model_type": "hf_encoder",
+        "score": 0.978607177734375,
+        "matched_aliases": [
+          "OMIM:600858"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.978607177734375,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [],
+          "n_shared_phenotype_labels": 0,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Dilated cardiomyopathy; Abnormal left ventricle morphology; Single ventricle; Hypoplastic ventricle; Dyspnea; obsolete Difficulty walking; Sleep disturbance; Shuffling gait; Glycosuria; Hyperlipidemia; Abnormal EKG; Type II diabetes mellitus; Premature atrial contra",
+          "disease_text_preview": "Disease: Cardiomyopathy, familial hypertrophic, 6 Phenotypes: Autosomal dominant inheritance; Syncope; Congestive heart failure; Hypertrophic cardiomyopathy; Asymmetric septal hypertrophy; Atrioventricular block; Sinus bradycardia; Wolff-Parkinson-White syndrome; Palpitations; Ventricular preexcitat"
+        },
+        "metadata": {
+          "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 4,
+        "canonical_disease_id": "OMIM:612098",
+        "representative_disease_id": "OMIM:612098",
+        "label": "Cardiomyopathy, familial hypertrophic, 11",
+        "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+        "model_type": "hf_encoder",
+        "score": 0.9783028364181519,
+        "matched_aliases": [
+          "OMIM:612098"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9783028364181519,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Dyspnea",
+            "Left anterior fascicular block"
+          ],
+          "n_shared_phenotype_labels": 2,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Dilated cardiomyopathy; Abnormal left ventricle morphology; Single ventricle; Hypoplastic ventricle; Dyspnea; obsolete Difficulty walking; Sleep disturbance; Shuffling gait; Glycosuria; Hyperlipidemia; Abnormal EKG; Type II diabetes mellitus; Premature atrial contra",
+          "disease_text_preview": "Disease: Cardiomyopathy, familial hypertrophic, 11 Phenotypes: Autosomal dominant inheritance; Syncope; Atrial septal defect; Congestive heart failure; Hypertrophic cardiomyopathy; Ventricular fibrillation; Angina pectoris; Cardiac arrest; Left ventricular hypertrophy; Palpitations; Dyspnea; Adult o"
+        },
+        "metadata": {
+          "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 5,
+        "canonical_disease_id": "OMIM:613873",
+        "representative_disease_id": "OMIM:613873",
+        "label": "Cardiomyopathy, familial hypertrophic, 17",
+        "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+        "model_type": "hf_encoder",
+        "score": 0.9773654937744141,
+        "matched_aliases": [
+          "OMIM:613873"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9773654937744141,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Dyspnea"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Dilated cardiomyopathy; Abnormal left ventricle morphology; Single ventricle; Hypoplastic ventricle; Dyspnea; obsolete Difficulty walking; Sleep disturbance; Shuffling gait; Glycosuria; Hyperlipidemia; Abnormal EKG; Type II diabetes mellitus; Premature atrial contra",
+          "disease_text_preview": "Disease: Cardiomyopathy, familial hypertrophic, 17 Phenotypes: Autosomal dominant inheritance; Hypertrophic cardiomyopathy; Angina pectoris; Myocardial fibrosis; Left ventricular hypertrophy; Palpitations; Dyspnea; Ventricular tachycardia; Atrial fibrillation; Young adult onset"
+        },
+        "metadata": {
+          "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 6,
+        "canonical_disease_id": "MONDO:0010946",
+        "representative_disease_id": "MONDO:0010946",
+        "label": "hypertrophic cardiomyopathy 6",
+        "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+        "model_type": "hf_encoder",
+        "score": 0.9771896600723267,
+        "matched_aliases": [
+          "MONDO:0010946"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9771896600723267,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [],
+          "n_shared_phenotype_labels": 0,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Dilated cardiomyopathy; Abnormal left ventricle morphology; Single ventricle; Hypoplastic ventricle; Dyspnea; obsolete Difficulty walking; Sleep disturbance; Shuffling gait; Glycosuria; Hyperlipidemia; Abnormal EKG; Type II diabetes mellitus; Premature atrial contra",
+          "disease_text_preview": "Disease: hypertrophic cardiomyopathy 6 Description: Any hypertrophic cardiomyopathy in which the cause of the disease is a mutation in the PRKAG2 gene. Phenotypes: Syncope; Congestive heart failure; Hypertrophic cardiomyopathy; Asymmetric septal hypertrophy; Atrioventricular block; Sinus bradycardia"
+        },
+        "metadata": {
+          "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 7,
+        "canonical_disease_id": "OMIM:608758",
+        "representative_disease_id": "OMIM:608758",
+        "label": "Cardiomyopathy, familial hypertrophic, 10",
+        "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+        "model_type": "hf_encoder",
+        "score": 0.97710120677948,
+        "matched_aliases": [
+          "OMIM:608758"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.97710120677948,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Dyspnea"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Dilated cardiomyopathy; Abnormal left ventricle morphology; Single ventricle; Hypoplastic ventricle; Dyspnea; obsolete Difficulty walking; Sleep disturbance; Shuffling gait; Glycosuria; Hyperlipidemia; Abnormal EKG; Type II diabetes mellitus; Premature atrial contra",
+          "disease_text_preview": "Disease: Cardiomyopathy, familial hypertrophic, 10 Phenotypes: Autosomal dominant inheritance; Hypertrophic cardiomyopathy; Sudden cardiac death; Ventricular fibrillation; Asymmetric septal hypertrophy; Left ventricular hypertrophy; Palpitations; Dyspnea; Vertigo; Adult onset; Supraventricular tachy"
+        },
+        "metadata": {
+          "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 8,
+        "canonical_disease_id": "OMIM:115197",
+        "representative_disease_id": "OMIM:115197",
+        "label": "Cardiomyopathy, familial hypertrophic, 4",
+        "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+        "model_type": "hf_encoder",
+        "score": 0.9768772125244141,
+        "matched_aliases": [
+          "OMIM:115197"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9768772125244141,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Dyspnea"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Dilated cardiomyopathy; Abnormal left ventricle morphology; Single ventricle; Hypoplastic ventricle; Dyspnea; obsolete Difficulty walking; Sleep disturbance; Shuffling gait; Glycosuria; Hyperlipidemia; Abnormal EKG; Type II diabetes mellitus; Premature atrial contra",
+          "disease_text_preview": "Disease: Cardiomyopathy, familial hypertrophic, 4 Phenotypes: Autosomal dominant inheritance; Autosomal recessive inheritance; Syncope; Stroke; Ascites; Congestive heart failure; Hypertrophic cardiomyopathy; Cardiomegaly; Sudden cardiac death; Ventricular fibrillation; Atrioventricular block; Cardia"
+        },
+        "metadata": {
+          "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 9,
+        "canonical_disease_id": "ORPHA:98855",
+        "representative_disease_id": "MONDO:0014676",
+        "label": "Emery-Dreifuss muscular dystrophy 3, autosomal recessive",
+        "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+        "model_type": "hf_encoder",
+        "score": 0.9762201309204102,
+        "matched_aliases": [
+          "MONDO:0014676"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9762201309204102,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Dilated cardiomyopathy"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Dilated cardiomyopathy; Abnormal left ventricle morphology; Single ventricle; Hypoplastic ventricle; Dyspnea; obsolete Difficulty walking; Sleep disturbance; Shuffling gait; Glycosuria; Hyperlipidemia; Abnormal EKG; Type II diabetes mellitus; Premature atrial contra",
+          "disease_text_preview": "Disease: Emery-Dreifuss muscular dystrophy 3, autosomal recessive Phenotypes: Pectus excavatum; Sprengel anomaly; Intellectual disability; Hypotonia; Gait disturbance; Muscle weakness; Joint stiffness; Obesity; Dilated cardiomyopathy; Sudden cardiac death; Atrioventricular block; Achilles tendon con"
+        },
+        "metadata": {
+          "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 10,
+        "canonical_disease_id": "OMIM:613243",
+        "representative_disease_id": "OMIM:613243",
+        "label": "Cardiomyopathy, familial hypertrophic, 13",
+        "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+        "model_type": "hf_encoder",
+        "score": 0.9762120842933655,
+        "matched_aliases": [
+          "OMIM:613243"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9762120842933655,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Dyspnea",
+            "Left anterior fascicular block"
+          ],
+          "n_shared_phenotype_labels": 2,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Dilated cardiomyopathy; Abnormal left ventricle morphology; Single ventricle; Hypoplastic ventricle; Dyspnea; obsolete Difficulty walking; Sleep disturbance; Shuffling gait; Glycosuria; Hyperlipidemia; Abnormal EKG; Type II diabetes mellitus; Premature atrial contra",
+          "disease_text_preview": "Disease: Cardiomyopathy, familial hypertrophic, 13 Phenotypes: Autosomal dominant inheritance; Syncope; Hypertrophic cardiomyopathy; Ventricular fibrillation; Angina pectoris; Dyspnea; Exertional dyspnea; Middle age onset; Juvenile onset; Atrial fibrillation; Concentric hypertrophic cardiomyopathy; "
+        },
+        "metadata": {
+          "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      }
+    ],
+    "sentence-transformers/all-MiniLM-L6-v2": [
+      {
+        "rank": 1,
+        "canonical_disease_id": "ORPHA:99105",
+        "representative_disease_id": "ORPHA:99105",
+        "label": "Atrial septal defect, sinus venosus type",
+        "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+        "model_type": "sentence_transformer",
+        "score": 0.7591420412063599,
+        "matched_aliases": [
+          "ORPHA:99105"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.7591420412063599,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Dyspnea",
+            "Premature atrial contractions"
+          ],
+          "n_shared_phenotype_labels": 2,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Dilated cardiomyopathy; Abnormal left ventricle morphology; Single ventricle; Hypoplastic ventricle; Dyspnea; obsolete Difficulty walking; Sleep disturbance; Shuffling gait; Glycosuria; Hyperlipidemia; Abnormal EKG; Type II diabetes mellitus; Premature atrial contra",
+          "disease_text_preview": "Disease: Atrial septal defect, sinus venosus type Phenotypes: Stroke; Congestive heart failure; Atrial arrhythmia; Thromboembolism; Palpitations; Pulmonary arterial hypertension; Dyspnea; Exertional dyspnea; Exercise intolerance; Atrial flutter; Supraventricular tachycardia; Atrial fibrillation; Sup"
+        },
+        "metadata": {
+          "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+          "model_type": "sentence_transformer",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": null,
+          "pooling": null,
+          "sentence_transformer_encode": true,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 2,
+        "canonical_disease_id": "MONDO:0859381",
+        "representative_disease_id": "MONDO:0859381",
+        "label": "cardiomyopathy, dilated, 100",
+        "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+        "model_type": "sentence_transformer",
+        "score": 0.7492126226425171,
+        "matched_aliases": [
+          "MONDO:0859381"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.7492126226425171,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Dilated cardiomyopathy"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Dilated cardiomyopathy; Abnormal left ventricle morphology; Single ventricle; Hypoplastic ventricle; Dyspnea; obsolete Difficulty walking; Sleep disturbance; Shuffling gait; Glycosuria; Hyperlipidemia; Abnormal EKG; Type II diabetes mellitus; Premature atrial contra",
+          "disease_text_preview": "Disease: cardiomyopathy, dilated, 100 Phenotypes: Atrial septal defect; Congestive heart failure; Dilated cardiomyopathy; Premature ventricular contraction; Second degree atrioventricular block; Reduced left ventricular ejection fraction"
+        },
+        "metadata": {
+          "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+          "model_type": "sentence_transformer",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": null,
+          "pooling": null,
+          "sentence_transformer_encode": true,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 3,
+        "canonical_disease_id": "OMIM:612098",
+        "representative_disease_id": "OMIM:612098",
+        "label": "Cardiomyopathy, familial hypertrophic, 11",
+        "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+        "model_type": "sentence_transformer",
+        "score": 0.7472079396247864,
+        "matched_aliases": [
+          "OMIM:612098"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.7472079396247864,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Dyspnea",
+            "Left anterior fascicular block"
+          ],
+          "n_shared_phenotype_labels": 2,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Dilated cardiomyopathy; Abnormal left ventricle morphology; Single ventricle; Hypoplastic ventricle; Dyspnea; obsolete Difficulty walking; Sleep disturbance; Shuffling gait; Glycosuria; Hyperlipidemia; Abnormal EKG; Type II diabetes mellitus; Premature atrial contra",
+          "disease_text_preview": "Disease: Cardiomyopathy, familial hypertrophic, 11 Phenotypes: Autosomal dominant inheritance; Syncope; Atrial septal defect; Congestive heart failure; Hypertrophic cardiomyopathy; Ventricular fibrillation; Angina pectoris; Cardiac arrest; Left ventricular hypertrophy; Palpitations; Dyspnea; Adult o"
+        },
+        "metadata": {
+          "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+          "model_type": "sentence_transformer",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": null,
+          "pooling": null,
+          "sentence_transformer_encode": true,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 4,
+        "canonical_disease_id": "OMIM:620247",
+        "representative_disease_id": "OMIM:620247",
+        "label": "Cardiomyopathy, dilated, 1OO",
+        "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+        "model_type": "sentence_transformer",
+        "score": 0.7366817593574524,
+        "matched_aliases": [
+          "OMIM:620247"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.7366817593574524,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Dilated cardiomyopathy"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Dilated cardiomyopathy; Abnormal left ventricle morphology; Single ventricle; Hypoplastic ventricle; Dyspnea; obsolete Difficulty walking; Sleep disturbance; Shuffling gait; Glycosuria; Hyperlipidemia; Abnormal EKG; Type II diabetes mellitus; Premature atrial contra",
+          "disease_text_preview": "Disease: Cardiomyopathy, dilated, 1OO Phenotypes: Autosomal dominant inheritance; Atrial septal defect; Congestive heart failure; Dilated cardiomyopathy; Middle age onset; Premature ventricular contraction; Young adult onset; Second degree atrioventricular block; Reduced left ventricular ejection fr"
+        },
+        "metadata": {
+          "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+          "model_type": "sentence_transformer",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": null,
+          "pooling": null,
+          "sentence_transformer_encode": true,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 5,
+        "canonical_disease_id": "ORPHA:99104",
+        "representative_disease_id": "ORPHA:99104",
+        "label": "Atrial septal defect, coronary sinus type",
+        "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+        "model_type": "sentence_transformer",
+        "score": 0.7353790998458862,
+        "matched_aliases": [
+          "ORPHA:99104"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.7353790998458862,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Dyspnea"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Dilated cardiomyopathy; Abnormal left ventricle morphology; Single ventricle; Hypoplastic ventricle; Dyspnea; obsolete Difficulty walking; Sleep disturbance; Shuffling gait; Glycosuria; Hyperlipidemia; Abnormal EKG; Type II diabetes mellitus; Premature atrial contra",
+          "disease_text_preview": "Disease: Atrial septal defect, coronary sinus type Phenotypes: Cyanosis; Syncope; Stroke; Right ventricular failure; Palpitations; Pneumonia; Pulmonary arterial hypertension; Dyspnea; Transient ischemic attack; Recurrent bacterial infections; Exertional dyspnea; Exercise intolerance; Supraventricula"
+        },
+        "metadata": {
+          "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+          "model_type": "sentence_transformer",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": null,
+          "pooling": null,
+          "sentence_transformer_encode": true,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 6,
+        "canonical_disease_id": "MONDO:0859358",
+        "representative_disease_id": "MONDO:0859358",
+        "label": "cardiomyopathy, dilated, 2H",
+        "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+        "model_type": "sentence_transformer",
+        "score": 0.7345862984657288,
+        "matched_aliases": [
+          "MONDO:0859358"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.7345862984657288,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [],
+          "n_shared_phenotype_labels": 0,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Dilated cardiomyopathy; Abnormal left ventricle morphology; Single ventricle; Hypoplastic ventricle; Dyspnea; obsolete Difficulty walking; Sleep disturbance; Shuffling gait; Glycosuria; Hyperlipidemia; Abnormal EKG; Type II diabetes mellitus; Premature atrial contra",
+          "disease_text_preview": "Disease: cardiomyopathy, dilated, 2H Phenotypes: Secundum atrial septal defect; Tachypnea; Cardiorespiratory arrest; Muscular ventricular septal defect; Feeding difficulties; Reduced left ventricular ejection fraction"
+        },
+        "metadata": {
+          "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+          "model_type": "sentence_transformer",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": null,
+          "pooling": null,
+          "sentence_transformer_encode": true,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 7,
+        "canonical_disease_id": "ORPHA:2041",
+        "representative_disease_id": "ORPHA:2041",
+        "label": "Coronary arterial fistula",
+        "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+        "model_type": "sentence_transformer",
+        "score": 0.7325245141983032,
+        "matched_aliases": [
+          "ORPHA:2041"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.7325245141983032,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Abnormal EKG"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Dilated cardiomyopathy; Abnormal left ventricle morphology; Single ventricle; Hypoplastic ventricle; Dyspnea; obsolete Difficulty walking; Sleep disturbance; Shuffling gait; Glycosuria; Hyperlipidemia; Abnormal EKG; Type II diabetes mellitus; Premature atrial contra",
+          "disease_text_preview": "Disease: Coronary arterial fistula Description: A congenital disorder characterized by an abnormal connection between one or more of the coronary arteries and a cardiac chamber or great vessel. Phenotypes: Syncope; Abnormal heart morphology; Atrial septal defect; Congestive heart failure; Cardiomega"
+        },
+        "metadata": {
+          "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+          "model_type": "sentence_transformer",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": null,
+          "pooling": null,
+          "sentence_transformer_encode": true,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 8,
+        "canonical_disease_id": "ORPHA:99106",
+        "representative_disease_id": "ORPHA:99106",
+        "label": "Atrial septal defect, ostium primum type",
+        "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+        "model_type": "sentence_transformer",
+        "score": 0.7267556190490723,
+        "matched_aliases": [
+          "ORPHA:99106"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.7267556190490723,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Dyspnea"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Dilated cardiomyopathy; Abnormal left ventricle morphology; Single ventricle; Hypoplastic ventricle; Dyspnea; obsolete Difficulty walking; Sleep disturbance; Shuffling gait; Glycosuria; Hyperlipidemia; Abnormal EKG; Type II diabetes mellitus; Premature atrial contra",
+          "disease_text_preview": "Disease: Atrial septal defect, ostium primum type Description: Atrioventricular septal defect with communication at the atrial level only. Phenotypes: Cyanosis; Syncope; Failure to thrive; Congestive heart failure; Mitral regurgitation; Atrioventricular block; Right-to-left shunt; Left ventricular h"
+        },
+        "metadata": {
+          "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+          "model_type": "sentence_transformer",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": null,
+          "pooling": null,
+          "sentence_transformer_encode": true,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 9,
+        "canonical_disease_id": "MONDO:0030062",
+        "representative_disease_id": "MONDO:0030062",
+        "label": "arrhythmogenic right ventricular dysplasia, familial, 14",
+        "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+        "model_type": "sentence_transformer",
+        "score": 0.7263610363006592,
+        "matched_aliases": [
+          "MONDO:0030062"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.7263610363006592,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [],
+          "n_shared_phenotype_labels": 0,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Dilated cardiomyopathy; Abnormal left ventricle morphology; Single ventricle; Hypoplastic ventricle; Dyspnea; obsolete Difficulty walking; Sleep disturbance; Shuffling gait; Glycosuria; Hyperlipidemia; Abnormal EKG; Type II diabetes mellitus; Premature atrial contra",
+          "disease_text_preview": "Disease: arrhythmogenic right ventricular dysplasia, familial, 14 Phenotypes: Palpitations; Ventricular tachycardia; Right ventricular dilatation; Premature ventricular contraction; Left bundle branch block; Presyncope; Chest pain"
+        },
+        "metadata": {
+          "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+          "model_type": "sentence_transformer",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": null,
+          "pooling": null,
+          "sentence_transformer_encode": true,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 10,
+        "canonical_disease_id": "ORPHA:99095",
+        "representative_disease_id": "ORPHA:99095",
+        "label": "Congenital Gerbode defect",
+        "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+        "model_type": "sentence_transformer",
+        "score": 0.7252407073974609,
+        "matched_aliases": [
+          "ORPHA:99095"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.7252407073974609,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Dyspnea"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Dilated cardiomyopathy; Abnormal left ventricle morphology; Single ventricle; Hypoplastic ventricle; Dyspnea; obsolete Difficulty walking; Sleep disturbance; Shuffling gait; Glycosuria; Hyperlipidemia; Abnormal EKG; Type II diabetes mellitus; Premature atrial contra",
+          "disease_text_preview": "Disease: Congenital Gerbode defect Phenotypes: Muscle weakness; Ventricular septal defect; Congestive heart failure; Pulmonic stenosis; Right ventricular hypertrophy; Right ventricular failure; Ankle swelling; Fever; Palpitations; Pulmonary arterial hypertension; Dyspnea; Constrictive pericarditis; "
+        },
+        "metadata": {
+          "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+          "model_type": "sentence_transformer",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": null,
+          "pooling": null,
+          "sentence_transformer_encode": true,
+          "deduplicated_to_canonical": true
+        }
+      }
+    ],
+    "cambridgeltl/SapBERT-from-PubMedBERT-fulltext": [
+      {
+        "rank": 1,
+        "canonical_disease_id": "ORPHA:2924",
+        "representative_disease_id": "MONDO:0000447",
+        "label": "autosomal dominant polycystic liver disease",
+        "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.819266676902771,
+        "matched_aliases": [
+          "MONDO:0000447",
+          "ORPHA:2924"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.819266676902771,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Dyspnea"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Dilated cardiomyopathy; Abnormal left ventricle morphology; Single ventricle; Hypoplastic ventricle; Dyspnea; obsolete Difficulty walking; Sleep disturbance; Shuffling gait; Glycosuria; Hyperlipidemia; Abnormal EKG; Type II diabetes mellitus; Premature atrial contra",
+          "disease_text_preview": "Disease: autosomal dominant polycystic liver disease Phenotypes: Jaundice; Abnormal heart valve morphology; Abnormality of the pancreas; Gastroesophageal reflux; Abdominal pain; Abnormality of the respiratory system; Respiratory insufficiency; Dyspnea; Gastrointestinal hemorrhage; Hepatomegaly; Vasc"
+        },
+        "metadata": {
+          "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 2,
+        "canonical_disease_id": "OMIM:612098",
+        "representative_disease_id": "OMIM:612098",
+        "label": "Cardiomyopathy, familial hypertrophic, 11",
+        "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.8107361197471619,
+        "matched_aliases": [
+          "OMIM:612098"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.8107361197471619,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Dyspnea",
+            "Left anterior fascicular block"
+          ],
+          "n_shared_phenotype_labels": 2,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Dilated cardiomyopathy; Abnormal left ventricle morphology; Single ventricle; Hypoplastic ventricle; Dyspnea; obsolete Difficulty walking; Sleep disturbance; Shuffling gait; Glycosuria; Hyperlipidemia; Abnormal EKG; Type II diabetes mellitus; Premature atrial contra",
+          "disease_text_preview": "Disease: Cardiomyopathy, familial hypertrophic, 11 Phenotypes: Autosomal dominant inheritance; Syncope; Atrial septal defect; Congestive heart failure; Hypertrophic cardiomyopathy; Ventricular fibrillation; Angina pectoris; Cardiac arrest; Left ventricular hypertrophy; Palpitations; Dyspnea; Adult o"
+        },
+        "metadata": {
+          "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 3,
+        "canonical_disease_id": "ORPHA:85450",
+        "representative_disease_id": "ORPHA:85450",
+        "label": "Amyloidosis, familial visceral",
+        "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.808763861656189,
+        "matched_aliases": [
+          "ORPHA:85450"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.808763861656189,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Hypertension"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Dilated cardiomyopathy; Abnormal left ventricle morphology; Single ventricle; Hypoplastic ventricle; Dyspnea; obsolete Difficulty walking; Sleep disturbance; Shuffling gait; Glycosuria; Hyperlipidemia; Abnormal EKG; Type II diabetes mellitus; Premature atrial contra",
+          "disease_text_preview": "Disease: Amyloidosis, familial visceral Phenotypes: Autosomal dominant inheritance; Nocturia; Abnormal testis morphology; Renal insufficiency; Renal tubular atrophy; Proteinuria; Nephrotic syndrome; Nephropathy; Hypogonadism; Hematuria; Oligozoospermia; Hypertension; Petechiae; Edema; Purpura; Skin "
+        },
+        "metadata": {
+          "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 4,
+        "canonical_disease_id": "OMIM:115197",
+        "representative_disease_id": "OMIM:115197",
+        "label": "Cardiomyopathy, familial hypertrophic, 4",
+        "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.8043686151504517,
+        "matched_aliases": [
+          "OMIM:115197"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.8043686151504517,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Dyspnea"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Dilated cardiomyopathy; Abnormal left ventricle morphology; Single ventricle; Hypoplastic ventricle; Dyspnea; obsolete Difficulty walking; Sleep disturbance; Shuffling gait; Glycosuria; Hyperlipidemia; Abnormal EKG; Type II diabetes mellitus; Premature atrial contra",
+          "disease_text_preview": "Disease: Cardiomyopathy, familial hypertrophic, 4 Phenotypes: Autosomal dominant inheritance; Autosomal recessive inheritance; Syncope; Stroke; Ascites; Congestive heart failure; Hypertrophic cardiomyopathy; Cardiomegaly; Sudden cardiac death; Ventricular fibrillation; Atrioventricular block; Cardia"
+        },
+        "metadata": {
+          "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 5,
+        "canonical_disease_id": "ORPHA:1329",
+        "representative_disease_id": "ORPHA:1329",
+        "label": "Complete atrioventricular septal defect",
+        "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.8000509142875671,
+        "matched_aliases": [
+          "ORPHA:1329"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.8000509142875671,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Abnormal EKG"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Dilated cardiomyopathy; Abnormal left ventricle morphology; Single ventricle; Hypoplastic ventricle; Dyspnea; obsolete Difficulty walking; Sleep disturbance; Shuffling gait; Glycosuria; Hyperlipidemia; Abnormal EKG; Type II diabetes mellitus; Premature atrial contra",
+          "disease_text_preview": "Disease: Complete atrioventricular septal defect Description: Complete atrioventricular canal (CAVC), also referred to as complete atrioventricular septal defect, is characterized by an ostium primum atrial septal defect, a common atrioventricular valve and a variable deficiency of the ventricular s"
+        },
+        "metadata": {
+          "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 6,
+        "canonical_disease_id": "ORPHA:330001",
+        "representative_disease_id": "ORPHA:330001",
+        "label": "Wild type ATTR amyloidosis",
+        "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.7998754978179932,
+        "matched_aliases": [
+          "ORPHA:330001"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.7998754978179932,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Abnormal EKG"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Dilated cardiomyopathy; Abnormal left ventricle morphology; Single ventricle; Hypoplastic ventricle; Dyspnea; obsolete Difficulty walking; Sleep disturbance; Shuffling gait; Glycosuria; Hyperlipidemia; Abnormal EKG; Type II diabetes mellitus; Premature atrial contra",
+          "disease_text_preview": "Disease: Wild type ATTR amyloidosis Phenotypes: Renal insufficiency; Proteinuria; Nephrotic syndrome; Nephropathy; Sensory neuropathy; Congestive heart failure; Hypertrophic cardiomyopathy; Aortic valve stenosis; Myocardial infarction; Bradycardia; Weight loss; Chronic diarrhea; Pleural effusion; He"
+        },
+        "metadata": {
+          "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 7,
+        "canonical_disease_id": "ORPHA:2041",
+        "representative_disease_id": "ORPHA:2041",
+        "label": "Coronary arterial fistula",
+        "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.7974836826324463,
+        "matched_aliases": [
+          "ORPHA:2041"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.7974836826324463,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Abnormal EKG"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Dilated cardiomyopathy; Abnormal left ventricle morphology; Single ventricle; Hypoplastic ventricle; Dyspnea; obsolete Difficulty walking; Sleep disturbance; Shuffling gait; Glycosuria; Hyperlipidemia; Abnormal EKG; Type II diabetes mellitus; Premature atrial contra",
+          "disease_text_preview": "Disease: Coronary arterial fistula Description: A congenital disorder characterized by an abnormal connection between one or more of the coronary arteries and a cardiac chamber or great vessel. Phenotypes: Syncope; Abnormal heart morphology; Atrial septal defect; Congestive heart failure; Cardiomega"
+        },
+        "metadata": {
+          "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 8,
+        "canonical_disease_id": "ORPHA:319646",
+        "representative_disease_id": "ORPHA:319646",
+        "label": "Congenital disorder of glycosylation, type It",
+        "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.7955809235572815,
+        "matched_aliases": [
+          "ORPHA:319646"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.7955809235572815,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Dilated cardiomyopathy",
+            "Dyspnea"
+          ],
+          "n_shared_phenotype_labels": 2,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Dilated cardiomyopathy; Abnormal left ventricle morphology; Single ventricle; Hypoplastic ventricle; Dyspnea; obsolete Difficulty walking; Sleep disturbance; Shuffling gait; Glycosuria; Hyperlipidemia; Abnormal EKG; Type II diabetes mellitus; Premature atrial contra",
+          "disease_text_preview": "Disease: Congenital disorder of glycosylation, type It Phenotypes: Autosomal recessive inheritance; Hydronephrosis; Cleft palate; Bifid uvula; Pierre-Robin sequence; Micrognathia; Recurrent otitis media; Blue sclerae; Delayed puberty; Hypotonia; Global developmental delay; Motor delay; Muscle weakne"
+        },
+        "metadata": {
+          "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 9,
+        "canonical_disease_id": "ORPHA:99106",
+        "representative_disease_id": "ORPHA:99106",
+        "label": "Atrial septal defect, ostium primum type",
+        "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.795563817024231,
+        "matched_aliases": [
+          "ORPHA:99106"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.795563817024231,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Dyspnea"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Dilated cardiomyopathy; Abnormal left ventricle morphology; Single ventricle; Hypoplastic ventricle; Dyspnea; obsolete Difficulty walking; Sleep disturbance; Shuffling gait; Glycosuria; Hyperlipidemia; Abnormal EKG; Type II diabetes mellitus; Premature atrial contra",
+          "disease_text_preview": "Disease: Atrial septal defect, ostium primum type Description: Atrioventricular septal defect with communication at the atrial level only. Phenotypes: Cyanosis; Syncope; Failure to thrive; Congestive heart failure; Mitral regurgitation; Atrioventricular block; Right-to-left shunt; Left ventricular h"
+        },
+        "metadata": {
+          "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 10,
+        "canonical_disease_id": "ORPHA:567546",
+        "representative_disease_id": "ORPHA:567546",
+        "label": "Idiopathic steroid-sensitive nephrotic syndrome with secondary steroid resistance",
+        "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.7944221496582031,
+        "matched_aliases": [
+          "ORPHA:567546"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.7944221496582031,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Hypertension",
+            "Dyspnea",
+            "Hyperlipidemia",
+            "Anasarca"
+          ],
+          "n_shared_phenotype_labels": 4,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Dilated cardiomyopathy; Abnormal left ventricle morphology; Single ventricle; Hypoplastic ventricle; Dyspnea; obsolete Difficulty walking; Sleep disturbance; Shuffling gait; Glycosuria; Hyperlipidemia; Abnormal EKG; Type II diabetes mellitus; Premature atrial contra",
+          "disease_text_preview": "Disease: Idiopathic steroid-sensitive nephrotic syndrome with secondary steroid resistance Phenotypes: Hydrocele testis; Focal segmental glomerulosclerosis; Facial edema; Hypertension; Edema; Ascites; Abdominal pain; Dyspnea; Pleural effusion; Pulmonary embolism; Microscopic hematuria; Hypoalbuminem"
+        },
+        "metadata": {
+          "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      }
+    ],
+    "dmis-lab/biobert-v1.1": [
+      {
+        "rank": 1,
+        "canonical_disease_id": "ORPHA:732",
+        "representative_disease_id": "ORPHA:732",
+        "label": "Polymyositis",
+        "model_name": "dmis-lab/biobert-v1.1",
+        "model_type": "hf_encoder",
+        "score": 0.973910927772522,
+        "matched_aliases": [
+          "ORPHA:732"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.973910927772522,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Dilated cardiomyopathy",
+            "Cough"
+          ],
+          "n_shared_phenotype_labels": 2,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Dilated cardiomyopathy; Abnormal left ventricle morphology; Single ventricle; Hypoplastic ventricle; Dyspnea; obsolete Difficulty walking; Sleep disturbance; Shuffling gait; Glycosuria; Hyperlipidemia; Abnormal EKG; Type II diabetes mellitus; Premature atrial contra",
+          "disease_text_preview": "Disease: Polymyositis Description: A rare idiopathic inflammatory myopathy characterized by symmetric proximal muscle weakness and elevated muscle enzymes. Phenotypes: Abnormal renal tubule morphology; Chondrocalcinosis; Skin rash; Hypotonia; Gait disturbance; Reduced tendon reflexes; Arthritis; Abn"
+        },
+        "metadata": {
+          "model_name": "dmis-lab/biobert-v1.1",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 2,
+        "canonical_disease_id": "ORPHA:99103",
+        "representative_disease_id": "ORPHA:99103",
+        "label": "Atrial septal defect 3",
+        "model_name": "dmis-lab/biobert-v1.1",
+        "model_type": "hf_encoder",
+        "score": 0.9727989435195923,
+        "matched_aliases": [
+          "ORPHA:99103"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9727989435195923,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Dyspnea"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Dilated cardiomyopathy; Abnormal left ventricle morphology; Single ventricle; Hypoplastic ventricle; Dyspnea; obsolete Difficulty walking; Sleep disturbance; Shuffling gait; Glycosuria; Hyperlipidemia; Abnormal EKG; Type II diabetes mellitus; Premature atrial contra",
+          "disease_text_preview": "Disease: Atrial septal defect 3 Phenotypes: Autosomal dominant inheritance; Cyanosis; Syncope; Stroke; Atrial septal defect; Abnormal mitral valve morphology; Congestive heart failure; Mitral regurgitation; Patent foramen ovale; Coarctation of aorta; Secundum atrial septal defect; Right ventricular "
+        },
+        "metadata": {
+          "model_name": "dmis-lab/biobert-v1.1",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 3,
+        "canonical_disease_id": "ORPHA:101016",
+        "representative_disease_id": "ORPHA:101016",
+        "label": "Long QT syndrome 16",
+        "model_name": "dmis-lab/biobert-v1.1",
+        "model_type": "hf_encoder",
+        "score": 0.9722159504890442,
+        "matched_aliases": [
+          "ORPHA:101016"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9722159504890442,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [],
+          "n_shared_phenotype_labels": 0,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Dilated cardiomyopathy; Abnormal left ventricle morphology; Single ventricle; Hypoplastic ventricle; Dyspnea; obsolete Difficulty walking; Sleep disturbance; Shuffling gait; Glycosuria; Hyperlipidemia; Abnormal EKG; Type II diabetes mellitus; Premature atrial contra",
+          "disease_text_preview": "Disease: Long QT syndrome 16 Phenotypes: Autosomal dominant inheritance; Hearing impairment; Abnormality of prenatal development or birth; Seizure; Syncope; Sudden cardiac death; Bradycardia; Torsade de pointes; Sinus bradycardia; Hypokalemia; Congenital onset; Ventricular arrhythmia; Abnormal T-wav"
+        },
+        "metadata": {
+          "model_name": "dmis-lab/biobert-v1.1",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 4,
+        "canonical_disease_id": "ORPHA:154",
+        "representative_disease_id": "MONDO:0700335",
+        "label": "familial isolated dilated cardiomyopathy",
+        "model_name": "dmis-lab/biobert-v1.1",
+        "model_type": "hf_encoder",
+        "score": 0.9719349145889282,
+        "matched_aliases": [
+          "MONDO:0700335"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9719349145889282,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Dilated cardiomyopathy",
+            "Dyspnea",
+            "Premature atrial contractions"
+          ],
+          "n_shared_phenotype_labels": 3,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Dilated cardiomyopathy; Abnormal left ventricle morphology; Single ventricle; Hypoplastic ventricle; Dyspnea; obsolete Difficulty walking; Sleep disturbance; Shuffling gait; Glycosuria; Hyperlipidemia; Abnormal EKG; Type II diabetes mellitus; Premature atrial contra",
+          "disease_text_preview": "Disease: familial isolated dilated cardiomyopathy Phenotypes: Sensorineural hearing impairment; Edema; Congestive heart failure; Dilated cardiomyopathy; Thromboembolic stroke; Exertional dyspnea; Myopathy; EMG abnormality; Arrhythmia; Fatigue; Orthopnea; Left ventricular systolic dysfunction; Lipoat"
+        },
+        "metadata": {
+          "model_name": "dmis-lab/biobert-v1.1",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 5,
+        "canonical_disease_id": "MONDO:0014329",
+        "representative_disease_id": "MONDO:0014329",
+        "label": "atrial standstill 2",
+        "model_name": "dmis-lab/biobert-v1.1",
+        "model_type": "hf_encoder",
+        "score": 0.9718475341796875,
+        "matched_aliases": [
+          "MONDO:0014329"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9718475341796875,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Dyspnea"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Dilated cardiomyopathy; Abnormal left ventricle morphology; Single ventricle; Hypoplastic ventricle; Dyspnea; obsolete Difficulty walking; Sleep disturbance; Shuffling gait; Glycosuria; Hyperlipidemia; Abnormal EKG; Type II diabetes mellitus; Premature atrial contra",
+          "disease_text_preview": "Disease: atrial standstill 2 Description: Any atrial standstill in which the cause of the disease is a mutation in the NPPA gene. Phenotypes: Stroke; Cardiomyopathy; Bradycardia; Atrial arrhythmia; Palpitations; Dyspnea; Vascular dilatation; Hyperpepsinogenemia I; Dilatation of the ventricular cavit"
+        },
+        "metadata": {
+          "model_name": "dmis-lab/biobert-v1.1",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 6,
+        "canonical_disease_id": "ORPHA:99104",
+        "representative_disease_id": "ORPHA:99104",
+        "label": "Atrial septal defect, coronary sinus type",
+        "model_name": "dmis-lab/biobert-v1.1",
+        "model_type": "hf_encoder",
+        "score": 0.9715954661369324,
+        "matched_aliases": [
+          "ORPHA:99104"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9715954661369324,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Dyspnea"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Dilated cardiomyopathy; Abnormal left ventricle morphology; Single ventricle; Hypoplastic ventricle; Dyspnea; obsolete Difficulty walking; Sleep disturbance; Shuffling gait; Glycosuria; Hyperlipidemia; Abnormal EKG; Type II diabetes mellitus; Premature atrial contra",
+          "disease_text_preview": "Disease: Atrial septal defect, coronary sinus type Phenotypes: Cyanosis; Syncope; Stroke; Right ventricular failure; Palpitations; Pneumonia; Pulmonary arterial hypertension; Dyspnea; Transient ischemic attack; Recurrent bacterial infections; Exertional dyspnea; Exercise intolerance; Supraventricula"
+        },
+        "metadata": {
+          "model_name": "dmis-lab/biobert-v1.1",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 7,
+        "canonical_disease_id": "ORPHA:34587",
+        "representative_disease_id": "ORPHA:34587",
+        "label": "Danon disease",
+        "model_name": "dmis-lab/biobert-v1.1",
+        "model_type": "hf_encoder",
+        "score": 0.9712843894958496,
+        "matched_aliases": [
+          "ORPHA:34587"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9712843894958496,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Dilated cardiomyopathy"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Dilated cardiomyopathy; Abnormal left ventricle morphology; Single ventricle; Hypoplastic ventricle; Dyspnea; obsolete Difficulty walking; Sleep disturbance; Shuffling gait; Glycosuria; Hyperlipidemia; Abnormal EKG; Type II diabetes mellitus; Premature atrial contra",
+          "disease_text_preview": "Disease: Danon disease Description: A lysosomal glycogen storage disease characterized by severe cardiomyopathy and variable degrees of muscle weakness, frequently associated with intellectual deficit. Phenotypes: Visual impairment; Intellectual disability; Global developmental delay; Syncope; Gait "
+        },
+        "metadata": {
+          "model_name": "dmis-lab/biobert-v1.1",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 8,
+        "canonical_disease_id": "OMIM:600858",
+        "representative_disease_id": "OMIM:600858",
+        "label": "Cardiomyopathy, familial hypertrophic, 6",
+        "model_name": "dmis-lab/biobert-v1.1",
+        "model_type": "hf_encoder",
+        "score": 0.9710595607757568,
+        "matched_aliases": [
+          "OMIM:600858"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9710595607757568,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [],
+          "n_shared_phenotype_labels": 0,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Dilated cardiomyopathy; Abnormal left ventricle morphology; Single ventricle; Hypoplastic ventricle; Dyspnea; obsolete Difficulty walking; Sleep disturbance; Shuffling gait; Glycosuria; Hyperlipidemia; Abnormal EKG; Type II diabetes mellitus; Premature atrial contra",
+          "disease_text_preview": "Disease: Cardiomyopathy, familial hypertrophic, 6 Phenotypes: Autosomal dominant inheritance; Syncope; Congestive heart failure; Hypertrophic cardiomyopathy; Asymmetric septal hypertrophy; Atrioventricular block; Sinus bradycardia; Wolff-Parkinson-White syndrome; Palpitations; Ventricular preexcitat"
+        },
+        "metadata": {
+          "model_name": "dmis-lab/biobert-v1.1",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 9,
+        "canonical_disease_id": "ORPHA:289377",
+        "representative_disease_id": "ORPHA:289377",
+        "label": "Congenital myopathy 5 with cardiomyopathy",
+        "model_name": "dmis-lab/biobert-v1.1",
+        "model_type": "hf_encoder",
+        "score": 0.9704294800758362,
+        "matched_aliases": [
+          "ORPHA:289377"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9704294800758362,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Dilated cardiomyopathy"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Dilated cardiomyopathy; Abnormal left ventricle morphology; Single ventricle; Hypoplastic ventricle; Dyspnea; obsolete Difficulty walking; Sleep disturbance; Shuffling gait; Glycosuria; Hyperlipidemia; Abnormal EKG; Type II diabetes mellitus; Premature atrial contra",
+          "disease_text_preview": "Disease: Congenital myopathy 5 with cardiomyopathy Phenotypes: Autosomal recessive inheritance; Ptosis; Motor delay; Congestive heart failure; Dilated cardiomyopathy; Sudden cardiac death; Atrioventricular block; Scoliosis; Myopathy; Elevated circulating creatine kinase concentration; Generalized mu"
+        },
+        "metadata": {
+          "model_name": "dmis-lab/biobert-v1.1",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 10,
+        "canonical_disease_id": "MONDO:0032633",
+        "representative_disease_id": "MONDO:0032633",
+        "label": "mitochondrial complex I deficiency, nuclear type 29",
+        "model_name": "dmis-lab/biobert-v1.1",
+        "model_type": "hf_encoder",
+        "score": 0.9701535105705261,
+        "matched_aliases": [
+          "MONDO:0032633"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9701535105705261,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Dyspnea"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Dilated cardiomyopathy; Abnormal left ventricle morphology; Single ventricle; Hypoplastic ventricle; Dyspnea; obsolete Difficulty walking; Sleep disturbance; Shuffling gait; Glycosuria; Hyperlipidemia; Abnormal EKG; Type II diabetes mellitus; Premature atrial contra",
+          "disease_text_preview": "Disease: mitochondrial complex I deficiency, nuclear type 29 Phenotypes: Muscle weakness; Failure to thrive; Abnormal heart morphology; Hypertrophic cardiomyopathy; Palpitations; Vomiting; Dyspnea; Increased circulating lactate concentration; Lactic acidosis; Myalgia; Hyperalaninemia; Easy fatigabil"
+        },
+        "metadata": {
+          "model_name": "dmis-lab/biobert-v1.1",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      }
+    ],
+    "mistralai/Mistral-7B-Instruct-v0.2": [
+      {
+        "rank": 1,
+        "disease_name": "Disease",
+        "ordo_id": "ORPHA:377788",
+        "matched_phenotypes": "peripheral neuropathy, shuffling gait, difficulty walking",
+        "confidence": "high",
+        "validated_against_profiles": true,
+        "model": "mistralai/Mistral-7B-Instruct-v0.2",
+        "method": "llm_retrieval"
+      },
+      {
+        "rank": 2,
+        "disease_name": "Pick disease",
+        "ordo_id": "MONDO:0008243",
+        "matched_phenotypes": "dyspnea, hepatosplenomegaly, neurological symptoms (perseverative thought)",
+        "confidence": "medium",
+        "validated_against_profiles": true,
+        "model": "mistralai/Mistral-7B-Instruct-v0.2",
+        "method": "llm_retrieval"
+      },
+      {
+        "rank": 3,
+        "disease_name": "Disease",
+        "ordo_id": "ORPHA:377788",
+        "matched_phenotypes": "dilated cardiomyopathy, hypotonia, glycosuria",
+        "confidence": "high",
+        "validated_against_profiles": true,
+        "model": "mistralai/Mistral-7B-Instruct-v0.2",
+        "method": "llm_retrieval"
+      },
+      {
+        "rank": 4,
+        "disease_name": "Alström Syndrome",
+        "ordo_id": "ORPHA:203700",
+        "matched_phenotypes": "sensorineural hearing loss, obesity, insulin resistance, diabetes mellitus",
+        "confidence": "medium",
+        "validated_against_profiles": false,
+        "model": "mistralai/Mistral-7B-Instruct-v0.2",
+        "method": "llm_retrieval"
+      },
+      {
+        "rank": 5,
+        "disease_name": "Williams-Beuren Syndrome (WBS)",
+        "ordo_id": "DECIPHER:3",
+        "matched_phenotypes": "hypertelorism, short stature, hypercalcemia, dental anomaly",
+        "confidence": "low",
+        "validated_against_profiles": true,
+        "model": "mistralai/Mistral-7B-Instruct-v0.2",
+        "method": "llm_retrieval"
+      },
+      {
+        "rank": 6,
+        "disease_name": "Long QT syndrome 13",
+        "ordo_id": "ORPHA:768",
+        "matched_phenotypes": "syncope, abnormal ECG, premature atrial contractions",
+        "confidence": "medium",
+        "validated_against_profiles": true,
+        "model": "mistralai/Mistral-7B-Instruct-v0.2",
+        "method": "llm_retrieval"
+      },
+      {
+        "rank": 7,
+        "disease_name": "Fabry disease",
+        "ordo_id": "ORPHA:324",
+        "matched_phenotypes": "angioedema, renal involvement, corneal opacity, gastrointestinal symptoms",
+        "confidence": "low",
+        "validated_against_profiles": true,
+        "model": "mistralai/Mistral-7B-Instruct-v0.2",
+        "method": "llm_retrieval"
+      },
+      {
+        "rank": 8,
+        "disease_name": "Prader-Willi syndrome (Type 1)",
+        "ordo_id": "DECIPHER:14",
+        "matched_phenotypes": "growth hormone deficiency, cognitive impairment, excessive hunger",
+        "confidence": "low",
+        "validated_against_profiles": true,
+        "model": "mistralai/Mistral-7B-Instruct-v0.2",
+        "method": "llm_retrieval"
+      },
+      {
+        "rank": 9,
+        "disease_name": "Noonan syndrome 11",
+        "ordo_id": "ORPHA:648",
+        "matched_phenotypes": "short stature, heart defects, characteristic facial features",
+        "confidence": "low",
+        "validated_against_profiles": true,
+        "model": "mistralai/Mistral-7B-Instruct-v0.2",
+        "method": "llm_retrieval"
+      },
+      {
+        "rank": 10,
+        "disease_name": "Tangier disease",
+        "ordo_id": "ORPHA:31150",
+        "matched_phenotypes": "orange skin and eyes, lipid accumulation, splenomegaly",
+        "confidence": "low",
+        "validated_against_profiles": true,
+        "model": "mistralai/Mistral-7B-Instruct-v0.2",
+        "method": "llm_retrieval"
+      }
+    ],
+    "tfidf_cosine": [
+      {
+        "rank": 1,
+        "disease_id": "ORPHA:436242",
+        "label": "Cardiac conduction disease with or without dilated cardiomyopathy",
+        "method_name": "tfidf",
+        "score": 0.3049827916602069,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.3049827916602069,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0001626",
+            "HP:0001627",
+            "HP:0001637",
+            "HP:0001638",
+            "HP:0001644",
+            "HP:0001649",
+            "HP:0003115",
+            "HP:0004755"
+          ],
+          "n_shared_terms": 21,
+          "patient_coverage": 0.2413793103448276,
+          "disease_coverage": 0.5526315789473685,
+          "n_patient_terms": 87,
+          "n_disease_terms": 38,
+          "n_union_terms": 104,
+          "top_weighted_matches": [
+            {
+              "term": "HP:0011711",
+              "idf_weight": 7.421725951892201
+            },
+            {
+              "term": "HP:0011713",
+              "idf_weight": 6.351284540190787
+            },
+            {
+              "term": "HP:0004755",
+              "idf_weight": 6.168962983396833
+            },
+            {
+              "term": "HP:0011702",
+              "idf_weight": 5.7957587375068895
+            },
+            {
+              "term": "HP:0011710",
+              "idf_weight": 5.301462415692109
+            }
+          ]
+        }
+      },
+      {
+        "rank": 2,
+        "disease_id": "ORPHA:563",
+        "label": "Peripartum cardiomyopathy",
+        "method_name": "tfidf",
+        "score": 0.26646930906156374,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.26646930906156374,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0000818",
+            "HP:0000819",
+            "HP:0000822",
+            "HP:0000969",
+            "HP:0001507",
+            "HP:0001626",
+            "HP:0001627"
+          ],
+          "n_shared_terms": 45,
+          "patient_coverage": 0.5172413793103449,
+          "disease_coverage": 0.3543307086614173,
+          "n_patient_terms": 87,
+          "n_disease_terms": 127,
+          "n_union_terms": 169,
+          "top_weighted_matches": [
+            {
+              "term": "HP:0011703",
+              "idf_weight": 7.073419257623985
+            },
+            {
+              "term": "HP:0011713",
+              "idf_weight": 6.351284540190787
+            },
+            {
+              "term": "HP:0011702",
+              "idf_weight": 5.7957587375068895
+            },
+            {
+              "term": "HP:0030148",
+              "idf_weight": 5.4522853054266935
+            },
+            {
+              "term": "HP:0031657",
+              "idf_weight": 5.363337819410197
+            }
+          ]
+        }
+      },
+      {
+        "rank": 3,
+        "disease_id": "MONDO:0012799",
+        "label": "hypertrophic cardiomyopathy 11",
+        "method_name": "tfidf",
+        "score": 0.2570884986758012,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.2570884986758012,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0001626",
+            "HP:0001627",
+            "HP:0001637",
+            "HP:0001638",
+            "HP:0001649",
+            "HP:0001711",
+            "HP:0001713"
+          ],
+          "n_shared_terms": 27,
+          "patient_coverage": 0.3103448275862069,
+          "disease_coverage": 0.5294117647058824,
+          "n_patient_terms": 87,
+          "n_disease_terms": 51,
+          "n_union_terms": 111,
+          "top_weighted_matches": [
+            {
+              "term": "HP:0011711",
+              "idf_weight": 7.421725951892201
+            },
+            {
+              "term": "HP:0011713",
+              "idf_weight": 6.351284540190787
+            },
+            {
+              "term": "HP:0011710",
+              "idf_weight": 5.301462415692109
+            },
+            {
+              "term": "HP:0005115",
+              "idf_weight": 4.702625914603406
+            },
+            {
+              "term": "HP:0001711",
+              "idf_weight": 4.670190638850252
+            }
+          ]
+        }
+      },
+      {
+        "rank": 4,
+        "disease_id": "ORPHA:3283",
+        "label": "His bundle tachycardia",
+        "method_name": "tfidf",
+        "score": 0.2552562776764078,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.2552562776764078,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0001626",
+            "HP:0001627",
+            "HP:0001637",
+            "HP:0001638",
+            "HP:0001649",
+            "HP:0004755",
+            "HP:0005115",
+            "HP:0011025"
+          ],
+          "n_shared_terms": 14,
+          "patient_coverage": 0.16091954022988506,
+          "disease_coverage": 0.7777777777777778,
+          "n_patient_terms": 87,
+          "n_disease_terms": 18,
+          "n_union_terms": 91,
+          "top_weighted_matches": [
+            {
+              "term": "HP:0011687",
+              "idf_weight": 7.960722452624887
+            },
+            {
+              "term": "HP:0004755",
+              "idf_weight": 6.168962983396833
+            },
+            {
+              "term": "HP:0005115",
+              "idf_weight": 4.702625914603406
+            },
+            {
+              "term": "HP:0001649",
+              "idf_weight": 4.47728697272576
+            },
+            {
+              "term": "HP:0001638",
+              "idf_weight": 3.347017364186959
+            }
+          ]
+        }
+      },
+      {
+        "rank": 5,
+        "disease_id": "MONDO:0037748",
+        "label": "hyperlipoproteinemia",
+        "method_name": "tfidf",
+        "score": 0.249932649439418,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.249932649439418,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0001939",
+            "HP:0003107",
+            "HP:0003119",
+            "HP:0010979",
+            "HP:0010980",
+            "HP:0032180",
+            "HP:0430071"
+          ],
+          "n_shared_terms": 9,
+          "patient_coverage": 0.10344827586206896,
+          "disease_coverage": 1.0,
+          "n_patient_terms": 87,
+          "n_disease_terms": 9,
+          "n_union_terms": 87,
+          "top_weighted_matches": [
+            {
+              "term": "HP:0010980",
+              "idf_weight": 5.974806968955875
+            },
+            {
+              "term": "HP:0010979",
+              "idf_weight": 5.311512751545611
+            },
+            {
+              "term": "HP:0003107",
+              "idf_weight": 4.613327776955709
+            },
+            {
+              "term": "HP:0003119",
+              "idf_weight": 3.824413691303755
+            },
+            {
+              "term": "HP:0430071",
+              "idf_weight": 2.9228426364220663
+            }
+          ]
+        }
+      },
+      {
+        "rank": 6,
+        "disease_id": "MONDO:0011003",
+        "label": "dilated cardiomyopathy 1E",
+        "method_name": "tfidf",
+        "score": 0.2486203116747521,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.2486203116747521,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0001626",
+            "HP:0001627",
+            "HP:0001637",
+            "HP:0001638",
+            "HP:0001644",
+            "HP:0001649",
+            "HP:0004755"
+          ],
+          "n_shared_terms": 22,
+          "patient_coverage": 0.25287356321839083,
+          "disease_coverage": 0.4583333333333333,
+          "n_patient_terms": 87,
+          "n_disease_terms": 48,
+          "n_union_terms": 113,
+          "top_weighted_matches": [
+            {
+              "term": "HP:0006699",
+              "idf_weight": 7.421725951892201
+            },
+            {
+              "term": "HP:0011713",
+              "idf_weight": 6.351284540190787
+            },
+            {
+              "term": "HP:0004755",
+              "idf_weight": 6.168962983396833
+            },
+            {
+              "term": "HP:0011710",
+              "idf_weight": 5.301462415692109
+            },
+            {
+              "term": "HP:0005115",
+              "idf_weight": 4.702625914603406
+            }
+          ]
+        }
+      },
+      {
+        "rank": 7,
+        "disease_id": "MONDO:0012112",
+        "label": "hypertrophic cardiomyopathy 10",
+        "method_name": "tfidf",
+        "score": 0.2437219559531188,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.2437219559531188,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0001626",
+            "HP:0001627",
+            "HP:0001637",
+            "HP:0001638",
+            "HP:0001649",
+            "HP:0001711",
+            "HP:0001713",
+            "HP:0002086"
+          ],
+          "n_shared_terms": 24,
+          "patient_coverage": 0.27586206896551724,
+          "disease_coverage": 0.46153846153846156,
+          "n_patient_terms": 87,
+          "n_disease_terms": 52,
+          "n_union_terms": 115,
+          "top_weighted_matches": [
+            {
+              "term": "HP:0011713",
+              "idf_weight": 6.351284540190787
+            },
+            {
+              "term": "HP:0004755",
+              "idf_weight": 6.168962983396833
+            },
+            {
+              "term": "HP:0011710",
+              "idf_weight": 5.301462415692109
+            },
+            {
+              "term": "HP:0005115",
+              "idf_weight": 4.702625914603406
+            },
+            {
+              "term": "HP:0001711",
+              "idf_weight": 4.670190638850252
+            }
+          ]
+        }
+      },
+      {
+        "rank": 8,
+        "disease_id": "OMIM:612098",
+        "label": "Cardiomyopathy, familial hypertrophic, 11",
+        "method_name": "tfidf",
+        "score": 0.24268240443423528,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.24268240443423528,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0001626",
+            "HP:0001627",
+            "HP:0001637",
+            "HP:0001638",
+            "HP:0001649",
+            "HP:0001711",
+            "HP:0001713"
+          ],
+          "n_shared_terms": 27,
+          "patient_coverage": 0.3103448275862069,
+          "disease_coverage": 0.42857142857142855,
+          "n_patient_terms": 87,
+          "n_disease_terms": 63,
+          "n_union_terms": 123,
+          "top_weighted_matches": [
+            {
+              "term": "HP:0011711",
+              "idf_weight": 7.421725951892201
+            },
+            {
+              "term": "HP:0011713",
+              "idf_weight": 6.351284540190787
+            },
+            {
+              "term": "HP:0011710",
+              "idf_weight": 5.301462415692109
+            },
+            {
+              "term": "HP:0005115",
+              "idf_weight": 4.702625914603406
+            },
+            {
+              "term": "HP:0001711",
+              "idf_weight": 4.670190638850252
+            }
+          ]
+        }
+      },
+      {
+        "rank": 9,
+        "disease_id": "OMIM:608758",
+        "label": "Cardiomyopathy, familial hypertrophic, 10",
+        "method_name": "tfidf",
+        "score": 0.24020451517083094,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.24020451517083094,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0001626",
+            "HP:0001627",
+            "HP:0001637",
+            "HP:0001638",
+            "HP:0001649",
+            "HP:0001711",
+            "HP:0001713",
+            "HP:0002086"
+          ],
+          "n_shared_terms": 24,
+          "patient_coverage": 0.27586206896551724,
+          "disease_coverage": 0.4067796610169492,
+          "n_patient_terms": 87,
+          "n_disease_terms": 59,
+          "n_union_terms": 122,
+          "top_weighted_matches": [
+            {
+              "term": "HP:0011713",
+              "idf_weight": 6.351284540190787
+            },
+            {
+              "term": "HP:0004755",
+              "idf_weight": 6.168962983396833
+            },
+            {
+              "term": "HP:0011710",
+              "idf_weight": 5.301462415692109
+            },
+            {
+              "term": "HP:0005115",
+              "idf_weight": 4.702625914603406
+            },
+            {
+              "term": "HP:0001711",
+              "idf_weight": 4.670190638850252
+            }
+          ]
+        }
+      },
+      {
+        "rank": 10,
+        "disease_id": "MONDO:0013195",
+        "label": "hypertrophic cardiomyopathy 13",
+        "method_name": "tfidf",
+        "score": 0.2286954811603081,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.2286954811603081,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0001626",
+            "HP:0001627",
+            "HP:0001637",
+            "HP:0001638",
+            "HP:0001713",
+            "HP:0002086",
+            "HP:0002094"
+          ],
+          "n_shared_terms": 25,
+          "patient_coverage": 0.28735632183908044,
+          "disease_coverage": 0.5102040816326531,
+          "n_patient_terms": 87,
+          "n_disease_terms": 49,
+          "n_union_terms": 111,
+          "top_weighted_matches": [
+            {
+              "term": "HP:0011711",
+              "idf_weight": 7.421725951892201
+            },
+            {
+              "term": "HP:0011713",
+              "idf_weight": 6.351284540190787
+            },
+            {
+              "term": "HP:0011710",
+              "idf_weight": 5.301462415692109
+            },
+            {
+              "term": "HP:0005115",
+              "idf_weight": 4.702625914603406
+            },
+            {
+              "term": "HP:0012722",
+              "idf_weight": 4.649137229652419
+            }
+          ]
+        }
+      }
+    ],
+    "hpo2vec": [
+      {
+        "disease_id": "ORPHA:563",
+        "label": "Peripartum cardiomyopathy",
+        "method_name": "hpo2vec_plus",
+        "score": 0.9105419404477192,
+        "explanation": {
+          "matching_terms": [
+            "HP:0011703",
+            "HP:0011014",
+            "HP:0002094",
+            "HP:0011710",
+            "HP:0001627",
+            "HP:0001952",
+            "HP:0030680",
+            "HP:0005120",
+            "HP:0030956",
+            "HP:0000001",
+            "HP:0001637",
+            "HP:0011458",
+            "HP:0031657",
+            "HP:0001649",
+            "HP:0001626",
+            "HP:0031546",
+            "HP:0002795",
+            "HP:0001713",
+            "HP:0011713",
+            "HP:0000822",
+            "HP:0030972",
+            "HP:0003115",
+            "HP:0000707",
+            "HP:0011675",
+            "HP:0011702",
+            "HP:0000819",
+            "HP:0011025",
+            "HP:0012722",
+            "HP:0001638",
+            "HP:0001939",
+            "HP:0001711",
+            "HP:0000118",
+            "HP:0032263",
+            "HP:0000818",
+            "HP:0025031",
+            "HP:0030148",
+            "HP:0012337",
+            "HP:0001507",
+            "HP:0011032",
+            "HP:0025032",
+            "HP:0001644",
+            "HP:0000969",
+            "HP:0002793",
+            "HP:0030829",
+            "HP:0002086"
+          ],
+          "n_matching": 45,
+          "top_ic_matches": [
+            {
+              "term": "HP:0011703",
+              "ic": 7.073419257623985
+            },
+            {
+              "term": "HP:0011713",
+              "ic": 6.351284540190787
+            },
+            {
+              "term": "HP:0011702",
+              "ic": 5.7957587375068895
+            },
+            {
+              "term": "HP:0030148",
+              "ic": 5.4522853054266935
+            },
+            {
+              "term": "HP:0031657",
+              "ic": 5.363337819410197
+            }
+          ]
+        },
+        "metadata": {
+          "n_patient_terms": 87,
+          "n_disease_terms": 127,
+          "used_propagated_terms": true
+        },
+        "canonical_disease_id": "ORPHA:563",
+        "rank": 1
+      },
+      {
+        "disease_id": "ORPHA:1329",
+        "label": "Complete atrioventricular septal defect",
+        "method_name": "hpo2vec_plus",
+        "score": 0.907191956458876,
+        "explanation": {
+          "matching_terms": [
+            "HP:0002094",
+            "HP:0011710",
+            "HP:0001627",
+            "HP:0030680",
+            "HP:0005120",
+            "HP:0030956",
+            "HP:0000001",
+            "HP:0011458",
+            "HP:0012638",
+            "HP:0031657",
+            "HP:0001649",
+            "HP:0001626",
+            "HP:0031546",
+            "HP:0002795",
+            "HP:0001713",
+            "HP:0003115",
+            "HP:0000707",
+            "HP:0011675",
+            "HP:0011025",
+            "HP:0012722",
+            "HP:0011446",
+            "HP:0001711",
+            "HP:0000118",
+            "HP:0025031",
+            "HP:0030148",
+            "HP:0001507",
+            "HP:0002360",
+            "HP:0025032",
+            "HP:0002793",
+            "HP:0030829",
+            "HP:0002086"
+          ],
+          "n_matching": 31,
+          "top_ic_matches": [
+            {
+              "term": "HP:0030148",
+              "ic": 5.4522853054266935
+            },
+            {
+              "term": "HP:0031657",
+              "ic": 5.363337819410197
+            },
+            {
+              "term": "HP:0011710",
+              "ic": 5.30146241569211
+            },
+            {
+              "term": "HP:0030829",
+              "ic": 4.964990179070897
+            },
+            {
+              "term": "HP:0001711",
+              "ic": 4.670190638850252
+            }
+          ]
+        },
+        "metadata": {
+          "n_patient_terms": 87,
+          "n_disease_terms": 118,
+          "used_propagated_terms": true
+        },
+        "canonical_disease_id": "ORPHA:1329",
+        "rank": 2
+      },
+      {
+        "disease_id": "ORPHA:97214",
+        "label": "Eisenmenger syndrome",
+        "method_name": "hpo2vec_plus",
+        "score": 0.9061787083266345,
+        "explanation": {
+          "matching_terms": [
+            "HP:0002094",
+            "HP:0011710",
+            "HP:0001627",
+            "HP:0030680",
+            "HP:0005120",
+            "HP:0030956",
+            "HP:0000001",
+            "HP:0011458",
+            "HP:0012638",
+            "HP:0031657",
+            "HP:0001649",
+            "HP:0001626",
+            "HP:0031546",
+            "HP:0005115",
+            "HP:0002795",
+            "HP:0001713",
+            "HP:0000707",
+            "HP:0011675",
+            "HP:0011025",
+            "HP:0012722",
+            "HP:0000119",
+            "HP:0007430",
+            "HP:0011446",
+            "HP:0000079",
+            "HP:0001939",
+            "HP:0032180",
+            "HP:0000118",
+            "HP:0025031",
+            "HP:0004755",
+            "HP:0030148",
+            "HP:0012337",
+            "HP:0011032",
+            "HP:0025032",
+            "HP:0000969",
+            "HP:0002793",
+            "HP:0011277",
+            "HP:0030829",
+            "HP:0002086",
+            "HP:0430071"
+          ],
+          "n_matching": 39,
+          "top_ic_matches": [
+            {
+              "term": "HP:0004755",
+              "ic": 6.168962983396833
+            },
+            {
+              "term": "HP:0007430",
+              "ic": 5.955388883098774
+            },
+            {
+              "term": "HP:0030148",
+              "ic": 5.4522853054266935
+            },
+            {
+              "term": "HP:0031657",
+              "ic": 5.363337819410197
+            },
+            {
+              "term": "HP:0011710",
+              "ic": 5.30146241569211
+            }
+          ]
+        },
+        "metadata": {
+          "n_patient_terms": 87,
+          "n_disease_terms": 187,
+          "used_propagated_terms": true
+        },
+        "canonical_disease_id": "ORPHA:97214",
+        "rank": 3
+      },
+      {
+        "disease_id": "ORPHA:99103",
+        "label": "Atrial septal defect 3",
+        "method_name": "hpo2vec_plus",
+        "score": 0.8995762490010483,
+        "explanation": {
+          "matching_terms": [
+            "HP:0002094",
+            "HP:0011710",
+            "HP:0001627",
+            "HP:0030680",
+            "HP:0005120",
+            "HP:0030956",
+            "HP:0000001",
+            "HP:0012638",
+            "HP:0031657",
+            "HP:0001649",
+            "HP:0001626",
+            "HP:0031546",
+            "HP:0005115",
+            "HP:0002795",
+            "HP:0001713",
+            "HP:0003115",
+            "HP:0000707",
+            "HP:0011675",
+            "HP:0011025",
+            "HP:0012722",
+            "HP:0011446",
+            "HP:0001939",
+            "HP:0000118",
+            "HP:0004755",
+            "HP:0030148",
+            "HP:0012337",
+            "HP:0011032",
+            "HP:0000969",
+            "HP:0002793",
+            "HP:0002086"
+          ],
+          "n_matching": 30,
+          "top_ic_matches": [
+            {
+              "term": "HP:0004755",
+              "ic": 6.168962983396833
+            },
+            {
+              "term": "HP:0030148",
+              "ic": 5.4522853054266935
+            },
+            {
+              "term": "HP:0031657",
+              "ic": 5.363337819410197
+            },
+            {
+              "term": "HP:0011710",
+              "ic": 5.30146241569211
+            },
+            {
+              "term": "HP:0005115",
+              "ic": 4.702625914603406
+            }
+          ]
+        },
+        "metadata": {
+          "n_patient_terms": 87,
+          "n_disease_terms": 127,
+          "used_propagated_terms": true
+        },
+        "canonical_disease_id": "ORPHA:99103",
+        "rank": 4
+      },
+      {
+        "disease_id": "OMIM:115197",
+        "label": "Cardiomyopathy, familial hypertrophic, 4",
+        "method_name": "hpo2vec_plus",
+        "score": 0.8966887250037112,
+        "explanation": {
+          "matching_terms": [
+            "HP:0002094",
+            "HP:0011710",
+            "HP:0001627",
+            "HP:0030680",
+            "HP:0005120",
+            "HP:0030956",
+            "HP:0000001",
+            "HP:0001637",
+            "HP:0012638",
+            "HP:0001626",
+            "HP:0031546",
+            "HP:0002795",
+            "HP:0001713",
+            "HP:0011713",
+            "HP:0000707",
+            "HP:0011675",
+            "HP:0011025",
+            "HP:0012722",
+            "HP:0011446",
+            "HP:0001638",
+            "HP:0001939",
+            "HP:0000118",
+            "HP:0025031",
+            "HP:0012337",
+            "HP:0011032",
+            "HP:0000969",
+            "HP:0002793",
+            "HP:0002086"
+          ],
+          "n_matching": 28,
+          "top_ic_matches": [
+            {
+              "term": "HP:0011713",
+              "ic": 6.351284540190787
+            },
+            {
+              "term": "HP:0011710",
+              "ic": 5.30146241569211
+            },
+            {
+              "term": "HP:0012722",
+              "ic": 4.649137229652419
+            },
+            {
+              "term": "HP:0031546",
+              "ic": 4.559525070962732
+            },
+            {
+              "term": "HP:0002094",
+              "ic": 3.4850103338736833
+            }
+          ]
+        },
+        "metadata": {
+          "n_patient_terms": 87,
+          "n_disease_terms": 100,
+          "used_propagated_terms": true
+        },
+        "canonical_disease_id": "OMIM:115197",
+        "rank": 5
+      },
+      {
+        "disease_id": "ORPHA:75565",
+        "label": "Tropical endomyocardial fibrosis",
+        "method_name": "hpo2vec_plus",
+        "score": 0.8966159508711656,
+        "explanation": {
+          "matching_terms": [
+            "HP:0002094",
+            "HP:0011710",
+            "HP:0001627",
+            "HP:0030680",
+            "HP:0005120",
+            "HP:0030956",
+            "HP:0000001",
+            "HP:0001637",
+            "HP:0011458",
+            "HP:0031657",
+            "HP:0001649",
+            "HP:0001626",
+            "HP:0031546",
+            "HP:0005115",
+            "HP:0002795",
+            "HP:0001713",
+            "HP:0011713",
+            "HP:0003115",
+            "HP:0011675",
+            "HP:0011025",
+            "HP:0012722",
+            "HP:0001638",
+            "HP:0001939",
+            "HP:0032180",
+            "HP:0000118",
+            "HP:0025031",
+            "HP:0004755",
+            "HP:0030148",
+            "HP:0012337",
+            "HP:0001507",
+            "HP:0011032",
+            "HP:0025032",
+            "HP:0000969",
+            "HP:0002793",
+            "HP:0002086"
+          ],
+          "n_matching": 35,
+          "top_ic_matches": [
+            {
+              "term": "HP:0011713",
+              "ic": 6.351284540190787
+            },
+            {
+              "term": "HP:0004755",
+              "ic": 6.168962983396833
+            },
+            {
+              "term": "HP:0030148",
+              "ic": 5.4522853054266935
+            },
+            {
+              "term": "HP:0031657",
+              "ic": 5.363337819410197
+            },
+            {
+              "term": "HP:0011710",
+              "ic": 5.30146241569211
+            }
+          ]
+        },
+        "metadata": {
+          "n_patient_terms": 87,
+          "n_disease_terms": 146,
+          "used_propagated_terms": true
+        },
+        "canonical_disease_id": "ORPHA:75565",
+        "rank": 6
+      },
+      {
+        "disease_id": "ORPHA:980",
+        "label": "Absence of the pulmonary artery",
+        "method_name": "hpo2vec_plus",
+        "score": 0.8952600047250868,
+        "explanation": {
+          "matching_terms": [
+            "HP:0002094",
+            "HP:0001627",
+            "HP:0030680",
+            "HP:0005120",
+            "HP:0030956",
+            "HP:0000001",
+            "HP:0031657",
+            "HP:0001649",
+            "HP:0001626",
+            "HP:0005115",
+            "HP:0002795",
+            "HP:0003115",
+            "HP:0011675",
+            "HP:0011025",
+            "HP:0012735",
+            "HP:0001939",
+            "HP:0000118",
+            "HP:0030148",
+            "HP:0012337",
+            "HP:0001507",
+            "HP:0011032",
+            "HP:0000969",
+            "HP:0002793",
+            "HP:0002086"
+          ],
+          "n_matching": 24,
+          "top_ic_matches": [
+            {
+              "term": "HP:0030148",
+              "ic": 5.4522853054266935
+            },
+            {
+              "term": "HP:0031657",
+              "ic": 5.363337819410197
+            },
+            {
+              "term": "HP:0005115",
+              "ic": 4.702625914603406
+            },
+            {
+              "term": "HP:0003115",
+              "ic": 4.598364904278996
+            },
+            {
+              "term": "HP:0012735",
+              "ic": 4.486097602407915
+            }
+          ]
+        },
+        "metadata": {
+          "n_patient_terms": 87,
+          "n_disease_terms": 112,
+          "used_propagated_terms": true
+        },
+        "canonical_disease_id": "ORPHA:980",
+        "rank": 7
+      },
+      {
+        "disease_id": "ORPHA:439854",
+        "label": "Glycogen storage disease of heart, lethal congenital",
+        "method_name": "hpo2vec_plus",
+        "score": 0.8945212419481664,
+        "explanation": {
+          "matching_terms": [
+            "HP:0011014",
+            "HP:0002094",
+            "HP:0001627",
+            "HP:0030680",
+            "HP:0030956",
+            "HP:0000001",
+            "HP:0001637",
+            "HP:0011458",
+            "HP:0012638",
+            "HP:0001626",
+            "HP:0002795",
+            "HP:0001713",
+            "HP:0030972",
+            "HP:0012050",
+            "HP:0003115",
+            "HP:0000707",
+            "HP:0011675",
+            "HP:0011025",
+            "HP:0000119",
+            "HP:0007430",
+            "HP:0001638",
+            "HP:0000079",
+            "HP:0001939",
+            "HP:0000118",
+            "HP:0025031",
+            "HP:0012337",
+            "HP:0011032",
+            "HP:0025032",
+            "HP:0000969",
+            "HP:0002793",
+            "HP:0002086"
+          ],
+          "n_matching": 31,
+          "top_ic_matches": [
+            {
+              "term": "HP:0012050",
+              "ic": 6.91090032812621
+            },
+            {
+              "term": "HP:0007430",
+              "ic": 5.955388883098774
+            },
+            {
+              "term": "HP:0003115",
+              "ic": 4.598364904278996
+            },
+            {
+              "term": "HP:0002094",
+              "ic": 3.4850103338736833
+            },
+            {
+              "term": "HP:0030972",
+              "ic": 3.394887272035473
+            }
+          ]
+        },
+        "metadata": {
+          "n_patient_terms": 87,
+          "n_disease_terms": 125,
+          "used_propagated_terms": true
+        },
+        "canonical_disease_id": "ORPHA:439854",
+        "rank": 8
+      },
+      {
+        "disease_id": "ORPHA:99106",
+        "label": "Atrial septal defect, ostium primum type",
+        "method_name": "hpo2vec_plus",
+        "score": 0.8936011213881572,
+        "explanation": {
+          "matching_terms": [
+            "HP:0002094",
+            "HP:0011710",
+            "HP:0001627",
+            "HP:0030680",
+            "HP:0005120",
+            "HP:0030956",
+            "HP:0000001",
+            "HP:0012638",
+            "HP:0031657",
+            "HP:0001626",
+            "HP:0031546",
+            "HP:0005115",
+            "HP:0002795",
+            "HP:0001713",
+            "HP:0003115",
+            "HP:0000707",
+            "HP:0011675",
+            "HP:0011025",
+            "HP:0012722",
+            "HP:0011446",
+            "HP:0001939",
+            "HP:0001711",
+            "HP:0000118",
+            "HP:0030148",
+            "HP:0012337",
+            "HP:0001507",
+            "HP:0011032",
+            "HP:0000969",
+            "HP:0002793",
+            "HP:0002086"
+          ],
+          "n_matching": 30,
+          "top_ic_matches": [
+            {
+              "term": "HP:0030148",
+              "ic": 5.4522853054266935
+            },
+            {
+              "term": "HP:0031657",
+              "ic": 5.363337819410197
+            },
+            {
+              "term": "HP:0011710",
+              "ic": 5.30146241569211
+            },
+            {
+              "term": "HP:0005115",
+              "ic": 4.702625914603406
+            },
+            {
+              "term": "HP:0001711",
+              "ic": 4.670190638850252
+            }
+          ]
+        },
+        "metadata": {
+          "n_patient_terms": 87,
+          "n_disease_terms": 130,
+          "used_propagated_terms": true
+        },
+        "canonical_disease_id": "ORPHA:99106",
+        "rank": 9
+      },
+      {
+        "disease_id": "ORPHA:65283",
+        "label": "Timothy syndrome",
+        "method_name": "hpo2vec_plus",
+        "score": 0.8926653545590864,
+        "explanation": {
+          "matching_terms": [
+            "HP:0011014",
+            "HP:0001627",
+            "HP:0030680",
+            "HP:0030956",
+            "HP:0000001",
+            "HP:0012638",
+            "HP:0001649",
+            "HP:0001626",
+            "HP:0031546",
+            "HP:0002795",
+            "HP:0001713",
+            "HP:0003115",
+            "HP:0000707",
+            "HP:0011675",
+            "HP:0011025",
+            "HP:0012722",
+            "HP:0011446",
+            "HP:0001939",
+            "HP:0032180",
+            "HP:0000118",
+            "HP:0000818",
+            "HP:0012337",
+            "HP:0002086"
+          ],
+          "n_matching": 23,
+          "top_ic_matches": [
+            {
+              "term": "HP:0012722",
+              "ic": 4.649137229652419
+            },
+            {
+              "term": "HP:0003115",
+              "ic": 4.598364904278996
+            },
+            {
+              "term": "HP:0031546",
+              "ic": 4.559525070962732
+            },
+            {
+              "term": "HP:0001649",
+              "ic": 4.47728697272576
+            },
+            {
+              "term": "HP:0011675",
+              "ic": 3.278591225500668
+            }
+          ]
+        },
+        "metadata": {
+          "n_patient_terms": 87,
+          "n_disease_terms": 135,
+          "used_propagated_terms": true
+        },
+        "canonical_disease_id": "ORPHA:65283",
+        "rank": 10
+      }
+    ],
+    "set_cosine": [
+      {
+        "rank": 1,
+        "disease_id": "ORPHA:563",
+        "label": "Peripartum cardiomyopathy",
+        "method_name": "set_cosine",
+        "score": 0.4281057164767173,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.4281057164767173,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0000818",
+            "HP:0000819",
+            "HP:0000822",
+            "HP:0000969",
+            "HP:0001507",
+            "HP:0001626",
+            "HP:0001627"
+          ],
+          "n_shared_terms": 45,
+          "patient_coverage": 0.5172413793103449,
+          "disease_coverage": 0.3543307086614173,
+          "n_patient_terms": 87,
+          "n_disease_terms": 127,
+          "n_union_terms": 169
+        }
+      },
+      {
+        "rank": 2,
+        "disease_id": "MONDO:0012799",
+        "label": "hypertrophic cardiomyopathy 11",
+        "method_name": "set_cosine",
+        "score": 0.40533961419994047,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.40533961419994047,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0001626",
+            "HP:0001627",
+            "HP:0001637",
+            "HP:0001638",
+            "HP:0001649",
+            "HP:0001711",
+            "HP:0001713"
+          ],
+          "n_shared_terms": 27,
+          "patient_coverage": 0.3103448275862069,
+          "disease_coverage": 0.5294117647058824,
+          "n_patient_terms": 87,
+          "n_disease_terms": 51,
+          "n_union_terms": 111
+        }
+      },
+      {
+        "rank": 3,
+        "disease_id": "ORPHA:439232",
+        "label": "AApoAIV amyloidosis",
+        "method_name": "set_cosine",
+        "score": 0.40294961922567407,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.40294961922567407,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000079",
+            "HP:0000118",
+            "HP:0000119",
+            "HP:0000818",
+            "HP:0000819",
+            "HP:0000822",
+            "HP:0001626",
+            "HP:0001627",
+            "HP:0001637"
+          ],
+          "n_shared_terms": 41,
+          "patient_coverage": 0.47126436781609193,
+          "disease_coverage": 0.3445378151260504,
+          "n_patient_terms": 87,
+          "n_disease_terms": 119,
+          "n_union_terms": 165
+        }
+      },
+      {
+        "rank": 4,
+        "disease_id": "MONDO:0013455",
+        "label": "hypertrophic cardiomyopathy 16",
+        "method_name": "set_cosine",
+        "score": 0.3951859233866744,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.3951859233866744,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0001626",
+            "HP:0001627",
+            "HP:0001637",
+            "HP:0001638",
+            "HP:0001649",
+            "HP:0001711",
+            "HP:0001713"
+          ],
+          "n_shared_terms": 25,
+          "patient_coverage": 0.28735632183908044,
+          "disease_coverage": 0.5434782608695652,
+          "n_patient_terms": 87,
+          "n_disease_terms": 46,
+          "n_union_terms": 108
+        }
+      },
+      {
+        "rank": 5,
+        "disease_id": "MONDO:0013195",
+        "label": "hypertrophic cardiomyopathy 13",
+        "method_name": "set_cosine",
+        "score": 0.382897333870641,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.382897333870641,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0001626",
+            "HP:0001627",
+            "HP:0001637",
+            "HP:0001638",
+            "HP:0001713",
+            "HP:0002086",
+            "HP:0002094"
+          ],
+          "n_shared_terms": 25,
+          "patient_coverage": 0.28735632183908044,
+          "disease_coverage": 0.5102040816326531,
+          "n_patient_terms": 87,
+          "n_disease_terms": 49,
+          "n_union_terms": 111
+        }
+      },
+      {
+        "rank": 6,
+        "disease_id": "MONDO:0007518",
+        "label": "edema, familial idiopathic, prepubertal",
+        "method_name": "set_cosine",
+        "score": 0.38003655890841154,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.38003655890841154,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000119",
+            "HP:0000707",
+            "HP:0000818",
+            "HP:0000819",
+            "HP:0000969",
+            "HP:0001939",
+            "HP:0001952",
+            "HP:0011014"
+          ],
+          "n_shared_terms": 17,
+          "patient_coverage": 0.19540229885057472,
+          "disease_coverage": 0.7391304347826086,
+          "n_patient_terms": 87,
+          "n_disease_terms": 23,
+          "n_union_terms": 93
+        }
+      },
+      {
+        "rank": 7,
+        "disease_id": "MONDO:0013474",
+        "label": "hypertrophic cardiomyopathy 17",
+        "method_name": "set_cosine",
+        "score": 0.3713906763541037,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.3713906763541037,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0001626",
+            "HP:0001627",
+            "HP:0001637",
+            "HP:0001638",
+            "HP:0001649",
+            "HP:0001711",
+            "HP:0001713",
+            "HP:0002086"
+          ],
+          "n_shared_terms": 18,
+          "patient_coverage": 0.20689655172413793,
+          "disease_coverage": 0.6666666666666666,
+          "n_patient_terms": 87,
+          "n_disease_terms": 27,
+          "n_union_terms": 96
+        }
+      },
+      {
+        "rank": 8,
+        "disease_id": "MONDO:0013030",
+        "label": "dilated cardiomyopathy 1BB",
+        "method_name": "set_cosine",
+        "score": 0.3713906763541037,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.3713906763541037,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0001626",
+            "HP:0001627",
+            "HP:0001637",
+            "HP:0001638",
+            "HP:0001644",
+            "HP:0002086",
+            "HP:0002094",
+            "HP:0002793"
+          ],
+          "n_shared_terms": 18,
+          "patient_coverage": 0.20689655172413793,
+          "disease_coverage": 0.6666666666666666,
+          "n_patient_terms": 87,
+          "n_disease_terms": 27,
+          "n_union_terms": 96
+        }
+      },
+      {
+        "rank": 9,
+        "disease_id": "MONDO:0014352",
+        "label": "abdominal obesity-metabolic syndrome 3",
+        "method_name": "set_cosine",
+        "score": 0.37139067635410367,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.37139067635410367,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0000818",
+            "HP:0000819",
+            "HP:0000822",
+            "HP:0001507",
+            "HP:0001626",
+            "HP:0001939",
+            "HP:0001952"
+          ],
+          "n_shared_terms": 24,
+          "patient_coverage": 0.27586206896551724,
+          "disease_coverage": 0.5,
+          "n_patient_terms": 87,
+          "n_disease_terms": 48,
+          "n_union_terms": 111
+        }
+      },
+      {
+        "rank": 10,
+        "disease_id": "ORPHA:3282",
+        "label": "Multifocal atrial tachycardia",
+        "method_name": "set_cosine",
+        "score": 0.3670245723729402,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.3670245723729402,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000119",
+            "HP:0000707",
+            "HP:0000818",
+            "HP:0001626",
+            "HP:0001627",
+            "HP:0001637",
+            "HP:0001638",
+            "HP:0001649"
+          ],
+          "n_shared_terms": 31,
+          "patient_coverage": 0.3563218390804598,
+          "disease_coverage": 0.3780487804878049,
+          "n_patient_terms": 87,
+          "n_disease_terms": 82,
+          "n_union_terms": 138
+        }
+      }
+    ],
+    "set_jaccard": [
+      {
+        "rank": 1,
+        "disease_id": "ORPHA:563",
+        "label": "Peripartum cardiomyopathy",
+        "method_name": "set_jaccard",
+        "score": 0.26627218934911245,
+        "explanation": {
+          "method": "jaccard",
+          "intersection_size": 45,
+          "union_size": 169,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0000818",
+            "HP:0000819",
+            "HP:0000822",
+            "HP:0000969",
+            "HP:0001507",
+            "HP:0001626",
+            "HP:0001627"
+          ],
+          "n_shared_terms": 45,
+          "patient_coverage": 0.5172413793103449,
+          "disease_coverage": 0.3543307086614173,
+          "n_patient_terms": 87,
+          "n_disease_terms": 127,
+          "n_union_terms": 169
+        }
+      },
+      {
+        "rank": 2,
+        "disease_id": "ORPHA:439232",
+        "label": "AApoAIV amyloidosis",
+        "method_name": "set_jaccard",
+        "score": 0.24848484848484848,
+        "explanation": {
+          "method": "jaccard",
+          "intersection_size": 41,
+          "union_size": 165,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000079",
+            "HP:0000118",
+            "HP:0000119",
+            "HP:0000818",
+            "HP:0000819",
+            "HP:0000822",
+            "HP:0001626",
+            "HP:0001627",
+            "HP:0001637"
+          ],
+          "n_shared_terms": 41,
+          "patient_coverage": 0.47126436781609193,
+          "disease_coverage": 0.3445378151260504,
+          "n_patient_terms": 87,
+          "n_disease_terms": 119,
+          "n_union_terms": 165
+        }
+      },
+      {
+        "rank": 3,
+        "disease_id": "MONDO:0012799",
+        "label": "hypertrophic cardiomyopathy 11",
+        "method_name": "set_jaccard",
+        "score": 0.24324324324324326,
+        "explanation": {
+          "method": "jaccard",
+          "intersection_size": 27,
+          "union_size": 111,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0001626",
+            "HP:0001627",
+            "HP:0001637",
+            "HP:0001638",
+            "HP:0001649",
+            "HP:0001711",
+            "HP:0001713"
+          ],
+          "n_shared_terms": 27,
+          "patient_coverage": 0.3103448275862069,
+          "disease_coverage": 0.5294117647058824,
+          "n_patient_terms": 87,
+          "n_disease_terms": 51,
+          "n_union_terms": 111
+        }
+      },
+      {
+        "rank": 4,
+        "disease_id": "MONDO:0013455",
+        "label": "hypertrophic cardiomyopathy 16",
+        "method_name": "set_jaccard",
+        "score": 0.23148148148148148,
+        "explanation": {
+          "method": "jaccard",
+          "intersection_size": 25,
+          "union_size": 108,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0001626",
+            "HP:0001627",
+            "HP:0001637",
+            "HP:0001638",
+            "HP:0001649",
+            "HP:0001711",
+            "HP:0001713"
+          ],
+          "n_shared_terms": 25,
+          "patient_coverage": 0.28735632183908044,
+          "disease_coverage": 0.5434782608695652,
+          "n_patient_terms": 87,
+          "n_disease_terms": 46,
+          "n_union_terms": 108
+        }
+      },
+      {
+        "rank": 5,
+        "disease_id": "MONDO:0013195",
+        "label": "hypertrophic cardiomyopathy 13",
+        "method_name": "set_jaccard",
+        "score": 0.22522522522522523,
+        "explanation": {
+          "method": "jaccard",
+          "intersection_size": 25,
+          "union_size": 111,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0001626",
+            "HP:0001627",
+            "HP:0001637",
+            "HP:0001638",
+            "HP:0001713",
+            "HP:0002086",
+            "HP:0002094"
+          ],
+          "n_shared_terms": 25,
+          "patient_coverage": 0.28735632183908044,
+          "disease_coverage": 0.5102040816326531,
+          "n_patient_terms": 87,
+          "n_disease_terms": 49,
+          "n_union_terms": 111
+        }
+      },
+      {
+        "rank": 6,
+        "disease_id": "ORPHA:3282",
+        "label": "Multifocal atrial tachycardia",
+        "method_name": "set_jaccard",
+        "score": 0.2246376811594203,
+        "explanation": {
+          "method": "jaccard",
+          "intersection_size": 31,
+          "union_size": 138,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000119",
+            "HP:0000707",
+            "HP:0000818",
+            "HP:0001626",
+            "HP:0001627",
+            "HP:0001637",
+            "HP:0001638",
+            "HP:0001649"
+          ],
+          "n_shared_terms": 31,
+          "patient_coverage": 0.3563218390804598,
+          "disease_coverage": 0.3780487804878049,
+          "n_patient_terms": 87,
+          "n_disease_terms": 82,
+          "n_union_terms": 138
+        }
+      },
+      {
+        "rank": 7,
+        "disease_id": "ORPHA:225",
+        "label": "Diabetes and deafness, maternally inherited",
+        "method_name": "set_jaccard",
+        "score": 0.2215568862275449,
+        "explanation": {
+          "method": "jaccard",
+          "intersection_size": 37,
+          "union_size": 167,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000079",
+            "HP:0000118",
+            "HP:0000119",
+            "HP:0000707",
+            "HP:0000818",
+            "HP:0000819",
+            "HP:0000822",
+            "HP:0001288",
+            "HP:0001626"
+          ],
+          "n_shared_terms": 37,
+          "patient_coverage": 0.42528735632183906,
+          "disease_coverage": 0.3162393162393162,
+          "n_patient_terms": 87,
+          "n_disease_terms": 117,
+          "n_union_terms": 167
+        }
+      },
+      {
+        "rank": 8,
+        "disease_id": "OMIM:612098",
+        "label": "Cardiomyopathy, familial hypertrophic, 11",
+        "method_name": "set_jaccard",
+        "score": 0.21951219512195122,
+        "explanation": {
+          "method": "jaccard",
+          "intersection_size": 27,
+          "union_size": 123,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0001626",
+            "HP:0001627",
+            "HP:0001637",
+            "HP:0001638",
+            "HP:0001649",
+            "HP:0001711",
+            "HP:0001713"
+          ],
+          "n_shared_terms": 27,
+          "patient_coverage": 0.3103448275862069,
+          "disease_coverage": 0.42857142857142855,
+          "n_patient_terms": 87,
+          "n_disease_terms": 63,
+          "n_union_terms": 123
+        }
+      },
+      {
+        "rank": 9,
+        "disease_id": "MONDO:0014352",
+        "label": "abdominal obesity-metabolic syndrome 3",
+        "method_name": "set_jaccard",
+        "score": 0.21621621621621623,
+        "explanation": {
+          "method": "jaccard",
+          "intersection_size": 24,
+          "union_size": 111,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0000818",
+            "HP:0000819",
+            "HP:0000822",
+            "HP:0001507",
+            "HP:0001626",
+            "HP:0001939",
+            "HP:0001952"
+          ],
+          "n_shared_terms": 24,
+          "patient_coverage": 0.27586206896551724,
+          "disease_coverage": 0.5,
+          "n_patient_terms": 87,
+          "n_disease_terms": 48,
+          "n_union_terms": 111
+        }
+      },
+      {
+        "rank": 10,
+        "disease_id": "OMIM:613838",
+        "label": "Cardiomyopathy, familial hypertrophic, 16",
+        "method_name": "set_jaccard",
+        "score": 0.21551724137931033,
+        "explanation": {
+          "method": "jaccard",
+          "intersection_size": 25,
+          "union_size": 116,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0001626",
+            "HP:0001627",
+            "HP:0001637",
+            "HP:0001638",
+            "HP:0001649",
+            "HP:0001711",
+            "HP:0001713"
+          ],
+          "n_shared_terms": 25,
+          "patient_coverage": 0.28735632183908044,
+          "disease_coverage": 0.46296296296296297,
+          "n_patient_terms": 87,
+          "n_disease_terms": 54,
+          "n_union_terms": 116
+        }
+      }
+    ],
+    "set_overlap": [
+      {
+        "rank": 1,
+        "disease_id": "OMIM:300082",
+        "label": "Cognitive function 1, social",
+        "method_name": "set_overlap",
+        "score": 1.0,
+        "explanation": {
+          "method": "overlap_coefficient",
+          "intersection_size": 3,
+          "min_size": 3,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707"
+          ],
+          "n_shared_terms": 3,
+          "patient_coverage": 0.034482758620689655,
+          "disease_coverage": 1.0,
+          "n_patient_terms": 87,
+          "n_disease_terms": 3,
+          "n_union_terms": 87
+        }
+      },
+      {
+        "rank": 2,
+        "disease_id": "OMIM:158280",
+        "label": "Motion sickness",
+        "method_name": "set_overlap",
+        "score": 1.0,
+        "explanation": {
+          "method": "overlap_coefficient",
+          "intersection_size": 3,
+          "min_size": 3,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707"
+          ],
+          "n_shared_terms": 3,
+          "patient_coverage": 0.034482758620689655,
+          "disease_coverage": 1.0,
+          "n_patient_terms": 87,
+          "n_disease_terms": 3,
+          "n_union_terms": 87
+        }
+      },
+      {
+        "rank": 3,
+        "disease_id": "OMIM:601941",
+        "label": "Diabetes mellitus, insulin-dependent, 6",
+        "method_name": "set_overlap",
+        "score": 1.0,
+        "explanation": {
+          "method": "overlap_coefficient",
+          "intersection_size": 8,
+          "min_size": 8,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000818",
+            "HP:0000819",
+            "HP:0001939",
+            "HP:0001952",
+            "HP:0011014",
+            "HP:0012337"
+          ],
+          "n_shared_terms": 8,
+          "patient_coverage": 0.09195402298850575,
+          "disease_coverage": 1.0,
+          "n_patient_terms": 87,
+          "n_disease_terms": 8,
+          "n_union_terms": 87
+        }
+      },
+      {
+        "rank": 4,
+        "disease_id": "OMIM:601942",
+        "label": "Diabetes mellitus, insulin-dependent, 10",
+        "method_name": "set_overlap",
+        "score": 1.0,
+        "explanation": {
+          "method": "overlap_coefficient",
+          "intersection_size": 8,
+          "min_size": 8,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000818",
+            "HP:0000819",
+            "HP:0001939",
+            "HP:0001952",
+            "HP:0011014",
+            "HP:0012337"
+          ],
+          "n_shared_terms": 8,
+          "patient_coverage": 0.09195402298850575,
+          "disease_coverage": 1.0,
+          "n_patient_terms": 87,
+          "n_disease_terms": 8,
+          "n_union_terms": 87
+        }
+      },
+      {
+        "rank": 5,
+        "disease_id": "MONDO:0008932",
+        "label": "premature centromere division",
+        "method_name": "set_overlap",
+        "score": 1.0,
+        "explanation": {
+          "method": "overlap_coefficient",
+          "intersection_size": 3,
+          "min_size": 3,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0001939"
+          ],
+          "n_shared_terms": 3,
+          "patient_coverage": 0.034482758620689655,
+          "disease_coverage": 1.0,
+          "n_patient_terms": 87,
+          "n_disease_terms": 3,
+          "n_union_terms": 87
+        }
+      },
+      {
+        "rank": 6,
+        "disease_id": "MONDO:0009753",
+        "label": "obsolete neurovisceral storage disease with Curvilinear bodies",
+        "method_name": "set_overlap",
+        "score": 1.0,
+        "explanation": {
+          "method": "overlap_coefficient",
+          "intersection_size": 4,
+          "min_size": 4,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0001939"
+          ],
+          "n_shared_terms": 4,
+          "patient_coverage": 0.04597701149425287,
+          "disease_coverage": 1.0,
+          "n_patient_terms": 87,
+          "n_disease_terms": 4,
+          "n_union_terms": 87
+        }
+      },
+      {
+        "rank": 7,
+        "disease_id": "MONDO:0044214",
+        "label": "obsolete androstenone, ability to smell",
+        "method_name": "set_overlap",
+        "score": 1.0,
+        "explanation": {
+          "method": "overlap_coefficient",
+          "intersection_size": 3,
+          "min_size": 3,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707"
+          ],
+          "n_shared_terms": 3,
+          "patient_coverage": 0.034482758620689655,
+          "disease_coverage": 1.0,
+          "n_patient_terms": 87,
+          "n_disease_terms": 3,
+          "n_union_terms": 87
+        }
+      },
+      {
+        "rank": 8,
+        "disease_id": "MONDO:0011167",
+        "label": "type 1 diabetes mellitus 6",
+        "method_name": "set_overlap",
+        "score": 1.0,
+        "explanation": {
+          "method": "overlap_coefficient",
+          "intersection_size": 8,
+          "min_size": 8,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000818",
+            "HP:0000819",
+            "HP:0001939",
+            "HP:0001952",
+            "HP:0011014",
+            "HP:0012337"
+          ],
+          "n_shared_terms": 8,
+          "patient_coverage": 0.09195402298850575,
+          "disease_coverage": 1.0,
+          "n_patient_terms": 87,
+          "n_disease_terms": 8,
+          "n_union_terms": 87
+        }
+      },
+      {
+        "rank": 9,
+        "disease_id": "MONDO:0010599",
+        "label": "granulomas, congenital cerebral",
+        "method_name": "set_overlap",
+        "score": 1.0,
+        "explanation": {
+          "method": "overlap_coefficient",
+          "intersection_size": 4,
+          "min_size": 4,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0001939"
+          ],
+          "n_shared_terms": 4,
+          "patient_coverage": 0.04597701149425287,
+          "disease_coverage": 1.0,
+          "n_patient_terms": 87,
+          "n_disease_terms": 4,
+          "n_union_terms": 87
+        }
+      },
+      {
+        "rank": 10,
+        "disease_id": "MONDO:0004619",
+        "label": "measles",
+        "method_name": "set_overlap",
+        "score": 1.0,
+        "explanation": {
+          "method": "overlap_coefficient",
+          "intersection_size": 5,
+          "min_size": 5,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0002086",
+            "HP:0002795",
+            "HP:0012735"
+          ],
+          "n_shared_terms": 5,
+          "patient_coverage": 0.05747126436781609,
+          "disease_coverage": 1.0,
+          "n_patient_terms": 87,
+          "n_disease_terms": 5,
+          "n_union_terms": 87
+        }
+      }
+    ],
+    "set_dice": [
+      {
+        "rank": 1,
+        "disease_id": "ORPHA:563",
+        "label": "Peripartum cardiomyopathy",
+        "method_name": "set_dice",
+        "score": 0.4205607476635514,
+        "explanation": {
+          "method": "dice",
+          "intersection_size": 45,
+          "size_patient": 87,
+          "size_disease": 127,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0000818",
+            "HP:0000819",
+            "HP:0000822",
+            "HP:0000969",
+            "HP:0001507",
+            "HP:0001626",
+            "HP:0001627"
+          ],
+          "n_shared_terms": 45,
+          "patient_coverage": 0.5172413793103449,
+          "disease_coverage": 0.3543307086614173,
+          "n_patient_terms": 87,
+          "n_disease_terms": 127,
+          "n_union_terms": 169
+        }
+      },
+      {
+        "rank": 2,
+        "disease_id": "ORPHA:439232",
+        "label": "AApoAIV amyloidosis",
+        "method_name": "set_dice",
+        "score": 0.39805825242718446,
+        "explanation": {
+          "method": "dice",
+          "intersection_size": 41,
+          "size_patient": 87,
+          "size_disease": 119,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000079",
+            "HP:0000118",
+            "HP:0000119",
+            "HP:0000818",
+            "HP:0000819",
+            "HP:0000822",
+            "HP:0001626",
+            "HP:0001627",
+            "HP:0001637"
+          ],
+          "n_shared_terms": 41,
+          "patient_coverage": 0.47126436781609193,
+          "disease_coverage": 0.3445378151260504,
+          "n_patient_terms": 87,
+          "n_disease_terms": 119,
+          "n_union_terms": 165
+        }
+      },
+      {
+        "rank": 3,
+        "disease_id": "MONDO:0012799",
+        "label": "hypertrophic cardiomyopathy 11",
+        "method_name": "set_dice",
+        "score": 0.391304347826087,
+        "explanation": {
+          "method": "dice",
+          "intersection_size": 27,
+          "size_patient": 87,
+          "size_disease": 51,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0001626",
+            "HP:0001627",
+            "HP:0001637",
+            "HP:0001638",
+            "HP:0001649",
+            "HP:0001711",
+            "HP:0001713"
+          ],
+          "n_shared_terms": 27,
+          "patient_coverage": 0.3103448275862069,
+          "disease_coverage": 0.5294117647058824,
+          "n_patient_terms": 87,
+          "n_disease_terms": 51,
+          "n_union_terms": 111
+        }
+      },
+      {
+        "rank": 4,
+        "disease_id": "MONDO:0013455",
+        "label": "hypertrophic cardiomyopathy 16",
+        "method_name": "set_dice",
+        "score": 0.37593984962406013,
+        "explanation": {
+          "method": "dice",
+          "intersection_size": 25,
+          "size_patient": 87,
+          "size_disease": 46,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0001626",
+            "HP:0001627",
+            "HP:0001637",
+            "HP:0001638",
+            "HP:0001649",
+            "HP:0001711",
+            "HP:0001713"
+          ],
+          "n_shared_terms": 25,
+          "patient_coverage": 0.28735632183908044,
+          "disease_coverage": 0.5434782608695652,
+          "n_patient_terms": 87,
+          "n_disease_terms": 46,
+          "n_union_terms": 108
+        }
+      },
+      {
+        "rank": 5,
+        "disease_id": "MONDO:0013195",
+        "label": "hypertrophic cardiomyopathy 13",
+        "method_name": "set_dice",
+        "score": 0.36764705882352944,
+        "explanation": {
+          "method": "dice",
+          "intersection_size": 25,
+          "size_patient": 87,
+          "size_disease": 49,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0001626",
+            "HP:0001627",
+            "HP:0001637",
+            "HP:0001638",
+            "HP:0001713",
+            "HP:0002086",
+            "HP:0002094"
+          ],
+          "n_shared_terms": 25,
+          "patient_coverage": 0.28735632183908044,
+          "disease_coverage": 0.5102040816326531,
+          "n_patient_terms": 87,
+          "n_disease_terms": 49,
+          "n_union_terms": 111
+        }
+      },
+      {
+        "rank": 6,
+        "disease_id": "ORPHA:3282",
+        "label": "Multifocal atrial tachycardia",
+        "method_name": "set_dice",
+        "score": 0.3668639053254438,
+        "explanation": {
+          "method": "dice",
+          "intersection_size": 31,
+          "size_patient": 87,
+          "size_disease": 82,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000119",
+            "HP:0000707",
+            "HP:0000818",
+            "HP:0001626",
+            "HP:0001627",
+            "HP:0001637",
+            "HP:0001638",
+            "HP:0001649"
+          ],
+          "n_shared_terms": 31,
+          "patient_coverage": 0.3563218390804598,
+          "disease_coverage": 0.3780487804878049,
+          "n_patient_terms": 87,
+          "n_disease_terms": 82,
+          "n_union_terms": 138
+        }
+      },
+      {
+        "rank": 7,
+        "disease_id": "ORPHA:225",
+        "label": "Diabetes and deafness, maternally inherited",
+        "method_name": "set_dice",
+        "score": 0.3627450980392157,
+        "explanation": {
+          "method": "dice",
+          "intersection_size": 37,
+          "size_patient": 87,
+          "size_disease": 117,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000079",
+            "HP:0000118",
+            "HP:0000119",
+            "HP:0000707",
+            "HP:0000818",
+            "HP:0000819",
+            "HP:0000822",
+            "HP:0001288",
+            "HP:0001626"
+          ],
+          "n_shared_terms": 37,
+          "patient_coverage": 0.42528735632183906,
+          "disease_coverage": 0.3162393162393162,
+          "n_patient_terms": 87,
+          "n_disease_terms": 117,
+          "n_union_terms": 167
+        }
+      },
+      {
+        "rank": 8,
+        "disease_id": "OMIM:612098",
+        "label": "Cardiomyopathy, familial hypertrophic, 11",
+        "method_name": "set_dice",
+        "score": 0.36,
+        "explanation": {
+          "method": "dice",
+          "intersection_size": 27,
+          "size_patient": 87,
+          "size_disease": 63,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0001626",
+            "HP:0001627",
+            "HP:0001637",
+            "HP:0001638",
+            "HP:0001649",
+            "HP:0001711",
+            "HP:0001713"
+          ],
+          "n_shared_terms": 27,
+          "patient_coverage": 0.3103448275862069,
+          "disease_coverage": 0.42857142857142855,
+          "n_patient_terms": 87,
+          "n_disease_terms": 63,
+          "n_union_terms": 123
+        }
+      },
+      {
+        "rank": 9,
+        "disease_id": "MONDO:0014352",
+        "label": "abdominal obesity-metabolic syndrome 3",
+        "method_name": "set_dice",
+        "score": 0.35555555555555557,
+        "explanation": {
+          "method": "dice",
+          "intersection_size": 24,
+          "size_patient": 87,
+          "size_disease": 48,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0000818",
+            "HP:0000819",
+            "HP:0000822",
+            "HP:0001507",
+            "HP:0001626",
+            "HP:0001939",
+            "HP:0001952"
+          ],
+          "n_shared_terms": 24,
+          "patient_coverage": 0.27586206896551724,
+          "disease_coverage": 0.5,
+          "n_patient_terms": 87,
+          "n_disease_terms": 48,
+          "n_union_terms": 111
+        }
+      },
+      {
+        "rank": 10,
+        "disease_id": "OMIM:613838",
+        "label": "Cardiomyopathy, familial hypertrophic, 16",
+        "method_name": "set_dice",
+        "score": 0.3546099290780142,
+        "explanation": {
+          "method": "dice",
+          "intersection_size": 25,
+          "size_patient": 87,
+          "size_disease": 54,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0001626",
+            "HP:0001627",
+            "HP:0001637",
+            "HP:0001638",
+            "HP:0001649",
+            "HP:0001711",
+            "HP:0001713"
+          ],
+          "n_shared_terms": 25,
+          "patient_coverage": 0.28735632183908044,
+          "disease_coverage": 0.46296296296296297,
+          "n_patient_terms": 87,
+          "n_disease_terms": 54,
+          "n_union_terms": 116
+        }
+      }
+    ],
+    "denoising_autoencoder": [
+      {
+        "disease_id": "MONDO:0030801",
+        "label": "monosomy 7 myelodysplasia and leukemia syndrome 2",
+        "score": 0.9999995231628418,
+        "method_name": "denoising_autoencoder",
+        "rank": 1,
+        "explanation": "{'method': 'denoising_autoencoder', 'score': 0.9999995231628418, 'top_shared_terms': [], 'n_shared_terms': 0, 'patient_coverage': 0.0, 'disease_coverage': 0.0, 'n_patient_terms': 25, 'n_disease_terms': 36, 'n_union_terms': 61}"
+      },
+      {
+        "disease_id": "MONDO:0009754",
+        "label": "neutropenia, lethal congenital, with eosinophilia",
+        "score": 0.9999994039535522,
+        "method_name": "denoising_autoencoder",
+        "rank": 2,
+        "explanation": "{'method': 'denoising_autoencoder', 'score': 0.9999994039535522, 'top_shared_terms': [], 'n_shared_terms': 0, 'patient_coverage': 0.0, 'disease_coverage': 0.0, 'n_patient_terms': 25, 'n_disease_terms': 18, 'n_union_terms': 43}"
+      },
+      {
+        "disease_id": "MONDO:0043364",
+        "label": "eosinophil peroxidase deficiency",
+        "score": 0.9999994039535522,
+        "method_name": "denoising_autoencoder",
+        "rank": 3,
+        "explanation": "{'method': 'denoising_autoencoder', 'score': 0.9999994039535522, 'top_shared_terms': [], 'n_shared_terms': 0, 'patient_coverage': 0.0, 'disease_coverage': 0.0, 'n_patient_terms': 25, 'n_disease_terms': 11, 'n_union_terms': 36}"
+      },
+      {
+        "disease_id": "MONDO:0008623",
+        "label": "Undritz anomaly",
+        "score": 0.9999994039535522,
+        "method_name": "denoising_autoencoder",
+        "rank": 4,
+        "explanation": "{'method': 'denoising_autoencoder', 'score': 0.9999994039535522, 'top_shared_terms': [], 'n_shared_terms': 0, 'patient_coverage': 0.0, 'disease_coverage': 0.0, 'n_patient_terms': 25, 'n_disease_terms': 12, 'n_union_terms': 37}"
+      },
+      {
+        "disease_id": "MONDO:0008906",
+        "label": "obsolete carbimazole sensitivity",
+        "score": 0.9999993443489075,
+        "method_name": "denoising_autoencoder",
+        "rank": 5,
+        "explanation": "{'method': 'denoising_autoencoder', 'score': 0.9999993443489075, 'top_shared_terms': [], 'n_shared_terms': 0, 'patient_coverage': 0.0, 'disease_coverage': 0.0, 'n_patient_terms': 25, 'n_disease_terms': 14, 'n_union_terms': 39}"
+      },
+      {
+        "disease_id": "ORPHA:157997",
+        "label": "Benign cephalic histiocytosis",
+        "score": 0.9999992847442627,
+        "method_name": "denoising_autoencoder",
+        "rank": 6,
+        "explanation": "{'method': 'denoising_autoencoder', 'score': 0.9999992847442627, 'top_shared_terms': [], 'n_shared_terms': 0, 'patient_coverage': 0.0, 'disease_coverage': 0.0, 'n_patient_terms': 25, 'n_disease_terms': 21, 'n_union_terms': 46}"
+      },
+      {
+        "disease_id": "OMIM:212060",
+        "label": "Carbimazole sensitivity",
+        "score": 0.9999992847442627,
+        "method_name": "denoising_autoencoder",
+        "rank": 7,
+        "explanation": "{'method': 'denoising_autoencoder', 'score': 0.9999992847442627, 'top_shared_terms': [], 'n_shared_terms': 0, 'patient_coverage': 0.0, 'disease_coverage': 0.0, 'n_patient_terms': 25, 'n_disease_terms': 17, 'n_union_terms': 42}"
+      },
+      {
+        "disease_id": "MONDO:0007347",
+        "label": "obsolete Coxsackievirus B3 susceptibility",
+        "score": 0.9999992847442627,
+        "method_name": "denoising_autoencoder",
+        "rank": 8,
+        "explanation": "{'method': 'denoising_autoencoder', 'score': 0.9999992847442627, 'top_shared_terms': [], 'n_shared_terms': 0, 'patient_coverage': 0.0, 'disease_coverage': 0.0, 'n_patient_terms': 25, 'n_disease_terms': 7, 'n_union_terms': 32}"
+      },
+      {
+        "disease_id": "MONDO:0030483",
+        "label": "immunodeficiency 88",
+        "score": 0.9999992847442627,
+        "method_name": "denoising_autoencoder",
+        "rank": 9,
+        "explanation": "{'method': 'denoising_autoencoder', 'score': 0.9999992847442627, 'top_shared_terms': [], 'n_shared_terms': 0, 'patient_coverage': 0.0, 'disease_coverage': 0.0, 'n_patient_terms': 25, 'n_disease_terms': 22, 'n_union_terms': 47}"
+      },
+      {
+        "disease_id": "OMIM:120050",
+        "label": "Coxsackievirus B3 susceptibility",
+        "score": 0.9999992847442627,
+        "method_name": "denoising_autoencoder",
+        "rank": 10,
+        "explanation": "{'method': 'denoising_autoencoder', 'score': 0.9999992847442627, 'top_shared_terms': [], 'n_shared_terms': 0, 'patient_coverage': 0.0, 'disease_coverage': 0.0, 'n_patient_terms': 25, 'n_disease_terms': 7, 'n_union_terms': 32}"
+      }
+    ]
+  }
+}
