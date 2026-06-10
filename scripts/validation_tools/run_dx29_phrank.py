@@ -4,7 +4,7 @@ import requests
 import argparse
 import time
 from pathlib import Path
-from scripts.validation_tools.utils import (
+from utils import (
     resolve_datasets,
     load_all_datasets,
     save_summary_tsv,

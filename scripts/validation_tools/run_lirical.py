@@ -20,7 +20,7 @@ import time
 from pathlib import Path
 import csv
 
-from scripts.validation_tools.utils import (
+from utils import (
     resolve_datasets,
     load_all_datasets,
     save_summary_tsv,
