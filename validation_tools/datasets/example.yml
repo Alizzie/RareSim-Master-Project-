@@ -1,0 +1,32 @@
+sampleId: NF2-example
+hpoIds: ['HP:0002321', 'HP:0000365', 'HP:0000360', 'HP:0009589', 'HP:0002858']
+negatedHpoIds: ['HP:0009736']
+
+## LIRICAL
+# lirical-cli-2.4.0 % java -jar lirical-cli-2.4.0.jar prioritize \        
+#   -p HP:0002321,HP:0000365,HP:0000360,HP:0009589,HP:0002858 \
+#   -n HP:0009736 \
+#   -d ~/lirical-data
+
+### Phenobrain
+# 1. Predict -> TaskID
+# http://www.phenobrain.cs.tsinghua.edu.cn/predict?
+# model=Ensemble
+# &hpoList[]=HP:0001913
+# &hpoList[]=HP:0008513
+# &hpoList[]=HP:0001123
+# &hpoList[]=HP:0000365
+# &hpoList[]=HP:0002857
+# &hpoList[]=HP:0001744
+# &topk=5
+
+
+# 2. Get Diseases from predict  -> return RD Codes and ranks
+# http://www.phenobrain.cs.tsinghua.edu.cn/query-predict-result?
+# taskId=a4fecf25-9eb6-4ac6-a02a-0eae329c9615
+
+# 3. Get Disease details -> return name and HPOs
+# http://www.phenobrain.cs.tsinghua.edu.cn/disease-list-detail
+
+# Request Payload:
+# {"diseaseList":["RD:454","RD:8366"]}

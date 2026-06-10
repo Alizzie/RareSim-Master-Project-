@@ -42,7 +42,7 @@ from shared.paths import (
     SHARED_DIR,
 )
 from shared.pipeline import PipelineConfig
-from shared.phenotype import build_patient_profile
+from hpo_extraction import build_patient_profile
 from gui.utils import (
     GUI_DIR,
     check_artifacts_exist,

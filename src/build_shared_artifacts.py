@@ -32,10 +32,12 @@ from core.loaders import (
     load_mondo_metadata,
     load_orphadata_product4_annotations,
     load_ordo_metadata,
+    load_ordo_parents,
 )
 from core.mapping_utils import build_orpha_mapping_index
 from core.normalizers import normalize_hpo_id, normalize_owl_local_id
 from core.phenotype_merge import merge_phenotype_annotation_records
+from core.disease_ancestors import build_ordered_ancestor_chains
 from core.schemas import PatientProfile
 
 
@@ -229,6 +231,14 @@ def main() -> None:
     print_filter_stats("Canonical profiles", canonical_filter_stats)
     print_filter_stats("Expanded alias profiles", expanded_filter_stats)
 
+    print("Extracting ORDO parent relations...")
+    disease_parents = load_ordo_parents(ORDO_PATH)
+    print(f"  ORDO parent relations: {len(disease_parents)} nodes")
+
+    print("Computing disease ancestors...")
+    disease_ancestors = build_ordered_ancestor_chains(disease_parents)
+    print(f"  Ancestor chains: {len(disease_ancestors)} diseases")
+
     print("Computing term frequencies and IC from canonical profiles...")
     term_frequencies = compute_term_frequencies(canonical_profiles)
     ic_values = compute_information_content(
@@ -262,6 +272,8 @@ def main() -> None:
         "hpo_labels.json": hpo_labels,
         "hpo_parents.json": {k: sorted(v) for k, v in hpo_parents.items()},
         "hpo_ancestors.json": {k: sorted(v) for k, v in hpo_ancestors.items()},
+        "disease_parents.json": {k: sorted(v) for k, v in disease_parents.items()},
+        "disease_ancestors.json": disease_ancestors,
         "term_frequencies.json": term_frequencies,
         "information_content.json": ic_values,
         "example_patient.json": serialize_profile(patient),

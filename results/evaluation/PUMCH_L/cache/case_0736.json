@@ -1,0 +1,4966 @@
+{
+  "case_index": 736,
+  "hpo_terms": [
+    "HP:0000017",
+    "HP:0000103",
+    "HP:0000131",
+    "HP:0000157",
+    "HP:0000217",
+    "HP:0000246",
+    "HP:0000282",
+    "HP:0000709",
+    "HP:0000711",
+    "HP:0000821",
+    "HP:0000822",
+    "HP:0000963",
+    "HP:0000975",
+    "HP:0000978",
+    "HP:0001407",
+    "HP:0001579",
+    "HP:0001677",
+    "HP:0001711",
+    "HP:0001824",
+    "HP:0001942",
+    "HP:0001959",
+    "HP:0001962",
+    "HP:0001993",
+    "HP:0002018",
+    "HP:0002019",
+    "HP:0002090",
+    "HP:0002315",
+    "HP:0002465",
+    "HP:0002832",
+    "HP:0002878",
+    "HP:0002900",
+    "HP:0003076",
+    "HP:0003419",
+    "HP:0003454",
+    "HP:0005345",
+    "HP:0005353",
+    "HP:0005897",
+    "HP:0005978",
+    "HP:0006737",
+    "HP:0006748",
+    "HP:0007461",
+    "HP:0008358",
+    "HP:0008796",
+    "HP:0009055",
+    "HP:0009889",
+    "HP:0011341",
+    "HP:0011410",
+    "HP:0011703",
+    "HP:0011742",
+    "HP:0011744",
+    "HP:0011748",
+    "HP:0011949",
+    "HP:0012375",
+    "HP:0012423",
+    "HP:0012701",
+    "HP:0030051",
+    "HP:0030052",
+    "HP:0030223",
+    "HP:0030365",
+    "HP:0030829",
+    "HP:0100515",
+    "HP:0100611",
+    "HP:0100786",
+    "HP:0100803",
+    "HP:0100883",
+    "HP:0200040",
+    "HP:0200042",
+    "HP:0200114"
+  ],
+  "ground_truth": [
+    "OMIM:171300",
+    "OMIM:219080",
+    "OMIM:219090",
+    "OMIM:610475",
+    "OMIM:610489",
+    "OMIM:614190",
+    "OMIM:615830",
+    "OMIM:615954",
+    "ORPHA:189427",
+    "ORPHA:553",
+    "ORPHA:96253",
+    "ORPHA:99889",
+    "ORPHA:99892",
+    "ORPHA:99893"
+  ],
+  "total_elapsed_seconds": 99.67,
+  "method_elapsed_seconds": {
+    "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext": 0.058,
+    "emilyalsentzer/Bio_ClinicalBERT": 0.085,
+    "sentence-transformers/all-MiniLM-L6-v2": 0.091,
+    "cambridgeltl/SapBERT-from-PubMedBERT-fulltext": 0.083,
+    "dmis-lab/biobert-v1.1": 0.083,
+    "tfidf": 11.884,
+    "mistralai/Mistral-7B-Instruct-v0.2": 55.781,
+    "hpo2vec": 10.876,
+    "set_cosine": 5.176,
+    "set_jaccard": 5.176,
+    "set_dice": 5.176,
+    "set_overlap": 5.176,
+    "denoising_autoencoder": 0.022
+  },
+  "methods_run": [
+    "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+    "denoising_autoencoder",
+    "dmis-lab/biobert-v1.1",
+    "emilyalsentzer/Bio_ClinicalBERT",
+    "hpo2vec",
+    "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+    "mistralai/Mistral-7B-Instruct-v0.2",
+    "sentence-transformers/all-MiniLM-L6-v2",
+    "set_cosine",
+    "set_dice",
+    "set_jaccard",
+    "set_overlap",
+    "tfidf_cosine"
+  ],
+  "results": {
+    "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext": [
+      {
+        "rank": 1,
+        "canonical_disease_id": "ORPHA:275761",
+        "representative_disease_id": "MONDO:0800449",
+        "label": "lysosomal acid lipase deficiency",
+        "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.9941469430923462,
+        "matched_aliases": [
+          "MONDO:0800449",
+          "ORPHA:275761"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9941469430923462,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Coronary artery atherosclerosis",
+            "Weight loss"
+          ],
+          "n_shared_phenotype_labels": 2,
+          "patient_text_preview": "Patient phenotypes: Nocturia; Polyuria; Uterine leiomyoma; Abnormality of the tongue; Xerostomia; Sinusitis; Facial edema; Psychosis; Restlessness; Hypothyroidism; Hypertension; Thin skin; Hyperhidrosis; Bruising susceptibility; Hepatic cysts; Primary hypercortisolism; Coronary artery atherosclerosi",
+          "disease_text_preview": "Disease: lysosomal acid lipase deficiency Phenotypes: Renal salt wasting; Jaundice; Pruritus; Xanthomatosis; Xanthelasma; Global developmental delay; Stroke; Hepatic fibrosis; Hepatic failure; Decreased liver function; Microvesicular hepatic steatosis; Hepatosplenomegaly; Failure to thrive; Ascites;"
+        },
+        "metadata": {
+          "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 2,
+        "canonical_disease_id": "ORPHA:308993",
+        "representative_disease_id": "MONDO:0010613",
+        "label": "inborn glycerol kinase deficiency",
+        "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.9939478635787964,
+        "matched_aliases": [
+          "MONDO:0010613"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9939478635787964,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Metabolic acidosis",
+            "Ketoacidosis"
+          ],
+          "n_shared_phenotype_labels": 2,
+          "patient_text_preview": "Patient phenotypes: Nocturia; Polyuria; Uterine leiomyoma; Abnormality of the tongue; Xerostomia; Sinusitis; Facial edema; Psychosis; Restlessness; Hypothyroidism; Hypertension; Thin skin; Hyperhidrosis; Bruising susceptibility; Hepatic cysts; Primary hypercortisolism; Coronary artery atherosclerosi",
+          "disease_text_preview": "Disease: inborn glycerol kinase deficiency Phenotypes: Cryptorchidism; Hypertelorism; Low-set ears; Strabismus; Adrenal insufficiency; Osteoporosis; Intellectual disability; Seizure; Lethargy; Coma; Global developmental delay; Growth delay; Small for gestational age; Metabolic acidosis; Hypoglycemia"
+        },
+        "metadata": {
+          "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 3,
+        "canonical_disease_id": "MONDO:0008930",
+        "representative_disease_id": "MONDO:0008930",
+        "label": "celiac disease, susceptibility to, 1",
+        "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.9939243793487549,
+        "matched_aliases": [
+          "MONDO:0008930"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9939243793487549,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Weight loss"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Nocturia; Polyuria; Uterine leiomyoma; Abnormality of the tongue; Xerostomia; Sinusitis; Facial edema; Psychosis; Restlessness; Hypothyroidism; Hypertension; Thin skin; Hyperhidrosis; Bruising susceptibility; Hepatic cysts; Primary hypercortisolism; Coronary artery atherosclerosi",
+          "disease_text_preview": "Disease: celiac disease, susceptibility to, 1 Phenotypes: Depression; Anxiety; Infertility; Delayed puberty; Osteoporosis; Eczematoid dermatitis; Seizure; Ataxia; Polyneuropathy; Failure to thrive; Alopecia; Weight loss; Iron deficiency anemia; Thrombocytosis; Macrocytic anemia; Vomiting; Diarrhea; "
+        },
+        "metadata": {
+          "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 4,
+        "canonical_disease_id": "ORPHA:309288",
+        "representative_disease_id": "ORPHA:309288",
+        "label": "Alpha-mannosidosis, adult form",
+        "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.9938702583312988,
+        "matched_aliases": [
+          "ORPHA:309288"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9938702583312988,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Pneumonia"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Nocturia; Polyuria; Uterine leiomyoma; Abnormality of the tongue; Xerostomia; Sinusitis; Facial edema; Psychosis; Restlessness; Hypothyroidism; Hypertension; Thin skin; Hyperhidrosis; Bruising susceptibility; Hepatic cysts; Primary hypercortisolism; Coronary artery atherosclerosi",
+          "disease_text_preview": "Disease: Alpha-mannosidosis, adult form Phenotypes: Macroglossia; Mixed hearing impairment; Cataract; Optic disc pallor; Myopia; Atypical behavior; Depression; Hallucinations; Anxiety; Delusion; Delayed speech and language development; Osteopenia; Ataxia; Mild intellectual disability; Cerebellar atr"
+        },
+        "metadata": {
+          "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 5,
+        "canonical_disease_id": "ORPHA:36913",
+        "representative_disease_id": "ORPHA:36913",
+        "label": "Autoimmune hypoparathyroidism",
+        "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.9937622547149658,
+        "matched_aliases": [
+          "ORPHA:36913"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9937622547149658,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Coronary artery atherosclerosis"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Nocturia; Polyuria; Uterine leiomyoma; Abnormality of the tongue; Xerostomia; Sinusitis; Facial edema; Psychosis; Restlessness; Hypothyroidism; Hypertension; Thin skin; Hyperhidrosis; Bruising susceptibility; Hepatic cysts; Primary hypercortisolism; Coronary artery atherosclerosi",
+          "disease_text_preview": "Disease: Autoimmune hypoparathyroidism Description: An autoimmune form of hypoparathyroidism. Phenotypes: Conjunctivitis; Cataract; Depression; Irritability; Hallucinations; Anxiety; Hyporeflexia; Confusion; Alopecia; Prolonged QT interval; Coronary artery atherosclerosis; Abnormality of extrapyrami"
+        },
+        "metadata": {
+          "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 6,
+        "canonical_disease_id": "OMIM:212750",
+        "representative_disease_id": "OMIM:212750",
+        "label": "Celiac disease, susceptibility to, 1",
+        "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.9937133193016052,
+        "matched_aliases": [
+          "OMIM:212750"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9937133193016052,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Weight loss"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Nocturia; Polyuria; Uterine leiomyoma; Abnormality of the tongue; Xerostomia; Sinusitis; Facial edema; Psychosis; Restlessness; Hypothyroidism; Hypertension; Thin skin; Hyperhidrosis; Bruising susceptibility; Hepatic cysts; Primary hypercortisolism; Coronary artery atherosclerosi",
+          "disease_text_preview": "Disease: Celiac disease, susceptibility to, 1 Phenotypes: Autosomal recessive inheritance; Depression; Anxiety; Infertility; Delayed puberty; Osteoporosis; Eczematoid dermatitis; Seizure; Ataxia; Polyneuropathy; Non-Mendelian inheritance; Failure to thrive; Alopecia; Weight loss; Iron deficiency ane"
+        },
+        "metadata": {
+          "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 7,
+        "canonical_disease_id": "ORPHA:566175",
+        "representative_disease_id": "MONDO:0009174",
+        "label": "protein-losing enteropathy",
+        "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.9936475157737732,
+        "matched_aliases": [
+          "MONDO:0009174"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9936475157737732,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Hypothyroidism"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Nocturia; Polyuria; Uterine leiomyoma; Abnormality of the tongue; Xerostomia; Sinusitis; Facial edema; Psychosis; Restlessness; Hypothyroidism; Hypertension; Thin skin; Hyperhidrosis; Bruising susceptibility; Hepatic cysts; Primary hypercortisolism; Coronary artery atherosclerosi",
+          "disease_text_preview": "Disease: protein-losing enteropathy Phenotypes: Hypothyroidism; Edema; Clubbing; Growth delay; Ascites; Iron deficiency anemia; Thrombocytosis; Anemia; Vomiting; Diarrhea; Malabsorption; Abdominal pain; Pulmonary embolism; Hepatomegaly; Abnormal intestine morphology; Intestinal lymphangiectasia; Bud"
+        },
+        "metadata": {
+          "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 8,
+        "canonical_disease_id": "ORPHA:465508",
+        "representative_disease_id": "ORPHA:465508",
+        "label": "Symptomatic form of HFE-related hemochromatosis",
+        "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.9935280680656433,
+        "matched_aliases": [
+          "ORPHA:465508"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9935280680656433,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Hypothyroidism",
+            "Weight loss"
+          ],
+          "n_shared_phenotype_labels": 2,
+          "patient_text_preview": "Patient phenotypes: Nocturia; Polyuria; Uterine leiomyoma; Abnormality of the tongue; Xerostomia; Sinusitis; Facial edema; Psychosis; Restlessness; Hypothyroidism; Hypertension; Thin skin; Hyperhidrosis; Bruising susceptibility; Hepatic cysts; Primary hypercortisolism; Coronary artery atherosclerosi",
+          "disease_text_preview": "Disease: Symptomatic form of HFE-related hemochromatosis Phenotypes: Testicular atrophy; Hypogonadotropic hypogonadism; Amenorrhea; Apathy; Gynecomastia; Infertility; Diabetes mellitus; Hypothyroidism; Osteoporosis; Hyperpigmentation of the skin; Lethargy; Muscle weakness; Arthritis; Joint swelling;"
+        },
+        "metadata": {
+          "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 9,
+        "canonical_disease_id": "ORPHA:85138",
+        "representative_disease_id": "ORPHA:85138",
+        "label": "Addison disease",
+        "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.9934730529785156,
+        "matched_aliases": [
+          "ORPHA:85138"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9934730529785156,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Weight loss",
+            "Constipation"
+          ],
+          "n_shared_phenotype_labels": 2,
+          "patient_text_preview": "Patient phenotypes: Nocturia; Polyuria; Uterine leiomyoma; Abnormality of the tongue; Xerostomia; Sinusitis; Facial edema; Psychosis; Restlessness; Hypothyroidism; Hypertension; Thin skin; Hyperhidrosis; Bruising susceptibility; Hepatic cysts; Primary hypercortisolism; Coronary artery atherosclerosi",
+          "disease_text_preview": "Disease: Addison disease Description: Diminished production of adrenocortical hormones due to autoimmune destruction of the adrenal glands. Phenotypes: Renal salt wasting; Delayed puberty; Hypoparathyroidism; Adrenal hypoplasia; Increased circulating renin concentration; Hashimoto thyroiditis; Hyper"
+        },
+        "metadata": {
+          "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 10,
+        "canonical_disease_id": "ORPHA:90041",
+        "representative_disease_id": "ORPHA:90041",
+        "label": "Gaisböck syndrome",
+        "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.9934386610984802,
+        "matched_aliases": [
+          "ORPHA:90041"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9934386610984802,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Hypertension",
+            "Coronary artery atherosclerosis",
+            "Headache"
+          ],
+          "n_shared_phenotype_labels": 3,
+          "patient_text_preview": "Patient phenotypes: Nocturia; Polyuria; Uterine leiomyoma; Abnormality of the tongue; Xerostomia; Sinusitis; Facial edema; Psychosis; Restlessness; Hypothyroidism; Hypertension; Thin skin; Hyperhidrosis; Bruising susceptibility; Hepatic cysts; Primary hypercortisolism; Coronary artery atherosclerosi",
+          "disease_text_preview": "Disease: Gaisböck syndrome Description: Polycythemia that is caused by stress. Phenotypes: Nephrocalcinosis; Anxiety; Diabetes mellitus; Hypertension; Increased circulating renin concentration; Plethora; Cholecystitis; Stroke; Obesity; Myocardial infarction; Coronary artery atherosclerosis; Angina p"
+        },
+        "metadata": {
+          "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      }
+    ],
+    "emilyalsentzer/Bio_ClinicalBERT": [
+      {
+        "rank": 1,
+        "canonical_disease_id": "ORPHA:647782",
+        "representative_disease_id": "ORPHA:647782",
+        "label": "Pigmented nodular adrenocortical disease, primary, 2",
+        "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+        "model_type": "hf_encoder",
+        "score": 0.9872430562973022,
+        "matched_aliases": [
+          "ORPHA:647782"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9872430562973022,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Psychosis",
+            "Hypertension",
+            "Thin skin",
+            "Bruising susceptibility",
+            "Primary hypercortisolism"
+          ],
+          "n_shared_phenotype_labels": 5,
+          "patient_text_preview": "Patient phenotypes: Nocturia; Polyuria; Uterine leiomyoma; Abnormality of the tongue; Xerostomia; Sinusitis; Facial edema; Psychosis; Restlessness; Hypothyroidism; Hypertension; Thin skin; Hyperhidrosis; Bruising susceptibility; Hepatic cysts; Primary hypercortisolism; Coronary artery atherosclerosi",
+          "disease_text_preview": "Disease: Pigmented nodular adrenocortical disease, primary, 2 Phenotypes: Autosomal dominant inheritance; Ovarian cyst; Round face; Psychosis; Emotional lability; Agitation; Depression; Anxiety; Hypertension; Secondary amenorrhea; Osteopenia; Osteoporosis; Thin skin; Bruising susceptibility; Striae "
+        },
+        "metadata": {
+          "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 2,
+        "canonical_disease_id": "ORPHA:228429",
+        "representative_disease_id": "MONDO:0013225",
+        "label": "congenital generalized lipodystrophy type 4",
+        "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+        "model_type": "hf_encoder",
+        "score": 0.9855420589447021,
+        "matched_aliases": [
+          "MONDO:0013225",
+          "ORPHA:228429"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9855420589447021,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Constipation"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Nocturia; Polyuria; Uterine leiomyoma; Abnormality of the tongue; Xerostomia; Sinusitis; Facial edema; Psychosis; Restlessness; Hypothyroidism; Hypertension; Thin skin; Hyperhidrosis; Bruising susceptibility; Hepatic cysts; Primary hypercortisolism; Coronary artery atherosclerosi",
+          "disease_text_preview": "Disease: congenital generalized lipodystrophy type 4 Phenotypes: Hyperinsulinemia; Insulin resistance; Osteopenia; Osteoporosis; Acanthosis nigricans; Hirsutism; Muscle weakness; Flexion contracture; Hepatic steatosis; Failure to thrive; Prominent umbilicus; Tachycardia; Prolonged QT interval; Brady"
+        },
+        "metadata": {
+          "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 3,
+        "canonical_disease_id": "ORPHA:2346",
+        "representative_disease_id": "MONDO:0007864",
+        "label": "angioosteohypertrophic syndrome",
+        "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+        "model_type": "hf_encoder",
+        "score": 0.9843973517417908,
+        "matched_aliases": [
+          "MONDO:0007864"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9843973517417908,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [],
+          "n_shared_phenotype_labels": 0,
+          "patient_text_preview": "Patient phenotypes: Nocturia; Polyuria; Uterine leiomyoma; Abnormality of the tongue; Xerostomia; Sinusitis; Facial edema; Psychosis; Restlessness; Hypothyroidism; Hypertension; Thin skin; Hyperhidrosis; Bruising susceptibility; Hepatic cysts; Primary hypercortisolism; Coronary artery atherosclerosi",
+          "disease_text_preview": "Disease: angioosteohypertrophic syndrome Phenotypes: Tall stature; Abnormality of the menstrual cycle; Microcephaly; Macrocephaly; Glaucoma; Hematuria; Abnormal skull morphology; Edema; Lymphedema; Hemangioma; Syndactyly; Hand polydactyly; Intellectual disability; Seizure; Hemihypertrophy; Ascites; "
+        },
+        "metadata": {
+          "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 4,
+        "canonical_disease_id": "ORPHA:435660",
+        "representative_disease_id": "ORPHA:435660",
+        "label": "Lipodystrophy, familial partial, type 6",
+        "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+        "model_type": "hf_encoder",
+        "score": 0.9841011762619019,
+        "matched_aliases": [
+          "ORPHA:435660"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9841011762619019,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Hypertension"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Nocturia; Polyuria; Uterine leiomyoma; Abnormality of the tongue; Xerostomia; Sinusitis; Facial edema; Psychosis; Restlessness; Hypothyroidism; Hypertension; Thin skin; Hyperhidrosis; Bruising susceptibility; Hepatic cysts; Primary hypercortisolism; Coronary artery atherosclerosi",
+          "disease_text_preview": "Disease: Lipodystrophy, familial partial, type 6 Phenotypes: Autosomal recessive inheritance; Polycystic ovaries; Increased adipose tissue around the neck; Diabetes mellitus; Hypertension; Insulin-resistant diabetes mellitus; Insulin resistance; Oligomenorrhea; Acanthosis nigricans; Hypopigmentation"
+        },
+        "metadata": {
+          "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 5,
+        "canonical_disease_id": "OMIM:617713",
+        "representative_disease_id": "OMIM:617713",
+        "label": "Combined oxidative phosphorylation deficiency 33",
+        "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+        "model_type": "hf_encoder",
+        "score": 0.9840288758277893,
+        "matched_aliases": [
+          "OMIM:617713"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9840288758277893,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Hypothyroidism"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Nocturia; Polyuria; Uterine leiomyoma; Abnormality of the tongue; Xerostomia; Sinusitis; Facial edema; Psychosis; Restlessness; Hypothyroidism; Hypertension; Thin skin; Hyperhidrosis; Bruising susceptibility; Hepatic cysts; Primary hypercortisolism; Coronary artery atherosclerosi",
+          "disease_text_preview": "Disease: Combined oxidative phosphorylation deficiency 33 Phenotypes: Autosomal recessive inheritance; Nephrotic syndrome; Sensorineural hearing impairment; Astigmatism; Ptosis; Progressive external ophthalmoplegia; Amblyopia; Hypothyroidism; Intrauterine growth retardation; Oligohydramnios; Cardiom"
+        },
+        "metadata": {
+          "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 6,
+        "canonical_disease_id": "ORPHA:465508",
+        "representative_disease_id": "ORPHA:465508",
+        "label": "Symptomatic form of HFE-related hemochromatosis",
+        "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+        "model_type": "hf_encoder",
+        "score": 0.9839667081832886,
+        "matched_aliases": [
+          "ORPHA:465508"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9839667081832886,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Hypothyroidism",
+            "Weight loss"
+          ],
+          "n_shared_phenotype_labels": 2,
+          "patient_text_preview": "Patient phenotypes: Nocturia; Polyuria; Uterine leiomyoma; Abnormality of the tongue; Xerostomia; Sinusitis; Facial edema; Psychosis; Restlessness; Hypothyroidism; Hypertension; Thin skin; Hyperhidrosis; Bruising susceptibility; Hepatic cysts; Primary hypercortisolism; Coronary artery atherosclerosi",
+          "disease_text_preview": "Disease: Symptomatic form of HFE-related hemochromatosis Phenotypes: Testicular atrophy; Hypogonadotropic hypogonadism; Amenorrhea; Apathy; Gynecomastia; Infertility; Diabetes mellitus; Hypothyroidism; Osteoporosis; Hyperpigmentation of the skin; Lethargy; Muscle weakness; Arthritis; Joint swelling;"
+        },
+        "metadata": {
+          "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 7,
+        "canonical_disease_id": "ORPHA:435651",
+        "representative_disease_id": "ORPHA:435651",
+        "label": "Lipodystrophy, familial partial, type 5",
+        "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+        "model_type": "hf_encoder",
+        "score": 0.9836508631706238,
+        "matched_aliases": [
+          "ORPHA:435651"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9836508631706238,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Hypertension"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Nocturia; Polyuria; Uterine leiomyoma; Abnormality of the tongue; Xerostomia; Sinusitis; Facial edema; Psychosis; Restlessness; Hypothyroidism; Hypertension; Thin skin; Hyperhidrosis; Bruising susceptibility; Hepatic cysts; Primary hypercortisolism; Coronary artery atherosclerosi",
+          "disease_text_preview": "Disease: Lipodystrophy, familial partial, type 5 Phenotypes: Autosomal recessive inheritance; Polycystic ovaries; Loss of facial adipose tissue; Hypertension; Insulin-resistant diabetes mellitus; Irregular menstruation; Oligomenorrhea; Acanthosis nigricans; Hepatic steatosis; Pancreatitis; Diabetic "
+        },
+        "metadata": {
+          "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 8,
+        "canonical_disease_id": "ORPHA:247651",
+        "representative_disease_id": "MONDO:1010169",
+        "label": "infantile hypophosphatasia",
+        "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+        "model_type": "hf_encoder",
+        "score": 0.9836065769195557,
+        "matched_aliases": [
+          "MONDO:1010169"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9836065769195557,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Constipation"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Nocturia; Polyuria; Uterine leiomyoma; Abnormality of the tongue; Xerostomia; Sinusitis; Facial edema; Psychosis; Restlessness; Hypothyroidism; Hypertension; Thin skin; Hyperhidrosis; Bruising susceptibility; Hepatic cysts; Primary hypercortisolism; Coronary artery atherosclerosi",
+          "disease_text_preview": "Disease: infantile hypophosphatasia Phenotypes: Nephrocalcinosis; Abnormality of the dentition; Blue sclerae; Irritability; Short ribs; Rachitic rosary; Platyspondyly; Skin dimple over apex of long bone angulation; Seizure; Hypotonia; Craniosynostosis; Failure to thrive; Polyhydramnios; Anemia; Feve"
+        },
+        "metadata": {
+          "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 9,
+        "canonical_disease_id": "MONDO:0859164",
+        "representative_disease_id": "MONDO:0859164",
+        "label": "osteootohepatoenteric syndrome",
+        "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+        "model_type": "hf_encoder",
+        "score": 0.9835541844367981,
+        "matched_aliases": [
+          "MONDO:0859164"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9835541844367981,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Weight loss",
+            "Hypokalemia"
+          ],
+          "n_shared_phenotype_labels": 2,
+          "patient_text_preview": "Patient phenotypes: Nocturia; Polyuria; Uterine leiomyoma; Abnormality of the tongue; Xerostomia; Sinusitis; Facial edema; Psychosis; Restlessness; Hypothyroidism; Hypertension; Thin skin; Hyperhidrosis; Bruising susceptibility; Hepatic cysts; Primary hypercortisolism; Coronary artery atherosclerosi",
+          "disease_text_preview": "Disease: osteootohepatoenteric syndrome Phenotypes: Proteinuria; Hydrocephalus; Hearing impairment; Blue sclerae; Pruritus; Global developmental delay; Hip dysplasia; Hepatic fibrosis; Cholestasis; Microvesicular hepatic steatosis; Failure to thrive; Weight loss; Anemia; Dehydration; Large forehead;"
+        },
+        "metadata": {
+          "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 10,
+        "canonical_disease_id": "ORPHA:1855",
+        "representative_disease_id": "ORPHA:1855",
+        "label": "Spondyloenchondrodysplasia with immune dysregulation",
+        "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+        "model_type": "hf_encoder",
+        "score": 0.983539879322052,
+        "matched_aliases": [
+          "ORPHA:1855"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.983539879322052,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Hypothyroidism",
+            "Hypertension",
+            "Pneumonia",
+            "Headache"
+          ],
+          "n_shared_phenotype_labels": 4,
+          "patient_text_preview": "Patient phenotypes: Nocturia; Polyuria; Uterine leiomyoma; Abnormality of the tongue; Xerostomia; Sinusitis; Facial edema; Psychosis; Restlessness; Hypothyroidism; Hypertension; Thin skin; Hyperhidrosis; Bruising susceptibility; Hepatic cysts; Primary hypercortisolism; Coronary artery atherosclerosi",
+          "disease_text_preview": "Disease: Spondyloenchondrodysplasia with immune dysregulation Phenotypes: Autosomal recessive inheritance; Proteinuria; Turricephaly; Low-set ears; Recurrent otitis media; Narrow nose; Delayed eruption of teeth; Dental malocclusion; Abnormality of the nervous system; Pectus carinatum; Hematuria; Hyp"
+        },
+        "metadata": {
+          "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      }
+    ],
+    "sentence-transformers/all-MiniLM-L6-v2": [
+      {
+        "rank": 1,
+        "canonical_disease_id": "ORPHA:228429",
+        "representative_disease_id": "MONDO:0013225",
+        "label": "congenital generalized lipodystrophy type 4",
+        "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+        "model_type": "sentence_transformer",
+        "score": 0.7933725118637085,
+        "matched_aliases": [
+          "MONDO:0013225",
+          "ORPHA:228429"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.7933725118637085,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Constipation"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Nocturia; Polyuria; Uterine leiomyoma; Abnormality of the tongue; Xerostomia; Sinusitis; Facial edema; Psychosis; Restlessness; Hypothyroidism; Hypertension; Thin skin; Hyperhidrosis; Bruising susceptibility; Hepatic cysts; Primary hypercortisolism; Coronary artery atherosclerosi",
+          "disease_text_preview": "Disease: congenital generalized lipodystrophy type 4 Phenotypes: Hyperinsulinemia; Insulin resistance; Osteopenia; Osteoporosis; Acanthosis nigricans; Hirsutism; Muscle weakness; Flexion contracture; Hepatic steatosis; Failure to thrive; Prominent umbilicus; Tachycardia; Prolonged QT interval; Brady"
+        },
+        "metadata": {
+          "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+          "model_type": "sentence_transformer",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": null,
+          "pooling": null,
+          "sentence_transformer_encode": true,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 2,
+        "canonical_disease_id": "ORPHA:397",
+        "representative_disease_id": "ORPHA:397",
+        "label": "Temporal arteritis",
+        "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+        "model_type": "sentence_transformer",
+        "score": 0.7819396257400513,
+        "matched_aliases": [
+          "ORPHA:397"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.7819396257400513,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Hyperhidrosis",
+            "Weight loss",
+            "Headache",
+            "Skin ulcer"
+          ],
+          "n_shared_phenotype_labels": 4,
+          "patient_text_preview": "Patient phenotypes: Nocturia; Polyuria; Uterine leiomyoma; Abnormality of the tongue; Xerostomia; Sinusitis; Facial edema; Psychosis; Restlessness; Hypothyroidism; Hypertension; Thin skin; Hyperhidrosis; Bruising susceptibility; Hepatic cysts; Primary hypercortisolism; Coronary artery atherosclerosi",
+          "disease_text_preview": "Disease: Temporal arteritis Description: A large vessel vasculitis predominantly involving the arteries originating from the aortic arch and especially the extracranial branches of the carotid arteries. Phenotypes: Autosomal dominant inheritance; Renal insufficiency; Glossitis; Hearing impairment; C"
+        },
+        "metadata": {
+          "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+          "model_type": "sentence_transformer",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": null,
+          "pooling": null,
+          "sentence_transformer_encode": true,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 3,
+        "canonical_disease_id": "ORPHA:3260",
+        "representative_disease_id": "ORPHA:3260",
+        "label": "Hypereosinophilic syndrome, idiopathic",
+        "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+        "model_type": "sentence_transformer",
+        "score": 0.780002236366272,
+        "matched_aliases": [
+          "ORPHA:3260"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.780002236366272,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [],
+          "n_shared_phenotype_labels": 0,
+          "patient_text_preview": "Patient phenotypes: Nocturia; Polyuria; Uterine leiomyoma; Abnormality of the tongue; Xerostomia; Sinusitis; Facial edema; Psychosis; Restlessness; Hypothyroidism; Hypertension; Thin skin; Hyperhidrosis; Bruising susceptibility; Hepatic cysts; Primary hypercortisolism; Coronary artery atherosclerosi",
+          "disease_text_preview": "Disease: Hypereosinophilic syndrome, idiopathic Phenotypes: Blurred vision; Abnormality of the nervous system; Atypical behavior; Dementia; Eczematoid dermatitis; Cutis marmorata; Pallor; Pruritus; Erythroderma; Urticaria; Clubbing; Seizure; Confusion; Encephalopathy; Muscle weakness; Hyperreflexia;"
+        },
+        "metadata": {
+          "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+          "model_type": "sentence_transformer",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": null,
+          "pooling": null,
+          "sentence_transformer_encode": true,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 4,
+        "canonical_disease_id": "ORPHA:686999",
+        "representative_disease_id": "MONDO:0958034",
+        "label": "lipodystrophy, familial partial, type 9",
+        "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+        "model_type": "sentence_transformer",
+        "score": 0.7704421281814575,
+        "matched_aliases": [
+          "MONDO:0958034"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.7704421281814575,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [],
+          "n_shared_phenotype_labels": 0,
+          "patient_text_preview": "Patient phenotypes: Nocturia; Polyuria; Uterine leiomyoma; Abnormality of the tongue; Xerostomia; Sinusitis; Facial edema; Psychosis; Restlessness; Hypothyroidism; Hypertension; Thin skin; Hyperhidrosis; Bruising susceptibility; Hepatic cysts; Primary hypercortisolism; Coronary artery atherosclerosi",
+          "disease_text_preview": "Disease: lipodystrophy, familial partial, type 9 Phenotypes: Polycystic ovaries; Mandibular prognathia; Low-set ears; Convex nasal ridge; Prominent nose; Short neck; Deeply set eye; Gynecomastia; Hypothyroidism; Hypertension; Precocious puberty; Insulin-resistant diabetes mellitus; Hyperinsulinemia;"
+        },
+        "metadata": {
+          "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+          "model_type": "sentence_transformer",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": null,
+          "pooling": null,
+          "sentence_transformer_encode": true,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 5,
+        "canonical_disease_id": "ORPHA:416",
+        "representative_disease_id": "ORPHA:416",
+        "label": "Primary hyperoxaluria",
+        "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+        "model_type": "sentence_transformer",
+        "score": 0.7687716484069824,
+        "matched_aliases": [
+          "ORPHA:416"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.7687716484069824,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Metabolic acidosis"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Nocturia; Polyuria; Uterine leiomyoma; Abnormality of the tongue; Xerostomia; Sinusitis; Facial edema; Psychosis; Restlessness; Hypothyroidism; Hypertension; Thin skin; Hyperhidrosis; Bruising susceptibility; Hepatic cysts; Primary hypercortisolism; Coronary artery atherosclerosi",
+          "disease_text_preview": "Disease: Primary hyperoxaluria Description: A hereditary disorder characterized by excessive oxalate production, leading to hyperoxaluria. Phenotypes: Nephrocalcinosis; Abnormality of the dentition; Retinopathy; Optic disc pallor; Optic atrophy; Hematuria; Cutis marmorata; Acrocyanosis; Failure to t"
+        },
+        "metadata": {
+          "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+          "model_type": "sentence_transformer",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": null,
+          "pooling": null,
+          "sentence_transformer_encode": true,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 6,
+        "canonical_disease_id": "MONDO:0859276",
+        "representative_disease_id": "MONDO:0859276",
+        "label": "primordial dwarfism-immunodeficiency-lipodystrophy syndrome",
+        "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+        "model_type": "sentence_transformer",
+        "score": 0.7663317918777466,
+        "matched_aliases": [
+          "MONDO:0859276"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.7663317918777466,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Hypothyroidism"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Nocturia; Polyuria; Uterine leiomyoma; Abnormality of the tongue; Xerostomia; Sinusitis; Facial edema; Psychosis; Restlessness; Hypothyroidism; Hypertension; Thin skin; Hyperhidrosis; Bruising susceptibility; Hepatic cysts; Primary hypercortisolism; Coronary artery atherosclerosi",
+          "disease_text_preview": "Disease: primordial dwarfism-immunodeficiency-lipodystrophy syndrome Phenotypes: Cryptorchidism; Renal hypoplasia; Microcephaly; Delayed cranial suture closure; Smooth philtrum; Broad forehead; Micrognathia; Low-set ears; Depressed nasal tip; Cataract; Microphthalmia; Blepharophimosis; Microdontia; "
+        },
+        "metadata": {
+          "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+          "model_type": "sentence_transformer",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": null,
+          "pooling": null,
+          "sentence_transformer_encode": true,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 7,
+        "canonical_disease_id": "ORPHA:36913",
+        "representative_disease_id": "ORPHA:36913",
+        "label": "Autoimmune hypoparathyroidism",
+        "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+        "model_type": "sentence_transformer",
+        "score": 0.7629386186599731,
+        "matched_aliases": [
+          "ORPHA:36913"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.7629386186599731,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Coronary artery atherosclerosis"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Nocturia; Polyuria; Uterine leiomyoma; Abnormality of the tongue; Xerostomia; Sinusitis; Facial edema; Psychosis; Restlessness; Hypothyroidism; Hypertension; Thin skin; Hyperhidrosis; Bruising susceptibility; Hepatic cysts; Primary hypercortisolism; Coronary artery atherosclerosi",
+          "disease_text_preview": "Disease: Autoimmune hypoparathyroidism Description: An autoimmune form of hypoparathyroidism. Phenotypes: Conjunctivitis; Cataract; Depression; Irritability; Hallucinations; Anxiety; Hyporeflexia; Confusion; Alopecia; Prolonged QT interval; Coronary artery atherosclerosis; Abnormality of extrapyrami"
+        },
+        "metadata": {
+          "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+          "model_type": "sentence_transformer",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": null,
+          "pooling": null,
+          "sentence_transformer_encode": true,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 8,
+        "canonical_disease_id": "OMIM:620005",
+        "representative_disease_id": "OMIM:620005",
+        "label": "Primordial dwarfism-immunodeficiency-lipodystrophy syndrome",
+        "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+        "model_type": "sentence_transformer",
+        "score": 0.7573329210281372,
+        "matched_aliases": [
+          "OMIM:620005"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.7573329210281372,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Hypothyroidism"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Nocturia; Polyuria; Uterine leiomyoma; Abnormality of the tongue; Xerostomia; Sinusitis; Facial edema; Psychosis; Restlessness; Hypothyroidism; Hypertension; Thin skin; Hyperhidrosis; Bruising susceptibility; Hepatic cysts; Primary hypercortisolism; Coronary artery atherosclerosi",
+          "disease_text_preview": "Disease: Primordial dwarfism-immunodeficiency-lipodystrophy syndrome Phenotypes: Autosomal recessive inheritance; Cryptorchidism; Renal hypoplasia; Microcephaly; Delayed cranial suture closure; Smooth philtrum; Broad forehead; Micrognathia; Low-set ears; Depressed nasal tip; Cataract; Microphthalmia"
+        },
+        "metadata": {
+          "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+          "model_type": "sentence_transformer",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": null,
+          "pooling": null,
+          "sentence_transformer_encode": true,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 9,
+        "canonical_disease_id": "MONDO:0859273",
+        "representative_disease_id": "MONDO:0859273",
+        "label": "liver disease, severe congenital",
+        "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+        "model_type": "sentence_transformer",
+        "score": 0.7562043070793152,
+        "matched_aliases": [
+          "MONDO:0859273"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.7562043070793152,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Metabolic acidosis",
+            "Pneumonia"
+          ],
+          "n_shared_phenotype_labels": 2,
+          "patient_text_preview": "Patient phenotypes: Nocturia; Polyuria; Uterine leiomyoma; Abnormality of the tongue; Xerostomia; Sinusitis; Facial edema; Psychosis; Restlessness; Hypothyroidism; Hypertension; Thin skin; Hyperhidrosis; Bruising susceptibility; Hepatic cysts; Primary hypercortisolism; Coronary artery atherosclerosi",
+          "disease_text_preview": "Disease: liver disease, severe congenital Phenotypes: Recurrent urinary tract infections; Inguinal hernia; Hydrocele testis; Hypospadias; Hydronephrosis; Epicanthus; Triangular face; Micrognathia; High forehead; Recurrent otitis media; Narrow nasal ridge; Proptosis; Nystagmus; Short attention span; "
+        },
+        "metadata": {
+          "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+          "model_type": "sentence_transformer",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": null,
+          "pooling": null,
+          "sentence_transformer_encode": true,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 10,
+        "canonical_disease_id": "MONDO:0030437",
+        "representative_disease_id": "MONDO:0030437",
+        "label": "congenital disorder of glycosylation, type IIw",
+        "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+        "model_type": "sentence_transformer",
+        "score": 0.75599205493927,
+        "matched_aliases": [
+          "MONDO:0030437"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.75599205493927,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [],
+          "n_shared_phenotype_labels": 0,
+          "patient_text_preview": "Patient phenotypes: Nocturia; Polyuria; Uterine leiomyoma; Abnormality of the tongue; Xerostomia; Sinusitis; Facial edema; Psychosis; Restlessness; Hypothyroidism; Hypertension; Thin skin; Hyperhidrosis; Bruising susceptibility; Hepatic cysts; Primary hypercortisolism; Coronary artery atherosclerosi",
+          "disease_text_preview": "Disease: congenital disorder of glycosylation, type IIw Phenotypes: Inguinal hernia; Narrow face; Pointed chin; Hypertelorism; Facial asymmetry; Micrognathia; Low-set ears; Recurrent otitis media; Underdeveloped nasal alae; Wide nose; Strabismus; Pectus excavatum; Pectus carinatum; Narrow chest; Mem"
+        },
+        "metadata": {
+          "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+          "model_type": "sentence_transformer",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": null,
+          "pooling": null,
+          "sentence_transformer_encode": true,
+          "deduplicated_to_canonical": true
+        }
+      }
+    ],
+    "cambridgeltl/SapBERT-from-PubMedBERT-fulltext": [
+      {
+        "rank": 1,
+        "canonical_disease_id": "ORPHA:549",
+        "representative_disease_id": "MONDO:0005824",
+        "label": "Legionnaires' disease",
+        "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.8670477867126465,
+        "matched_aliases": [
+          "MONDO:0005824",
+          "ORPHA:549"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.8670477867126465,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [],
+          "n_shared_phenotype_labels": 0,
+          "patient_text_preview": "Patient phenotypes: Nocturia; Polyuria; Uterine leiomyoma; Abnormality of the tongue; Xerostomia; Sinusitis; Facial edema; Psychosis; Restlessness; Hypothyroidism; Hypertension; Thin skin; Hyperhidrosis; Bruising susceptibility; Hepatic cysts; Primary hypercortisolism; Coronary artery atherosclerosi",
+          "disease_text_preview": "Disease: Legionnaires' disease Phenotypes: Renal insufficiency; Proteinuria; Hallucinations; Hematuria; Jaundice; Ataxia; Muscle weakness; Pericarditis; Pancreatitis; Splenomegaly; Decreased total lymphocyte count; Fever; Diarrhea; Nausea and vomiting; Abdominal pain; Anorexia; Migraine; Abnormal lu"
+        },
+        "metadata": {
+          "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 2,
+        "canonical_disease_id": "MONDO:0030500",
+        "representative_disease_id": "MONDO:0030500",
+        "label": "Loeys-Dietz syndrome 6",
+        "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.8641240000724792,
+        "matched_aliases": [
+          "MONDO:0030500"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.8641240000724792,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Bruising susceptibility"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Nocturia; Polyuria; Uterine leiomyoma; Abnormality of the tongue; Xerostomia; Sinusitis; Facial edema; Psychosis; Restlessness; Hypothyroidism; Hypertension; Thin skin; Hyperhidrosis; Bruising susceptibility; Hepatic cysts; Primary hypercortisolism; Coronary artery atherosclerosi",
+          "disease_text_preview": "Disease: Loeys-Dietz syndrome 6 Phenotypes: Inguinal hernia; Tall stature; Bifid uvula; High palate; Dolichocephaly; Long face; Hypertelorism; Downslanted palpebral fissures; Abnormal sternum morphology; Congenital diaphragmatic hernia; Soft skin; Bruising susceptibility; Striae distensae; Arachnoda"
+        },
+        "metadata": {
+          "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 3,
+        "canonical_disease_id": "ORPHA:397",
+        "representative_disease_id": "ORPHA:397",
+        "label": "Temporal arteritis",
+        "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.8636454343795776,
+        "matched_aliases": [
+          "ORPHA:397"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.8636454343795776,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Hyperhidrosis",
+            "Weight loss",
+            "Headache",
+            "Skin ulcer"
+          ],
+          "n_shared_phenotype_labels": 4,
+          "patient_text_preview": "Patient phenotypes: Nocturia; Polyuria; Uterine leiomyoma; Abnormality of the tongue; Xerostomia; Sinusitis; Facial edema; Psychosis; Restlessness; Hypothyroidism; Hypertension; Thin skin; Hyperhidrosis; Bruising susceptibility; Hepatic cysts; Primary hypercortisolism; Coronary artery atherosclerosi",
+          "disease_text_preview": "Disease: Temporal arteritis Description: A large vessel vasculitis predominantly involving the arteries originating from the aortic arch and especially the extracranial branches of the carotid arteries. Phenotypes: Autosomal dominant inheritance; Renal insufficiency; Glossitis; Hearing impairment; C"
+        },
+        "metadata": {
+          "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 4,
+        "canonical_disease_id": "ORPHA:95455",
+        "representative_disease_id": "MONDO:0019810",
+        "label": "toxic epidermal necrolysis",
+        "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.8611100316047668,
+        "matched_aliases": [
+          "MONDO:0019810"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.8611100316047668,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Xerostomia",
+            "Pneumonia",
+            "Headache",
+            "Chemosis",
+            "Skin ulcer"
+          ],
+          "n_shared_phenotype_labels": 5,
+          "patient_text_preview": "Patient phenotypes: Nocturia; Polyuria; Uterine leiomyoma; Abnormality of the tongue; Xerostomia; Sinusitis; Facial edema; Psychosis; Restlessness; Hypothyroidism; Hypertension; Thin skin; Hyperhidrosis; Bruising susceptibility; Hepatic cysts; Primary hypercortisolism; Coronary artery atherosclerosi",
+          "disease_text_preview": "Disease: toxic epidermal necrolysis Phenotypes: Abnormal penis morphology; Xerostomia; Keratitis; Conjunctivitis; Visual loss; Abnormality of the pharynx; Photophobia; Blindness; Depression; Anxiety; Hematuria; Hyperpigmentation of the skin; Atypical scarring of skin; Skin rash; Hypopigmentation of "
+        },
+        "metadata": {
+          "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 5,
+        "canonical_disease_id": "ORPHA:90041",
+        "representative_disease_id": "ORPHA:90041",
+        "label": "Gaisböck syndrome",
+        "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.8591052293777466,
+        "matched_aliases": [
+          "ORPHA:90041"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.8591052293777466,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Hypertension",
+            "Coronary artery atherosclerosis",
+            "Headache"
+          ],
+          "n_shared_phenotype_labels": 3,
+          "patient_text_preview": "Patient phenotypes: Nocturia; Polyuria; Uterine leiomyoma; Abnormality of the tongue; Xerostomia; Sinusitis; Facial edema; Psychosis; Restlessness; Hypothyroidism; Hypertension; Thin skin; Hyperhidrosis; Bruising susceptibility; Hepatic cysts; Primary hypercortisolism; Coronary artery atherosclerosi",
+          "disease_text_preview": "Disease: Gaisböck syndrome Description: Polycythemia that is caused by stress. Phenotypes: Nephrocalcinosis; Anxiety; Diabetes mellitus; Hypertension; Increased circulating renin concentration; Plethora; Cholecystitis; Stroke; Obesity; Myocardial infarction; Coronary artery atherosclerosis; Angina p"
+        },
+        "metadata": {
+          "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 6,
+        "canonical_disease_id": "ORPHA:319646",
+        "representative_disease_id": "ORPHA:319646",
+        "label": "Congenital disorder of glycosylation, type It",
+        "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.8559389114379883,
+        "matched_aliases": [
+          "ORPHA:319646"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.8559389114379883,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [],
+          "n_shared_phenotype_labels": 0,
+          "patient_text_preview": "Patient phenotypes: Nocturia; Polyuria; Uterine leiomyoma; Abnormality of the tongue; Xerostomia; Sinusitis; Facial edema; Psychosis; Restlessness; Hypothyroidism; Hypertension; Thin skin; Hyperhidrosis; Bruising susceptibility; Hepatic cysts; Primary hypercortisolism; Coronary artery atherosclerosi",
+          "disease_text_preview": "Disease: Congenital disorder of glycosylation, type It Phenotypes: Autosomal recessive inheritance; Hydronephrosis; Cleft palate; Bifid uvula; Pierre-Robin sequence; Micrognathia; Recurrent otitis media; Blue sclerae; Delayed puberty; Hypotonia; Global developmental delay; Motor delay; Muscle weakne"
+        },
+        "metadata": {
+          "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 7,
+        "canonical_disease_id": "ORPHA:275761",
+        "representative_disease_id": "ORPHA:275761",
+        "label": "Lysosomal acid lipase deficiency",
+        "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.8550572395324707,
+        "matched_aliases": [
+          "MONDO:0800449",
+          "ORPHA:275761"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.8550572395324707,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Coronary artery atherosclerosis",
+            "Weight loss"
+          ],
+          "n_shared_phenotype_labels": 2,
+          "patient_text_preview": "Patient phenotypes: Nocturia; Polyuria; Uterine leiomyoma; Abnormality of the tongue; Xerostomia; Sinusitis; Facial edema; Psychosis; Restlessness; Hypothyroidism; Hypertension; Thin skin; Hyperhidrosis; Bruising susceptibility; Hepatic cysts; Primary hypercortisolism; Coronary artery atherosclerosi",
+          "disease_text_preview": "Disease: Lysosomal acid lipase deficiency Phenotypes: Renal salt wasting; Jaundice; Pruritus; Xanthomatosis; Xanthelasma; Global developmental delay; Stroke; Hepatic fibrosis; Hepatic failure; Decreased liver function; Microvesicular hepatic steatosis; Hepatosplenomegaly; Failure to thrive; Ascites;"
+        },
+        "metadata": {
+          "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 8,
+        "canonical_disease_id": "MONDO:0008399",
+        "representative_disease_id": "MONDO:0008399",
+        "label": "sarcoidosis, susceptibility to, 1",
+        "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.8537471294403076,
+        "matched_aliases": [
+          "MONDO:0008399"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.8537471294403076,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Weight loss"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Nocturia; Polyuria; Uterine leiomyoma; Abnormality of the tongue; Xerostomia; Sinusitis; Facial edema; Psychosis; Restlessness; Hypothyroidism; Hypertension; Thin skin; Hyperhidrosis; Bruising susceptibility; Hepatic cysts; Primary hypercortisolism; Coronary artery atherosclerosi",
+          "disease_text_preview": "Disease: sarcoidosis, susceptibility to, 1 Phenotypes: Glaucoma; Uveitis; Photophobia; Blurred vision; Iridocyclitis; Optic neuropathy; Clubbing; Arthritis; Pericardial effusion; Splenomegaly; Weight loss; Pancytopenia; Fever; Inflammation of the large intestine; Anorexia; Restrictive ventilatory de"
+        },
+        "metadata": {
+          "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 9,
+        "canonical_disease_id": "ORPHA:567546",
+        "representative_disease_id": "ORPHA:567546",
+        "label": "Idiopathic steroid-sensitive nephrotic syndrome with secondary steroid resistance",
+        "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.8536778688430786,
+        "matched_aliases": [
+          "ORPHA:567546"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.8536778688430786,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Facial edema",
+            "Hypertension"
+          ],
+          "n_shared_phenotype_labels": 2,
+          "patient_text_preview": "Patient phenotypes: Nocturia; Polyuria; Uterine leiomyoma; Abnormality of the tongue; Xerostomia; Sinusitis; Facial edema; Psychosis; Restlessness; Hypothyroidism; Hypertension; Thin skin; Hyperhidrosis; Bruising susceptibility; Hepatic cysts; Primary hypercortisolism; Coronary artery atherosclerosi",
+          "disease_text_preview": "Disease: Idiopathic steroid-sensitive nephrotic syndrome with secondary steroid resistance Phenotypes: Hydrocele testis; Focal segmental glomerulosclerosis; Facial edema; Hypertension; Edema; Ascites; Abdominal pain; Dyspnea; Pleural effusion; Pulmonary embolism; Microscopic hematuria; Hypoalbuminem"
+        },
+        "metadata": {
+          "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 10,
+        "canonical_disease_id": "ORPHA:488618",
+        "representative_disease_id": "ORPHA:488618",
+        "label": "Short stature, developmental delay, and congenital heart defects",
+        "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.8514857292175293,
+        "matched_aliases": [
+          "ORPHA:488618"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.8514857292175293,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [],
+          "n_shared_phenotype_labels": 0,
+          "patient_text_preview": "Patient phenotypes: Nocturia; Polyuria; Uterine leiomyoma; Abnormality of the tongue; Xerostomia; Sinusitis; Facial edema; Psychosis; Restlessness; Hypothyroidism; Hypertension; Thin skin; Hyperhidrosis; Bruising susceptibility; Hepatic cysts; Primary hypercortisolism; Coronary artery atherosclerosi",
+          "disease_text_preview": "Disease: Short stature, developmental delay, and congenital heart defects Phenotypes: Autosomal recessive inheritance; Renal cyst; Hearing impairment; Strabismus; Conjunctivitis; Cataract; Developmental cataract; Uveitis; Compulsive behaviors; Motor stereotypy; Delayed speech and language developmen"
+        },
+        "metadata": {
+          "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      }
+    ],
+    "dmis-lab/biobert-v1.1": [
+      {
+        "rank": 1,
+        "canonical_disease_id": "ORPHA:2346",
+        "representative_disease_id": "MONDO:0007864",
+        "label": "angioosteohypertrophic syndrome",
+        "model_name": "dmis-lab/biobert-v1.1",
+        "model_type": "hf_encoder",
+        "score": 0.9753228425979614,
+        "matched_aliases": [
+          "MONDO:0007864"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9753228425979614,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [],
+          "n_shared_phenotype_labels": 0,
+          "patient_text_preview": "Patient phenotypes: Nocturia; Polyuria; Uterine leiomyoma; Abnormality of the tongue; Xerostomia; Sinusitis; Facial edema; Psychosis; Restlessness; Hypothyroidism; Hypertension; Thin skin; Hyperhidrosis; Bruising susceptibility; Hepatic cysts; Primary hypercortisolism; Coronary artery atherosclerosi",
+          "disease_text_preview": "Disease: angioosteohypertrophic syndrome Phenotypes: Tall stature; Abnormality of the menstrual cycle; Microcephaly; Macrocephaly; Glaucoma; Hematuria; Abnormal skull morphology; Edema; Lymphedema; Hemangioma; Syndactyly; Hand polydactyly; Intellectual disability; Seizure; Hemihypertrophy; Ascites; "
+        },
+        "metadata": {
+          "model_name": "dmis-lab/biobert-v1.1",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 2,
+        "canonical_disease_id": "ORPHA:647782",
+        "representative_disease_id": "ORPHA:647782",
+        "label": "Pigmented nodular adrenocortical disease, primary, 2",
+        "model_name": "dmis-lab/biobert-v1.1",
+        "model_type": "hf_encoder",
+        "score": 0.9753143787384033,
+        "matched_aliases": [
+          "ORPHA:647782"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9753143787384033,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Psychosis",
+            "Hypertension",
+            "Thin skin",
+            "Bruising susceptibility",
+            "Primary hypercortisolism"
+          ],
+          "n_shared_phenotype_labels": 5,
+          "patient_text_preview": "Patient phenotypes: Nocturia; Polyuria; Uterine leiomyoma; Abnormality of the tongue; Xerostomia; Sinusitis; Facial edema; Psychosis; Restlessness; Hypothyroidism; Hypertension; Thin skin; Hyperhidrosis; Bruising susceptibility; Hepatic cysts; Primary hypercortisolism; Coronary artery atherosclerosi",
+          "disease_text_preview": "Disease: Pigmented nodular adrenocortical disease, primary, 2 Phenotypes: Autosomal dominant inheritance; Ovarian cyst; Round face; Psychosis; Emotional lability; Agitation; Depression; Anxiety; Hypertension; Secondary amenorrhea; Osteopenia; Osteoporosis; Thin skin; Bruising susceptibility; Striae "
+        },
+        "metadata": {
+          "model_name": "dmis-lab/biobert-v1.1",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 3,
+        "canonical_disease_id": "OMIM:619377",
+        "representative_disease_id": "OMIM:619377",
+        "label": "Osteootohepatoenteric syndrome",
+        "model_name": "dmis-lab/biobert-v1.1",
+        "model_type": "hf_encoder",
+        "score": 0.9739528894424438,
+        "matched_aliases": [
+          "OMIM:619377"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9739528894424438,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Weight loss",
+            "Hypokalemia"
+          ],
+          "n_shared_phenotype_labels": 2,
+          "patient_text_preview": "Patient phenotypes: Nocturia; Polyuria; Uterine leiomyoma; Abnormality of the tongue; Xerostomia; Sinusitis; Facial edema; Psychosis; Restlessness; Hypothyroidism; Hypertension; Thin skin; Hyperhidrosis; Bruising susceptibility; Hepatic cysts; Primary hypercortisolism; Coronary artery atherosclerosi",
+          "disease_text_preview": "Disease: Osteootohepatoenteric syndrome Phenotypes: Autosomal recessive inheritance; Proteinuria; Hydrocephalus; Hearing impairment; Blue sclerae; Pruritus; Global developmental delay; Hip dysplasia; Hepatic fibrosis; Cholestasis; Microvesicular hepatic steatosis; Failure to thrive; Weight loss; Ane"
+        },
+        "metadata": {
+          "model_name": "dmis-lab/biobert-v1.1",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 4,
+        "canonical_disease_id": "ORPHA:696289",
+        "representative_disease_id": "MONDO:0010020",
+        "label": "congenital generalized lipodystrophy type 2",
+        "model_name": "dmis-lab/biobert-v1.1",
+        "model_type": "hf_encoder",
+        "score": 0.9739412069320679,
+        "matched_aliases": [
+          "MONDO:0010020"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9739412069320679,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Type II diabetes mellitus"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Nocturia; Polyuria; Uterine leiomyoma; Abnormality of the tongue; Xerostomia; Sinusitis; Facial edema; Psychosis; Restlessness; Hypothyroidism; Hypertension; Thin skin; Hyperhidrosis; Bruising susceptibility; Hepatic cysts; Primary hypercortisolism; Coronary artery atherosclerosi",
+          "disease_text_preview": "Disease: congenital generalized lipodystrophy type 2 Phenotypes: Labial hypertrophy; Tall stature; Decreased fertility; Polycystic ovaries; Mandibular prognathia; Triangular face; Macrotia; Nephrolithiasis; Hyperinsulinemia; Decreased fertility in females; Insulin-resistant diabetes mellitus at pube"
+        },
+        "metadata": {
+          "model_name": "dmis-lab/biobert-v1.1",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 5,
+        "canonical_disease_id": "MONDO:0859164",
+        "representative_disease_id": "MONDO:0859164",
+        "label": "osteootohepatoenteric syndrome",
+        "model_name": "dmis-lab/biobert-v1.1",
+        "model_type": "hf_encoder",
+        "score": 0.9737218022346497,
+        "matched_aliases": [
+          "MONDO:0859164"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9737218022346497,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Weight loss",
+            "Hypokalemia"
+          ],
+          "n_shared_phenotype_labels": 2,
+          "patient_text_preview": "Patient phenotypes: Nocturia; Polyuria; Uterine leiomyoma; Abnormality of the tongue; Xerostomia; Sinusitis; Facial edema; Psychosis; Restlessness; Hypothyroidism; Hypertension; Thin skin; Hyperhidrosis; Bruising susceptibility; Hepatic cysts; Primary hypercortisolism; Coronary artery atherosclerosi",
+          "disease_text_preview": "Disease: osteootohepatoenteric syndrome Phenotypes: Proteinuria; Hydrocephalus; Hearing impairment; Blue sclerae; Pruritus; Global developmental delay; Hip dysplasia; Hepatic fibrosis; Cholestasis; Microvesicular hepatic steatosis; Failure to thrive; Weight loss; Anemia; Dehydration; Large forehead;"
+        },
+        "metadata": {
+          "model_name": "dmis-lab/biobert-v1.1",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 6,
+        "canonical_disease_id": "ORPHA:90041",
+        "representative_disease_id": "ORPHA:90041",
+        "label": "Gaisböck syndrome",
+        "model_name": "dmis-lab/biobert-v1.1",
+        "model_type": "hf_encoder",
+        "score": 0.973676323890686,
+        "matched_aliases": [
+          "ORPHA:90041"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.973676323890686,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Hypertension",
+            "Coronary artery atherosclerosis",
+            "Headache"
+          ],
+          "n_shared_phenotype_labels": 3,
+          "patient_text_preview": "Patient phenotypes: Nocturia; Polyuria; Uterine leiomyoma; Abnormality of the tongue; Xerostomia; Sinusitis; Facial edema; Psychosis; Restlessness; Hypothyroidism; Hypertension; Thin skin; Hyperhidrosis; Bruising susceptibility; Hepatic cysts; Primary hypercortisolism; Coronary artery atherosclerosi",
+          "disease_text_preview": "Disease: Gaisböck syndrome Description: Polycythemia that is caused by stress. Phenotypes: Nephrocalcinosis; Anxiety; Diabetes mellitus; Hypertension; Increased circulating renin concentration; Plethora; Cholecystitis; Stroke; Obesity; Myocardial infarction; Coronary artery atherosclerosis; Angina p"
+        },
+        "metadata": {
+          "model_name": "dmis-lab/biobert-v1.1",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 7,
+        "canonical_disease_id": "MONDO:0011714",
+        "representative_disease_id": "MONDO:0011714",
+        "label": "partial lipodystrophy, congenital cataracts, and neurodegeneration syndrome",
+        "model_name": "dmis-lab/biobert-v1.1",
+        "model_type": "hf_encoder",
+        "score": 0.9736196398735046,
+        "matched_aliases": [
+          "MONDO:0011714"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9736196398735046,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Polyuria",
+            "Hypertension",
+            "Thin skin"
+          ],
+          "n_shared_phenotype_labels": 3,
+          "patient_text_preview": "Patient phenotypes: Nocturia; Polyuria; Uterine leiomyoma; Abnormality of the tongue; Xerostomia; Sinusitis; Facial edema; Psychosis; Restlessness; Hypothyroidism; Hypertension; Thin skin; Hyperhidrosis; Bruising susceptibility; Hepatic cysts; Primary hypercortisolism; Coronary artery atherosclerosi",
+          "disease_text_preview": "Disease: partial lipodystrophy, congenital cataracts, and neurodegeneration syndrome Phenotypes: Polyuria; Narrow mouth; Large fontanelles; Triangular face; Tinnitus; Low-set ears; Narrow nasal ridge; Cataract; Developmental cataract; Pigmentary retinopathy; Nystagmus; Hypertension; Insulin resistan"
+        },
+        "metadata": {
+          "model_name": "dmis-lab/biobert-v1.1",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 8,
+        "canonical_disease_id": "ORPHA:696189",
+        "representative_disease_id": "MONDO:0012071",
+        "label": "congenital generalized lipodystrophy type 1",
+        "model_name": "dmis-lab/biobert-v1.1",
+        "model_type": "hf_encoder",
+        "score": 0.9728186130523682,
+        "matched_aliases": [
+          "MONDO:0012071"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9728186130523682,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [],
+          "n_shared_phenotype_labels": 0,
+          "patient_text_preview": "Patient phenotypes: Nocturia; Polyuria; Uterine leiomyoma; Abnormality of the tongue; Xerostomia; Sinusitis; Facial edema; Psychosis; Restlessness; Hypothyroidism; Hypertension; Thin skin; Hyperhidrosis; Bruising susceptibility; Hepatic cysts; Primary hypercortisolism; Coronary artery atherosclerosi",
+          "disease_text_preview": "Disease: congenital generalized lipodystrophy type 1 Phenotypes: Labial hypertrophy; Tall stature; Polycystic ovaries; Mandibular prognathia; Triangular face; Macrotia; Nephrolithiasis; Diabetes mellitus; Hyperinsulinemia; Decreased fertility in females; Insulin-resistant diabetes mellitus at pubert"
+        },
+        "metadata": {
+          "model_name": "dmis-lab/biobert-v1.1",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 9,
+        "canonical_disease_id": "ORPHA:228429",
+        "representative_disease_id": "MONDO:0013225",
+        "label": "congenital generalized lipodystrophy type 4",
+        "model_name": "dmis-lab/biobert-v1.1",
+        "model_type": "hf_encoder",
+        "score": 0.9726240634918213,
+        "matched_aliases": [
+          "MONDO:0013225"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9726240634918213,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Constipation"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Nocturia; Polyuria; Uterine leiomyoma; Abnormality of the tongue; Xerostomia; Sinusitis; Facial edema; Psychosis; Restlessness; Hypothyroidism; Hypertension; Thin skin; Hyperhidrosis; Bruising susceptibility; Hepatic cysts; Primary hypercortisolism; Coronary artery atherosclerosi",
+          "disease_text_preview": "Disease: congenital generalized lipodystrophy type 4 Phenotypes: Hyperinsulinemia; Insulin resistance; Osteopenia; Osteoporosis; Acanthosis nigricans; Hirsutism; Muscle weakness; Flexion contracture; Hepatic steatosis; Failure to thrive; Prominent umbilicus; Tachycardia; Prolonged QT interval; Brady"
+        },
+        "metadata": {
+          "model_name": "dmis-lab/biobert-v1.1",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 10,
+        "canonical_disease_id": "ORPHA:247651",
+        "representative_disease_id": "MONDO:1010169",
+        "label": "infantile hypophosphatasia",
+        "model_name": "dmis-lab/biobert-v1.1",
+        "model_type": "hf_encoder",
+        "score": 0.9723421335220337,
+        "matched_aliases": [
+          "MONDO:1010169"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9723421335220337,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Constipation"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Nocturia; Polyuria; Uterine leiomyoma; Abnormality of the tongue; Xerostomia; Sinusitis; Facial edema; Psychosis; Restlessness; Hypothyroidism; Hypertension; Thin skin; Hyperhidrosis; Bruising susceptibility; Hepatic cysts; Primary hypercortisolism; Coronary artery atherosclerosi",
+          "disease_text_preview": "Disease: infantile hypophosphatasia Phenotypes: Nephrocalcinosis; Abnormality of the dentition; Blue sclerae; Irritability; Short ribs; Rachitic rosary; Platyspondyly; Skin dimple over apex of long bone angulation; Seizure; Hypotonia; Craniosynostosis; Failure to thrive; Polyhydramnios; Anemia; Feve"
+        },
+        "metadata": {
+          "model_name": "dmis-lab/biobert-v1.1",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      }
+    ],
+    "tfidf_cosine": [
+      {
+        "rank": 1,
+        "disease_id": "ORPHA:276621",
+        "label": "Sporadic pheochromocytoma/secreting paraganglioma",
+        "method_name": "tfidf",
+        "score": 0.25803161152919174,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.25803161152919174,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000077",
+            "HP:0000079",
+            "HP:0000095",
+            "HP:0000118",
+            "HP:0000119",
+            "HP:0000707",
+            "HP:0000759",
+            "HP:0000818",
+            "HP:0000822"
+          ],
+          "n_shared_terms": 78,
+          "patient_coverage": 0.2653061224489796,
+          "disease_coverage": 0.5306122448979592,
+          "n_patient_terms": 294,
+          "n_disease_terms": 147,
+          "n_union_terms": 363,
+          "top_weighted_matches": [
+            {
+              "term": "HP:0006737",
+              "idf_weight": 8.297194689246101
+            },
+            {
+              "term": "HP:0006748",
+              "idf_weight": 8.114873132452146
+            },
+            {
+              "term": "HP:0100642",
+              "idf_weight": 8.114873132452146
+            },
+            {
+              "term": "HP:0011703",
+              "idf_weight": 7.073419257623985
+            },
+            {
+              "term": "HP:0002666",
+              "idf_weight": 6.728578771332256
+            }
+          ]
+        }
+      },
+      {
+        "rank": 2,
+        "disease_id": "ORPHA:231625",
+        "label": "Adrenocortical carcinoma with pure aldosterone hypersecretion",
+        "method_name": "tfidf",
+        "score": 0.2533576035705678,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.2533576035705678,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000079",
+            "HP:0000118",
+            "HP:0000119",
+            "HP:0000152",
+            "HP:0000234",
+            "HP:0000271",
+            "HP:0000707",
+            "HP:0000818",
+            "HP:0000822"
+          ],
+          "n_shared_terms": 60,
+          "patient_coverage": 0.20408163265306123,
+          "disease_coverage": 0.6818181818181818,
+          "n_patient_terms": 294,
+          "n_disease_terms": 88,
+          "n_union_terms": 322,
+          "top_weighted_matches": [
+            {
+              "term": "HP:0200114",
+              "idf_weight": 6.687756776812
+            },
+            {
+              "term": "HP:0100631",
+              "idf_weight": 6.410125040213721
+            },
+            {
+              "term": "HP:0001948",
+              "idf_weight": 6.168962983396833
+            },
+            {
+              "term": "HP:0003118",
+              "idf_weight": 6.099970111909881
+            },
+            {
+              "term": "HP:0002717",
+              "idf_weight": 6.0564849999701424
+            }
+          ]
+        }
+      },
+      {
+        "rank": 3,
+        "disease_id": "ORPHA:1501",
+        "label": "Adrenocortical carcinoma, pediatric",
+        "method_name": "tfidf",
+        "score": 0.24745830942199007,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.24745830942199007,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000078",
+            "HP:0000079",
+            "HP:0000118",
+            "HP:0000119",
+            "HP:0000707",
+            "HP:0000818",
+            "HP:0000819",
+            "HP:0000822",
+            "HP:0000830"
+          ],
+          "n_shared_terms": 80,
+          "patient_coverage": 0.272108843537415,
+          "disease_coverage": 0.6299212598425197,
+          "n_patient_terms": 294,
+          "n_disease_terms": 127,
+          "n_union_terms": 341,
+          "top_weighted_matches": [
+            {
+              "term": "HP:0011748",
+              "idf_weight": 6.728578771332256
+            },
+            {
+              "term": "HP:0100631",
+              "idf_weight": 6.410125040213721
+            },
+            {
+              "term": "HP:0003118",
+              "idf_weight": 6.099970111909881
+            },
+            {
+              "term": "HP:0002717",
+              "idf_weight": 6.0564849999701424
+            },
+            {
+              "term": "HP:0011731",
+              "idf_weight": 5.4522853054266935
+            }
+          ]
+        }
+      },
+      {
+        "rank": 4,
+        "disease_id": "MONDO:0014359",
+        "label": "pigmented nodular adrenocortical disease, primary, 4",
+        "method_name": "tfidf",
+        "score": 0.24442004829792574,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.24442004829792574,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000152",
+            "HP:0000234",
+            "HP:0000271",
+            "HP:0000707",
+            "HP:0000708",
+            "HP:0000818",
+            "HP:0000819",
+            "HP:0000822"
+          ],
+          "n_shared_terms": 61,
+          "patient_coverage": 0.20748299319727892,
+          "disease_coverage": 0.7261904761904762,
+          "n_patient_terms": 294,
+          "n_disease_terms": 84,
+          "n_union_terms": 317,
+          "top_weighted_matches": [
+            {
+              "term": "HP:0001579",
+              "idf_weight": 7.709408024343982
+            },
+            {
+              "term": "HP:0003118",
+              "idf_weight": 6.099970111909881
+            },
+            {
+              "term": "HP:0002717",
+              "idf_weight": 6.0564849999701424
+            },
+            {
+              "term": "HP:0011731",
+              "idf_weight": 5.4522853054266935
+            },
+            {
+              "term": "HP:0012111",
+              "idf_weight": 5.406822931349936
+            }
+          ]
+        }
+      },
+      {
+        "rank": 5,
+        "disease_id": "ORPHA:251274",
+        "label": "Hyperaldosteronism, familial, type III",
+        "method_name": "tfidf",
+        "score": 0.24428018195903917,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.24428018195903917,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000077",
+            "HP:0000079",
+            "HP:0000103",
+            "HP:0000118",
+            "HP:0000119",
+            "HP:0000152",
+            "HP:0000234",
+            "HP:0000271",
+            "HP:0000707"
+          ],
+          "n_shared_terms": 65,
+          "patient_coverage": 0.22108843537414966,
+          "disease_coverage": 0.6701030927835051,
+          "n_patient_terms": 294,
+          "n_disease_terms": 97,
+          "n_union_terms": 326,
+          "top_weighted_matches": [
+            {
+              "term": "HP:0200114",
+              "idf_weight": 6.687756776812
+            },
+            {
+              "term": "HP:0001948",
+              "idf_weight": 6.168962983396833
+            },
+            {
+              "term": "HP:0000103",
+              "idf_weight": 5.779498216635109
+            },
+            {
+              "term": "HP:0001959",
+              "idf_weight": 5.61617316053181
+            },
+            {
+              "term": "HP:0030082",
+              "idf_weight": 5.602567508476031
+            }
+          ]
+        }
+      },
+      {
+        "rank": 6,
+        "disease_id": "MONDO:0020735",
+        "label": "ACTH-independent macronodular adrenal hyperplasia 1",
+        "method_name": "tfidf",
+        "score": 0.24210320755502074,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.24210320755502074,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000152",
+            "HP:0000234",
+            "HP:0000271",
+            "HP:0000707",
+            "HP:0000708",
+            "HP:0000709",
+            "HP:0000818",
+            "HP:0000822"
+          ],
+          "n_shared_terms": 60,
+          "patient_coverage": 0.20408163265306123,
+          "disease_coverage": 0.6818181818181818,
+          "n_patient_terms": 294,
+          "n_disease_terms": 88,
+          "n_union_terms": 322,
+          "top_weighted_matches": [
+            {
+              "term": "HP:0001579",
+              "idf_weight": 7.709408024343982
+            },
+            {
+              "term": "HP:0003118",
+              "idf_weight": 6.099970111909881
+            },
+            {
+              "term": "HP:0002717",
+              "idf_weight": 6.0564849999701424
+            },
+            {
+              "term": "HP:0011731",
+              "idf_weight": 5.4522853054266935
+            },
+            {
+              "term": "HP:0012111",
+              "idf_weight": 5.406822931349936
+            }
+          ]
+        }
+      },
+      {
+        "rank": 7,
+        "disease_id": "MONDO:0012505",
+        "label": "pigmented nodular adrenocortical disease, primary, 2",
+        "method_name": "tfidf",
+        "score": 0.2381843074244749,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.2381843074244749,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000008",
+            "HP:0000078",
+            "HP:0000118",
+            "HP:0000119",
+            "HP:0000152",
+            "HP:0000234",
+            "HP:0000271",
+            "HP:0000707",
+            "HP:0000708"
+          ],
+          "n_shared_terms": 68,
+          "patient_coverage": 0.23129251700680273,
+          "disease_coverage": 0.6601941747572816,
+          "n_patient_terms": 294,
+          "n_disease_terms": 103,
+          "n_union_terms": 329,
+          "top_weighted_matches": [
+            {
+              "term": "HP:0001579",
+              "idf_weight": 7.709408024343982
+            },
+            {
+              "term": "HP:0003118",
+              "idf_weight": 6.099970111909881
+            },
+            {
+              "term": "HP:0002717",
+              "idf_weight": 6.0564849999701424
+            },
+            {
+              "term": "HP:0011731",
+              "idf_weight": 5.4522853054266935
+            },
+            {
+              "term": "HP:0012111",
+              "idf_weight": 5.406822931349936
+            }
+          ]
+        }
+      },
+      {
+        "rank": 8,
+        "disease_id": "MONDO:0011544",
+        "label": "pheochromocytoma/paraganglioma syndrome 3",
+        "method_name": "tfidf",
+        "score": 0.22848887615437694,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.22848887615437694,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0000759",
+            "HP:0000818",
+            "HP:0000822",
+            "HP:0000834",
+            "HP:0000975",
+            "HP:0001574",
+            "HP:0001626"
+          ],
+          "n_shared_terms": 38,
+          "patient_coverage": 0.1292517006802721,
+          "disease_coverage": 0.59375,
+          "n_patient_terms": 294,
+          "n_disease_terms": 64,
+          "n_union_terms": 320,
+          "top_weighted_matches": [
+            {
+              "term": "HP:0006737",
+              "idf_weight": 8.297194689246101
+            },
+            {
+              "term": "HP:0006748",
+              "idf_weight": 8.114873132452146
+            },
+            {
+              "term": "HP:0100642",
+              "idf_weight": 8.114873132452146
+            },
+            {
+              "term": "HP:0002666",
+              "idf_weight": 6.728578771332256
+            },
+            {
+              "term": "HP:0100631",
+              "idf_weight": 6.410125040213721
+            }
+          ]
+        }
+      },
+      {
+        "rank": 9,
+        "disease_id": "MONDO:0007273",
+        "label": "pheochromocytoma/paraganglioma syndrome 4",
+        "method_name": "tfidf",
+        "score": 0.22820756508342227,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.22820756508342227,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000077",
+            "HP:0000079",
+            "HP:0000118",
+            "HP:0000119",
+            "HP:0000707",
+            "HP:0000759",
+            "HP:0000818",
+            "HP:0000822",
+            "HP:0000834"
+          ],
+          "n_shared_terms": 49,
+          "patient_coverage": 0.16666666666666666,
+          "disease_coverage": 0.5833333333333334,
+          "n_patient_terms": 294,
+          "n_disease_terms": 84,
+          "n_union_terms": 329,
+          "top_weighted_matches": [
+            {
+              "term": "HP:0006737",
+              "idf_weight": 8.297194689246101
+            },
+            {
+              "term": "HP:0006748",
+              "idf_weight": 8.114873132452146
+            },
+            {
+              "term": "HP:0100642",
+              "idf_weight": 8.114873132452146
+            },
+            {
+              "term": "HP:0002666",
+              "idf_weight": 6.728578771332256
+            },
+            {
+              "term": "HP:0100631",
+              "idf_weight": 6.410125040213721
+            }
+          ]
+        }
+      },
+      {
+        "rank": 10,
+        "disease_id": "ORPHA:189427",
+        "label": "ACTH-independent macronodular adrenal hyperplasia",
+        "method_name": "tfidf",
+        "score": 0.22371402294595136,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.22371402294595136,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000077",
+            "HP:0000078",
+            "HP:0000079",
+            "HP:0000118",
+            "HP:0000119",
+            "HP:0000152",
+            "HP:0000234",
+            "HP:0000271",
+            "HP:0000707"
+          ],
+          "n_shared_terms": 99,
+          "patient_coverage": 0.336734693877551,
+          "disease_coverage": 0.49748743718592964,
+          "n_patient_terms": 294,
+          "n_disease_terms": 199,
+          "n_union_terms": 394,
+          "top_weighted_matches": [
+            {
+              "term": "HP:0001579",
+              "idf_weight": 7.709408024343982
+            },
+            {
+              "term": "HP:0003118",
+              "idf_weight": 6.099970111909881
+            },
+            {
+              "term": "HP:0002717",
+              "idf_weight": 6.0564849999701424
+            },
+            {
+              "term": "HP:0100634",
+              "idf_weight": 5.716977859653776
+            },
+            {
+              "term": "HP:0011731",
+              "idf_weight": 5.4522853054266935
+            }
+          ]
+        }
+      }
+    ],
+    "mistralai/Mistral-7B-Instruct-v0.2": [
+      {
+        "rank": 1,
+        "disease_name": "Cushing's Syndrome (Endogenous)",
+        "ordo_id": "ORPHA:267843",
+        "matched_phenotypes": "polyuria, nocturia, hypertension, hypothymcia, truncal obesity, thin skin, bruising susceptibility, psychosis, facies moon face",
+        "confidence": "very high",
+        "validated_against_profiles": false,
+        "model": "mistralai/Mistral-7B-Instruct-v0.2",
+        "method": "llm_retrieval"
+      },
+      {
+        "rank": 2,
+        "disease_name": "McCune Albright Syndrome",
+        "ordo_id": "ORPHA:121100",
+        "matched_phenotypes": "polydactyly, cafe au lait spots, precocious puberty, fibrous dysplasia, thyroid disorders, hemihypertrophy",
+        "confidence": "high",
+        "validated_against_profiles": false,
+        "model": "mistralai/Mistral-7B-Instruct-v0.2",
+        "method": "llm_retrieval"
+      },
+      {
+        "rank": 3,
+        "disease_name": "Fabry disease",
+        "ordo_id": "ORPHA:324",
+        "matched_phenotypes": "angioedema, renal involvement, corneal opacities, cardiac symptoms, gastrointestinal issues",
+        "confidence": "medium",
+        "validated_against_profiles": true,
+        "model": "mistralai/Mistral-7B-Instruct-v0.2",
+        "method": "llm_retrieval"
+      },
+      {
+        "rank": 4,
+        "disease_name": "Pseudo-Von willebrand disease",
+        "ordo_id": "ORPHA:52530",
+        "matched_phenotypes": "easy bruising, prolonged bleeding time, platelet antibodies",
+        "confidence": "medium",
+        "validated_against_profiles": true,
+        "model": "mistralai/Mistral-7B-Instruct-v0.2",
+        "method": "llm_retrieval"
+      },
+      {
+        "rank": 5,
+        "disease_name": "Neurofibroma",
+        "ordo_id": "ORPHA:252183",
+        "matched_phenotypes": "multiple café-au-lait macules, axillary and inguinal freckles, Lisch nodules, neurofibromas",
+        "confidence": "medium",
+        "validated_against_profiles": true,
+        "model": "mistralai/Mistral-7B-Instruct-v0.2",
+        "method": "llm_retrieval"
+      },
+      {
+        "rank": 6,
+        "disease_name": "Tuberous Sclerosis Complex",
+        "ordo_id": "ORPHA:115200",
+        "matched_phenotypes": "facial angiofibromas or shagreen patches, epilepsy, retinal hamartomas, kidney benign tumors",
+        "confidence": "medium",
+        "validated_against_profiles": false,
+        "model": "mistralai/Mistral-7B-Instruct-v0.2",
+        "method": "llm_retrieval"
+      },
+      {
+        "rank": 7,
+        "disease_name": "Methylmalonic aciduria and homocystinuria, Cblj type",
+        "ordo_id": "ORPHA:369955",
+        "matched_phenotypes": "mental retardation, ectropion uveae, marfanoid habitus, skeletal abnormalities, thromboembolisms",
+        "confidence": "low",
+        "validated_against_profiles": true,
+        "model": "mistralai/Mistral-7B-Instruct-v0.2",
+        "method": "llm_retrieval"
+      },
+      {
+        "rank": 8,
+        "disease_name": "Morquio A syndrome",
+        "ordo_id": "ORPHA:253050",
+        "matched_phenotypes": "short stature, coarse facies, kyphoscoliosis, joint stiffness, hearing impairment",
+        "confidence": "low",
+        "validated_against_profiles": false,
+        "model": "mistralai/Mistral-7B-Instruct-v0.2",
+        "method": "llm_retrieval"
+      },
+      {
+        "rank": 9,
+        "disease_name": "Hurler syndrome",
+        "ordo_id": "ORPHA:93473",
+        "matched_phenotypes": "progressive intellectual disability, coarsening of features, short stature, heart valvular thickening",
+        "confidence": "low",
+        "validated_against_profiles": true,
+        "model": "mistralai/Mistral-7B-Instruct-v0.2",
+        "method": "llm_retrieval"
+      },
+      {
+        "rank": 10,
+        "disease_name": "Marfan syndrome",
+        "ordo_id": "ORPHA:284963",
+        "matched_phenotypes": "tall stature, long fingers, chest deformity, lens dislocation, mitral regurgitation",
+        "confidence": "low",
+        "validated_against_profiles": true,
+        "model": "mistralai/Mistral-7B-Instruct-v0.2",
+        "method": "llm_retrieval"
+      }
+    ],
+    "hpo2vec": [
+      {
+        "disease_id": "ORPHA:3452",
+        "label": "Whipple disease",
+        "method_name": "hpo2vec_plus",
+        "score": 0.9221282938746715,
+        "explanation": {
+          "matching_terms": [
+            "HP:0000951",
+            "HP:0001392",
+            "HP:0003111",
+            "HP:0011014",
+            "HP:0002597",
+            "HP:0001627",
+            "HP:0000708",
+            "HP:0030680",
+            "HP:0000001",
+            "HP:0012443",
+            "HP:0011458",
+            "HP:0002088",
+            "HP:0012638",
+            "HP:0001959",
+            "HP:0004325",
+            "HP:0000820",
+            "HP:0012531",
+            "HP:0025780",
+            "HP:0001626",
+            "HP:0000078",
+            "HP:0030082",
+            "HP:0002795",
+            "HP:0100022",
+            "HP:0030972",
+            "HP:0010930",
+            "HP:0001892",
+            "HP:0000707",
+            "HP:0025766",
+            "HP:0002715",
+            "HP:0011842",
+            "HP:0002093",
+            "HP:0011025",
+            "HP:0002012",
+            "HP:0025142",
+            "HP:0012252",
+            "HP:0000119",
+            "HP:0010929",
+            "HP:0010978",
+            "HP:0033127",
+            "HP:0012639",
+            "HP:0001574",
+            "HP:0040202",
+            "HP:0001871",
+            "HP:0011446",
+            "HP:0012647",
+            "HP:0410042",
+            "HP:0040064",
+            "HP:0001939",
+            "HP:0032180",
+            "HP:0001824",
+            "HP:0032101",
+            "HP:0000118",
+            "HP:0002011",
+            "HP:0000818",
+            "HP:0002814",
+            "HP:0001000",
+            "HP:0025031",
+            "HP:0002926",
+            "HP:0011121",
+            "HP:0012337",
+            "HP:0001507",
+            "HP:0003011",
+            "HP:0004323",
+            "HP:0012649",
+            "HP:0011805",
+            "HP:0011032",
+            "HP:0025032",
+            "HP:5200241",
+            "HP:0000969",
+            "HP:0000924",
+            "HP:0002086",
+            "HP:0000821"
+          ],
+          "n_matching": 72,
+          "top_ic_matches": [
+            {
+              "term": "HP:0001959",
+              "ic": 5.61617316053181
+            },
+            {
+              "term": "HP:0030082",
+              "ic": 5.602567508476032
+            },
+            {
+              "term": "HP:0040202",
+              "ic": 4.51300505532784
+            },
+            {
+              "term": "HP:0010930",
+              "ic": 4.486097602407915
+            },
+            {
+              "term": "HP:0001824",
+              "ic": 4.020528570230045
+            }
+          ]
+        },
+        "metadata": {
+          "n_patient_terms": 294,
+          "n_disease_terms": 168,
+          "used_propagated_terms": true
+        },
+        "canonical_disease_id": "ORPHA:3452",
+        "rank": 1
+      },
+      {
+        "disease_id": "ORPHA:99889",
+        "label": "Cushing syndrome due to ectopic ACTH secretion",
+        "method_name": "hpo2vec_plus",
+        "score": 0.9143818939153722,
+        "explanation": {
+          "matching_terms": [
+            "HP:0000951",
+            "HP:0004349",
+            "HP:0011014",
+            "HP:0003330",
+            "HP:0002597",
+            "HP:0011793",
+            "HP:0000864",
+            "HP:0000708",
+            "HP:0001933",
+            "HP:0000978",
+            "HP:0001595",
+            "HP:0001952",
+            "HP:0030680",
+            "HP:0003118",
+            "HP:0000001",
+            "HP:0012443",
+            "HP:0010787",
+            "HP:0011458",
+            "HP:0002088",
+            "HP:0012638",
+            "HP:0011138",
+            "HP:0007379",
+            "HP:0004325",
+            "HP:0000820",
+            "HP:0025780",
+            "HP:0025015",
+            "HP:0001626",
+            "HP:0100007",
+            "HP:0000078",
+            "HP:0004348",
+            "HP:0000929",
+            "HP:0200042",
+            "HP:0000834",
+            "HP:0011354",
+            "HP:0012503",
+            "HP:0011731",
+            "HP:0000822",
+            "HP:0030972",
+            "HP:0001892",
+            "HP:0000152",
+            "HP:0031071",
+            "HP:0000707",
+            "HP:0012243",
+            "HP:0002666",
+            "HP:0025766",
+            "HP:0011733",
+            "HP:0000709",
+            "HP:0002715",
+            "HP:0011842",
+            "HP:0011276",
+            "HP:0000819",
+            "HP:0000271",
+            "HP:0009121",
+            "HP:0011025",
+            "HP:5200423",
+            "HP:0002012",
+            "HP:0025142",
+            "HP:0012252",
+            "HP:0000759",
+            "HP:0000153",
+            "HP:0011849",
+            "HP:0000119",
+            "HP:0100634",
+            "HP:0010978",
+            "HP:0033127",
+            "HP:0012639",
+            "HP:0001574",
+            "HP:0000812",
+            "HP:0001871",
+            "HP:0011446",
+            "HP:0012647",
+            "HP:0012111",
+            "HP:0040064",
+            "HP:0031816",
+            "HP:0001939",
+            "HP:0011355",
+            "HP:0001824",
+            "HP:0003117",
+            "HP:0000925",
+            "HP:0032101",
+            "HP:0000118",
+            "HP:0002011",
+            "HP:0001007",
+            "HP:0032263",
+            "HP:0000818",
+            "HP:0002814",
+            "HP:0004375",
+            "HP:0001000",
+            "HP:0000234",
+            "HP:0000939",
+            "HP:0025792",
+            "HP:0025031",
+            "HP:0011121",
+            "HP:5200430",
+            "HP:0012337",
+            "HP:0011362",
+            "HP:0001507",
+            "HP:0003011",
+            "HP:0008065",
+            "HP:0000163",
+            "HP:0004323",
+            "HP:0002717",
+            "HP:0003202",
+            "HP:0012649",
+            "HP:0011805",
+            "HP:0011032",
+            "HP:0011732",
+            "HP:0025032",
+            "HP:0000963",
+            "HP:0000969",
+            "HP:0100568",
+            "HP:0000924",
+            "HP:0002664",
+            "HP:0002086",
+            "HP:0011747"
+          ],
+          "n_matching": 115,
+          "top_ic_matches": [
+            {
+              "term": "HP:0002666",
+              "ic": 6.728578771332256
+            },
+            {
+              "term": "HP:0003118",
+              "ic": 6.099970111909881
+            },
+            {
+              "term": "HP:0002717",
+              "ic": 6.0564849999701424
+            },
+            {
+              "term": "HP:0100634",
+              "ic": 5.716977859653776
+            },
+            {
+              "term": "HP:0011731",
+              "ic": 5.4522853054266935
+            }
+          ]
+        },
+        "metadata": {
+          "n_patient_terms": 294,
+          "n_disease_terms": 273,
+          "used_propagated_terms": true
+        },
+        "canonical_disease_id": "ORPHA:99889",
+        "rank": 2
+      },
+      {
+        "disease_id": "ORPHA:35687",
+        "label": "Erdheim-Chester disease",
+        "method_name": "hpo2vec_plus",
+        "score": 0.9137387860656327,
+        "explanation": {
+          "matching_terms": [
+            "HP:0000951",
+            "HP:0000014",
+            "HP:0003330",
+            "HP:0002167",
+            "HP:0001627",
+            "HP:0000708",
+            "HP:0000975",
+            "HP:0030680",
+            "HP:0000001",
+            "HP:0012443",
+            "HP:0012210",
+            "HP:0011458",
+            "HP:0002088",
+            "HP:0012638",
+            "HP:0001959",
+            "HP:0004325",
+            "HP:0012531",
+            "HP:4000072",
+            "HP:0001626",
+            "HP:0000078",
+            "HP:0004348",
+            "HP:0040068",
+            "HP:0030082",
+            "HP:0002795",
+            "HP:0011844",
+            "HP:0100022",
+            "HP:0032039",
+            "HP:0000152",
+            "HP:0000707",
+            "HP:0002715",
+            "HP:0012211",
+            "HP:0011842",
+            "HP:0000271",
+            "HP:0011025",
+            "HP:0002012",
+            "HP:0025142",
+            "HP:0012252",
+            "HP:0025276",
+            "HP:0034434",
+            "HP:0011849",
+            "HP:0000119",
+            "HP:0010978",
+            "HP:0033127",
+            "HP:0012639",
+            "HP:0001574",
+            "HP:0040202",
+            "HP:0001871",
+            "HP:0002813",
+            "HP:0011446",
+            "HP:0012647",
+            "HP:0030669",
+            "HP:0040064",
+            "HP:0000079",
+            "HP:0001939",
+            "HP:0011355",
+            "HP:0001824",
+            "HP:0000118",
+            "HP:0002017",
+            "HP:0002011",
+            "HP:0010935",
+            "HP:0000818",
+            "HP:0000234",
+            "HP:0025792",
+            "HP:0025031",
+            "HP:0011121",
+            "HP:0012337",
+            "HP:0000077",
+            "HP:0001507",
+            "HP:0004323",
+            "HP:0000009",
+            "HP:0012649",
+            "HP:0011032",
+            "HP:0025032",
+            "HP:5200241",
+            "HP:0000969",
+            "HP:0000924",
+            "HP:0000315",
+            "HP:0011277",
+            "HP:0002086",
+            "HP:0007550",
+            "HP:0010936"
+          ],
+          "n_matching": 81,
+          "top_ic_matches": [
+            {
+              "term": "HP:0001959",
+              "ic": 5.61617316053181
+            },
+            {
+              "term": "HP:0030082",
+              "ic": 5.602567508476032
+            },
+            {
+              "term": "HP:0000975",
+              "ic": 4.613327776955709
+            },
+            {
+              "term": "HP:0040202",
+              "ic": 4.51300505532784
+            },
+            {
+              "term": "HP:0007550",
+              "ic": 4.186320825072789
+            }
+          ]
+        },
+        "metadata": {
+          "n_patient_terms": 294,
+          "n_disease_terms": 149,
+          "used_propagated_terms": true
+        },
+        "canonical_disease_id": "ORPHA:35687",
+        "rank": 3
+      },
+      {
+        "disease_id": "ORPHA:64",
+        "label": "Alstrom syndrome",
+        "method_name": "hpo2vec_plus",
+        "score": 0.9108831627133368,
+        "explanation": {
+          "matching_terms": [
+            "HP:0000951",
+            "HP:0001392",
+            "HP:0000014",
+            "HP:0011014",
+            "HP:0002597",
+            "HP:0002167",
+            "HP:0000864",
+            "HP:0001627",
+            "HP:0000708",
+            "HP:0001595",
+            "HP:0001952",
+            "HP:0030680",
+            "HP:0000001",
+            "HP:0012443",
+            "HP:0012210",
+            "HP:0002088",
+            "HP:0012638",
+            "HP:0000095",
+            "HP:0011138",
+            "HP:0000820",
+            "HP:0012531",
+            "HP:0010460",
+            "HP:0011947",
+            "HP:0025015",
+            "HP:0011035",
+            "HP:4000072",
+            "HP:0001626",
+            "HP:0000078",
+            "HP:0000929",
+            "HP:0040068",
+            "HP:0011354",
+            "HP:0002795",
+            "HP:0012503",
+            "HP:0011844",
+            "HP:0000822",
+            "HP:0030972",
+            "HP:0000152",
+            "HP:0000246",
+            "HP:0000707",
+            "HP:0012243",
+            "HP:0011821",
+            "HP:0002715",
+            "HP:0012211",
+            "HP:0002090",
+            "HP:0005978",
+            "HP:0011842",
+            "HP:0000819",
+            "HP:0000271",
+            "HP:0012575",
+            "HP:0009121",
+            "HP:0011025",
+            "HP:0002012",
+            "HP:0025142",
+            "HP:0012252",
+            "HP:0000153",
+            "HP:0034434",
+            "HP:0002634",
+            "HP:0000119",
+            "HP:0010978",
+            "HP:0033127",
+            "HP:0012639",
+            "HP:0001574",
+            "HP:0000812",
+            "HP:0040202",
+            "HP:0001871",
+            "HP:0002813",
+            "HP:0011446",
+            "HP:0040069",
+            "HP:0012647",
+            "HP:0410042",
+            "HP:0033353",
+            "HP:0040064",
+            "HP:0031816",
+            "HP:0000079",
+            "HP:0001939",
+            "HP:0032180",
+            "HP:0003117",
+            "HP:0000925",
+            "HP:0032101",
+            "HP:0000118",
+            "HP:0031263",
+            "HP:0002011",
+            "HP:0040075",
+            "HP:0000008",
+            "HP:0001007",
+            "HP:0010935",
+            "HP:0032263",
+            "HP:0000818",
+            "HP:0002814",
+            "HP:0430071",
+            "HP:0000234",
+            "HP:0025792",
+            "HP:0002621",
+            "HP:0025031",
+            "HP:0000830",
+            "HP:0002926",
+            "HP:0011004",
+            "HP:0011121",
+            "HP:0012337",
+            "HP:0000077",
+            "HP:0011362",
+            "HP:0001507",
+            "HP:0000163",
+            "HP:0004323",
+            "HP:0000245",
+            "HP:0000009",
+            "HP:0012649",
+            "HP:0025032",
+            "HP:5200241",
+            "HP:0000924",
+            "HP:0011277",
+            "HP:0002086",
+            "HP:0002087",
+            "HP:0011747",
+            "HP:0010936",
+            "HP:0000821"
+          ],
+          "n_matching": 116,
+          "top_ic_matches": [
+            {
+              "term": "HP:0005978",
+              "ic": 5.291512084838941
+            },
+            {
+              "term": "HP:0002621",
+              "ic": 5.243193507568134
+            },
+            {
+              "term": "HP:0002634",
+              "ic": 5.197102400367867
+            },
+            {
+              "term": "HP:0000246",
+              "ic": 4.628517942449684
+            },
+            {
+              "term": "HP:0000830",
+              "ic": 4.535994573552538
+            }
+          ]
+        },
+        "metadata": {
+          "n_patient_terms": 294,
+          "n_disease_terms": 447,
+          "used_propagated_terms": true
+        },
+        "canonical_disease_id": "ORPHA:64",
+        "rank": 4
+      },
+      {
+        "disease_id": "ORPHA:199299",
+        "label": "Late-onset isolated ACTH deficiency",
+        "method_name": "hpo2vec_plus",
+        "score": 0.9089686028142896,
+        "explanation": {
+          "matching_terms": [
+            "HP:0000951",
+            "HP:0001392",
+            "HP:0003111",
+            "HP:0004349",
+            "HP:0011014",
+            "HP:0003330",
+            "HP:0011793",
+            "HP:0000864",
+            "HP:0011042",
+            "HP:0001952",
+            "HP:0000001",
+            "HP:0012443",
+            "HP:0011458",
+            "HP:0012638",
+            "HP:0004325",
+            "HP:0000820",
+            "HP:0012531",
+            "HP:0025780",
+            "HP:0001626",
+            "HP:0000078",
+            "HP:0004348",
+            "HP:0000834",
+            "HP:0012503",
+            "HP:0011731",
+            "HP:0030972",
+            "HP:0010930",
+            "HP:0002019",
+            "HP:0000707",
+            "HP:0025766",
+            "HP:0011733",
+            "HP:0002715",
+            "HP:0011842",
+            "HP:0000819",
+            "HP:0011748",
+            "HP:0011025",
+            "HP:0002012",
+            "HP:0025142",
+            "HP:0002960",
+            "HP:0011849",
+            "HP:0000119",
+            "HP:0010929",
+            "HP:0010978",
+            "HP:0033127",
+            "HP:0012639",
+            "HP:0001574",
+            "HP:0001871",
+            "HP:0011446",
+            "HP:0012647",
+            "HP:0410042",
+            "HP:0012111",
+            "HP:0001939",
+            "HP:0032180",
+            "HP:0001824",
+            "HP:0003117",
+            "HP:0032101",
+            "HP:0000118",
+            "HP:0002017",
+            "HP:0002011",
+            "HP:0040075",
+            "HP:0000818",
+            "HP:0430071",
+            "HP:0001000",
+            "HP:0025031",
+            "HP:0000830",
+            "HP:0002926",
+            "HP:0011121",
+            "HP:0012337",
+            "HP:0001507",
+            "HP:0003011",
+            "HP:0004323",
+            "HP:0012649",
+            "HP:0025032",
+            "HP:0100568",
+            "HP:0000924",
+            "HP:0002664",
+            "HP:0011747"
+          ],
+          "n_matching": 76,
+          "top_ic_matches": [
+            {
+              "term": "HP:0011748",
+              "ic": 6.728578771332256
+            },
+            {
+              "term": "HP:0011731",
+              "ic": 5.4522853054266935
+            },
+            {
+              "term": "HP:0012111",
+              "ic": 5.406822931349936
+            },
+            {
+              "term": "HP:0011733",
+              "ic": 4.882752080833924
+            },
+            {
+              "term": "HP:0100568",
+              "ic": 4.844037568653234
+            }
+          ]
+        },
+        "metadata": {
+          "n_patient_terms": 294,
+          "n_disease_terms": 162,
+          "used_propagated_terms": true
+        },
+        "canonical_disease_id": "ORPHA:199299",
+        "rank": 5
+      },
+      {
+        "disease_id": "ORPHA:189427",
+        "label": "ACTH-independent macronodular adrenal hyperplasia",
+        "method_name": "hpo2vec_plus",
+        "score": 0.9048213769541908,
+        "explanation": {
+          "matching_terms": [
+            "HP:0000951",
+            "HP:0001392",
+            "HP:0004349",
+            "HP:0011014",
+            "HP:0003330",
+            "HP:0002597",
+            "HP:0011793",
+            "HP:0000864",
+            "HP:0000708",
+            "HP:0001933",
+            "HP:0000978",
+            "HP:0001595",
+            "HP:0001952",
+            "HP:0003118",
+            "HP:0000001",
+            "HP:0012443",
+            "HP:0012210",
+            "HP:0012638",
+            "HP:0011138",
+            "HP:0007379",
+            "HP:0025780",
+            "HP:0001626",
+            "HP:0100007",
+            "HP:0000078",
+            "HP:0004348",
+            "HP:0000834",
+            "HP:0011354",
+            "HP:0012503",
+            "HP:0011731",
+            "HP:0000822",
+            "HP:0030972",
+            "HP:0001892",
+            "HP:0000152",
+            "HP:0031071",
+            "HP:0000707",
+            "HP:0025766",
+            "HP:0011733",
+            "HP:0000709",
+            "HP:0002715",
+            "HP:0011842",
+            "HP:0011276",
+            "HP:0000819",
+            "HP:0001579",
+            "HP:0000271",
+            "HP:0009121",
+            "HP:0011025",
+            "HP:5200423",
+            "HP:0002012",
+            "HP:0025142",
+            "HP:5200263",
+            "HP:0000759",
+            "HP:0011849",
+            "HP:0000119",
+            "HP:0100634",
+            "HP:0010978",
+            "HP:0033127",
+            "HP:0012639",
+            "HP:0001574",
+            "HP:0001871",
+            "HP:0011446",
+            "HP:0012647",
+            "HP:0410042",
+            "HP:0012111",
+            "HP:0000079",
+            "HP:0001939",
+            "HP:0032180",
+            "HP:0011355",
+            "HP:0003117",
+            "HP:0000925",
+            "HP:0000118",
+            "HP:0002011",
+            "HP:0001007",
+            "HP:0010935",
+            "HP:0032263",
+            "HP:0000818",
+            "HP:0430071",
+            "HP:0004375",
+            "HP:0000234",
+            "HP:0000939",
+            "HP:0025031",
+            "HP:0011121",
+            "HP:5200430",
+            "HP:0012337",
+            "HP:0000077",
+            "HP:0011362",
+            "HP:0001507",
+            "HP:0003011",
+            "HP:0008065",
+            "HP:0004323",
+            "HP:0002717",
+            "HP:0003202",
+            "HP:0012649",
+            "HP:0011805",
+            "HP:0011732",
+            "HP:0000963",
+            "HP:0100568",
+            "HP:0000924",
+            "HP:0002664",
+            "HP:0011747"
+          ],
+          "n_matching": 99,
+          "top_ic_matches": [
+            {
+              "term": "HP:0001579",
+              "ic": 7.709408024343982
+            },
+            {
+              "term": "HP:0003118",
+              "ic": 6.099970111909881
+            },
+            {
+              "term": "HP:0002717",
+              "ic": 6.0564849999701424
+            },
+            {
+              "term": "HP:0100634",
+              "ic": 5.716977859653776
+            },
+            {
+              "term": "HP:0011731",
+              "ic": 5.4522853054266935
+            }
+          ]
+        },
+        "metadata": {
+          "n_patient_terms": 294,
+          "n_disease_terms": 199,
+          "used_propagated_terms": true
+        },
+        "canonical_disease_id": "ORPHA:189427",
+        "rank": 6
+      },
+      {
+        "disease_id": "ORPHA:293987",
+        "label": "Rapid-onset childhood obesity-hypothalamic dysfunction-hypoventilation-autonomic dysregulation syndrome",
+        "method_name": "hpo2vec_plus",
+        "score": 0.9044108601435814,
+        "explanation": {
+          "matching_terms": [
+            "HP:0000951",
+            "HP:0000014",
+            "HP:0011792",
+            "HP:0003111",
+            "HP:0011014",
+            "HP:0011793",
+            "HP:0000864",
+            "HP:0000708",
+            "HP:0011042",
+            "HP:0000001",
+            "HP:0012443",
+            "HP:0011458",
+            "HP:0002088",
+            "HP:0012638",
+            "HP:0001959",
+            "HP:0000820",
+            "HP:0025780",
+            "HP:0011947",
+            "HP:0100007",
+            "HP:0000929",
+            "HP:0040068",
+            "HP:0030082",
+            "HP:0011354",
+            "HP:0002795",
+            "HP:0012503",
+            "HP:0011844",
+            "HP:0010930",
+            "HP:0000152",
+            "HP:0000707",
+            "HP:0025766",
+            "HP:0000709",
+            "HP:0002715",
+            "HP:0011842",
+            "HP:0000271",
+            "HP:0011748",
+            "HP:0002093",
+            "HP:0009121",
+            "HP:5200423",
+            "HP:5200263",
+            "HP:0012252",
+            "HP:0000759",
+            "HP:0000153",
+            "HP:0025276",
+            "HP:0000119",
+            "HP:0010929",
+            "HP:0010978",
+            "HP:0033127",
+            "HP:0012639",
+            "HP:0001574",
+            "HP:0040202",
+            "HP:0002813",
+            "HP:0011446",
+            "HP:0040064",
+            "HP:0031816",
+            "HP:0000079",
+            "HP:0001939",
+            "HP:0032180",
+            "HP:0000925",
+            "HP:0032101",
+            "HP:0000118",
+            "HP:0002011",
+            "HP:0040075",
+            "HP:0000818",
+            "HP:0430071",
+            "HP:0004375",
+            "HP:0000234",
+            "HP:0025031",
+            "HP:0000830",
+            "HP:0002926",
+            "HP:0011121",
+            "HP:0000159",
+            "HP:5200430",
+            "HP:0012337",
+            "HP:0001507",
+            "HP:0003011",
+            "HP:0000163",
+            "HP:0004323",
+            "HP:0000009",
+            "HP:0025032",
+            "HP:5200241",
+            "HP:0000924",
+            "HP:0002664",
+            "HP:0002086",
+            "HP:0002087",
+            "HP:0007550",
+            "HP:0011747",
+            "HP:0010936",
+            "HP:0000821"
+          ],
+          "n_matching": 88,
+          "top_ic_matches": [
+            {
+              "term": "HP:0011748",
+              "ic": 6.728578771332256
+            },
+            {
+              "term": "HP:0001959",
+              "ic": 5.61617316053181
+            },
+            {
+              "term": "HP:0030082",
+              "ic": 5.602567508476032
+            },
+            {
+              "term": "HP:0100007",
+              "ic": 5.161700473316951
+            },
+            {
+              "term": "HP:0000709",
+              "ic": 4.9230259799718645
+            }
+          ]
+        },
+        "metadata": {
+          "n_patient_terms": 294,
+          "n_disease_terms": 251,
+          "used_propagated_terms": true
+        },
+        "canonical_disease_id": "ORPHA:293987",
+        "rank": 7
+      },
+      {
+        "disease_id": "ORPHA:96253",
+        "label": "Pituitary adenoma 4, ACTH-secreting, somatic",
+        "method_name": "hpo2vec_plus",
+        "score": 0.9039343849002065,
+        "explanation": {
+          "matching_terms": [
+            "HP:0000951",
+            "HP:0003111",
+            "HP:0004349",
+            "HP:0011014",
+            "HP:0003330",
+            "HP:0002597",
+            "HP:0011793",
+            "HP:0000864",
+            "HP:0000708",
+            "HP:0001933",
+            "HP:0000978",
+            "HP:0001595",
+            "HP:0011042",
+            "HP:0001952",
+            "HP:0030680",
+            "HP:0003118",
+            "HP:0000001",
+            "HP:0012443",
+            "HP:0012210",
+            "HP:0012638",
+            "HP:0011138",
+            "HP:0025780",
+            "HP:0025015",
+            "HP:0002315",
+            "HP:0001626",
+            "HP:0000078",
+            "HP:0004348",
+            "HP:0000929",
+            "HP:0200042",
+            "HP:0000834",
+            "HP:0011354",
+            "HP:0012503",
+            "HP:0011731",
+            "HP:0000822",
+            "HP:0030972",
+            "HP:0010930",
+            "HP:0001892",
+            "HP:0000152",
+            "HP:0031071",
+            "HP:0000707",
+            "HP:0025766",
+            "HP:0011733",
+            "HP:0002900",
+            "HP:0000709",
+            "HP:0002715",
+            "HP:0011842",
+            "HP:0011276",
+            "HP:0000819",
+            "HP:0000271",
+            "HP:0009121",
+            "HP:0011025",
+            "HP:5200423",
+            "HP:0000759",
+            "HP:0000153",
+            "HP:0011849",
+            "HP:0001948",
+            "HP:0000119",
+            "HP:0010929",
+            "HP:0010978",
+            "HP:0033127",
+            "HP:0012639",
+            "HP:0001574",
+            "HP:0004360",
+            "HP:0001871",
+            "HP:0011446",
+            "HP:0012647",
+            "HP:0012111",
+            "HP:0040064",
+            "HP:0031816",
+            "HP:0000079",
+            "HP:0001939",
+            "HP:0032180",
+            "HP:0011355",
+            "HP:0003117",
+            "HP:0000925",
+            "HP:0032101",
+            "HP:0000118",
+            "HP:0002011",
+            "HP:0001007",
+            "HP:0010935",
+            "HP:0032263",
+            "HP:0000818",
+            "HP:0002814",
+            "HP:0001000",
+            "HP:0000234",
+            "HP:0000939",
+            "HP:0025792",
+            "HP:0011121",
+            "HP:5200430",
+            "HP:0012337",
+            "HP:0000077",
+            "HP:0011362",
+            "HP:0001507",
+            "HP:0003011",
+            "HP:0008065",
+            "HP:0000163",
+            "HP:0004323",
+            "HP:0002717",
+            "HP:0003202",
+            "HP:0012649",
+            "HP:0011805",
+            "HP:0011032",
+            "HP:0011732",
+            "HP:0000963",
+            "HP:5200241",
+            "HP:0000969",
+            "HP:0100568",
+            "HP:0000924",
+            "HP:0002664",
+            "HP:0002086",
+            "HP:0011747"
+          ],
+          "n_matching": 111,
+          "top_ic_matches": [
+            {
+              "term": "HP:0001948",
+              "ic": 6.168962983396833
+            },
+            {
+              "term": "HP:0003118",
+              "ic": 6.099970111909881
+            },
+            {
+              "term": "HP:0002717",
+              "ic": 6.0564849999701424
+            },
+            {
+              "term": "HP:0011731",
+              "ic": 5.4522853054266935
+            },
+            {
+              "term": "HP:0012111",
+              "ic": 5.406822931349936
+            }
+          ]
+        },
+        "metadata": {
+          "n_patient_terms": 294,
+          "n_disease_terms": 252,
+          "used_propagated_terms": true
+        },
+        "canonical_disease_id": "ORPHA:96253",
+        "rank": 8
+      },
+      {
+        "disease_id": "ORPHA:330015",
+        "label": "Lead poisoning",
+        "method_name": "hpo2vec_plus",
+        "score": 0.900448153118979,
+        "explanation": {
+          "matching_terms": [
+            "HP:0000951",
+            "HP:0000708",
+            "HP:0000001",
+            "HP:0002018",
+            "HP:0012210",
+            "HP:0011458",
+            "HP:0012638",
+            "HP:0004325",
+            "HP:0012531",
+            "HP:0025780",
+            "HP:0002315",
+            "HP:0001626",
+            "HP:0000078",
+            "HP:0000929",
+            "HP:0002795",
+            "HP:0000822",
+            "HP:0030972",
+            "HP:0000152",
+            "HP:0002019",
+            "HP:0000707",
+            "HP:0012243",
+            "HP:0025766",
+            "HP:0002715",
+            "HP:0012211",
+            "HP:0011842",
+            "HP:0000271",
+            "HP:0012575",
+            "HP:0009121",
+            "HP:0011025",
+            "HP:0025142",
+            "HP:5200263",
+            "HP:0000153",
+            "HP:0000119",
+            "HP:0010978",
+            "HP:0033127",
+            "HP:0001574",
+            "HP:0001871",
+            "HP:0011446",
+            "HP:0012647",
+            "HP:0031816",
+            "HP:0000079",
+            "HP:0001939",
+            "HP:0032180",
+            "HP:0003117",
+            "HP:0000118",
+            "HP:0002017",
+            "HP:0010935",
+            "HP:0032263",
+            "HP:0000818",
+            "HP:0430071",
+            "HP:0001197",
+            "HP:0000234",
+            "HP:0025031",
+            "HP:0000077",
+            "HP:0001507",
+            "HP:0003011",
+            "HP:0000163",
+            "HP:0004323",
+            "HP:0012649",
+            "HP:0025032",
+            "HP:5200241",
+            "HP:0000924",
+            "HP:0011277",
+            "HP:0002086"
+          ],
+          "n_matching": 64,
+          "top_ic_matches": [
+            {
+              "term": "HP:0002018",
+              "ic": 4.909420327916086
+            },
+            {
+              "term": "HP:0012575",
+              "ic": 4.135191478550185
+            },
+            {
+              "term": "HP:0000822",
+              "ic": 3.801839369265216
+            },
+            {
+              "term": "HP:0002315",
+              "ic": 3.6880324819884716
+            },
+            {
+              "term": "HP:0032263",
+              "ic": 3.6432343390885773
+            }
+          ]
+        },
+        "metadata": {
+          "n_patient_terms": 294,
+          "n_disease_terms": 200,
+          "used_propagated_terms": true
+        },
+        "canonical_disease_id": "ORPHA:330015",
+        "rank": 9
+      },
+      {
+        "disease_id": "ORPHA:525731",
+        "label": "Pediatric-onset Graves disease",
+        "method_name": "hpo2vec_plus",
+        "score": 0.9001171613834722,
+        "explanation": {
+          "matching_terms": [
+            "HP:0011703",
+            "HP:0000951",
+            "HP:0001392",
+            "HP:0002597",
+            "HP:0000708",
+            "HP:0000975",
+            "HP:0030956",
+            "HP:0000001",
+            "HP:0012443",
+            "HP:0011458",
+            "HP:0012638",
+            "HP:0001959",
+            "HP:0004325",
+            "HP:0000820",
+            "HP:0025780",
+            "HP:0001649",
+            "HP:0001626",
+            "HP:0000929",
+            "HP:0030082",
+            "HP:0011354",
+            "HP:0002795",
+            "HP:0100022",
+            "HP:0000822",
+            "HP:0030972",
+            "HP:0032039",
+            "HP:0000152",
+            "HP:0000707",
+            "HP:0025766",
+            "HP:0011675",
+            "HP:0011702",
+            "HP:0002715",
+            "HP:0011842",
+            "HP:0000271",
+            "HP:0002093",
+            "HP:0009121",
+            "HP:0011025",
+            "HP:0002012",
+            "HP:5200263",
+            "HP:0002960",
+            "HP:0025276",
+            "HP:0010978",
+            "HP:0033127",
+            "HP:0012639",
+            "HP:0001574",
+            "HP:0040202",
+            "HP:0001871",
+            "HP:0011446",
+            "HP:0012647",
+            "HP:0410042",
+            "HP:0030669",
+            "HP:0001939",
+            "HP:0011356",
+            "HP:0003117",
+            "HP:0000118",
+            "HP:0002017",
+            "HP:0002011",
+            "HP:0032263",
+            "HP:0000818",
+            "HP:0001197",
+            "HP:0030057",
+            "HP:0000234",
+            "HP:0025031",
+            "HP:0002926",
+            "HP:0011121",
+            "HP:0001507",
+            "HP:0004323",
+            "HP:0012649",
+            "HP:0025032",
+            "HP:5200241",
+            "HP:0000924",
+            "HP:0000315",
+            "HP:0002086",
+            "HP:0007550",
+            "HP:0001962"
+          ],
+          "n_matching": 74,
+          "top_ic_matches": [
+            {
+              "term": "HP:0011703",
+              "ic": 7.073419257623985
+            },
+            {
+              "term": "HP:0011702",
+              "ic": 5.7957587375068895
+            },
+            {
+              "term": "HP:0001959",
+              "ic": 5.61617316053181
+            },
+            {
+              "term": "HP:0030082",
+              "ic": 5.602567508476032
+            },
+            {
+              "term": "HP:0001962",
+              "ic": 5.03143527847905
+            }
+          ]
+        },
+        "metadata": {
+          "n_patient_terms": 294,
+          "n_disease_terms": 190,
+          "used_propagated_terms": true
+        },
+        "canonical_disease_id": "ORPHA:525731",
+        "rank": 10
+      }
+    ],
+    "set_cosine": [
+      {
+        "rank": 1,
+        "disease_id": "ORPHA:1501",
+        "label": "Adrenocortical carcinoma, pediatric",
+        "method_name": "set_cosine",
+        "score": 0.4140134605726962,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.4140134605726962,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000078",
+            "HP:0000079",
+            "HP:0000118",
+            "HP:0000119",
+            "HP:0000707",
+            "HP:0000818",
+            "HP:0000819",
+            "HP:0000822",
+            "HP:0000830"
+          ],
+          "n_shared_terms": 80,
+          "patient_coverage": 0.272108843537415,
+          "disease_coverage": 0.6299212598425197,
+          "n_patient_terms": 294,
+          "n_disease_terms": 127,
+          "n_union_terms": 341
+        }
+      },
+      {
+        "rank": 2,
+        "disease_id": "ORPHA:189427",
+        "label": "ACTH-independent macronodular adrenal hyperplasia",
+        "method_name": "set_cosine",
+        "score": 0.4092936352653574,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.4092936352653574,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000077",
+            "HP:0000078",
+            "HP:0000079",
+            "HP:0000118",
+            "HP:0000119",
+            "HP:0000152",
+            "HP:0000234",
+            "HP:0000271",
+            "HP:0000707"
+          ],
+          "n_shared_terms": 99,
+          "patient_coverage": 0.336734693877551,
+          "disease_coverage": 0.49748743718592964,
+          "n_patient_terms": 294,
+          "n_disease_terms": 199,
+          "n_union_terms": 394
+        }
+      },
+      {
+        "rank": 3,
+        "disease_id": "ORPHA:96253",
+        "label": "Pituitary adenoma 4, ACTH-secreting, somatic",
+        "method_name": "set_cosine",
+        "score": 0.40780171061410003,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.40780171061410003,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000077",
+            "HP:0000078",
+            "HP:0000079",
+            "HP:0000118",
+            "HP:0000119",
+            "HP:0000152",
+            "HP:0000153",
+            "HP:0000163",
+            "HP:0000234"
+          ],
+          "n_shared_terms": 111,
+          "patient_coverage": 0.37755102040816324,
+          "disease_coverage": 0.44047619047619047,
+          "n_patient_terms": 294,
+          "n_disease_terms": 252,
+          "n_union_terms": 435
+        }
+      },
+      {
+        "rank": 4,
+        "disease_id": "ORPHA:99889",
+        "label": "Cushing syndrome due to ectopic ACTH secretion",
+        "method_name": "set_cosine",
+        "score": 0.4059222448382221,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.4059222448382221,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000078",
+            "HP:0000118",
+            "HP:0000119",
+            "HP:0000152",
+            "HP:0000153",
+            "HP:0000163",
+            "HP:0000234",
+            "HP:0000271",
+            "HP:0000707"
+          ],
+          "n_shared_terms": 115,
+          "patient_coverage": 0.391156462585034,
+          "disease_coverage": 0.42124542124542125,
+          "n_patient_terms": 294,
+          "n_disease_terms": 273,
+          "n_union_terms": 452
+        }
+      },
+      {
+        "rank": 5,
+        "disease_id": "ORPHA:340",
+        "label": "Hemorrhagic fever-renal syndrome",
+        "method_name": "set_cosine",
+        "score": 0.3914341110139816,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.3914341110139816,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000077",
+            "HP:0000079",
+            "HP:0000095",
+            "HP:0000118",
+            "HP:0000119",
+            "HP:0000152",
+            "HP:0000234",
+            "HP:0000271",
+            "HP:0000707"
+          ],
+          "n_shared_terms": 93,
+          "patient_coverage": 0.3163265306122449,
+          "disease_coverage": 0.484375,
+          "n_patient_terms": 294,
+          "n_disease_terms": 192,
+          "n_union_terms": 393
+        }
+      },
+      {
+        "rank": 6,
+        "disease_id": "MONDO:0012505",
+        "label": "pigmented nodular adrenocortical disease, primary, 2",
+        "method_name": "set_cosine",
+        "score": 0.39076587925872014,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.39076587925872014,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000008",
+            "HP:0000078",
+            "HP:0000118",
+            "HP:0000119",
+            "HP:0000152",
+            "HP:0000234",
+            "HP:0000271",
+            "HP:0000707",
+            "HP:0000708"
+          ],
+          "n_shared_terms": 68,
+          "patient_coverage": 0.23129251700680273,
+          "disease_coverage": 0.6601941747572816,
+          "n_patient_terms": 294,
+          "n_disease_terms": 103,
+          "n_union_terms": 329
+        }
+      },
+      {
+        "rank": 7,
+        "disease_id": "ORPHA:466677",
+        "label": "Scorpion envenomation",
+        "method_name": "set_cosine",
+        "score": 0.3890748424299444,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.3890748424299444,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000077",
+            "HP:0000078",
+            "HP:0000079",
+            "HP:0000118",
+            "HP:0000119",
+            "HP:0000152",
+            "HP:0000153",
+            "HP:0000234",
+            "HP:0000271"
+          ],
+          "n_shared_terms": 90,
+          "patient_coverage": 0.30612244897959184,
+          "disease_coverage": 0.4945054945054945,
+          "n_patient_terms": 294,
+          "n_disease_terms": 182,
+          "n_union_terms": 386
+        }
+      },
+      {
+        "rank": 8,
+        "disease_id": "MONDO:0014359",
+        "label": "pigmented nodular adrenocortical disease, primary, 4",
+        "method_name": "set_cosine",
+        "score": 0.38816513706328304,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.38816513706328304,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000152",
+            "HP:0000234",
+            "HP:0000271",
+            "HP:0000707",
+            "HP:0000708",
+            "HP:0000818",
+            "HP:0000819",
+            "HP:0000822"
+          ],
+          "n_shared_terms": 61,
+          "patient_coverage": 0.20748299319727892,
+          "disease_coverage": 0.7261904761904762,
+          "n_patient_terms": 294,
+          "n_disease_terms": 84,
+          "n_union_terms": 317
+        }
+      },
+      {
+        "rank": 9,
+        "disease_id": "ORPHA:35687",
+        "label": "Erdheim-Chester disease",
+        "method_name": "set_cosine",
+        "score": 0.3870064644953053,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.3870064644953053,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000009",
+            "HP:0000014",
+            "HP:0000077",
+            "HP:0000078",
+            "HP:0000079",
+            "HP:0000118",
+            "HP:0000119",
+            "HP:0000152",
+            "HP:0000234"
+          ],
+          "n_shared_terms": 81,
+          "patient_coverage": 0.2755102040816326,
+          "disease_coverage": 0.5436241610738255,
+          "n_patient_terms": 294,
+          "n_disease_terms": 149,
+          "n_union_terms": 362
+        }
+      },
+      {
+        "rank": 10,
+        "disease_id": "ORPHA:251274",
+        "label": "Hyperaldosteronism, familial, type III",
+        "method_name": "set_cosine",
+        "score": 0.384905240705922,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.384905240705922,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000077",
+            "HP:0000079",
+            "HP:0000103",
+            "HP:0000118",
+            "HP:0000119",
+            "HP:0000152",
+            "HP:0000234",
+            "HP:0000271",
+            "HP:0000707"
+          ],
+          "n_shared_terms": 65,
+          "patient_coverage": 0.22108843537414966,
+          "disease_coverage": 0.6701030927835051,
+          "n_patient_terms": 294,
+          "n_disease_terms": 97,
+          "n_union_terms": 326
+        }
+      }
+    ],
+    "set_jaccard": [
+      {
+        "rank": 1,
+        "disease_id": "ORPHA:96253",
+        "label": "Pituitary adenoma 4, ACTH-secreting, somatic",
+        "method_name": "set_jaccard",
+        "score": 0.25517241379310346,
+        "explanation": {
+          "method": "jaccard",
+          "intersection_size": 111,
+          "union_size": 435,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000077",
+            "HP:0000078",
+            "HP:0000079",
+            "HP:0000118",
+            "HP:0000119",
+            "HP:0000152",
+            "HP:0000153",
+            "HP:0000163",
+            "HP:0000234"
+          ],
+          "n_shared_terms": 111,
+          "patient_coverage": 0.37755102040816324,
+          "disease_coverage": 0.44047619047619047,
+          "n_patient_terms": 294,
+          "n_disease_terms": 252,
+          "n_union_terms": 435
+        }
+      },
+      {
+        "rank": 2,
+        "disease_id": "ORPHA:99889",
+        "label": "Cushing syndrome due to ectopic ACTH secretion",
+        "method_name": "set_jaccard",
+        "score": 0.25442477876106195,
+        "explanation": {
+          "method": "jaccard",
+          "intersection_size": 115,
+          "union_size": 452,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000078",
+            "HP:0000118",
+            "HP:0000119",
+            "HP:0000152",
+            "HP:0000153",
+            "HP:0000163",
+            "HP:0000234",
+            "HP:0000271",
+            "HP:0000707"
+          ],
+          "n_shared_terms": 115,
+          "patient_coverage": 0.391156462585034,
+          "disease_coverage": 0.42124542124542125,
+          "n_patient_terms": 294,
+          "n_disease_terms": 273,
+          "n_union_terms": 452
+        }
+      },
+      {
+        "rank": 3,
+        "disease_id": "ORPHA:189427",
+        "label": "ACTH-independent macronodular adrenal hyperplasia",
+        "method_name": "set_jaccard",
+        "score": 0.2512690355329949,
+        "explanation": {
+          "method": "jaccard",
+          "intersection_size": 99,
+          "union_size": 394,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000077",
+            "HP:0000078",
+            "HP:0000079",
+            "HP:0000118",
+            "HP:0000119",
+            "HP:0000152",
+            "HP:0000234",
+            "HP:0000271",
+            "HP:0000707"
+          ],
+          "n_shared_terms": 99,
+          "patient_coverage": 0.336734693877551,
+          "disease_coverage": 0.49748743718592964,
+          "n_patient_terms": 294,
+          "n_disease_terms": 199,
+          "n_union_terms": 394
+        }
+      },
+      {
+        "rank": 4,
+        "disease_id": "ORPHA:340",
+        "label": "Hemorrhagic fever-renal syndrome",
+        "method_name": "set_jaccard",
+        "score": 0.2366412213740458,
+        "explanation": {
+          "method": "jaccard",
+          "intersection_size": 93,
+          "union_size": 393,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000077",
+            "HP:0000079",
+            "HP:0000095",
+            "HP:0000118",
+            "HP:0000119",
+            "HP:0000152",
+            "HP:0000234",
+            "HP:0000271",
+            "HP:0000707"
+          ],
+          "n_shared_terms": 93,
+          "patient_coverage": 0.3163265306122449,
+          "disease_coverage": 0.484375,
+          "n_patient_terms": 294,
+          "n_disease_terms": 192,
+          "n_union_terms": 393
+        }
+      },
+      {
+        "rank": 5,
+        "disease_id": "ORPHA:1501",
+        "label": "Adrenocortical carcinoma, pediatric",
+        "method_name": "set_jaccard",
+        "score": 0.23460410557184752,
+        "explanation": {
+          "method": "jaccard",
+          "intersection_size": 80,
+          "union_size": 341,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000078",
+            "HP:0000079",
+            "HP:0000118",
+            "HP:0000119",
+            "HP:0000707",
+            "HP:0000818",
+            "HP:0000819",
+            "HP:0000822",
+            "HP:0000830"
+          ],
+          "n_shared_terms": 80,
+          "patient_coverage": 0.272108843537415,
+          "disease_coverage": 0.6299212598425197,
+          "n_patient_terms": 294,
+          "n_disease_terms": 127,
+          "n_union_terms": 341
+        }
+      },
+      {
+        "rank": 6,
+        "disease_id": "ORPHA:466677",
+        "label": "Scorpion envenomation",
+        "method_name": "set_jaccard",
+        "score": 0.23316062176165803,
+        "explanation": {
+          "method": "jaccard",
+          "intersection_size": 90,
+          "union_size": 386,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000077",
+            "HP:0000078",
+            "HP:0000079",
+            "HP:0000118",
+            "HP:0000119",
+            "HP:0000152",
+            "HP:0000153",
+            "HP:0000234",
+            "HP:0000271"
+          ],
+          "n_shared_terms": 90,
+          "patient_coverage": 0.30612244897959184,
+          "disease_coverage": 0.4945054945054945,
+          "n_patient_terms": 294,
+          "n_disease_terms": 182,
+          "n_union_terms": 386
+        }
+      },
+      {
+        "rank": 7,
+        "disease_id": "ORPHA:79474",
+        "label": "Atypical Werner syndrome",
+        "method_name": "set_jaccard",
+        "score": 0.23076923076923078,
+        "explanation": {
+          "method": "jaccard",
+          "intersection_size": 114,
+          "union_size": 494,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000008",
+            "HP:0000077",
+            "HP:0000078",
+            "HP:0000079",
+            "HP:0000118",
+            "HP:0000119",
+            "HP:0000152",
+            "HP:0000153",
+            "HP:0000159"
+          ],
+          "n_shared_terms": 114,
+          "patient_coverage": 0.3877551020408163,
+          "disease_coverage": 0.3630573248407643,
+          "n_patient_terms": 294,
+          "n_disease_terms": 314,
+          "n_union_terms": 494
+        }
+      },
+      {
+        "rank": 8,
+        "disease_id": "ORPHA:358",
+        "label": "Gitelman syndrome",
+        "method_name": "set_jaccard",
+        "score": 0.22939866369710468,
+        "explanation": {
+          "method": "jaccard",
+          "intersection_size": 103,
+          "union_size": 449,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000009",
+            "HP:0000014",
+            "HP:0000017",
+            "HP:0000077",
+            "HP:0000079",
+            "HP:0000095",
+            "HP:0000103",
+            "HP:0000118",
+            "HP:0000119"
+          ],
+          "n_shared_terms": 103,
+          "patient_coverage": 0.35034013605442177,
+          "disease_coverage": 0.3992248062015504,
+          "n_patient_terms": 294,
+          "n_disease_terms": 258,
+          "n_union_terms": 449
+        }
+      },
+      {
+        "rank": 9,
+        "disease_id": "ORPHA:35687",
+        "label": "Erdheim-Chester disease",
+        "method_name": "set_jaccard",
+        "score": 0.22375690607734808,
+        "explanation": {
+          "method": "jaccard",
+          "intersection_size": 81,
+          "union_size": 362,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000009",
+            "HP:0000014",
+            "HP:0000077",
+            "HP:0000078",
+            "HP:0000079",
+            "HP:0000118",
+            "HP:0000119",
+            "HP:0000152",
+            "HP:0000234"
+          ],
+          "n_shared_terms": 81,
+          "patient_coverage": 0.2755102040816326,
+          "disease_coverage": 0.5436241610738255,
+          "n_patient_terms": 294,
+          "n_disease_terms": 149,
+          "n_union_terms": 362
+        }
+      },
+      {
+        "rank": 10,
+        "disease_id": "ORPHA:231226",
+        "label": "Thalassemia-beta, dominant inclusion-body",
+        "method_name": "set_jaccard",
+        "score": 0.22139303482587064,
+        "explanation": {
+          "method": "jaccard",
+          "intersection_size": 89,
+          "union_size": 402,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000152",
+            "HP:0000153",
+            "HP:0000163",
+            "HP:0000234",
+            "HP:0000271",
+            "HP:0000315",
+            "HP:0000707",
+            "HP:0000818"
+          ],
+          "n_shared_terms": 89,
+          "patient_coverage": 0.30272108843537415,
+          "disease_coverage": 0.4517766497461929,
+          "n_patient_terms": 294,
+          "n_disease_terms": 197,
+          "n_union_terms": 402
+        }
+      }
+    ],
+    "set_overlap": [
+      {
+        "rank": 1,
+        "disease_id": "OMIM:139630",
+        "label": "Hairy nose tip",
+        "method_name": "set_overlap",
+        "score": 1.0,
+        "explanation": {
+          "method": "overlap_coefficient",
+          "intersection_size": 5,
+          "min_size": 5,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0001574",
+            "HP:0001595",
+            "HP:0011138"
+          ],
+          "n_shared_terms": 5,
+          "patient_coverage": 0.017006802721088437,
+          "disease_coverage": 1.0,
+          "n_patient_terms": 294,
+          "n_disease_terms": 5,
+          "n_union_terms": 294
+        }
+      },
+      {
+        "rank": 2,
+        "disease_id": "OMIM:300082",
+        "label": "Cognitive function 1, social",
+        "method_name": "set_overlap",
+        "score": 1.0,
+        "explanation": {
+          "method": "overlap_coefficient",
+          "intersection_size": 3,
+          "min_size": 3,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707"
+          ],
+          "n_shared_terms": 3,
+          "patient_coverage": 0.01020408163265306,
+          "disease_coverage": 1.0,
+          "n_patient_terms": 294,
+          "n_disease_terms": 3,
+          "n_union_terms": 294
+        }
+      },
+      {
+        "rank": 3,
+        "disease_id": "OMIM:158280",
+        "label": "Motion sickness",
+        "method_name": "set_overlap",
+        "score": 1.0,
+        "explanation": {
+          "method": "overlap_coefficient",
+          "intersection_size": 3,
+          "min_size": 3,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707"
+          ],
+          "n_shared_terms": 3,
+          "patient_coverage": 0.01020408163265306,
+          "disease_coverage": 1.0,
+          "n_patient_terms": 294,
+          "n_disease_terms": 3,
+          "n_union_terms": 294
+        }
+      },
+      {
+        "rank": 4,
+        "disease_id": "OMIM:601941",
+        "label": "Diabetes mellitus, insulin-dependent, 6",
+        "method_name": "set_overlap",
+        "score": 1.0,
+        "explanation": {
+          "method": "overlap_coefficient",
+          "intersection_size": 8,
+          "min_size": 8,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000818",
+            "HP:0000819",
+            "HP:0001939",
+            "HP:0001952",
+            "HP:0011014",
+            "HP:0012337"
+          ],
+          "n_shared_terms": 8,
+          "patient_coverage": 0.027210884353741496,
+          "disease_coverage": 1.0,
+          "n_patient_terms": 294,
+          "n_disease_terms": 8,
+          "n_union_terms": 294
+        }
+      },
+      {
+        "rank": 5,
+        "disease_id": "OMIM:601942",
+        "label": "Diabetes mellitus, insulin-dependent, 10",
+        "method_name": "set_overlap",
+        "score": 1.0,
+        "explanation": {
+          "method": "overlap_coefficient",
+          "intersection_size": 8,
+          "min_size": 8,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000818",
+            "HP:0000819",
+            "HP:0001939",
+            "HP:0001952",
+            "HP:0011014",
+            "HP:0012337"
+          ],
+          "n_shared_terms": 8,
+          "patient_coverage": 0.027210884353741496,
+          "disease_coverage": 1.0,
+          "n_patient_terms": 294,
+          "n_disease_terms": 8,
+          "n_union_terms": 294
+        }
+      },
+      {
+        "rank": 6,
+        "disease_id": "ORPHA:71519",
+        "label": "Psychogenic movement disorders",
+        "method_name": "set_overlap",
+        "score": 1.0,
+        "explanation": {
+          "method": "overlap_coefficient",
+          "intersection_size": 11,
+          "min_size": 11,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0001288",
+            "HP:0002167",
+            "HP:0011446",
+            "HP:0012638",
+            "HP:0025792",
+            "HP:0034434",
+            "HP:0100022"
+          ],
+          "n_shared_terms": 11,
+          "patient_coverage": 0.03741496598639456,
+          "disease_coverage": 1.0,
+          "n_patient_terms": 294,
+          "n_disease_terms": 11,
+          "n_union_terms": 294
+        }
+      },
+      {
+        "rank": 7,
+        "disease_id": "MONDO:0010719",
+        "label": "radiation sensitivity of natural killer activity",
+        "method_name": "set_overlap",
+        "score": 1.0,
+        "explanation": {
+          "method": "overlap_coefficient",
+          "intersection_size": 3,
+          "min_size": 3,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0002715"
+          ],
+          "n_shared_terms": 3,
+          "patient_coverage": 0.01020408163265306,
+          "disease_coverage": 1.0,
+          "n_patient_terms": 294,
+          "n_disease_terms": 3,
+          "n_union_terms": 294
+        }
+      },
+      {
+        "rank": 8,
+        "disease_id": "MONDO:0008932",
+        "label": "premature centromere division",
+        "method_name": "set_overlap",
+        "score": 1.0,
+        "explanation": {
+          "method": "overlap_coefficient",
+          "intersection_size": 3,
+          "min_size": 3,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0001939"
+          ],
+          "n_shared_terms": 3,
+          "patient_coverage": 0.01020408163265306,
+          "disease_coverage": 1.0,
+          "n_patient_terms": 294,
+          "n_disease_terms": 3,
+          "n_union_terms": 294
+        }
+      },
+      {
+        "rank": 9,
+        "disease_id": "MONDO:0007685",
+        "label": "granulosis rubra nasi",
+        "method_name": "set_overlap",
+        "score": 1.0,
+        "explanation": {
+          "method": "overlap_coefficient",
+          "intersection_size": 6,
+          "min_size": 6,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000975",
+            "HP:0001574",
+            "HP:0007550",
+            "HP:0025276"
+          ],
+          "n_shared_terms": 6,
+          "patient_coverage": 0.02040816326530612,
+          "disease_coverage": 1.0,
+          "n_patient_terms": 294,
+          "n_disease_terms": 6,
+          "n_union_terms": 294
+        }
+      },
+      {
+        "rank": 10,
+        "disease_id": "MONDO:0006022",
+        "label": "acidosis disorder",
+        "method_name": "set_overlap",
+        "score": 1.0,
+        "explanation": {
+          "method": "overlap_coefficient",
+          "intersection_size": 6,
+          "min_size": 6,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0001939",
+            "HP:0001941",
+            "HP:0004360",
+            "HP:0012337"
+          ],
+          "n_shared_terms": 6,
+          "patient_coverage": 0.02040816326530612,
+          "disease_coverage": 1.0,
+          "n_patient_terms": 294,
+          "n_disease_terms": 6,
+          "n_union_terms": 294
+        }
+      }
+    ],
+    "set_dice": [
+      {
+        "rank": 1,
+        "disease_id": "ORPHA:96253",
+        "label": "Pituitary adenoma 4, ACTH-secreting, somatic",
+        "method_name": "set_dice",
+        "score": 0.4065934065934066,
+        "explanation": {
+          "method": "dice",
+          "intersection_size": 111,
+          "size_patient": 294,
+          "size_disease": 252,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000077",
+            "HP:0000078",
+            "HP:0000079",
+            "HP:0000118",
+            "HP:0000119",
+            "HP:0000152",
+            "HP:0000153",
+            "HP:0000163",
+            "HP:0000234"
+          ],
+          "n_shared_terms": 111,
+          "patient_coverage": 0.37755102040816324,
+          "disease_coverage": 0.44047619047619047,
+          "n_patient_terms": 294,
+          "n_disease_terms": 252,
+          "n_union_terms": 435
+        }
+      },
+      {
+        "rank": 2,
+        "disease_id": "ORPHA:99889",
+        "label": "Cushing syndrome due to ectopic ACTH secretion",
+        "method_name": "set_dice",
+        "score": 0.4056437389770723,
+        "explanation": {
+          "method": "dice",
+          "intersection_size": 115,
+          "size_patient": 294,
+          "size_disease": 273,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000078",
+            "HP:0000118",
+            "HP:0000119",
+            "HP:0000152",
+            "HP:0000153",
+            "HP:0000163",
+            "HP:0000234",
+            "HP:0000271",
+            "HP:0000707"
+          ],
+          "n_shared_terms": 115,
+          "patient_coverage": 0.391156462585034,
+          "disease_coverage": 0.42124542124542125,
+          "n_patient_terms": 294,
+          "n_disease_terms": 273,
+          "n_union_terms": 452
+        }
+      },
+      {
+        "rank": 3,
+        "disease_id": "ORPHA:189427",
+        "label": "ACTH-independent macronodular adrenal hyperplasia",
+        "method_name": "set_dice",
+        "score": 0.40162271805273836,
+        "explanation": {
+          "method": "dice",
+          "intersection_size": 99,
+          "size_patient": 294,
+          "size_disease": 199,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000077",
+            "HP:0000078",
+            "HP:0000079",
+            "HP:0000118",
+            "HP:0000119",
+            "HP:0000152",
+            "HP:0000234",
+            "HP:0000271",
+            "HP:0000707"
+          ],
+          "n_shared_terms": 99,
+          "patient_coverage": 0.336734693877551,
+          "disease_coverage": 0.49748743718592964,
+          "n_patient_terms": 294,
+          "n_disease_terms": 199,
+          "n_union_terms": 394
+        }
+      },
+      {
+        "rank": 4,
+        "disease_id": "ORPHA:340",
+        "label": "Hemorrhagic fever-renal syndrome",
+        "method_name": "set_dice",
+        "score": 0.38271604938271603,
+        "explanation": {
+          "method": "dice",
+          "intersection_size": 93,
+          "size_patient": 294,
+          "size_disease": 192,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000077",
+            "HP:0000079",
+            "HP:0000095",
+            "HP:0000118",
+            "HP:0000119",
+            "HP:0000152",
+            "HP:0000234",
+            "HP:0000271",
+            "HP:0000707"
+          ],
+          "n_shared_terms": 93,
+          "patient_coverage": 0.3163265306122449,
+          "disease_coverage": 0.484375,
+          "n_patient_terms": 294,
+          "n_disease_terms": 192,
+          "n_union_terms": 393
+        }
+      },
+      {
+        "rank": 5,
+        "disease_id": "ORPHA:1501",
+        "label": "Adrenocortical carcinoma, pediatric",
+        "method_name": "set_dice",
+        "score": 0.38004750593824227,
+        "explanation": {
+          "method": "dice",
+          "intersection_size": 80,
+          "size_patient": 294,
+          "size_disease": 127,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000078",
+            "HP:0000079",
+            "HP:0000118",
+            "HP:0000119",
+            "HP:0000707",
+            "HP:0000818",
+            "HP:0000819",
+            "HP:0000822",
+            "HP:0000830"
+          ],
+          "n_shared_terms": 80,
+          "patient_coverage": 0.272108843537415,
+          "disease_coverage": 0.6299212598425197,
+          "n_patient_terms": 294,
+          "n_disease_terms": 127,
+          "n_union_terms": 341
+        }
+      },
+      {
+        "rank": 6,
+        "disease_id": "ORPHA:466677",
+        "label": "Scorpion envenomation",
+        "method_name": "set_dice",
+        "score": 0.37815126050420167,
+        "explanation": {
+          "method": "dice",
+          "intersection_size": 90,
+          "size_patient": 294,
+          "size_disease": 182,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000077",
+            "HP:0000078",
+            "HP:0000079",
+            "HP:0000118",
+            "HP:0000119",
+            "HP:0000152",
+            "HP:0000153",
+            "HP:0000234",
+            "HP:0000271"
+          ],
+          "n_shared_terms": 90,
+          "patient_coverage": 0.30612244897959184,
+          "disease_coverage": 0.4945054945054945,
+          "n_patient_terms": 294,
+          "n_disease_terms": 182,
+          "n_union_terms": 386
+        }
+      },
+      {
+        "rank": 7,
+        "disease_id": "ORPHA:79474",
+        "label": "Atypical Werner syndrome",
+        "method_name": "set_dice",
+        "score": 0.375,
+        "explanation": {
+          "method": "dice",
+          "intersection_size": 114,
+          "size_patient": 294,
+          "size_disease": 314,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000008",
+            "HP:0000077",
+            "HP:0000078",
+            "HP:0000079",
+            "HP:0000118",
+            "HP:0000119",
+            "HP:0000152",
+            "HP:0000153",
+            "HP:0000159"
+          ],
+          "n_shared_terms": 114,
+          "patient_coverage": 0.3877551020408163,
+          "disease_coverage": 0.3630573248407643,
+          "n_patient_terms": 294,
+          "n_disease_terms": 314,
+          "n_union_terms": 494
+        }
+      },
+      {
+        "rank": 8,
+        "disease_id": "ORPHA:358",
+        "label": "Gitelman syndrome",
+        "method_name": "set_dice",
+        "score": 0.37318840579710144,
+        "explanation": {
+          "method": "dice",
+          "intersection_size": 103,
+          "size_patient": 294,
+          "size_disease": 258,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000009",
+            "HP:0000014",
+            "HP:0000017",
+            "HP:0000077",
+            "HP:0000079",
+            "HP:0000095",
+            "HP:0000103",
+            "HP:0000118",
+            "HP:0000119"
+          ],
+          "n_shared_terms": 103,
+          "patient_coverage": 0.35034013605442177,
+          "disease_coverage": 0.3992248062015504,
+          "n_patient_terms": 294,
+          "n_disease_terms": 258,
+          "n_union_terms": 449
+        }
+      },
+      {
+        "rank": 9,
+        "disease_id": "ORPHA:35687",
+        "label": "Erdheim-Chester disease",
+        "method_name": "set_dice",
+        "score": 0.3656884875846501,
+        "explanation": {
+          "method": "dice",
+          "intersection_size": 81,
+          "size_patient": 294,
+          "size_disease": 149,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000009",
+            "HP:0000014",
+            "HP:0000077",
+            "HP:0000078",
+            "HP:0000079",
+            "HP:0000118",
+            "HP:0000119",
+            "HP:0000152",
+            "HP:0000234"
+          ],
+          "n_shared_terms": 81,
+          "patient_coverage": 0.2755102040816326,
+          "disease_coverage": 0.5436241610738255,
+          "n_patient_terms": 294,
+          "n_disease_terms": 149,
+          "n_union_terms": 362
+        }
+      },
+      {
+        "rank": 10,
+        "disease_id": "ORPHA:231226",
+        "label": "Thalassemia-beta, dominant inclusion-body",
+        "method_name": "set_dice",
+        "score": 0.3625254582484725,
+        "explanation": {
+          "method": "dice",
+          "intersection_size": 89,
+          "size_patient": 294,
+          "size_disease": 197,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000152",
+            "HP:0000153",
+            "HP:0000163",
+            "HP:0000234",
+            "HP:0000271",
+            "HP:0000315",
+            "HP:0000707",
+            "HP:0000818"
+          ],
+          "n_shared_terms": 89,
+          "patient_coverage": 0.30272108843537415,
+          "disease_coverage": 0.4517766497461929,
+          "n_patient_terms": 294,
+          "n_disease_terms": 197,
+          "n_union_terms": 402
+        }
+      }
+    ],
+    "denoising_autoencoder": [
+      {
+        "disease_id": "ORPHA:714493",
+        "label": "Wiskott-Aldrich syndrome 2",
+        "score": 0.9999990463256836,
+        "method_name": "denoising_autoencoder",
+        "rank": 1,
+        "explanation": "{'method': 'denoising_autoencoder', 'score': 0.9999990463256836, 'top_shared_terms': [], 'n_shared_terms': 0, 'patient_coverage': 0.0, 'disease_coverage': 0.0, 'n_patient_terms': 68, 'n_disease_terms': 31, 'n_union_terms': 99}"
+      },
+      {
+        "disease_id": "MONDO:0013779",
+        "label": "Wiskott-Aldrich syndrome 2",
+        "score": 0.9999990463256836,
+        "method_name": "denoising_autoencoder",
+        "rank": 2,
+        "explanation": "{'method': 'denoising_autoencoder', 'score': 0.9999990463256836, 'top_shared_terms': [], 'n_shared_terms': 0, 'patient_coverage': 0.0, 'disease_coverage': 0.0, 'n_patient_terms': 68, 'n_disease_terms': 36, 'n_union_terms': 104}"
+      },
+      {
+        "disease_id": "MONDO:0010681",
+        "label": "myelolymphatic insufficiency",
+        "score": 0.999998927116394,
+        "method_name": "denoising_autoencoder",
+        "rank": 3,
+        "explanation": "{'method': 'denoising_autoencoder', 'score': 0.999998927116394, 'top_shared_terms': [], 'n_shared_terms': 0, 'patient_coverage': 0.0, 'disease_coverage': 0.0, 'n_patient_terms': 68, 'n_disease_terms': 19, 'n_union_terms': 87}"
+      },
+      {
+        "disease_id": "OMIM:242870",
+        "label": "Immunodeficiency, partial combined, with absence of hla determinantsand beta-2-microglobulin from lymphocytes",
+        "score": 0.9999988079071045,
+        "method_name": "denoising_autoencoder",
+        "rank": 4,
+        "explanation": "{'method': 'denoising_autoencoder', 'score': 0.9999988079071045, 'top_shared_terms': [], 'n_shared_terms': 0, 'patient_coverage': 0.0, 'disease_coverage': 0.0, 'n_patient_terms': 68, 'n_disease_terms': 35, 'n_union_terms': 103}"
+      },
+      {
+        "disease_id": "MONDO:0011179",
+        "label": "leishmaniasis, tegumentary, susceptibility to",
+        "score": 0.9999988079071045,
+        "method_name": "denoising_autoencoder",
+        "rank": 5,
+        "explanation": "{'method': 'denoising_autoencoder', 'score': 0.9999988079071045, 'top_shared_terms': [], 'n_shared_terms': 0, 'patient_coverage': 0.0, 'disease_coverage': 0.0, 'n_patient_terms': 68, 'n_disease_terms': 8, 'n_union_terms': 76}"
+      },
+      {
+        "disease_id": "OMIM:146830",
+        "label": "Immune deficiency, familial variable",
+        "score": 0.9999988079071045,
+        "method_name": "denoising_autoencoder",
+        "rank": 6,
+        "explanation": "{'method': 'denoising_autoencoder', 'score': 0.9999988079071045, 'top_shared_terms': [], 'n_shared_terms': 0, 'patient_coverage': 0.0, 'disease_coverage': 0.0, 'n_patient_terms': 68, 'n_disease_terms': 24, 'n_union_terms': 92}"
+      },
+      {
+        "disease_id": "MONDO:0010625",
+        "label": "immunodeficiency, X-linked, with deficiency of 115,000 Dalton surface glycoprotein",
+        "score": 0.9999988079071045,
+        "method_name": "denoising_autoencoder",
+        "rank": 7,
+        "explanation": "{'method': 'denoising_autoencoder', 'score': 0.9999988079071045, 'top_shared_terms': [], 'n_shared_terms': 0, 'patient_coverage': 0.0, 'disease_coverage': 0.0, 'n_patient_terms': 68, 'n_disease_terms': 16, 'n_union_terms': 84}"
+      },
+      {
+        "disease_id": "MONDO:0014307",
+        "label": "Dowling-Degos disease 4",
+        "score": 0.9999988079071045,
+        "method_name": "denoising_autoencoder",
+        "rank": 8,
+        "explanation": "{'method': 'denoising_autoencoder', 'score': 0.9999988079071045, 'top_shared_terms': [], 'n_shared_terms': 0, 'patient_coverage': 0.0, 'disease_coverage': 0.0, 'n_patient_terms': 68, 'n_disease_terms': 14, 'n_union_terms': 82}"
+      },
+      {
+        "disease_id": "OMIM:602068",
+        "label": "Leishmaniasis, tegumentary",
+        "score": 0.9999988079071045,
+        "method_name": "denoising_autoencoder",
+        "rank": 9,
+        "explanation": "{'method': 'denoising_autoencoder', 'score': 0.9999988079071045, 'top_shared_terms': [], 'n_shared_terms': 0, 'patient_coverage': 0.0, 'disease_coverage': 0.0, 'n_patient_terms': 68, 'n_disease_terms': 13, 'n_union_terms': 81}"
+      },
+      {
+        "disease_id": "MONDO:0043364",
+        "label": "eosinophil peroxidase deficiency",
+        "score": 0.9999988079071045,
+        "method_name": "denoising_autoencoder",
+        "rank": 10,
+        "explanation": "{'method': 'denoising_autoencoder', 'score': 0.9999988079071045, 'top_shared_terms': [], 'n_shared_terms': 0, 'patient_coverage': 0.0, 'disease_coverage': 0.0, 'n_patient_terms': 68, 'n_disease_terms': 11, 'n_union_terms': 79}"
+      }
+    ]
+  }
+}

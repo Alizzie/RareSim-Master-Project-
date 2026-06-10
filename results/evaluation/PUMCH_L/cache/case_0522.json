@@ -1,0 +1,4400 @@
+{
+  "case_index": 522,
+  "hpo_terms": [
+    "HP:0000822",
+    "HP:0000975",
+    "HP:0000979",
+    "HP:0001287",
+    "HP:0001644",
+    "HP:0001711",
+    "HP:0002090",
+    "HP:0002149",
+    "HP:0002355",
+    "HP:0002870",
+    "HP:0003115",
+    "HP:0005180",
+    "HP:0005978",
+    "HP:0006682",
+    "HP:0007200",
+    "HP:0011537",
+    "HP:0011604",
+    "HP:0011706",
+    "HP:0012393",
+    "HP:0012418",
+    "HP:0012735",
+    "HP:0012743",
+    "HP:0012764",
+    "HP:0030223",
+    "HP:0030812",
+    "HP:0030900",
+    "HP:0100738"
+  ],
+  "ground_truth": [
+    "CCRD:52.1",
+    "OMIM:115200",
+    "OMIM:302045",
+    "OMIM:600884",
+    "OMIM:601154",
+    "OMIM:601419",
+    "OMIM:601493",
+    "OMIM:601494",
+    "OMIM:604145",
+    "OMIM:604765",
+    "OMIM:605362",
+    "OMIM:605676",
+    "OMIM:606685",
+    "OMIM:607482",
+    "OMIM:608569",
+    "OMIM:609909",
+    "OMIM:610198",
+    "OMIM:611407",
+    "OMIM:611615",
+    "OMIM:611878",
+    "OMIM:611879",
+    "OMIM:611880",
+    "OMIM:612877",
+    "OMIM:613122",
+    "OMIM:613172",
+    "OMIM:613252",
+    "OMIM:613286",
+    "OMIM:613424",
+    "OMIM:613426",
+    "OMIM:613642",
+    "OMIM:613694",
+    "OMIM:613697",
+    "OMIM:613881",
+    "OMIM:614672",
+    "OMIM:615184",
+    "OMIM:615235",
+    "OMIM:615248",
+    "OMIM:615373",
+    "OMIM:615396",
+    "OMIM:615821",
+    "OMIM:615916",
+    "OMIM:616117",
+    "OMIM:618189",
+    "ORPHA:154",
+    "ORPHA:217607",
+    "ORPHA:217622",
+    "ORPHA:300751",
+    "ORPHA:436242",
+    "ORPHA:65282",
+    "ORPHA:66634",
+    "ORPHA:98909"
+  ],
+  "total_elapsed_seconds": 78.598,
+  "method_elapsed_seconds": {
+    "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext": 0.125,
+    "emilyalsentzer/Bio_ClinicalBERT": 0.102,
+    "sentence-transformers/all-MiniLM-L6-v2": 0.137,
+    "cambridgeltl/SapBERT-from-PubMedBERT-fulltext": 0.094,
+    "dmis-lab/biobert-v1.1": 0.13,
+    "mistralai/Mistral-7B-Instruct-v0.2": 44.956,
+    "tfidf": 7.554,
+    "hpo2vec": 10.705,
+    "set_cosine": 3.694,
+    "set_jaccard": 3.694,
+    "set_dice": 3.694,
+    "set_overlap": 3.694,
+    "denoising_autoencoder": 0.02
+  },
+  "methods_run": [
+    "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+    "denoising_autoencoder",
+    "dmis-lab/biobert-v1.1",
+    "emilyalsentzer/Bio_ClinicalBERT",
+    "hpo2vec",
+    "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+    "mistralai/Mistral-7B-Instruct-v0.2",
+    "sentence-transformers/all-MiniLM-L6-v2",
+    "set_cosine",
+    "set_dice",
+    "set_jaccard",
+    "set_overlap",
+    "tfidf_cosine"
+  ],
+  "results": {
+    "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext": [
+      {
+        "rank": 1,
+        "canonical_disease_id": "ORPHA:330001",
+        "representative_disease_id": "ORPHA:330001",
+        "label": "Wild type ATTR amyloidosis",
+        "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.993901789188385,
+        "matched_aliases": [
+          "ORPHA:330001"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.993901789188385,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Abnormal EKG"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Hyperhidrosis; Purpura; Meningitis; Dilated cardiomyopathy; Abnormal left ventricle morphology; Pneumonia; Hyperuricemia; obsolete Difficulty walking; Obstructive sleep apnea; Abnormal EKG; Tricuspid regurgitation; Type II diabetes mellitus; Premature ventricular co",
+          "disease_text_preview": "Disease: Wild type ATTR amyloidosis Phenotypes: Renal insufficiency; Proteinuria; Nephrotic syndrome; Nephropathy; Sensory neuropathy; Congestive heart failure; Hypertrophic cardiomyopathy; Aortic valve stenosis; Myocardial infarction; Bradycardia; Weight loss; Chronic diarrhea; Pleural effusion; He"
+        },
+        "metadata": {
+          "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 2,
+        "canonical_disease_id": "MONDO:0060659",
+        "representative_disease_id": "MONDO:0060659",
+        "label": "neurodevelopmental disorder with poor language and loss of hand skills",
+        "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.9935214519500732,
+        "matched_aliases": [
+          "MONDO:0060659"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9935214519500732,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [],
+          "n_shared_phenotype_labels": 0,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Hyperhidrosis; Purpura; Meningitis; Dilated cardiomyopathy; Abnormal left ventricle morphology; Pneumonia; Hyperuricemia; obsolete Difficulty walking; Obstructive sleep apnea; Abnormal EKG; Tricuspid regurgitation; Type II diabetes mellitus; Premature ventricular co",
+          "disease_text_preview": "Disease: neurodevelopmental disorder with poor language and loss of hand skills Phenotypes: Microcephaly; Macrocephaly; Agitation; Autistic behavior; Intellectual disability; Seizure; Gait disturbance; Dystonia; Absent speech; Short foot; Apnea; Ventriculomegaly; Developmental regression; Hyperventi"
+        },
+        "metadata": {
+          "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 3,
+        "canonical_disease_id": "ORPHA:100081",
+        "representative_disease_id": "MONDO:0015068",
+        "label": "rectal neuroendocrine tumor",
+        "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.9935025572776794,
+        "matched_aliases": [
+          "MONDO:0015068",
+          "ORPHA:100081"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9935025572776794,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Tricuspid regurgitation"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Hyperhidrosis; Purpura; Meningitis; Dilated cardiomyopathy; Abnormal left ventricle morphology; Pneumonia; Hyperuricemia; obsolete Difficulty walking; Obstructive sleep apnea; Abnormal EKG; Tricuspid regurgitation; Type II diabetes mellitus; Premature ventricular co",
+          "disease_text_preview": "Disease: rectal neuroendocrine tumor Phenotypes: Right ventricular failure; Weight loss; Palpitations; Constipation; Abdominal pain; Anorexia; Hepatomegaly; Melena; Hematochezia; Hypotension; Chronic noninfectious lymphadenopathy; Elevated circulating hepatic transaminase concentration; Increased se"
+        },
+        "metadata": {
+          "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 4,
+        "canonical_disease_id": "ORPHA:97287",
+        "representative_disease_id": "ORPHA:97287",
+        "label": "Bronchial neuroendocrine tumor",
+        "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.9934983849525452,
+        "matched_aliases": [
+          "ORPHA:97287"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9934983849525452,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Pneumonia",
+            "Tricuspid regurgitation"
+          ],
+          "n_shared_phenotype_labels": 2,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Hyperhidrosis; Purpura; Meningitis; Dilated cardiomyopathy; Abnormal left ventricle morphology; Pneumonia; Hyperuricemia; obsolete Difficulty walking; Obstructive sleep apnea; Abnormal EKG; Tricuspid regurgitation; Type II diabetes mellitus; Premature ventricular co",
+          "disease_text_preview": "Disease: Bronchial neuroendocrine tumor Description: A neuroendocrine neoplasm that involves the bronchus. Phenotypes: Elevated circulating growth hormone concentration; Dermatological manifestations of systemic disorders; Hepatic failure; Right ventricular failure; Weight loss; Palpitations; Anorex"
+        },
+        "metadata": {
+          "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 5,
+        "canonical_disease_id": "ORPHA:449291",
+        "representative_disease_id": "ORPHA:449291",
+        "label": "Symptomatic form of fragile X syndrome in female carriers",
+        "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.9934896230697632,
+        "matched_aliases": [
+          "ORPHA:449291"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9934896230697632,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Hypertension"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Hyperhidrosis; Purpura; Meningitis; Dilated cardiomyopathy; Abnormal left ventricle morphology; Pneumonia; Hyperuricemia; obsolete Difficulty walking; Obstructive sleep apnea; Abnormal EKG; Tricuspid regurgitation; Type II diabetes mellitus; Premature ventricular co",
+          "disease_text_preview": "Disease: Symptomatic form of fragile X syndrome in female carriers Phenotypes: Long face; Mandibular prognathia; Macrotia; Recurrent otitis media; Strabismus; Depression; Aggressive behavior; Autistic behavior; Motor stereotypy; obsolete Impaired social interactions; Short attention span; Irritabili"
+        },
+        "metadata": {
+          "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 6,
+        "canonical_disease_id": "MONDO:0859258",
+        "representative_disease_id": "MONDO:0859258",
+        "label": "neurodevelopmental disorder with dystonia and seizures",
+        "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.9933692812919617,
+        "matched_aliases": [
+          "MONDO:0859258"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9933692812919617,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Hyperhidrosis"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Hyperhidrosis; Purpura; Meningitis; Dilated cardiomyopathy; Abnormal left ventricle morphology; Pneumonia; Hyperuricemia; obsolete Difficulty walking; Obstructive sleep apnea; Abnormal EKG; Tricuspid regurgitation; Type II diabetes mellitus; Premature ventricular co",
+          "disease_text_preview": "Disease: neurodevelopmental disorder with dystonia and seizures Phenotypes: Anxiety; Hyperhidrosis; Seizure; Hypotonia; Global developmental delay; Cerebellar atrophy; Cerebellar hypoplasia; Dystonia; Absent speech; Intrauterine growth retardation; Decreased fetal movement; Constipation; Chorea; Ven"
+        },
+        "metadata": {
+          "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 7,
+        "canonical_disease_id": "ORPHA:404493",
+        "representative_disease_id": "ORPHA:404493",
+        "label": "Spinocerebellar ataxia, autosomal recessive 23",
+        "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.993301272392273,
+        "matched_aliases": [
+          "ORPHA:404493"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.993301272392273,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [],
+          "n_shared_phenotype_labels": 0,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Hyperhidrosis; Purpura; Meningitis; Dilated cardiomyopathy; Abnormal left ventricle morphology; Pneumonia; Hyperuricemia; obsolete Difficulty walking; Obstructive sleep apnea; Abnormal EKG; Tricuspid regurgitation; Type II diabetes mellitus; Premature ventricular co",
+          "disease_text_preview": "Disease: Spinocerebellar ataxia, autosomal recessive 23 Phenotypes: Autosomal recessive inheritance; Brachycephaly; Microcephaly; Intellectual disability; Seizure; Ataxia; Excessive daytime somnolence; Generalized hypotonia; Decreased total neutrophil count; Abnormal facial shape; Hyponatremia; Easy"
+        },
+        "metadata": {
+          "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 8,
+        "canonical_disease_id": "ORPHA:309288",
+        "representative_disease_id": "ORPHA:309288",
+        "label": "Alpha-mannosidosis, adult form",
+        "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.9932566285133362,
+        "matched_aliases": [
+          "ORPHA:309288"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9932566285133362,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Pneumonia"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Hyperhidrosis; Purpura; Meningitis; Dilated cardiomyopathy; Abnormal left ventricle morphology; Pneumonia; Hyperuricemia; obsolete Difficulty walking; Obstructive sleep apnea; Abnormal EKG; Tricuspid regurgitation; Type II diabetes mellitus; Premature ventricular co",
+          "disease_text_preview": "Disease: Alpha-mannosidosis, adult form Phenotypes: Macroglossia; Mixed hearing impairment; Cataract; Optic disc pallor; Myopia; Atypical behavior; Depression; Hallucinations; Anxiety; Delusion; Delayed speech and language development; Osteopenia; Ataxia; Mild intellectual disability; Cerebellar atr"
+        },
+        "metadata": {
+          "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 9,
+        "canonical_disease_id": "ORPHA:100093",
+        "representative_disease_id": "ORPHA:100093",
+        "label": "Carcinoid syndrome",
+        "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.993255078792572,
+        "matched_aliases": [
+          "ORPHA:100093"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.993255078792572,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Tricuspid regurgitation"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Hyperhidrosis; Purpura; Meningitis; Dilated cardiomyopathy; Abnormal left ventricle morphology; Pneumonia; Hyperuricemia; obsolete Difficulty walking; Obstructive sleep apnea; Abnormal EKG; Tricuspid regurgitation; Type II diabetes mellitus; Premature ventricular co",
+          "disease_text_preview": "Disease: Carcinoid syndrome Phenotypes: Right ventricular failure; Palpitations; Nausea and vomiting; Asthma; Episodic abdominal pain; Hepatic necrosis; Paraganglioma; Chronic noninfectious lymphadenopathy; Elevated circulating hepatic transaminase concentration; Increased serum serotonin; Myopathy;"
+        },
+        "metadata": {
+          "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 10,
+        "canonical_disease_id": "MONDO:0008930",
+        "representative_disease_id": "MONDO:0008930",
+        "label": "celiac disease, susceptibility to, 1",
+        "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.9932409524917603,
+        "matched_aliases": [
+          "MONDO:0008930"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9932409524917603,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [],
+          "n_shared_phenotype_labels": 0,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Hyperhidrosis; Purpura; Meningitis; Dilated cardiomyopathy; Abnormal left ventricle morphology; Pneumonia; Hyperuricemia; obsolete Difficulty walking; Obstructive sleep apnea; Abnormal EKG; Tricuspid regurgitation; Type II diabetes mellitus; Premature ventricular co",
+          "disease_text_preview": "Disease: celiac disease, susceptibility to, 1 Phenotypes: Depression; Anxiety; Infertility; Delayed puberty; Osteoporosis; Eczematoid dermatitis; Seizure; Ataxia; Polyneuropathy; Failure to thrive; Alopecia; Weight loss; Iron deficiency anemia; Thrombocytosis; Macrocytic anemia; Vomiting; Diarrhea; "
+        },
+        "metadata": {
+          "model_name": "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      }
+    ],
+    "emilyalsentzer/Bio_ClinicalBERT": [
+      {
+        "rank": 1,
+        "canonical_disease_id": "ORPHA:99103",
+        "representative_disease_id": "ORPHA:99103",
+        "label": "Atrial septal defect 3",
+        "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+        "model_type": "hf_encoder",
+        "score": 0.9806324243545532,
+        "matched_aliases": [
+          "ORPHA:99103"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9806324243545532,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Pneumonia",
+            "Tricuspid regurgitation",
+            "Orthopnea"
+          ],
+          "n_shared_phenotype_labels": 3,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Hyperhidrosis; Purpura; Meningitis; Dilated cardiomyopathy; Abnormal left ventricle morphology; Pneumonia; Hyperuricemia; obsolete Difficulty walking; Obstructive sleep apnea; Abnormal EKG; Tricuspid regurgitation; Type II diabetes mellitus; Premature ventricular co",
+          "disease_text_preview": "Disease: Atrial septal defect 3 Phenotypes: Autosomal dominant inheritance; Cyanosis; Syncope; Stroke; Atrial septal defect; Abnormal mitral valve morphology; Congestive heart failure; Mitral regurgitation; Patent foramen ovale; Coarctation of aorta; Secundum atrial septal defect; Right ventricular "
+        },
+        "metadata": {
+          "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 2,
+        "canonical_disease_id": "MONDO:0957960",
+        "representative_disease_id": "MONDO:0957960",
+        "label": "Long-Olsen-Distelmaier syndrome",
+        "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+        "model_type": "hf_encoder",
+        "score": 0.9795434474945068,
+        "matched_aliases": [
+          "MONDO:0957960"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9795434474945068,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Dilated cardiomyopathy"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Hyperhidrosis; Purpura; Meningitis; Dilated cardiomyopathy; Abnormal left ventricle morphology; Pneumonia; Hyperuricemia; obsolete Difficulty walking; Obstructive sleep apnea; Abnormal EKG; Tricuspid regurgitation; Type II diabetes mellitus; Premature ventricular co",
+          "disease_text_preview": "Disease: Long-Olsen-Distelmaier syndrome Phenotypes: Macrocephaly; Hypertelorism; Low-set ears; Downslanted palpebral fissures; Cataract; Optic nerve hypoplasia; Pachygyria; Failure to thrive; Ventricular septal defect; Congestive heart failure; Cardiomegaly; Dilated cardiomyopathy; Secundum atrial "
+        },
+        "metadata": {
+          "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 3,
+        "canonical_disease_id": "ORPHA:439232",
+        "representative_disease_id": "ORPHA:439232",
+        "label": "AApoAIV amyloidosis",
+        "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+        "model_type": "hf_encoder",
+        "score": 0.9790892601013184,
+        "matched_aliases": [
+          "ORPHA:439232"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9790892601013184,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Hypertension"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Hyperhidrosis; Purpura; Meningitis; Dilated cardiomyopathy; Abnormal left ventricle morphology; Pneumonia; Hyperuricemia; obsolete Difficulty walking; Obstructive sleep apnea; Abnormal EKG; Tricuspid regurgitation; Type II diabetes mellitus; Premature ventricular co",
+          "disease_text_preview": "Disease: AApoAIV amyloidosis Phenotypes: Proteinuria; Glomerular sclerosis; Diabetes mellitus; Hypertension; Hypertrophic cardiomyopathy; Coronary artery atherosclerosis; Sinus bradycardia; Left ventricular hypertrophy; Renal amyloidosis; Abnormal lung morphology; Hyperlipidemia; Elevated circulatin"
+        },
+        "metadata": {
+          "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 4,
+        "canonical_disease_id": "MONDO:0958334",
+        "representative_disease_id": "MONDO:0958334",
+        "label": "pulmonary hypertension, primary, 6",
+        "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+        "model_type": "hf_encoder",
+        "score": 0.9788697361946106,
+        "matched_aliases": [
+          "MONDO:0958334"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9788697361946106,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [],
+          "n_shared_phenotype_labels": 0,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Hyperhidrosis; Purpura; Meningitis; Dilated cardiomyopathy; Abnormal left ventricle morphology; Pneumonia; Hyperuricemia; obsolete Difficulty walking; Obstructive sleep apnea; Abnormal EKG; Tricuspid regurgitation; Type II diabetes mellitus; Premature ventricular co",
+          "disease_text_preview": "Disease: pulmonary hypertension, primary, 6 Phenotypes: Cyanosis; Failure to thrive; Premature birth; Hypertrophic cardiomyopathy; Right ventricular hypertrophy; Atrioventricular block; Right ventricular failure; Pulmonary arterial hypertension; Respiratory insufficiency; Dyspnea; Apnea; Atrial flut"
+        },
+        "metadata": {
+          "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 5,
+        "canonical_disease_id": "MONDO:0957795",
+        "representative_disease_id": "MONDO:0957795",
+        "label": "arrhythmogenic cardiomyopathy with variable ectodermal abnormalities",
+        "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+        "model_type": "hf_encoder",
+        "score": 0.9787172079086304,
+        "matched_aliases": [
+          "MONDO:0957795"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9787172079086304,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Dilated cardiomyopathy",
+            "Tricuspid regurgitation"
+          ],
+          "n_shared_phenotype_labels": 2,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Hyperhidrosis; Purpura; Meningitis; Dilated cardiomyopathy; Abnormal left ventricle morphology; Pneumonia; Hyperuricemia; obsolete Difficulty walking; Obstructive sleep apnea; Abnormal EKG; Tricuspid regurgitation; Type II diabetes mellitus; Premature ventricular co",
+          "disease_text_preview": "Disease: arrhythmogenic cardiomyopathy with variable ectodermal abnormalities Phenotypes: Palmoplantar keratoderma; Pruritus; Intellectual disability; Motor delay; Failure to thrive; Polyhydramnios; Ventricular septal defect; Dilated cardiomyopathy; Bicuspid aortic valve; Mitral regurgitation; Paten"
+        },
+        "metadata": {
+          "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 6,
+        "canonical_disease_id": "MONDO:0014991",
+        "representative_disease_id": "MONDO:0014991",
+        "label": "Seckel syndrome 10",
+        "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+        "model_type": "hf_encoder",
+        "score": 0.9783726930618286,
+        "matched_aliases": [
+          "MONDO:0014991"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9783726930618286,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Hypertension"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Hyperhidrosis; Purpura; Meningitis; Dilated cardiomyopathy; Abnormal left ventricle morphology; Pneumonia; Hyperuricemia; obsolete Difficulty walking; Obstructive sleep apnea; Abnormal EKG; Tricuspid regurgitation; Type II diabetes mellitus; Premature ventricular co",
+          "disease_text_preview": "Disease: Seckel syndrome 10 Description: Any Seckel syndrome in which the cause of the disease is a mutation in the NSMCE2 gene. Phenotypes: Microcephaly; Microretrognathia; Retinal detachment; Diabetes mellitus; Hypertension; Insulin resistance; Acanthosis nigricans; Hepatic steatosis; Congestive h"
+        },
+        "metadata": {
+          "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 7,
+        "canonical_disease_id": "ORPHA:99104",
+        "representative_disease_id": "ORPHA:99104",
+        "label": "Atrial septal defect, coronary sinus type",
+        "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+        "model_type": "hf_encoder",
+        "score": 0.977843165397644,
+        "matched_aliases": [
+          "ORPHA:99104"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.977843165397644,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Pneumonia"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Hyperhidrosis; Purpura; Meningitis; Dilated cardiomyopathy; Abnormal left ventricle morphology; Pneumonia; Hyperuricemia; obsolete Difficulty walking; Obstructive sleep apnea; Abnormal EKG; Tricuspid regurgitation; Type II diabetes mellitus; Premature ventricular co",
+          "disease_text_preview": "Disease: Atrial septal defect, coronary sinus type Phenotypes: Cyanosis; Syncope; Stroke; Right ventricular failure; Palpitations; Pneumonia; Pulmonary arterial hypertension; Dyspnea; Transient ischemic attack; Recurrent bacterial infections; Exertional dyspnea; Exercise intolerance; Supraventricula"
+        },
+        "metadata": {
+          "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 8,
+        "canonical_disease_id": "ORPHA:99106",
+        "representative_disease_id": "ORPHA:99106",
+        "label": "Atrial septal defect, ostium primum type",
+        "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+        "model_type": "hf_encoder",
+        "score": 0.9775029420852661,
+        "matched_aliases": [
+          "ORPHA:99106"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9775029420852661,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Tricuspid regurgitation"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Hyperhidrosis; Purpura; Meningitis; Dilated cardiomyopathy; Abnormal left ventricle morphology; Pneumonia; Hyperuricemia; obsolete Difficulty walking; Obstructive sleep apnea; Abnormal EKG; Tricuspid regurgitation; Type II diabetes mellitus; Premature ventricular co",
+          "disease_text_preview": "Disease: Atrial septal defect, ostium primum type Description: Atrioventricular septal defect with communication at the atrial level only. Phenotypes: Cyanosis; Syncope; Failure to thrive; Congestive heart failure; Mitral regurgitation; Atrioventricular block; Right-to-left shunt; Left ventricular h"
+        },
+        "metadata": {
+          "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 9,
+        "canonical_disease_id": "ORPHA:653880",
+        "representative_disease_id": "ORPHA:653880",
+        "label": "Mitochondrial short-chain enoyl-coa hydratase 1 deficiency",
+        "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+        "model_type": "hf_encoder",
+        "score": 0.9774751663208008,
+        "matched_aliases": [
+          "ORPHA:653880"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9774751663208008,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [],
+          "n_shared_phenotype_labels": 0,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Hyperhidrosis; Purpura; Meningitis; Dilated cardiomyopathy; Abnormal left ventricle morphology; Pneumonia; Hyperuricemia; obsolete Difficulty walking; Obstructive sleep apnea; Abnormal EKG; Tricuspid regurgitation; Type II diabetes mellitus; Premature ventricular co",
+          "disease_text_preview": "Disease: Mitochondrial short-chain enoyl-coa hydratase 1 deficiency Phenotypes: Autosomal recessive inheritance; Hearing impairment; Nystagmus; Hypotonia; Spasticity; Global developmental delay; Generalized hypotonia; Dystonia; Death in infancy; Ventricular septal defect; Hypertrophic cardiomyopathy"
+        },
+        "metadata": {
+          "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 10,
+        "canonical_disease_id": "OMIM:618052",
+        "representative_disease_id": "OMIM:618052",
+        "label": "Cardiomyopathy, familial hypertrophic 27",
+        "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+        "model_type": "hf_encoder",
+        "score": 0.9773339033126831,
+        "matched_aliases": [
+          "OMIM:618052"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9773339033126831,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Tricuspid regurgitation"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Hyperhidrosis; Purpura; Meningitis; Dilated cardiomyopathy; Abnormal left ventricle morphology; Pneumonia; Hyperuricemia; obsolete Difficulty walking; Obstructive sleep apnea; Abnormal EKG; Tricuspid regurgitation; Type II diabetes mellitus; Premature ventricular co",
+          "disease_text_preview": "Disease: Cardiomyopathy, familial hypertrophic 27 Phenotypes: Autosomal recessive inheritance; Pterygium; Congestive heart failure; Hypertrophic cardiomyopathy; Cardiomegaly; Mitral regurgitation; Prolonged QT interval; Right ventricular hypertrophy; Cardiac arrest; Endocardial fibroelastosis; Nonim"
+        },
+        "metadata": {
+          "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      }
+    ],
+    "sentence-transformers/all-MiniLM-L6-v2": [
+      {
+        "rank": 1,
+        "canonical_disease_id": "MONDO:0957795",
+        "representative_disease_id": "MONDO:0957795",
+        "label": "arrhythmogenic cardiomyopathy with variable ectodermal abnormalities",
+        "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+        "model_type": "sentence_transformer",
+        "score": 0.7229404449462891,
+        "matched_aliases": [
+          "MONDO:0957795"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.7229404449462891,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Dilated cardiomyopathy",
+            "Tricuspid regurgitation"
+          ],
+          "n_shared_phenotype_labels": 2,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Hyperhidrosis; Purpura; Meningitis; Dilated cardiomyopathy; Abnormal left ventricle morphology; Pneumonia; Hyperuricemia; obsolete Difficulty walking; Obstructive sleep apnea; Abnormal EKG; Tricuspid regurgitation; Type II diabetes mellitus; Premature ventricular co",
+          "disease_text_preview": "Disease: arrhythmogenic cardiomyopathy with variable ectodermal abnormalities Phenotypes: Palmoplantar keratoderma; Pruritus; Intellectual disability; Motor delay; Failure to thrive; Polyhydramnios; Ventricular septal defect; Dilated cardiomyopathy; Bicuspid aortic valve; Mitral regurgitation; Paten"
+        },
+        "metadata": {
+          "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+          "model_type": "sentence_transformer",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": null,
+          "pooling": null,
+          "sentence_transformer_encode": true,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 2,
+        "canonical_disease_id": "ORPHA:647811",
+        "representative_disease_id": "ORPHA:647811",
+        "label": "Cardiac-Urogenital syndrome",
+        "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+        "model_type": "sentence_transformer",
+        "score": 0.7154285311698914,
+        "matched_aliases": [
+          "ORPHA:647811"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.7154285311698914,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [],
+          "n_shared_phenotype_labels": 0,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Hyperhidrosis; Purpura; Meningitis; Dilated cardiomyopathy; Abnormal left ventricle morphology; Pneumonia; Hyperuricemia; obsolete Difficulty walking; Obstructive sleep apnea; Abnormal EKG; Tricuspid regurgitation; Type II diabetes mellitus; Premature ventricular co",
+          "disease_text_preview": "Disease: Cardiac-Urogenital syndrome Phenotypes: Autosomal dominant inheritance; Cryptorchidism; Bifid scrotum; Micropenis; Ambiguous genitalia; Enlarged kidney; Aplasia of the uterus; Wide nasal bridge; Congenital diaphragmatic hernia; Penoscrotal hypospadias; Intellectual disability; Motor delay; "
+        },
+        "metadata": {
+          "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+          "model_type": "sentence_transformer",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": null,
+          "pooling": null,
+          "sentence_transformer_encode": true,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 3,
+        "canonical_disease_id": "ORPHA:99106",
+        "representative_disease_id": "ORPHA:99106",
+        "label": "Atrial septal defect, ostium primum type",
+        "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+        "model_type": "sentence_transformer",
+        "score": 0.7093398571014404,
+        "matched_aliases": [
+          "ORPHA:99106"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.7093398571014404,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Tricuspid regurgitation"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Hyperhidrosis; Purpura; Meningitis; Dilated cardiomyopathy; Abnormal left ventricle morphology; Pneumonia; Hyperuricemia; obsolete Difficulty walking; Obstructive sleep apnea; Abnormal EKG; Tricuspid regurgitation; Type II diabetes mellitus; Premature ventricular co",
+          "disease_text_preview": "Disease: Atrial septal defect, ostium primum type Description: Atrioventricular septal defect with communication at the atrial level only. Phenotypes: Cyanosis; Syncope; Failure to thrive; Congestive heart failure; Mitral regurgitation; Atrioventricular block; Right-to-left shunt; Left ventricular h"
+        },
+        "metadata": {
+          "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+          "model_type": "sentence_transformer",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": null,
+          "pooling": null,
+          "sentence_transformer_encode": true,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 4,
+        "canonical_disease_id": "ORPHA:99095",
+        "representative_disease_id": "ORPHA:99095",
+        "label": "Congenital Gerbode defect",
+        "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+        "model_type": "sentence_transformer",
+        "score": 0.7026875019073486,
+        "matched_aliases": [
+          "ORPHA:99095"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.7026875019073486,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Tricuspid regurgitation"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Hyperhidrosis; Purpura; Meningitis; Dilated cardiomyopathy; Abnormal left ventricle morphology; Pneumonia; Hyperuricemia; obsolete Difficulty walking; Obstructive sleep apnea; Abnormal EKG; Tricuspid regurgitation; Type II diabetes mellitus; Premature ventricular co",
+          "disease_text_preview": "Disease: Congenital Gerbode defect Phenotypes: Muscle weakness; Ventricular septal defect; Congestive heart failure; Pulmonic stenosis; Right ventricular hypertrophy; Right ventricular failure; Ankle swelling; Fever; Palpitations; Pulmonary arterial hypertension; Dyspnea; Constrictive pericarditis; "
+        },
+        "metadata": {
+          "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+          "model_type": "sentence_transformer",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": null,
+          "pooling": null,
+          "sentence_transformer_encode": true,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 5,
+        "canonical_disease_id": "MONDO:0100297",
+        "representative_disease_id": "MONDO:0100297",
+        "label": "short stature, facial dysmorphism, and skeletal anomalies with or without cardiac anomalies 1",
+        "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+        "model_type": "sentence_transformer",
+        "score": 0.6991361975669861,
+        "matched_aliases": [
+          "MONDO:0100297"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.6991361975669861,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Obstructive sleep apnea"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Hyperhidrosis; Purpura; Meningitis; Dilated cardiomyopathy; Abnormal left ventricle morphology; Pneumonia; Hyperuricemia; obsolete Difficulty walking; Obstructive sleep apnea; Abnormal EKG; Tricuspid regurgitation; Type II diabetes mellitus; Premature ventricular co",
+          "disease_text_preview": "Disease: short stature, facial dysmorphism, and skeletal anomalies with or without cardiac anomalies 1 Phenotypes: Pierre-Robin sequence; High palate; Thin upper lip vermilion; Everted lower lip vermilion; Broad forehead; Narrow forehead; Long philtrum; Posteriorly rotated ears; Low-set ears; Conduc"
+        },
+        "metadata": {
+          "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+          "model_type": "sentence_transformer",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": null,
+          "pooling": null,
+          "sentence_transformer_encode": true,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 6,
+        "canonical_disease_id": "MONDO:0009935",
+        "representative_disease_id": "MONDO:0009935",
+        "label": "pulmonary hypertension, primary, 5",
+        "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+        "model_type": "sentence_transformer",
+        "score": 0.694092333316803,
+        "matched_aliases": [
+          "MONDO:0009935"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.694092333316803,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [],
+          "n_shared_phenotype_labels": 0,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Hyperhidrosis; Purpura; Meningitis; Dilated cardiomyopathy; Abnormal left ventricle morphology; Pneumonia; Hyperuricemia; obsolete Difficulty walking; Obstructive sleep apnea; Abnormal EKG; Tricuspid regurgitation; Type II diabetes mellitus; Premature ventricular co",
+          "disease_text_preview": "Disease: pulmonary hypertension, primary, 5 Phenotypes: Syncope; Muscle weakness; Right ventricular hypertrophy; Angina pectoris; Right ventricular failure; Pulmonary arterial hypertension; Exertional dyspnea; Easy fatigability; Fatigue"
+        },
+        "metadata": {
+          "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+          "model_type": "sentence_transformer",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": null,
+          "pooling": null,
+          "sentence_transformer_encode": true,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 7,
+        "canonical_disease_id": "ORPHA:26793",
+        "representative_disease_id": "ORPHA:26793",
+        "label": "Very long-chain acyl-CoA dehydrogenase deficiency",
+        "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+        "model_type": "sentence_transformer",
+        "score": 0.6928993463516235,
+        "matched_aliases": [
+          "ORPHA:26793"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.6928993463516235,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Dilated cardiomyopathy",
+            "Pneumonia"
+          ],
+          "n_shared_phenotype_labels": 2,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Hyperhidrosis; Purpura; Meningitis; Dilated cardiomyopathy; Abnormal left ventricle morphology; Pneumonia; Hyperuricemia; obsolete Difficulty walking; Obstructive sleep apnea; Abnormal EKG; Tricuspid regurgitation; Type II diabetes mellitus; Premature ventricular co",
+          "disease_text_preview": "Disease: Very long-chain acyl-CoA dehydrogenase deficiency Description: An inherited disorder of mitochondrial long-chain fatty acid oxidation with a variable presentation including: cardiomyopathy, hypoketotic hypoglycemia, liver disease, exercise intolerance and rhabdomyolysis. Phenotypes: Autosom"
+        },
+        "metadata": {
+          "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+          "model_type": "sentence_transformer",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": null,
+          "pooling": null,
+          "sentence_transformer_encode": true,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 8,
+        "canonical_disease_id": "ORPHA:542306",
+        "representative_disease_id": "ORPHA:542306",
+        "label": "Language delay and attention deficit-hyperactivity disorder/cognitive impairment with or without cardiac arrhythmia",
+        "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+        "model_type": "sentence_transformer",
+        "score": 0.6920487880706787,
+        "matched_aliases": [
+          "ORPHA:542306"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.6920487880706787,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [],
+          "n_shared_phenotype_labels": 0,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Hyperhidrosis; Purpura; Meningitis; Dilated cardiomyopathy; Abnormal left ventricle morphology; Pneumonia; Hyperuricemia; obsolete Difficulty walking; Obstructive sleep apnea; Abnormal EKG; Tricuspid regurgitation; Type II diabetes mellitus; Premature ventricular co",
+          "disease_text_preview": "Disease: Language delay and attention deficit-hyperactivity disorder/cognitive impairment with or without cardiac arrhythmia Phenotypes: Autosomal recessive inheritance; Microcephaly; Abnormal electroretinogram; Retinal degeneration; Keratoconus; Nystagmus; Delayed speech and language development; H"
+        },
+        "metadata": {
+          "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+          "model_type": "sentence_transformer",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": null,
+          "pooling": null,
+          "sentence_transformer_encode": true,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 9,
+        "canonical_disease_id": "ORPHA:99105",
+        "representative_disease_id": "ORPHA:99105",
+        "label": "Atrial septal defect, sinus venosus type",
+        "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+        "model_type": "sentence_transformer",
+        "score": 0.6909887194633484,
+        "matched_aliases": [
+          "ORPHA:99105"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.6909887194633484,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Tricuspid regurgitation"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Hyperhidrosis; Purpura; Meningitis; Dilated cardiomyopathy; Abnormal left ventricle morphology; Pneumonia; Hyperuricemia; obsolete Difficulty walking; Obstructive sleep apnea; Abnormal EKG; Tricuspid regurgitation; Type II diabetes mellitus; Premature ventricular co",
+          "disease_text_preview": "Disease: Atrial septal defect, sinus venosus type Phenotypes: Stroke; Congestive heart failure; Atrial arrhythmia; Thromboembolism; Palpitations; Pulmonary arterial hypertension; Dyspnea; Exertional dyspnea; Exercise intolerance; Atrial flutter; Supraventricular tachycardia; Atrial fibrillation; Sup"
+        },
+        "metadata": {
+          "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+          "model_type": "sentence_transformer",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": null,
+          "pooling": null,
+          "sentence_transformer_encode": true,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 10,
+        "canonical_disease_id": "OMIM:619424",
+        "representative_disease_id": "OMIM:619424",
+        "label": "Myopathy, myofibrillar, 12, infantile-onset, with cardiomyopathy",
+        "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+        "model_type": "sentence_transformer",
+        "score": 0.6892029643058777,
+        "matched_aliases": [
+          "OMIM:619424"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.6892029643058777,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Dilated cardiomyopathy"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Hyperhidrosis; Purpura; Meningitis; Dilated cardiomyopathy; Abnormal left ventricle morphology; Pneumonia; Hyperuricemia; obsolete Difficulty walking; Obstructive sleep apnea; Abnormal EKG; Tricuspid regurgitation; Type II diabetes mellitus; Premature ventricular co",
+          "disease_text_preview": "Disease: Myopathy, myofibrillar, 12, infantile-onset, with cardiomyopathy Phenotypes: Autosomal recessive inheritance; Ptosis; Generalized hypotonia; Tremor; Death in infancy; Hypertrophic cardiomyopathy; Dilated cardiomyopathy; Mitral regurgitation; Myocardial fibrosis; Restrictive cardiomyopathy; "
+        },
+        "metadata": {
+          "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+          "model_type": "sentence_transformer",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": null,
+          "pooling": null,
+          "sentence_transformer_encode": true,
+          "deduplicated_to_canonical": true
+        }
+      }
+    ],
+    "cambridgeltl/SapBERT-from-PubMedBERT-fulltext": [
+      {
+        "rank": 1,
+        "canonical_disease_id": "MONDO:0859370",
+        "representative_disease_id": "MONDO:0859370",
+        "label": "respiratory infections, recurrent, and failure to thrive with or without diarrhea",
+        "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.8370250463485718,
+        "matched_aliases": [
+          "MONDO:0859370"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.8370250463485718,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Tricuspid regurgitation",
+            "Cough"
+          ],
+          "n_shared_phenotype_labels": 2,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Hyperhidrosis; Purpura; Meningitis; Dilated cardiomyopathy; Abnormal left ventricle morphology; Pneumonia; Hyperuricemia; obsolete Difficulty walking; Obstructive sleep apnea; Abnormal EKG; Tricuspid regurgitation; Type II diabetes mellitus; Premature ventricular co",
+          "disease_text_preview": "Disease: respiratory infections, recurrent, and failure to thrive with or without diarrhea Phenotypes: Thin upper lip vermilion; Recurrent otitis media; Upslanted palpebral fissure; Hypotonia; Lethargy; Global developmental delay; Hemiparesis; Motor delay; Cholestasis; Failure to thrive; Mitral valv"
+        },
+        "metadata": {
+          "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 2,
+        "canonical_disease_id": "ORPHA:75249",
+        "representative_disease_id": "ORPHA:75249",
+        "label": "Cardiomyopathy, familial restrictive, 6",
+        "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.8321542143821716,
+        "matched_aliases": [
+          "ORPHA:75249"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.8321542143821716,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Dilated cardiomyopathy",
+            "Tricuspid regurgitation",
+            "Orthopnea"
+          ],
+          "n_shared_phenotype_labels": 3,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Hyperhidrosis; Purpura; Meningitis; Dilated cardiomyopathy; Abnormal left ventricle morphology; Pneumonia; Hyperuricemia; obsolete Difficulty walking; Obstructive sleep apnea; Abnormal EKG; Tricuspid regurgitation; Type II diabetes mellitus; Premature ventricular co",
+          "disease_text_preview": "Disease: Cardiomyopathy, familial restrictive, 6 Phenotypes: Autosomal dominant inheritance; Autosomal recessive inheritance; Syncope; Stroke; Death in infancy; Ascites; Congestive heart failure; Hypertrophic cardiomyopathy; Pulmonic stenosis; Dilated cardiomyopathy; Sudden cardiac death; Mitral reg"
+        },
+        "metadata": {
+          "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 3,
+        "canonical_disease_id": "OMIM:115197",
+        "representative_disease_id": "OMIM:115197",
+        "label": "Cardiomyopathy, familial hypertrophic, 4",
+        "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.829664409160614,
+        "matched_aliases": [
+          "OMIM:115197"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.829664409160614,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [],
+          "n_shared_phenotype_labels": 0,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Hyperhidrosis; Purpura; Meningitis; Dilated cardiomyopathy; Abnormal left ventricle morphology; Pneumonia; Hyperuricemia; obsolete Difficulty walking; Obstructive sleep apnea; Abnormal EKG; Tricuspid regurgitation; Type II diabetes mellitus; Premature ventricular co",
+          "disease_text_preview": "Disease: Cardiomyopathy, familial hypertrophic, 4 Phenotypes: Autosomal dominant inheritance; Autosomal recessive inheritance; Syncope; Stroke; Ascites; Congestive heart failure; Hypertrophic cardiomyopathy; Cardiomegaly; Sudden cardiac death; Ventricular fibrillation; Atrioventricular block; Cardia"
+        },
+        "metadata": {
+          "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 4,
+        "canonical_disease_id": "OMIM:619471",
+        "representative_disease_id": "OMIM:619471",
+        "label": "Bardet-Biedl syndrome 20",
+        "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.8288732171058655,
+        "matched_aliases": [
+          "OMIM:619471"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.8288732171058655,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [],
+          "n_shared_phenotype_labels": 0,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Hyperhidrosis; Purpura; Meningitis; Dilated cardiomyopathy; Abnormal left ventricle morphology; Pneumonia; Hyperuricemia; obsolete Difficulty walking; Obstructive sleep apnea; Abnormal EKG; Tricuspid regurgitation; Type II diabetes mellitus; Premature ventricular co",
+          "disease_text_preview": "Disease: Bardet-Biedl syndrome 20 Phenotypes: Autosomal recessive inheritance; Male hypogonadism; Micropenis; Proteinuria; Astigmatism; Rod-cone dystrophy; Hypermetropia; Nyctalopia; Delayed speech and language development; Papilledema; Constriction of peripheral visual field; Postaxial hand polydac"
+        },
+        "metadata": {
+          "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 5,
+        "canonical_disease_id": "ORPHA:2924",
+        "representative_disease_id": "MONDO:0000447",
+        "label": "autosomal dominant polycystic liver disease",
+        "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.8274776935577393,
+        "matched_aliases": [
+          "MONDO:0000447",
+          "ORPHA:2924"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.8274776935577393,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [],
+          "n_shared_phenotype_labels": 0,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Hyperhidrosis; Purpura; Meningitis; Dilated cardiomyopathy; Abnormal left ventricle morphology; Pneumonia; Hyperuricemia; obsolete Difficulty walking; Obstructive sleep apnea; Abnormal EKG; Tricuspid regurgitation; Type II diabetes mellitus; Premature ventricular co",
+          "disease_text_preview": "Disease: autosomal dominant polycystic liver disease Phenotypes: Jaundice; Abnormal heart valve morphology; Abnormality of the pancreas; Gastroesophageal reflux; Abdominal pain; Abnormality of the respiratory system; Respiratory insufficiency; Dyspnea; Gastrointestinal hemorrhage; Hepatomegaly; Vasc"
+        },
+        "metadata": {
+          "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 6,
+        "canonical_disease_id": "ORPHA:449291",
+        "representative_disease_id": "ORPHA:449291",
+        "label": "Symptomatic form of fragile X syndrome in female carriers",
+        "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.8270096778869629,
+        "matched_aliases": [
+          "ORPHA:449291"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.8270096778869629,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Hypertension"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Hyperhidrosis; Purpura; Meningitis; Dilated cardiomyopathy; Abnormal left ventricle morphology; Pneumonia; Hyperuricemia; obsolete Difficulty walking; Obstructive sleep apnea; Abnormal EKG; Tricuspid regurgitation; Type II diabetes mellitus; Premature ventricular co",
+          "disease_text_preview": "Disease: Symptomatic form of fragile X syndrome in female carriers Phenotypes: Long face; Mandibular prognathia; Macrotia; Recurrent otitis media; Strabismus; Depression; Aggressive behavior; Autistic behavior; Motor stereotypy; obsolete Impaired social interactions; Short attention span; Irritabili"
+        },
+        "metadata": {
+          "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 7,
+        "canonical_disease_id": "ORPHA:694956",
+        "representative_disease_id": "ORPHA:694956",
+        "label": "Macrocephaly, neurodevelopmental delay, lymphoid hyperplasia, and persistent fetal hemoglobin",
+        "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.8265469670295715,
+        "matched_aliases": [
+          "MONDO:0859231",
+          "ORPHA:694956"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.8265469670295715,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [],
+          "n_shared_phenotype_labels": 0,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Hyperhidrosis; Purpura; Meningitis; Dilated cardiomyopathy; Abnormal left ventricle morphology; Pneumonia; Hyperuricemia; obsolete Difficulty walking; Obstructive sleep apnea; Abnormal EKG; Tricuspid regurgitation; Type II diabetes mellitus; Premature ventricular co",
+          "disease_text_preview": "Disease: Macrocephaly, neurodevelopmental delay, lymphoid hyperplasia, and persistent fetal hemoglobin Phenotypes: Autosomal dominant inheritance; Macrocephaly; Astigmatism; Dental crowding; Autistic behavior; Delayed speech and language development; Intellectual disability; Seizure; Hypotonia; Glob"
+        },
+        "metadata": {
+          "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 8,
+        "canonical_disease_id": "ORPHA:528091",
+        "representative_disease_id": "ORPHA:528091",
+        "label": "Hydrops, lactic acidosis, and sideroblastic anemia",
+        "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.8244643211364746,
+        "matched_aliases": [
+          "ORPHA:528091"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.8244643211364746,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Hypertension",
+            "Second degree atrioventricular block"
+          ],
+          "n_shared_phenotype_labels": 2,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Hyperhidrosis; Purpura; Meningitis; Dilated cardiomyopathy; Abnormal left ventricle morphology; Pneumonia; Hyperuricemia; obsolete Difficulty walking; Obstructive sleep apnea; Abnormal EKG; Tricuspid regurgitation; Type II diabetes mellitus; Premature ventricular co",
+          "disease_text_preview": "Disease: Hydrops, lactic acidosis, and sideroblastic anemia Phenotypes: Autosomal recessive inheritance; Hematuria; Hypertension; Seizure; Decreased liver function; Intrauterine growth retardation; Small for gestational age; Ascites; Oligohydramnios; Ventricular septal defect; Patent ductus arterios"
+        },
+        "metadata": {
+          "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 9,
+        "canonical_disease_id": "OMIM:620244",
+        "representative_disease_id": "OMIM:620244",
+        "label": "Lymphatic malformation 13",
+        "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.8244459629058838,
+        "matched_aliases": [
+          "OMIM:620244"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.8244459629058838,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [],
+          "n_shared_phenotype_labels": 0,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Hyperhidrosis; Purpura; Meningitis; Dilated cardiomyopathy; Abnormal left ventricle morphology; Pneumonia; Hyperuricemia; obsolete Difficulty walking; Obstructive sleep apnea; Abnormal EKG; Tricuspid regurgitation; Type II diabetes mellitus; Premature ventricular co",
+          "disease_text_preview": "Disease: Lymphatic malformation 13 Phenotypes: Autosomal recessive inheritance; Hydrocele testis; Coarse facial features; Hypertelorism; Smooth philtrum; Long philtrum; Lymphedema; Hemangioma; Cavernous hemangioma; Single umbilical artery; Ascites; Atrial septal defect; Patent ductus arteriosus; Mit"
+        },
+        "metadata": {
+          "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 10,
+        "canonical_disease_id": "MONDO:0030543",
+        "representative_disease_id": "MONDO:0030543",
+        "label": "combined oxidative phosphorylation deficiency 54",
+        "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+        "model_type": "hf_encoder",
+        "score": 0.8201029300689697,
+        "matched_aliases": [
+          "MONDO:0030543"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.8201029300689697,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [],
+          "n_shared_phenotype_labels": 0,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Hyperhidrosis; Purpura; Meningitis; Dilated cardiomyopathy; Abnormal left ventricle morphology; Pneumonia; Hyperuricemia; obsolete Difficulty walking; Obstructive sleep apnea; Abnormal EKG; Tricuspid regurgitation; Type II diabetes mellitus; Premature ventricular co",
+          "disease_text_preview": "Disease: combined oxidative phosphorylation deficiency 54 Phenotypes: Thin vermilion border; Epicanthus; Microretrognathia; Hypertelorism; Sensorineural hearing impairment; Optic disc pallor; Psychosis; Autistic behavior; Primary amenorrhea; Hypergonadotropic hypogonadism; Intellectual disability; S"
+        },
+        "metadata": {
+          "model_name": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      }
+    ],
+    "dmis-lab/biobert-v1.1": [
+      {
+        "rank": 1,
+        "canonical_disease_id": "ORPHA:99104",
+        "representative_disease_id": "ORPHA:99104",
+        "label": "Atrial septal defect, coronary sinus type",
+        "model_name": "dmis-lab/biobert-v1.1",
+        "model_type": "hf_encoder",
+        "score": 0.9781104326248169,
+        "matched_aliases": [
+          "ORPHA:99104"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9781104326248169,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Pneumonia"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Hyperhidrosis; Purpura; Meningitis; Dilated cardiomyopathy; Abnormal left ventricle morphology; Pneumonia; Hyperuricemia; obsolete Difficulty walking; Obstructive sleep apnea; Abnormal EKG; Tricuspid regurgitation; Type II diabetes mellitus; Premature ventricular co",
+          "disease_text_preview": "Disease: Atrial septal defect, coronary sinus type Phenotypes: Cyanosis; Syncope; Stroke; Right ventricular failure; Palpitations; Pneumonia; Pulmonary arterial hypertension; Dyspnea; Transient ischemic attack; Recurrent bacterial infections; Exertional dyspnea; Exercise intolerance; Supraventricula"
+        },
+        "metadata": {
+          "model_name": "dmis-lab/biobert-v1.1",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 2,
+        "canonical_disease_id": "ORPHA:275766",
+        "representative_disease_id": "MONDO:0001999",
+        "label": "idiopathic pulmonary arterial hypertension",
+        "model_name": "dmis-lab/biobert-v1.1",
+        "model_type": "hf_encoder",
+        "score": 0.9764521718025208,
+        "matched_aliases": [
+          "MONDO:0001999"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9764521718025208,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Tricuspid regurgitation"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Hyperhidrosis; Purpura; Meningitis; Dilated cardiomyopathy; Abnormal left ventricle morphology; Pneumonia; Hyperuricemia; obsolete Difficulty walking; Obstructive sleep apnea; Abnormal EKG; Tricuspid regurgitation; Type II diabetes mellitus; Premature ventricular co",
+          "disease_text_preview": "Disease: idiopathic pulmonary arterial hypertension Phenotypes: Syncope; Congestive heart failure; Right ventricular hypertrophy; Ankle swelling; Palpitations; Pulmonary arterial hypertension; Dyspnea; Hemoptysis; Abnormality of connective tissue; Chronic hemolytic anemia; Elevated pulmonary artery "
+        },
+        "metadata": {
+          "model_name": "dmis-lab/biobert-v1.1",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 3,
+        "canonical_disease_id": "ORPHA:99103",
+        "representative_disease_id": "ORPHA:99103",
+        "label": "Atrial septal defect 3",
+        "model_name": "dmis-lab/biobert-v1.1",
+        "model_type": "hf_encoder",
+        "score": 0.9752524495124817,
+        "matched_aliases": [
+          "ORPHA:99103"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9752524495124817,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Pneumonia",
+            "Tricuspid regurgitation",
+            "Orthopnea"
+          ],
+          "n_shared_phenotype_labels": 3,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Hyperhidrosis; Purpura; Meningitis; Dilated cardiomyopathy; Abnormal left ventricle morphology; Pneumonia; Hyperuricemia; obsolete Difficulty walking; Obstructive sleep apnea; Abnormal EKG; Tricuspid regurgitation; Type II diabetes mellitus; Premature ventricular co",
+          "disease_text_preview": "Disease: Atrial septal defect 3 Phenotypes: Autosomal dominant inheritance; Cyanosis; Syncope; Stroke; Atrial septal defect; Abnormal mitral valve morphology; Congestive heart failure; Mitral regurgitation; Patent foramen ovale; Coarctation of aorta; Secundum atrial septal defect; Right ventricular "
+        },
+        "metadata": {
+          "model_name": "dmis-lab/biobert-v1.1",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 4,
+        "canonical_disease_id": "ORPHA:99095",
+        "representative_disease_id": "ORPHA:99095",
+        "label": "Congenital Gerbode defect",
+        "model_name": "dmis-lab/biobert-v1.1",
+        "model_type": "hf_encoder",
+        "score": 0.974860668182373,
+        "matched_aliases": [
+          "ORPHA:99095"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.974860668182373,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Tricuspid regurgitation"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Hyperhidrosis; Purpura; Meningitis; Dilated cardiomyopathy; Abnormal left ventricle morphology; Pneumonia; Hyperuricemia; obsolete Difficulty walking; Obstructive sleep apnea; Abnormal EKG; Tricuspid regurgitation; Type II diabetes mellitus; Premature ventricular co",
+          "disease_text_preview": "Disease: Congenital Gerbode defect Phenotypes: Muscle weakness; Ventricular septal defect; Congestive heart failure; Pulmonic stenosis; Right ventricular hypertrophy; Right ventricular failure; Ankle swelling; Fever; Palpitations; Pulmonary arterial hypertension; Dyspnea; Constrictive pericarditis; "
+        },
+        "metadata": {
+          "model_name": "dmis-lab/biobert-v1.1",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 5,
+        "canonical_disease_id": "MONDO:0958334",
+        "representative_disease_id": "MONDO:0958334",
+        "label": "pulmonary hypertension, primary, 6",
+        "model_name": "dmis-lab/biobert-v1.1",
+        "model_type": "hf_encoder",
+        "score": 0.9745151996612549,
+        "matched_aliases": [
+          "MONDO:0958334"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9745151996612549,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [],
+          "n_shared_phenotype_labels": 0,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Hyperhidrosis; Purpura; Meningitis; Dilated cardiomyopathy; Abnormal left ventricle morphology; Pneumonia; Hyperuricemia; obsolete Difficulty walking; Obstructive sleep apnea; Abnormal EKG; Tricuspid regurgitation; Type II diabetes mellitus; Premature ventricular co",
+          "disease_text_preview": "Disease: pulmonary hypertension, primary, 6 Phenotypes: Cyanosis; Failure to thrive; Premature birth; Hypertrophic cardiomyopathy; Right ventricular hypertrophy; Atrioventricular block; Right ventricular failure; Pulmonary arterial hypertension; Respiratory insufficiency; Dyspnea; Apnea; Atrial flut"
+        },
+        "metadata": {
+          "model_name": "dmis-lab/biobert-v1.1",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 6,
+        "canonical_disease_id": "ORPHA:422",
+        "representative_disease_id": "ORPHA:422",
+        "label": "Pulmonary hypertension, primary, 3",
+        "model_name": "dmis-lab/biobert-v1.1",
+        "model_type": "hf_encoder",
+        "score": 0.9734172224998474,
+        "matched_aliases": [
+          "ORPHA:422"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9734172224998474,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Hypertension",
+            "Tricuspid regurgitation",
+            "Cough"
+          ],
+          "n_shared_phenotype_labels": 3,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Hyperhidrosis; Purpura; Meningitis; Dilated cardiomyopathy; Abnormal left ventricle morphology; Pneumonia; Hyperuricemia; obsolete Difficulty walking; Obstructive sleep apnea; Abnormal EKG; Tricuspid regurgitation; Type II diabetes mellitus; Premature ventricular co",
+          "disease_text_preview": "Disease: Pulmonary hypertension, primary, 3 Phenotypes: Autosomal dominant inheritance; Autosomal recessive inheritance; Hypertension; Telangiectasia; Syncope; Muscle weakness; Right ventricular hypertrophy; Angina pectoris; Right ventricular failure; Thromboembolism; Palpitations; Abnormal thrombos"
+        },
+        "metadata": {
+          "model_name": "dmis-lab/biobert-v1.1",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 7,
+        "canonical_disease_id": "ORPHA:615",
+        "representative_disease_id": "ORPHA:615",
+        "label": "Myxoma, intracardiac",
+        "model_name": "dmis-lab/biobert-v1.1",
+        "model_type": "hf_encoder",
+        "score": 0.9732475280761719,
+        "matched_aliases": [
+          "ORPHA:615"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9732475280761719,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Tricuspid regurgitation"
+          ],
+          "n_shared_phenotype_labels": 1,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Hyperhidrosis; Purpura; Meningitis; Dilated cardiomyopathy; Abnormal left ventricle morphology; Pneumonia; Hyperuricemia; obsolete Difficulty walking; Obstructive sleep apnea; Abnormal EKG; Tricuspid regurgitation; Type II diabetes mellitus; Premature ventricular co",
+          "disease_text_preview": "Disease: Myxoma, intracardiac Phenotypes: Autosomal dominant inheritance; Jaundice; Cholestasis; Ascites; Congestive heart failure; Cardiomegaly; Thromboembolism; Fever; Vascular dilatation; Exertional dyspnea; Easy fatigability; Dilatation of the cerebral artery; Tricuspid regurgitation; Bacterial "
+        },
+        "metadata": {
+          "model_name": "dmis-lab/biobert-v1.1",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 8,
+        "canonical_disease_id": "ORPHA:732",
+        "representative_disease_id": "ORPHA:732",
+        "label": "Polymyositis",
+        "model_name": "dmis-lab/biobert-v1.1",
+        "model_type": "hf_encoder",
+        "score": 0.9724422693252563,
+        "matched_aliases": [
+          "ORPHA:732"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9724422693252563,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [
+            "Dilated cardiomyopathy",
+            "Cough"
+          ],
+          "n_shared_phenotype_labels": 2,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Hyperhidrosis; Purpura; Meningitis; Dilated cardiomyopathy; Abnormal left ventricle morphology; Pneumonia; Hyperuricemia; obsolete Difficulty walking; Obstructive sleep apnea; Abnormal EKG; Tricuspid regurgitation; Type II diabetes mellitus; Premature ventricular co",
+          "disease_text_preview": "Disease: Polymyositis Description: A rare idiopathic inflammatory myopathy characterized by symmetric proximal muscle weakness and elevated muscle enzymes. Phenotypes: Abnormal renal tubule morphology; Chondrocalcinosis; Skin rash; Hypotonia; Gait disturbance; Reduced tendon reflexes; Arthritis; Abn"
+        },
+        "metadata": {
+          "model_name": "dmis-lab/biobert-v1.1",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 9,
+        "canonical_disease_id": "MONDO:0859337",
+        "representative_disease_id": "MONDO:0859337",
+        "label": "combined oxidative phosphorylation deficiency 57",
+        "model_name": "dmis-lab/biobert-v1.1",
+        "model_type": "hf_encoder",
+        "score": 0.9724302291870117,
+        "matched_aliases": [
+          "MONDO:0859337"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.9724302291870117,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [],
+          "n_shared_phenotype_labels": 0,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Hyperhidrosis; Purpura; Meningitis; Dilated cardiomyopathy; Abnormal left ventricle morphology; Pneumonia; Hyperuricemia; obsolete Difficulty walking; Obstructive sleep apnea; Abnormal EKG; Tricuspid regurgitation; Type II diabetes mellitus; Premature ventricular co",
+          "disease_text_preview": "Disease: combined oxidative phosphorylation deficiency 57 Phenotypes: Sensorineural hearing impairment; Nystagmus; Hyperorality; Central diabetes insipidus; Diabetes insipidus; Seizure; Hypotonia; Global developmental delay; Dystonia; Myoclonus; Small for gestational age; Hypertrophic cardiomyopathy"
+        },
+        "metadata": {
+          "model_name": "dmis-lab/biobert-v1.1",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      },
+      {
+        "rank": 10,
+        "canonical_disease_id": "MONDO:0032606",
+        "representative_disease_id": "MONDO:0032606",
+        "label": "mitochondrial complex I deficiency, nuclear type 2",
+        "model_name": "dmis-lab/biobert-v1.1",
+        "model_type": "hf_encoder",
+        "score": 0.972266674041748,
+        "matched_aliases": [
+          "MONDO:0032606"
+        ],
+        "explanation": {
+          "method": "transformer_cosine",
+          "score": 0.972266674041748,
+          "score_note": "Cosine similarity between dense embeddings. Range [0, 1] after L2 normalization. Higher = more semantically similar.",
+          "shared_phenotype_labels": [],
+          "n_shared_phenotype_labels": 0,
+          "patient_text_preview": "Patient phenotypes: Hypertension; Hyperhidrosis; Purpura; Meningitis; Dilated cardiomyopathy; Abnormal left ventricle morphology; Pneumonia; Hyperuricemia; obsolete Difficulty walking; Obstructive sleep apnea; Abnormal EKG; Tricuspid regurgitation; Type II diabetes mellitus; Premature ventricular co",
+          "disease_text_preview": "Disease: mitochondrial complex I deficiency, nuclear type 2 Phenotypes: Nystagmus; Seizure; Hypotonia; Dysarthria; Global developmental delay; Gait disturbance; Dystonia; Hyperreflexia; Brisk reflexes; Weak cry; Hypertrophic cardiomyopathy; Poor suck; Respiratory insufficiency; Apnea; Ventriculomega"
+        },
+        "metadata": {
+          "model_name": "dmis-lab/biobert-v1.1",
+          "model_type": "hf_encoder",
+          "top_k": 10,
+          "embedding_normalization": "l2",
+          "max_length": 128,
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "deduplicated_to_canonical": true
+        }
+      }
+    ],
+    "mistralai/Mistral-7B-Instruct-v0.2": [
+      {
+        "rank": 1,
+        "disease_name": "Fabry disease",
+        "ordo_id": "ORPHA:324",
+        "matched_phenotypes": "hypertension, corneal opacity, angioedema, proteinuria",
+        "confidence": "high",
+        "validated_against_profiles": true,
+        "model": "mistralai/Mistral-7B-Instruct-v0.2",
+        "method": "llm_retrieval"
+      },
+      {
+        "rank": 2,
+        "disease_name": "Pick disease",
+        "ordo_id": "MONDO:0008243",
+        "matched_phenotypes": "neurological symptoms (ataxia, myoclonus), hepatosplenomegaly, pulmonary involvement",
+        "confidence": "medium",
+        "validated_against_profiles": true,
+        "model": "mistralai/Mistral-7B-Instruct-v0.2",
+        "method": "llm_retrieval"
+      },
+      {
+        "rank": 3,
+        "disease_name": "Takayasu arteritis",
+        "ordo_id": "ORPHA:3287",
+        "matched_phenotypes": "hypertension, meningitis, purpuric rashes, dilated cardiomyopathy",
+        "confidence": "medium",
+        "validated_against_profiles": true,
+        "model": "mistralai/Mistral-7B-Instruct-v0.2",
+        "method": "llm_retrieval"
+      },
+      {
+        "rank": 4,
+        "disease_name": "Disease",
+        "ordo_id": "ORPHA:377788",
+        "matched_phenotypes": "muscle weakness, enlarged heart, respiratory issues",
+        "confidence": "medium",
+        "validated_against_profiles": true,
+        "model": "mistralai/Mistral-7B-Instruct-v0.2",
+        "method": "llm_retrieval"
+      },
+      {
+        "rank": 5,
+        "disease_name": "Systemic lupus erythematosus, susceptibility to, 6",
+        "ordo_id": "OMIM:609939",
+        "matched_phenotypes": "arthralgias, skin manifestations (rash, photosensitivity), renal impairment",
+        "confidence": "medium",
+        "validated_against_profiles": true,
+        "model": "mistralai/Mistral-7B-Instruct-v0.2",
+        "method": "llm_retrieval"
+      },
+      {
+        "rank": 6,
+        "disease_name": "Neurodevelopmental disorder with epilepsy and hemochromatosis",
+        "ordo_id": "ORPHA:397922",
+        "matched_phenotypes": "hyperpigmentation, joint pain, abdominal distention, diabetes mellitus",
+        "confidence": "medium",
+        "validated_against_profiles": true,
+        "model": "mistralai/Mistral-7B-Instruct-v0.2",
+        "method": "llm_retrieval"
+      },
+      {
+        "rank": 7,
+        "disease_name": "Amyloidosis, Finnish type",
+        "ordo_id": "ORPHA:85448",
+        "matched_phenotypes": "neuropathies, kidney dysfunction, congestive heart failure",
+        "confidence": "low",
+        "validated_against_profiles": true,
+        "model": "mistralai/Mistral-7B-Instruct-v0.2",
+        "method": "llm_retrieval"
+      },
+      {
+        "rank": 8,
+        "disease_name": "Pseudo-Von willebrand disease",
+        "ordo_id": "ORPHA:52530",
+        "matched_phenotypes": "easy bruising, bleeding disorders, orthopedic problems",
+        "confidence": "low",
+        "validated_against_profiles": true,
+        "model": "mistralai/Mistral-7B-Instruct-v0.2",
+        "method": "llm_retrieval"
+      },
+      {
+        "rank": 9,
+        "disease_name": "Neurofibroma",
+        "ordo_id": "ORPHA:252183",
+        "matched_phenotypes": "cafe au lait spots, freckling of axillary and inguinal regions, scoliosis",
+        "confidence": "low",
+        "validated_against_profiles": true,
+        "model": "mistralai/Mistral-7B-Instruct-v0.2",
+        "method": "llm_retrieval"
+      }
+    ],
+    "tfidf_cosine": [
+      {
+        "rank": 1,
+        "disease_id": "MONDO:0859381",
+        "label": "cardiomyopathy, dilated, 100",
+        "method_name": "tfidf",
+        "score": 0.2836105631081196,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.2836105631081196,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0001626",
+            "HP:0001627",
+            "HP:0001637",
+            "HP:0001638",
+            "HP:0001644",
+            "HP:0001678",
+            "HP:0004308",
+            "HP:0005120"
+          ],
+          "n_shared_terms": 19,
+          "patient_coverage": 0.15702479338842976,
+          "disease_coverage": 0.6785714285714286,
+          "n_patient_terms": 121,
+          "n_disease_terms": 28,
+          "n_union_terms": 130,
+          "top_weighted_matches": [
+            {
+              "term": "HP:0011706",
+              "idf_weight": 6.862110163956778
+            },
+            {
+              "term": "HP:0006682",
+              "idf_weight": 6.168962983396833
+            },
+            {
+              "term": "HP:0001678",
+              "idf_weight": 5.206152235887785
+            },
+            {
+              "term": "HP:0005150",
+              "idf_weight": 5.1108420560834595
+            },
+            {
+              "term": "HP:0004308",
+              "idf_weight": 4.825228236695738
+            }
+          ]
+        }
+      },
+      {
+        "rank": 2,
+        "disease_id": "OMIM:620247",
+        "label": "Cardiomyopathy, dilated, 1OO",
+        "method_name": "tfidf",
+        "score": 0.26539545562665573,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.26539545562665573,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0001626",
+            "HP:0001627",
+            "HP:0001637",
+            "HP:0001638",
+            "HP:0001644",
+            "HP:0001678",
+            "HP:0004308",
+            "HP:0005120"
+          ],
+          "n_shared_terms": 19,
+          "patient_coverage": 0.15702479338842976,
+          "disease_coverage": 0.5135135135135135,
+          "n_patient_terms": 121,
+          "n_disease_terms": 37,
+          "n_union_terms": 139,
+          "top_weighted_matches": [
+            {
+              "term": "HP:0011706",
+              "idf_weight": 6.862110163956778
+            },
+            {
+              "term": "HP:0006682",
+              "idf_weight": 6.168962983396833
+            },
+            {
+              "term": "HP:0001678",
+              "idf_weight": 5.206152235887785
+            },
+            {
+              "term": "HP:0005150",
+              "idf_weight": 5.1108420560834595
+            },
+            {
+              "term": "HP:0004308",
+              "idf_weight": 4.825228236695738
+            }
+          ]
+        }
+      },
+      {
+        "rank": 3,
+        "disease_id": "ORPHA:97214",
+        "label": "Eisenmenger syndrome",
+        "method_name": "tfidf",
+        "score": 0.24667194774850607,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.24667194774850607,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0000951",
+            "HP:0001574",
+            "HP:0001626",
+            "HP:0001627",
+            "HP:0001713",
+            "HP:0001871",
+            "HP:0001892"
+          ],
+          "n_shared_terms": 59,
+          "patient_coverage": 0.48760330578512395,
+          "disease_coverage": 0.3155080213903743,
+          "n_patient_terms": 121,
+          "n_disease_terms": 187,
+          "n_union_terms": 249,
+          "top_weighted_matches": [
+            {
+              "term": "HP:0011604",
+              "idf_weight": 8.297194689246101
+            },
+            {
+              "term": "HP:0002149",
+              "idf_weight": 5.89929941644773
+            },
+            {
+              "term": "HP:0012418",
+              "idf_weight": 5.629966482664146
+            },
+            {
+              "term": "HP:0500165",
+              "idf_weight": 5.61617316053181
+            },
+            {
+              "term": "HP:0010932",
+              "idf_weight": 5.537184749213179
+            }
+          ]
+        }
+      },
+      {
+        "rank": 4,
+        "disease_id": "MONDO:0011565",
+        "label": "metabolic syndrome X",
+        "method_name": "tfidf",
+        "score": 0.2336021965659051,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.2336021965659051,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000822",
+            "HP:0001507",
+            "HP:0001513",
+            "HP:0001626",
+            "HP:0004323",
+            "HP:0004324",
+            "HP:0011025",
+            "HP:0012743"
+          ],
+          "n_shared_terms": 12,
+          "patient_coverage": 0.09917355371900827,
+          "disease_coverage": 1.0,
+          "n_patient_terms": 121,
+          "n_disease_terms": 12,
+          "n_union_terms": 121,
+          "top_weighted_matches": [
+            {
+              "term": "HP:0012743",
+              "idf_weight": 6.610795735675872
+            },
+            {
+              "term": "HP:0001513",
+              "idf_weight": 3.868761681758063
+            },
+            {
+              "term": "HP:0000822",
+              "idf_weight": 3.801839369265216
+            },
+            {
+              "term": "HP:0004324",
+              "idf_weight": 3.6432343390885773
+            },
+            {
+              "term": "HP:0032263",
+              "idf_weight": 3.6432343390885773
+            }
+          ]
+        }
+      },
+      {
+        "rank": 5,
+        "disease_id": "MONDO:0011566",
+        "label": "abdominal obesity-metabolic syndrome quantitative trait locus 2",
+        "method_name": "tfidf",
+        "score": 0.2336021965659051,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.2336021965659051,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000822",
+            "HP:0001507",
+            "HP:0001513",
+            "HP:0001626",
+            "HP:0004323",
+            "HP:0004324",
+            "HP:0011025",
+            "HP:0012743"
+          ],
+          "n_shared_terms": 12,
+          "patient_coverage": 0.09917355371900827,
+          "disease_coverage": 1.0,
+          "n_patient_terms": 121,
+          "n_disease_terms": 12,
+          "n_union_terms": 121,
+          "top_weighted_matches": [
+            {
+              "term": "HP:0012743",
+              "idf_weight": 6.610795735675872
+            },
+            {
+              "term": "HP:0001513",
+              "idf_weight": 3.868761681758063
+            },
+            {
+              "term": "HP:0000822",
+              "idf_weight": 3.801839369265216
+            },
+            {
+              "term": "HP:0004324",
+              "idf_weight": 3.6432343390885773
+            },
+            {
+              "term": "HP:0032263",
+              "idf_weight": 3.6432343390885773
+            }
+          ]
+        }
+      },
+      {
+        "rank": 6,
+        "disease_id": "MONDO:0958022",
+        "label": "lipodystrophy, familial partial, type 8",
+        "method_name": "tfidf",
+        "score": 0.2321778875871932,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.2321778875871932,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0000818",
+            "HP:0000819",
+            "HP:0000822",
+            "HP:0000951",
+            "HP:0001574",
+            "HP:0001626",
+            "HP:0001939"
+          ],
+          "n_shared_terms": 30,
+          "patient_coverage": 0.24793388429752067,
+          "disease_coverage": 0.5,
+          "n_patient_terms": 121,
+          "n_disease_terms": 60,
+          "n_union_terms": 151,
+          "top_weighted_matches": [
+            {
+              "term": "HP:0002149",
+              "idf_weight": 5.89929941644773
+            },
+            {
+              "term": "HP:0010932",
+              "idf_weight": 5.537184749213179
+            },
+            {
+              "term": "HP:0002870",
+              "idf_weight": 5.086351036075164
+            },
+            {
+              "term": "HP:0010535",
+              "idf_weight": 4.468553292757005
+            },
+            {
+              "term": "HP:5200283",
+              "idf_weight": 4.447047087536042
+            }
+          ]
+        }
+      },
+      {
+        "rank": 7,
+        "disease_id": "MONDO:0011546",
+        "label": "heterotaxy, visceral, 2, autosomal",
+        "method_name": "tfidf",
+        "score": 0.22899519212569255,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.22899519212569255,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0001507",
+            "HP:0001626",
+            "HP:0001627",
+            "HP:0002011",
+            "HP:0002597",
+            "HP:0002715",
+            "HP:0005120"
+          ],
+          "n_shared_terms": 23,
+          "patient_coverage": 0.19008264462809918,
+          "disease_coverage": 0.3026315789473684,
+          "n_patient_terms": 121,
+          "n_disease_terms": 76,
+          "n_union_terms": 174,
+          "top_weighted_matches": [
+            {
+              "term": "HP:0011537",
+              "idf_weight": 8.808020313012092
+            },
+            {
+              "term": "HP:0031854",
+              "idf_weight": 8.114873132452146
+            },
+            {
+              "term": "HP:0011535",
+              "idf_weight": 7.50873732888183
+            },
+            {
+              "term": "HP:0031853",
+              "idf_weight": 7.341683244218665
+            },
+            {
+              "term": "HP:0030853",
+              "idf_weight": 6.193060534975893
+            }
+          ]
+        }
+      },
+      {
+        "rank": 8,
+        "disease_id": "OMIM:605552",
+        "label": "Abdominal obesity-metabolic syndrome 1",
+        "method_name": "tfidf",
+        "score": 0.2269302326210991,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.2269302326210991,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000822",
+            "HP:0001507",
+            "HP:0001513",
+            "HP:0001626",
+            "HP:0004323",
+            "HP:0004324",
+            "HP:0011025",
+            "HP:0012743"
+          ],
+          "n_shared_terms": 12,
+          "patient_coverage": 0.09917355371900827,
+          "disease_coverage": 0.8,
+          "n_patient_terms": 121,
+          "n_disease_terms": 15,
+          "n_union_terms": 124,
+          "top_weighted_matches": [
+            {
+              "term": "HP:0012743",
+              "idf_weight": 6.610795735675872
+            },
+            {
+              "term": "HP:0001513",
+              "idf_weight": 3.868761681758063
+            },
+            {
+              "term": "HP:0000822",
+              "idf_weight": 3.801839369265216
+            },
+            {
+              "term": "HP:0004324",
+              "idf_weight": 3.6432343390885773
+            },
+            {
+              "term": "HP:0032263",
+              "idf_weight": 3.6432343390885773
+            }
+          ]
+        }
+      },
+      {
+        "rank": 9,
+        "disease_id": "OMIM:605572",
+        "label": "Abdominal obesity-metabolic syndrome quantitative trait locus 2",
+        "method_name": "tfidf",
+        "score": 0.2269302326210991,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.2269302326210991,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000822",
+            "HP:0001507",
+            "HP:0001513",
+            "HP:0001626",
+            "HP:0004323",
+            "HP:0004324",
+            "HP:0011025",
+            "HP:0012743"
+          ],
+          "n_shared_terms": 12,
+          "patient_coverage": 0.09917355371900827,
+          "disease_coverage": 0.8,
+          "n_patient_terms": 121,
+          "n_disease_terms": 15,
+          "n_union_terms": 124,
+          "top_weighted_matches": [
+            {
+              "term": "HP:0012743",
+              "idf_weight": 6.610795735675872
+            },
+            {
+              "term": "HP:0001513",
+              "idf_weight": 3.868761681758063
+            },
+            {
+              "term": "HP:0000822",
+              "idf_weight": 3.801839369265216
+            },
+            {
+              "term": "HP:0004324",
+              "idf_weight": 3.6432343390885773
+            },
+            {
+              "term": "HP:0032263",
+              "idf_weight": 3.6432343390885773
+            }
+          ]
+        }
+      },
+      {
+        "rank": 10,
+        "disease_id": "MONDO:0005749",
+        "label": "eosinophilic pneumonia",
+        "method_name": "tfidf",
+        "score": 0.2214554831210696,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.2214554831210696,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000975",
+            "HP:0001574",
+            "HP:0002086",
+            "HP:0002088",
+            "HP:0002090",
+            "HP:0002715",
+            "HP:0007550",
+            "HP:0010978"
+          ],
+          "n_shared_terms": 15,
+          "patient_coverage": 0.12396694214876033,
+          "disease_coverage": 1.0,
+          "n_patient_terms": 121,
+          "n_disease_terms": 15,
+          "n_union_terms": 121,
+          "top_weighted_matches": [
+            {
+              "term": "HP:0000975",
+              "idf_weight": 4.613327776955709
+            },
+            {
+              "term": "HP:0007550",
+              "idf_weight": 4.186320825072789
+            },
+            {
+              "term": "HP:0025276",
+              "idf_weight": 4.089521441716997
+            },
+            {
+              "term": "HP:0002090",
+              "idf_weight": 3.854543432755784
+            },
+            {
+              "term": "HP:0011947",
+              "idf_weight": 2.9415522560787943
+            }
+          ]
+        }
+      }
+    ],
+    "hpo2vec": [
+      {
+        "disease_id": "ORPHA:97214",
+        "label": "Eisenmenger syndrome",
+        "method_name": "hpo2vec_plus",
+        "score": 0.9190061490650528,
+        "explanation": {
+          "matching_terms": [
+            "HP:0000951",
+            "HP:0002094",
+            "HP:0002597",
+            "HP:0001627",
+            "HP:0030680",
+            "HP:0005120",
+            "HP:0030956",
+            "HP:0000001",
+            "HP:0011450",
+            "HP:0012638",
+            "HP:0010932",
+            "HP:0025015",
+            "HP:0001626",
+            "HP:0002157",
+            "HP:0004364",
+            "HP:0031546",
+            "HP:0012415",
+            "HP:0002795",
+            "HP:0011354",
+            "HP:0001713",
+            "HP:0001892",
+            "HP:0000707",
+            "HP:0011604",
+            "HP:0011675",
+            "HP:0002715",
+            "HP:0011025",
+            "HP:0012252",
+            "HP:0012722",
+            "HP:0031650",
+            "HP:0034376",
+            "HP:0010978",
+            "HP:0012639",
+            "HP:0030962",
+            "HP:0001574",
+            "HP:0001871",
+            "HP:0032158",
+            "HP:0011446",
+            "HP:0012647",
+            "HP:0033353",
+            "HP:0001939",
+            "HP:0032180",
+            "HP:0031651",
+            "HP:0032101",
+            "HP:0000118",
+            "HP:0002011",
+            "HP:0004372",
+            "HP:0002149",
+            "HP:0005180",
+            "HP:0011121",
+            "HP:0012418",
+            "HP:0004308",
+            "HP:0012337",
+            "HP:0500165",
+            "HP:0011603",
+            "HP:0012649",
+            "HP:0002793",
+            "HP:0031653",
+            "HP:0002086",
+            "HP:0430071"
+          ],
+          "n_matching": 59,
+          "top_ic_matches": [
+            {
+              "term": "HP:0011604",
+              "ic": 8.297194689246101
+            },
+            {
+              "term": "HP:0002149",
+              "ic": 5.89929941644773
+            },
+            {
+              "term": "HP:0012418",
+              "ic": 5.629966482664146
+            },
+            {
+              "term": "HP:0500165",
+              "ic": 5.61617316053181
+            },
+            {
+              "term": "HP:0010932",
+              "ic": 5.537184749213179
+            }
+          ]
+        },
+        "metadata": {
+          "n_patient_terms": 121,
+          "n_disease_terms": 187,
+          "used_propagated_terms": true
+        },
+        "canonical_disease_id": "ORPHA:97214",
+        "rank": 1
+      },
+      {
+        "disease_id": "ORPHA:714484",
+        "label": "Respiratory infections, recurrent, and failure to thrive with or without diarrhea",
+        "method_name": "hpo2vec_plus",
+        "score": 0.9111252897047319,
+        "explanation": {
+          "matching_terms": [
+            "HP:0002094",
+            "HP:0002597",
+            "HP:0001627",
+            "HP:0030680",
+            "HP:0005120",
+            "HP:0000001",
+            "HP:0002088",
+            "HP:0012638",
+            "HP:0100763",
+            "HP:0011947",
+            "HP:0001626",
+            "HP:0002795",
+            "HP:0000707",
+            "HP:0002715",
+            "HP:0011025",
+            "HP:0012252",
+            "HP:0012735",
+            "HP:0031650",
+            "HP:0034376",
+            "HP:0010978",
+            "HP:0001871",
+            "HP:0011446",
+            "HP:0012647",
+            "HP:0001939",
+            "HP:0100326",
+            "HP:0031651",
+            "HP:0032101",
+            "HP:0000118",
+            "HP:0005180",
+            "HP:0001507",
+            "HP:0012337",
+            "HP:0004323",
+            "HP:0012649",
+            "HP:0002793",
+            "HP:0031653",
+            "HP:0002086"
+          ],
+          "n_matching": 36,
+          "top_ic_matches": [
+            {
+              "term": "HP:0005180",
+              "ic": 4.964990179070897
+            },
+            {
+              "term": "HP:0031651",
+              "ic": 4.895997307583945
+            },
+            {
+              "term": "HP:0012735",
+              "ic": 4.486097602407915
+            },
+            {
+              "term": "HP:0100326",
+              "ic": 4.300830535384204
+            },
+            {
+              "term": "HP:0034376",
+              "ic": 4.271842998510952
+            }
+          ]
+        },
+        "metadata": {
+          "n_patient_terms": 121,
+          "n_disease_terms": 159,
+          "used_propagated_terms": true
+        },
+        "canonical_disease_id": "ORPHA:714484",
+        "rank": 2
+      },
+      {
+        "disease_id": "MONDO:0859370",
+        "label": "respiratory infections, recurrent, and failure to thrive with or without diarrhea",
+        "method_name": "hpo2vec_plus",
+        "score": 0.9090710326258882,
+        "explanation": {
+          "matching_terms": [
+            "HP:0002094",
+            "HP:0002597",
+            "HP:0001627",
+            "HP:0030680",
+            "HP:0005120",
+            "HP:0000001",
+            "HP:0002088",
+            "HP:0012638",
+            "HP:0100763",
+            "HP:0011947",
+            "HP:0001626",
+            "HP:0002795",
+            "HP:0000707",
+            "HP:0002715",
+            "HP:0011025",
+            "HP:0012252",
+            "HP:0012735",
+            "HP:0031650",
+            "HP:0034376",
+            "HP:0010978",
+            "HP:0001871",
+            "HP:0011446",
+            "HP:0012647",
+            "HP:0001939",
+            "HP:0100326",
+            "HP:0031651",
+            "HP:0032101",
+            "HP:0000118",
+            "HP:0005180",
+            "HP:0001507",
+            "HP:0012337",
+            "HP:0004323",
+            "HP:0012649",
+            "HP:0002793",
+            "HP:0031653",
+            "HP:0002086"
+          ],
+          "n_matching": 36,
+          "top_ic_matches": [
+            {
+              "term": "HP:0005180",
+              "ic": 4.964990179070897
+            },
+            {
+              "term": "HP:0031651",
+              "ic": 4.895997307583945
+            },
+            {
+              "term": "HP:0012735",
+              "ic": 4.486097602407915
+            },
+            {
+              "term": "HP:0100326",
+              "ic": 4.300830535384204
+            },
+            {
+              "term": "HP:0034376",
+              "ic": 4.271842998510952
+            }
+          ]
+        },
+        "metadata": {
+          "n_patient_terms": 121,
+          "n_disease_terms": 148,
+          "used_propagated_terms": true
+        },
+        "canonical_disease_id": "MONDO:0859370",
+        "rank": 3
+      },
+      {
+        "disease_id": "ORPHA:563",
+        "label": "Peripartum cardiomyopathy",
+        "method_name": "hpo2vec_plus",
+        "score": 0.906370679053091,
+        "explanation": {
+          "matching_terms": [
+            "HP:0011014",
+            "HP:0002094",
+            "HP:0002597",
+            "HP:0001627",
+            "HP:0001952",
+            "HP:0030680",
+            "HP:0005120",
+            "HP:0030956",
+            "HP:0000001",
+            "HP:0001637",
+            "HP:0025015",
+            "HP:0001626",
+            "HP:0031546",
+            "HP:0002795",
+            "HP:0001713",
+            "HP:0000822",
+            "HP:0030972",
+            "HP:0003115",
+            "HP:0000707",
+            "HP:0011675",
+            "HP:0002715",
+            "HP:0001513",
+            "HP:0000819",
+            "HP:0011025",
+            "HP:0012722",
+            "HP:0031650",
+            "HP:0034376",
+            "HP:0010978",
+            "HP:0012639",
+            "HP:0001871",
+            "HP:0001638",
+            "HP:0001939",
+            "HP:0100326",
+            "HP:0001711",
+            "HP:0000118",
+            "HP:0002011",
+            "HP:0004324",
+            "HP:0032263",
+            "HP:0000818",
+            "HP:0012764",
+            "HP:0001507",
+            "HP:0012337",
+            "HP:0004323",
+            "HP:0001644",
+            "HP:0002793",
+            "HP:0031653",
+            "HP:0002086"
+          ],
+          "n_matching": 47,
+          "top_ic_matches": [
+            {
+              "term": "HP:0012764",
+              "ic": 6.962193622513761
+            },
+            {
+              "term": "HP:0001711",
+              "ic": 4.670190638850252
+            },
+            {
+              "term": "HP:0012722",
+              "ic": 4.649137229652419
+            },
+            {
+              "term": "HP:0003115",
+              "ic": 4.598364904278996
+            },
+            {
+              "term": "HP:0001644",
+              "ic": 4.56429834971539
+            }
+          ]
+        },
+        "metadata": {
+          "n_patient_terms": 121,
+          "n_disease_terms": 127,
+          "used_propagated_terms": true
+        },
+        "canonical_disease_id": "ORPHA:563",
+        "rank": 4
+      },
+      {
+        "disease_id": "ORPHA:1329",
+        "label": "Complete atrioventricular septal defect",
+        "method_name": "hpo2vec_plus",
+        "score": 0.9060969446156073,
+        "explanation": {
+          "matching_terms": [
+            "HP:0000951",
+            "HP:0002094",
+            "HP:0002597",
+            "HP:0001627",
+            "HP:0000975",
+            "HP:0030680",
+            "HP:0005120",
+            "HP:0030956",
+            "HP:0000001",
+            "HP:0002088",
+            "HP:0012638",
+            "HP:0011947",
+            "HP:0001626",
+            "HP:0031546",
+            "HP:0002795",
+            "HP:0011354",
+            "HP:0001262",
+            "HP:0001713",
+            "HP:0003115",
+            "HP:0000707",
+            "HP:0011675",
+            "HP:0002715",
+            "HP:0002090",
+            "HP:0011025",
+            "HP:0012252",
+            "HP:0012722",
+            "HP:0031650",
+            "HP:0025276",
+            "HP:0010978",
+            "HP:0001574",
+            "HP:0011446",
+            "HP:0012647",
+            "HP:0001711",
+            "HP:0032101",
+            "HP:0000118",
+            "HP:0004372",
+            "HP:0001678",
+            "HP:0011121",
+            "HP:0001507",
+            "HP:0004323",
+            "HP:0002360",
+            "HP:0012649",
+            "HP:0002793",
+            "HP:0005150",
+            "HP:0031653",
+            "HP:0007550",
+            "HP:0002086"
+          ],
+          "n_matching": 47,
+          "top_ic_matches": [
+            {
+              "term": "HP:0001262",
+              "ic": 5.52460596700632
+            },
+            {
+              "term": "HP:0001678",
+              "ic": 5.206152235887784
+            },
+            {
+              "term": "HP:0005150",
+              "ic": 5.1108420560834595
+            },
+            {
+              "term": "HP:0001711",
+              "ic": 4.670190638850252
+            },
+            {
+              "term": "HP:0012722",
+              "ic": 4.649137229652419
+            }
+          ]
+        },
+        "metadata": {
+          "n_patient_terms": 121,
+          "n_disease_terms": 118,
+          "used_propagated_terms": true
+        },
+        "canonical_disease_id": "ORPHA:1329",
+        "rank": 5
+      },
+      {
+        "disease_id": "ORPHA:65283",
+        "label": "Timothy syndrome",
+        "method_name": "hpo2vec_plus",
+        "score": 0.9041807544691564,
+        "explanation": {
+          "matching_terms": [
+            "HP:0011014",
+            "HP:0002597",
+            "HP:0001627",
+            "HP:0000708",
+            "HP:0030680",
+            "HP:0030956",
+            "HP:0000001",
+            "HP:0002088",
+            "HP:0012638",
+            "HP:0011947",
+            "HP:0025015",
+            "HP:0001626",
+            "HP:0031546",
+            "HP:0002795",
+            "HP:0001713",
+            "HP:0003115",
+            "HP:0000707",
+            "HP:0011675",
+            "HP:0002715",
+            "HP:0002090",
+            "HP:0011025",
+            "HP:0012252",
+            "HP:0012722",
+            "HP:0010978",
+            "HP:0030962",
+            "HP:0011446",
+            "HP:0012647",
+            "HP:0033353",
+            "HP:0001939",
+            "HP:0032180",
+            "HP:0032101",
+            "HP:0000118",
+            "HP:0000818",
+            "HP:0004372",
+            "HP:0001678",
+            "HP:0004308",
+            "HP:0012337",
+            "HP:0011603",
+            "HP:0012649",
+            "HP:0005150",
+            "HP:0002086"
+          ],
+          "n_matching": 41,
+          "top_ic_matches": [
+            {
+              "term": "HP:0001678",
+              "ic": 5.206152235887784
+            },
+            {
+              "term": "HP:0005150",
+              "ic": 5.1108420560834595
+            },
+            {
+              "term": "HP:0004308",
+              "ic": 4.825228236695738
+            },
+            {
+              "term": "HP:0012722",
+              "ic": 4.649137229652419
+            },
+            {
+              "term": "HP:0003115",
+              "ic": 4.598364904278996
+            }
+          ]
+        },
+        "metadata": {
+          "n_patient_terms": 121,
+          "n_disease_terms": 135,
+          "used_propagated_terms": true
+        },
+        "canonical_disease_id": "ORPHA:65283",
+        "rank": 6
+      },
+      {
+        "disease_id": "ORPHA:980",
+        "label": "Absence of the pulmonary artery",
+        "method_name": "hpo2vec_plus",
+        "score": 0.9012042364747893,
+        "explanation": {
+          "matching_terms": [
+            "HP:0000951",
+            "HP:0002094",
+            "HP:0002597",
+            "HP:0001627",
+            "HP:0030680",
+            "HP:0005120",
+            "HP:0030956",
+            "HP:0000001",
+            "HP:0002088",
+            "HP:0011947",
+            "HP:0025015",
+            "HP:0001626",
+            "HP:0012415",
+            "HP:0002795",
+            "HP:0011354",
+            "HP:0003115",
+            "HP:0011675",
+            "HP:0002715",
+            "HP:0002090",
+            "HP:0011025",
+            "HP:0012252",
+            "HP:0012735",
+            "HP:0010978",
+            "HP:0030962",
+            "HP:0001574",
+            "HP:0012647",
+            "HP:0033353",
+            "HP:0001939",
+            "HP:0032101",
+            "HP:0000118",
+            "HP:0011121",
+            "HP:0012764",
+            "HP:0001507",
+            "HP:0012337",
+            "HP:0011603",
+            "HP:0012649",
+            "HP:0002793",
+            "HP:0002086"
+          ],
+          "n_matching": 38,
+          "top_ic_matches": [
+            {
+              "term": "HP:0012764",
+              "ic": 6.962193622513761
+            },
+            {
+              "term": "HP:0012415",
+              "ic": 5.417996231948061
+            },
+            {
+              "term": "HP:0003115",
+              "ic": 4.598364904278996
+            },
+            {
+              "term": "HP:0012735",
+              "ic": 4.486097602407915
+            },
+            {
+              "term": "HP:0002090",
+              "ic": 3.854543432755784
+            }
+          ]
+        },
+        "metadata": {
+          "n_patient_terms": 121,
+          "n_disease_terms": 112,
+          "used_propagated_terms": true
+        },
+        "canonical_disease_id": "ORPHA:980",
+        "rank": 7
+      },
+      {
+        "disease_id": "ORPHA:254898",
+        "label": "Coenzyme Q10 deficiency, primary, 2",
+        "method_name": "hpo2vec_plus",
+        "score": 0.8942057157819564,
+        "explanation": {
+          "matching_terms": [
+            "HP:0000951",
+            "HP:0002597",
+            "HP:0000708",
+            "HP:0000001",
+            "HP:0012638",
+            "HP:0001626",
+            "HP:0002795",
+            "HP:0011354",
+            "HP:0000707",
+            "HP:0001513",
+            "HP:0011276",
+            "HP:0011025",
+            "HP:0031650",
+            "HP:0034376",
+            "HP:0001574",
+            "HP:0040202",
+            "HP:0011446",
+            "HP:0001939",
+            "HP:0000118",
+            "HP:0004324",
+            "HP:0011121",
+            "HP:0001507",
+            "HP:0012337",
+            "HP:0100738",
+            "HP:0004323",
+            "HP:5200241",
+            "HP:0031653",
+            "HP:0002086"
+          ],
+          "n_matching": 28,
+          "top_ic_matches": [
+            {
+              "term": "HP:0100738",
+              "ic": 4.850386796331893
+            },
+            {
+              "term": "HP:0040202",
+              "ic": 4.51300505532784
+            },
+            {
+              "term": "HP:0034376",
+              "ic": 4.271842998510952
+            },
+            {
+              "term": "HP:0031650",
+              "ic": 4.147730827802921
+            },
+            {
+              "term": "HP:0001513",
+              "ic": 3.868761681758063
+            }
+          ]
+        },
+        "metadata": {
+          "n_patient_terms": 121,
+          "n_disease_terms": 84,
+          "used_propagated_terms": true
+        },
+        "canonical_disease_id": "ORPHA:254898",
+        "rank": 8
+      },
+      {
+        "disease_id": "ORPHA:70591",
+        "label": "Chronic thromboembolic pulmonary hypertension",
+        "method_name": "hpo2vec_plus",
+        "score": 0.8875820017434971,
+        "explanation": {
+          "matching_terms": [
+            "HP:0002094",
+            "HP:0002597",
+            "HP:0001627",
+            "HP:0030680",
+            "HP:0005120",
+            "HP:0030956",
+            "HP:0000001",
+            "HP:0012638",
+            "HP:0001626",
+            "HP:0031546",
+            "HP:0012415",
+            "HP:0002795",
+            "HP:0001713",
+            "HP:0003115",
+            "HP:0000707",
+            "HP:0011675",
+            "HP:0002715",
+            "HP:0001513",
+            "HP:0011025",
+            "HP:0012722",
+            "HP:0010978",
+            "HP:0001871",
+            "HP:0011446",
+            "HP:0012647",
+            "HP:0001939",
+            "HP:0032180",
+            "HP:0000118",
+            "HP:0004324",
+            "HP:0004372",
+            "HP:0010535",
+            "HP:0001507",
+            "HP:0012337",
+            "HP:0004323",
+            "HP:0002360",
+            "HP:0012649",
+            "HP:5200283",
+            "HP:0002793",
+            "HP:0002086",
+            "HP:0430071"
+          ],
+          "n_matching": 39,
+          "top_ic_matches": [
+            {
+              "term": "HP:0012415",
+              "ic": 5.417996231948061
+            },
+            {
+              "term": "HP:0012722",
+              "ic": 4.649137229652419
+            },
+            {
+              "term": "HP:0003115",
+              "ic": 4.598364904278996
+            },
+            {
+              "term": "HP:0031546",
+              "ic": 4.559525070962732
+            },
+            {
+              "term": "HP:0010535",
+              "ic": 4.468553292757005
+            }
+          ]
+        },
+        "metadata": {
+          "n_patient_terms": 121,
+          "n_disease_terms": 129,
+          "used_propagated_terms": true
+        },
+        "canonical_disease_id": "ORPHA:70591",
+        "rank": 9
+      },
+      {
+        "disease_id": "ORPHA:1464",
+        "label": "ORPHA:1464",
+        "method_name": "hpo2vec_plus",
+        "score": 0.8856440419439962,
+        "explanation": {
+          "matching_terms": [
+            "HP:0000951",
+            "HP:0002094",
+            "HP:0002597",
+            "HP:0001627",
+            "HP:0030680",
+            "HP:0030956",
+            "HP:0000001",
+            "HP:0001626",
+            "HP:0012415",
+            "HP:0002795",
+            "HP:0011354",
+            "HP:0011675",
+            "HP:0011025",
+            "HP:0001574",
+            "HP:0000118",
+            "HP:0011121",
+            "HP:0012418",
+            "HP:0001507",
+            "HP:0500165",
+            "HP:0004323",
+            "HP:0002793",
+            "HP:0031653",
+            "HP:0002086"
+          ],
+          "n_matching": 23,
+          "top_ic_matches": [
+            {
+              "term": "HP:0012418",
+              "ic": 5.629966482664146
+            },
+            {
+              "term": "HP:0500165",
+              "ic": 5.61617316053181
+            },
+            {
+              "term": "HP:0012415",
+              "ic": 5.417996231948061
+            },
+            {
+              "term": "HP:0002094",
+              "ic": 3.4850103338736833
+            },
+            {
+              "term": "HP:0031653",
+              "ic": 3.4785273289956047
+            }
+          ]
+        },
+        "metadata": {
+          "n_patient_terms": 121,
+          "n_disease_terms": 54,
+          "used_propagated_terms": true
+        },
+        "canonical_disease_id": "ORPHA:1464",
+        "rank": 10
+      }
+    ],
+    "set_cosine": [
+      {
+        "rank": 1,
+        "disease_id": "ORPHA:99103",
+        "label": "Atrial septal defect 3",
+        "method_name": "set_cosine",
+        "score": 0.40334386791641536,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.40334386791641536,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0000951",
+            "HP:0001574",
+            "HP:0001626",
+            "HP:0001627",
+            "HP:0001678",
+            "HP:0001713",
+            "HP:0001939"
+          ],
+          "n_shared_terms": 50,
+          "patient_coverage": 0.4132231404958678,
+          "disease_coverage": 0.3937007874015748,
+          "n_patient_terms": 121,
+          "n_disease_terms": 127,
+          "n_union_terms": 198
+        }
+      },
+      {
+        "rank": 2,
+        "disease_id": "ORPHA:1329",
+        "label": "Complete atrioventricular septal defect",
+        "method_name": "set_cosine",
+        "score": 0.39333642764746546,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.39333642764746546,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0000951",
+            "HP:0000975",
+            "HP:0001262",
+            "HP:0001507",
+            "HP:0001574",
+            "HP:0001626",
+            "HP:0001627"
+          ],
+          "n_shared_terms": 47,
+          "patient_coverage": 0.3884297520661157,
+          "disease_coverage": 0.3983050847457627,
+          "n_patient_terms": 121,
+          "n_disease_terms": 118,
+          "n_union_terms": 192
+        }
+      },
+      {
+        "rank": 3,
+        "disease_id": "ORPHA:97214",
+        "label": "Eisenmenger syndrome",
+        "method_name": "set_cosine",
+        "score": 0.39222793657727917,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.39222793657727917,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0000951",
+            "HP:0001574",
+            "HP:0001626",
+            "HP:0001627",
+            "HP:0001713",
+            "HP:0001871",
+            "HP:0001892"
+          ],
+          "n_shared_terms": 59,
+          "patient_coverage": 0.48760330578512395,
+          "disease_coverage": 0.3155080213903743,
+          "n_patient_terms": 121,
+          "n_disease_terms": 187,
+          "n_union_terms": 249
+        }
+      },
+      {
+        "rank": 4,
+        "disease_id": "ORPHA:99106",
+        "label": "Atrial septal defect, ostium primum type",
+        "method_name": "set_cosine",
+        "score": 0.3827162266067037,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.3827162266067037,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0000951",
+            "HP:0001507",
+            "HP:0001574",
+            "HP:0001626",
+            "HP:0001627",
+            "HP:0001678",
+            "HP:0001711"
+          ],
+          "n_shared_terms": 48,
+          "patient_coverage": 0.39669421487603307,
+          "disease_coverage": 0.36923076923076925,
+          "n_patient_terms": 121,
+          "n_disease_terms": 130,
+          "n_union_terms": 203
+        }
+      },
+      {
+        "rank": 5,
+        "disease_id": "ORPHA:563",
+        "label": "Peripartum cardiomyopathy",
+        "method_name": "set_cosine",
+        "score": 0.37914323584143045,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.37914323584143045,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0000818",
+            "HP:0000819",
+            "HP:0000822",
+            "HP:0001507",
+            "HP:0001513",
+            "HP:0001626",
+            "HP:0001627"
+          ],
+          "n_shared_terms": 47,
+          "patient_coverage": 0.3884297520661157,
+          "disease_coverage": 0.3700787401574803,
+          "n_patient_terms": 121,
+          "n_disease_terms": 127,
+          "n_union_terms": 201
+        }
+      },
+      {
+        "rank": 6,
+        "disease_id": "ORPHA:83317",
+        "label": "Scrub typhus",
+        "method_name": "set_cosine",
+        "score": 0.3784472070043489,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.3784472070043489,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0000708",
+            "HP:0000951",
+            "HP:0000975",
+            "HP:0001287",
+            "HP:0001574",
+            "HP:0001626",
+            "HP:0001627"
+          ],
+          "n_shared_terms": 41,
+          "patient_coverage": 0.33884297520661155,
+          "disease_coverage": 0.422680412371134,
+          "n_patient_terms": 121,
+          "n_disease_terms": 97,
+          "n_union_terms": 177
+        }
+      },
+      {
+        "rank": 7,
+        "disease_id": "ORPHA:60041",
+        "label": "Heart block, congenital",
+        "method_name": "set_cosine",
+        "score": 0.37615244810839255,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.37615244810839255,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0000951",
+            "HP:0000975",
+            "HP:0001507",
+            "HP:0001574",
+            "HP:0001626",
+            "HP:0001627",
+            "HP:0001637"
+          ],
+          "n_shared_terms": 43,
+          "patient_coverage": 0.35537190082644626,
+          "disease_coverage": 0.39814814814814814,
+          "n_patient_terms": 121,
+          "n_disease_terms": 108,
+          "n_union_terms": 186
+        }
+      },
+      {
+        "rank": 8,
+        "disease_id": "MONDO:0002572",
+        "label": "aspiration pneumonitis",
+        "method_name": "set_cosine",
+        "score": 0.3713906763541038,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.3713906763541038,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0001626",
+            "HP:0002011",
+            "HP:0002086",
+            "HP:0002088",
+            "HP:0002090",
+            "HP:0002094",
+            "HP:0002597"
+          ],
+          "n_shared_terms": 22,
+          "patient_coverage": 0.18181818181818182,
+          "disease_coverage": 0.7586206896551724,
+          "n_patient_terms": 121,
+          "n_disease_terms": 29,
+          "n_union_terms": 128
+        }
+      },
+      {
+        "rank": 9,
+        "disease_id": "MONDO:0009763",
+        "label": "obesity-hypoventilation syndrome",
+        "method_name": "set_cosine",
+        "score": 0.36825578279605437,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.36825578279605437,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0000951",
+            "HP:0001262",
+            "HP:0001507",
+            "HP:0001513",
+            "HP:0001574",
+            "HP:0002086",
+            "HP:0002360"
+          ],
+          "n_shared_terms": 19,
+          "patient_coverage": 0.15702479338842976,
+          "disease_coverage": 0.8636363636363636,
+          "n_patient_terms": 121,
+          "n_disease_terms": 22,
+          "n_union_terms": 124
+        }
+      },
+      {
+        "rank": 10,
+        "disease_id": "MONDO:0014352",
+        "label": "abdominal obesity-metabolic syndrome 3",
+        "method_name": "set_cosine",
+        "score": 0.36740471675703457,
+        "explanation": {
+          "method": "cosine_similarity",
+          "score": 0.36740471675703457,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0000818",
+            "HP:0000819",
+            "HP:0000822",
+            "HP:0001507",
+            "HP:0001513",
+            "HP:0001626",
+            "HP:0001939"
+          ],
+          "n_shared_terms": 28,
+          "patient_coverage": 0.23140495867768596,
+          "disease_coverage": 0.5833333333333334,
+          "n_patient_terms": 121,
+          "n_disease_terms": 48,
+          "n_union_terms": 141
+        }
+      }
+    ],
+    "set_jaccard": [
+      {
+        "rank": 1,
+        "disease_id": "ORPHA:99103",
+        "label": "Atrial septal defect 3",
+        "method_name": "set_jaccard",
+        "score": 0.25252525252525254,
+        "explanation": {
+          "method": "jaccard",
+          "intersection_size": 50,
+          "union_size": 198,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0000951",
+            "HP:0001574",
+            "HP:0001626",
+            "HP:0001627",
+            "HP:0001678",
+            "HP:0001713",
+            "HP:0001939"
+          ],
+          "n_shared_terms": 50,
+          "patient_coverage": 0.4132231404958678,
+          "disease_coverage": 0.3937007874015748,
+          "n_patient_terms": 121,
+          "n_disease_terms": 127,
+          "n_union_terms": 198
+        }
+      },
+      {
+        "rank": 2,
+        "disease_id": "ORPHA:1329",
+        "label": "Complete atrioventricular septal defect",
+        "method_name": "set_jaccard",
+        "score": 0.24479166666666666,
+        "explanation": {
+          "method": "jaccard",
+          "intersection_size": 47,
+          "union_size": 192,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0000951",
+            "HP:0000975",
+            "HP:0001262",
+            "HP:0001507",
+            "HP:0001574",
+            "HP:0001626",
+            "HP:0001627"
+          ],
+          "n_shared_terms": 47,
+          "patient_coverage": 0.3884297520661157,
+          "disease_coverage": 0.3983050847457627,
+          "n_patient_terms": 121,
+          "n_disease_terms": 118,
+          "n_union_terms": 192
+        }
+      },
+      {
+        "rank": 3,
+        "disease_id": "ORPHA:97214",
+        "label": "Eisenmenger syndrome",
+        "method_name": "set_jaccard",
+        "score": 0.23694779116465864,
+        "explanation": {
+          "method": "jaccard",
+          "intersection_size": 59,
+          "union_size": 249,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0000951",
+            "HP:0001574",
+            "HP:0001626",
+            "HP:0001627",
+            "HP:0001713",
+            "HP:0001871",
+            "HP:0001892"
+          ],
+          "n_shared_terms": 59,
+          "patient_coverage": 0.48760330578512395,
+          "disease_coverage": 0.3155080213903743,
+          "n_patient_terms": 121,
+          "n_disease_terms": 187,
+          "n_union_terms": 249
+        }
+      },
+      {
+        "rank": 4,
+        "disease_id": "ORPHA:99106",
+        "label": "Atrial septal defect, ostium primum type",
+        "method_name": "set_jaccard",
+        "score": 0.23645320197044334,
+        "explanation": {
+          "method": "jaccard",
+          "intersection_size": 48,
+          "union_size": 203,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0000951",
+            "HP:0001507",
+            "HP:0001574",
+            "HP:0001626",
+            "HP:0001627",
+            "HP:0001678",
+            "HP:0001711"
+          ],
+          "n_shared_terms": 48,
+          "patient_coverage": 0.39669421487603307,
+          "disease_coverage": 0.36923076923076925,
+          "n_patient_terms": 121,
+          "n_disease_terms": 130,
+          "n_union_terms": 203
+        }
+      },
+      {
+        "rank": 5,
+        "disease_id": "ORPHA:563",
+        "label": "Peripartum cardiomyopathy",
+        "method_name": "set_jaccard",
+        "score": 0.23383084577114427,
+        "explanation": {
+          "method": "jaccard",
+          "intersection_size": 47,
+          "union_size": 201,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0000818",
+            "HP:0000819",
+            "HP:0000822",
+            "HP:0001507",
+            "HP:0001513",
+            "HP:0001626",
+            "HP:0001627"
+          ],
+          "n_shared_terms": 47,
+          "patient_coverage": 0.3884297520661157,
+          "disease_coverage": 0.3700787401574803,
+          "n_patient_terms": 121,
+          "n_disease_terms": 127,
+          "n_union_terms": 201
+        }
+      },
+      {
+        "rank": 6,
+        "disease_id": "ORPHA:83317",
+        "label": "Scrub typhus",
+        "method_name": "set_jaccard",
+        "score": 0.23163841807909605,
+        "explanation": {
+          "method": "jaccard",
+          "intersection_size": 41,
+          "union_size": 177,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0000708",
+            "HP:0000951",
+            "HP:0000975",
+            "HP:0001287",
+            "HP:0001574",
+            "HP:0001626",
+            "HP:0001627"
+          ],
+          "n_shared_terms": 41,
+          "patient_coverage": 0.33884297520661155,
+          "disease_coverage": 0.422680412371134,
+          "n_patient_terms": 121,
+          "n_disease_terms": 97,
+          "n_union_terms": 177
+        }
+      },
+      {
+        "rank": 7,
+        "disease_id": "ORPHA:60041",
+        "label": "Heart block, congenital",
+        "method_name": "set_jaccard",
+        "score": 0.23118279569892472,
+        "explanation": {
+          "method": "jaccard",
+          "intersection_size": 43,
+          "union_size": 186,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0000951",
+            "HP:0000975",
+            "HP:0001507",
+            "HP:0001574",
+            "HP:0001626",
+            "HP:0001627",
+            "HP:0001637"
+          ],
+          "n_shared_terms": 43,
+          "patient_coverage": 0.35537190082644626,
+          "disease_coverage": 0.39814814814814814,
+          "n_patient_terms": 121,
+          "n_disease_terms": 108,
+          "n_union_terms": 186
+        }
+      },
+      {
+        "rank": 8,
+        "disease_id": "ORPHA:1880",
+        "label": "Ebstein anomaly",
+        "method_name": "set_jaccard",
+        "score": 0.2215909090909091,
+        "explanation": {
+          "method": "jaccard",
+          "intersection_size": 39,
+          "union_size": 176,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0000951",
+            "HP:0001574",
+            "HP:0001626",
+            "HP:0001627",
+            "HP:0001871",
+            "HP:0001939",
+            "HP:0002011"
+          ],
+          "n_shared_terms": 39,
+          "patient_coverage": 0.32231404958677684,
+          "disease_coverage": 0.4148936170212766,
+          "n_patient_terms": 121,
+          "n_disease_terms": 94,
+          "n_union_terms": 176
+        }
+      },
+      {
+        "rank": 9,
+        "disease_id": "ORPHA:99104",
+        "label": "Atrial septal defect, coronary sinus type",
+        "method_name": "set_jaccard",
+        "score": 0.22033898305084745,
+        "explanation": {
+          "method": "jaccard",
+          "intersection_size": 39,
+          "union_size": 177,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0000951",
+            "HP:0001574",
+            "HP:0001626",
+            "HP:0001627",
+            "HP:0001713",
+            "HP:0002011",
+            "HP:0002086"
+          ],
+          "n_shared_terms": 39,
+          "patient_coverage": 0.32231404958677684,
+          "disease_coverage": 0.4105263157894737,
+          "n_patient_terms": 121,
+          "n_disease_terms": 95,
+          "n_union_terms": 177
+        }
+      },
+      {
+        "rank": 10,
+        "disease_id": "ORPHA:75249",
+        "label": "Cardiomyopathy, familial restrictive, 6",
+        "method_name": "set_jaccard",
+        "score": 0.22026431718061673,
+        "explanation": {
+          "method": "jaccard",
+          "intersection_size": 50,
+          "union_size": 227,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0001507",
+            "HP:0001626",
+            "HP:0001627",
+            "HP:0001637",
+            "HP:0001638",
+            "HP:0001644",
+            "HP:0001678"
+          ],
+          "n_shared_terms": 50,
+          "patient_coverage": 0.4132231404958678,
+          "disease_coverage": 0.32051282051282054,
+          "n_patient_terms": 121,
+          "n_disease_terms": 156,
+          "n_union_terms": 227
+        }
+      }
+    ],
+    "set_overlap": [
+      {
+        "rank": 1,
+        "disease_id": "OMIM:300082",
+        "label": "Cognitive function 1, social",
+        "method_name": "set_overlap",
+        "score": 1.0,
+        "explanation": {
+          "method": "overlap_coefficient",
+          "intersection_size": 3,
+          "min_size": 3,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707"
+          ],
+          "n_shared_terms": 3,
+          "patient_coverage": 0.024793388429752067,
+          "disease_coverage": 1.0,
+          "n_patient_terms": 121,
+          "n_disease_terms": 3,
+          "n_union_terms": 121
+        }
+      },
+      {
+        "rank": 2,
+        "disease_id": "OMIM:158280",
+        "label": "Motion sickness",
+        "method_name": "set_overlap",
+        "score": 1.0,
+        "explanation": {
+          "method": "overlap_coefficient",
+          "intersection_size": 3,
+          "min_size": 3,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707"
+          ],
+          "n_shared_terms": 3,
+          "patient_coverage": 0.024793388429752067,
+          "disease_coverage": 1.0,
+          "n_patient_terms": 121,
+          "n_disease_terms": 3,
+          "n_union_terms": 121
+        }
+      },
+      {
+        "rank": 3,
+        "disease_id": "OMIM:601941",
+        "label": "Diabetes mellitus, insulin-dependent, 6",
+        "method_name": "set_overlap",
+        "score": 1.0,
+        "explanation": {
+          "method": "overlap_coefficient",
+          "intersection_size": 8,
+          "min_size": 8,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000818",
+            "HP:0000819",
+            "HP:0001939",
+            "HP:0001952",
+            "HP:0011014",
+            "HP:0012337"
+          ],
+          "n_shared_terms": 8,
+          "patient_coverage": 0.06611570247933884,
+          "disease_coverage": 1.0,
+          "n_patient_terms": 121,
+          "n_disease_terms": 8,
+          "n_union_terms": 121
+        }
+      },
+      {
+        "rank": 4,
+        "disease_id": "OMIM:601942",
+        "label": "Diabetes mellitus, insulin-dependent, 10",
+        "method_name": "set_overlap",
+        "score": 1.0,
+        "explanation": {
+          "method": "overlap_coefficient",
+          "intersection_size": 8,
+          "min_size": 8,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000818",
+            "HP:0000819",
+            "HP:0001939",
+            "HP:0001952",
+            "HP:0011014",
+            "HP:0012337"
+          ],
+          "n_shared_terms": 8,
+          "patient_coverage": 0.06611570247933884,
+          "disease_coverage": 1.0,
+          "n_patient_terms": 121,
+          "n_disease_terms": 8,
+          "n_union_terms": 121
+        }
+      },
+      {
+        "rank": 5,
+        "disease_id": "MONDO:0010719",
+        "label": "radiation sensitivity of natural killer activity",
+        "method_name": "set_overlap",
+        "score": 1.0,
+        "explanation": {
+          "method": "overlap_coefficient",
+          "intersection_size": 3,
+          "min_size": 3,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0002715"
+          ],
+          "n_shared_terms": 3,
+          "patient_coverage": 0.024793388429752067,
+          "disease_coverage": 1.0,
+          "n_patient_terms": 121,
+          "n_disease_terms": 3,
+          "n_union_terms": 121
+        }
+      },
+      {
+        "rank": 6,
+        "disease_id": "MONDO:0008932",
+        "label": "premature centromere division",
+        "method_name": "set_overlap",
+        "score": 1.0,
+        "explanation": {
+          "method": "overlap_coefficient",
+          "intersection_size": 3,
+          "min_size": 3,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0001939"
+          ],
+          "n_shared_terms": 3,
+          "patient_coverage": 0.024793388429752067,
+          "disease_coverage": 1.0,
+          "n_patient_terms": 121,
+          "n_disease_terms": 3,
+          "n_union_terms": 121
+        }
+      },
+      {
+        "rank": 7,
+        "disease_id": "MONDO:0007685",
+        "label": "granulosis rubra nasi",
+        "method_name": "set_overlap",
+        "score": 1.0,
+        "explanation": {
+          "method": "overlap_coefficient",
+          "intersection_size": 6,
+          "min_size": 6,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000975",
+            "HP:0001574",
+            "HP:0007550",
+            "HP:0025276"
+          ],
+          "n_shared_terms": 6,
+          "patient_coverage": 0.049586776859504134,
+          "disease_coverage": 1.0,
+          "n_patient_terms": 121,
+          "n_disease_terms": 6,
+          "n_union_terms": 121
+        }
+      },
+      {
+        "rank": 8,
+        "disease_id": "MONDO:0007358",
+        "label": "comedones, familial Dyskeratotic",
+        "method_name": "set_overlap",
+        "score": 1.0,
+        "explanation": {
+          "method": "overlap_coefficient",
+          "intersection_size": 4,
+          "min_size": 4,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000951",
+            "HP:0001574"
+          ],
+          "n_shared_terms": 4,
+          "patient_coverage": 0.03305785123966942,
+          "disease_coverage": 1.0,
+          "n_patient_terms": 121,
+          "n_disease_terms": 4,
+          "n_union_terms": 121
+        }
+      },
+      {
+        "rank": 9,
+        "disease_id": "MONDO:0021913",
+        "label": "aquagenic pruritus",
+        "method_name": "set_overlap",
+        "score": 1.0,
+        "explanation": {
+          "method": "overlap_coefficient",
+          "intersection_size": 6,
+          "min_size": 6,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000951",
+            "HP:0000989",
+            "HP:0001574",
+            "HP:0011122"
+          ],
+          "n_shared_terms": 6,
+          "patient_coverage": 0.049586776859504134,
+          "disease_coverage": 1.0,
+          "n_patient_terms": 121,
+          "n_disease_terms": 6,
+          "n_union_terms": 121
+        }
+      },
+      {
+        "rank": 10,
+        "disease_id": "MONDO:0009753",
+        "label": "obsolete neurovisceral storage disease with Curvilinear bodies",
+        "method_name": "set_overlap",
+        "score": 1.0,
+        "explanation": {
+          "method": "overlap_coefficient",
+          "intersection_size": 4,
+          "min_size": 4,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0001939"
+          ],
+          "n_shared_terms": 4,
+          "patient_coverage": 0.03305785123966942,
+          "disease_coverage": 1.0,
+          "n_patient_terms": 121,
+          "n_disease_terms": 4,
+          "n_union_terms": 121
+        }
+      }
+    ],
+    "set_dice": [
+      {
+        "rank": 1,
+        "disease_id": "ORPHA:99103",
+        "label": "Atrial septal defect 3",
+        "method_name": "set_dice",
+        "score": 0.4032258064516129,
+        "explanation": {
+          "method": "dice",
+          "intersection_size": 50,
+          "size_patient": 121,
+          "size_disease": 127,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0000951",
+            "HP:0001574",
+            "HP:0001626",
+            "HP:0001627",
+            "HP:0001678",
+            "HP:0001713",
+            "HP:0001939"
+          ],
+          "n_shared_terms": 50,
+          "patient_coverage": 0.4132231404958678,
+          "disease_coverage": 0.3937007874015748,
+          "n_patient_terms": 121,
+          "n_disease_terms": 127,
+          "n_union_terms": 198
+        }
+      },
+      {
+        "rank": 2,
+        "disease_id": "ORPHA:1329",
+        "label": "Complete atrioventricular septal defect",
+        "method_name": "set_dice",
+        "score": 0.39330543933054396,
+        "explanation": {
+          "method": "dice",
+          "intersection_size": 47,
+          "size_patient": 121,
+          "size_disease": 118,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0000951",
+            "HP:0000975",
+            "HP:0001262",
+            "HP:0001507",
+            "HP:0001574",
+            "HP:0001626",
+            "HP:0001627"
+          ],
+          "n_shared_terms": 47,
+          "patient_coverage": 0.3884297520661157,
+          "disease_coverage": 0.3983050847457627,
+          "n_patient_terms": 121,
+          "n_disease_terms": 118,
+          "n_union_terms": 192
+        }
+      },
+      {
+        "rank": 3,
+        "disease_id": "ORPHA:97214",
+        "label": "Eisenmenger syndrome",
+        "method_name": "set_dice",
+        "score": 0.38311688311688313,
+        "explanation": {
+          "method": "dice",
+          "intersection_size": 59,
+          "size_patient": 121,
+          "size_disease": 187,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0000951",
+            "HP:0001574",
+            "HP:0001626",
+            "HP:0001627",
+            "HP:0001713",
+            "HP:0001871",
+            "HP:0001892"
+          ],
+          "n_shared_terms": 59,
+          "patient_coverage": 0.48760330578512395,
+          "disease_coverage": 0.3155080213903743,
+          "n_patient_terms": 121,
+          "n_disease_terms": 187,
+          "n_union_terms": 249
+        }
+      },
+      {
+        "rank": 4,
+        "disease_id": "ORPHA:99106",
+        "label": "Atrial septal defect, ostium primum type",
+        "method_name": "set_dice",
+        "score": 0.38247011952191234,
+        "explanation": {
+          "method": "dice",
+          "intersection_size": 48,
+          "size_patient": 121,
+          "size_disease": 130,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0000951",
+            "HP:0001507",
+            "HP:0001574",
+            "HP:0001626",
+            "HP:0001627",
+            "HP:0001678",
+            "HP:0001711"
+          ],
+          "n_shared_terms": 48,
+          "patient_coverage": 0.39669421487603307,
+          "disease_coverage": 0.36923076923076925,
+          "n_patient_terms": 121,
+          "n_disease_terms": 130,
+          "n_union_terms": 203
+        }
+      },
+      {
+        "rank": 5,
+        "disease_id": "ORPHA:563",
+        "label": "Peripartum cardiomyopathy",
+        "method_name": "set_dice",
+        "score": 0.3790322580645161,
+        "explanation": {
+          "method": "dice",
+          "intersection_size": 47,
+          "size_patient": 121,
+          "size_disease": 127,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0000818",
+            "HP:0000819",
+            "HP:0000822",
+            "HP:0001507",
+            "HP:0001513",
+            "HP:0001626",
+            "HP:0001627"
+          ],
+          "n_shared_terms": 47,
+          "patient_coverage": 0.3884297520661157,
+          "disease_coverage": 0.3700787401574803,
+          "n_patient_terms": 121,
+          "n_disease_terms": 127,
+          "n_union_terms": 201
+        }
+      },
+      {
+        "rank": 6,
+        "disease_id": "ORPHA:83317",
+        "label": "Scrub typhus",
+        "method_name": "set_dice",
+        "score": 0.3761467889908257,
+        "explanation": {
+          "method": "dice",
+          "intersection_size": 41,
+          "size_patient": 121,
+          "size_disease": 97,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0000708",
+            "HP:0000951",
+            "HP:0000975",
+            "HP:0001287",
+            "HP:0001574",
+            "HP:0001626",
+            "HP:0001627"
+          ],
+          "n_shared_terms": 41,
+          "patient_coverage": 0.33884297520661155,
+          "disease_coverage": 0.422680412371134,
+          "n_patient_terms": 121,
+          "n_disease_terms": 97,
+          "n_union_terms": 177
+        }
+      },
+      {
+        "rank": 7,
+        "disease_id": "ORPHA:60041",
+        "label": "Heart block, congenital",
+        "method_name": "set_dice",
+        "score": 0.37554585152838427,
+        "explanation": {
+          "method": "dice",
+          "intersection_size": 43,
+          "size_patient": 121,
+          "size_disease": 108,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0000951",
+            "HP:0000975",
+            "HP:0001507",
+            "HP:0001574",
+            "HP:0001626",
+            "HP:0001627",
+            "HP:0001637"
+          ],
+          "n_shared_terms": 43,
+          "patient_coverage": 0.35537190082644626,
+          "disease_coverage": 0.39814814814814814,
+          "n_patient_terms": 121,
+          "n_disease_terms": 108,
+          "n_union_terms": 186
+        }
+      },
+      {
+        "rank": 8,
+        "disease_id": "ORPHA:1880",
+        "label": "Ebstein anomaly",
+        "method_name": "set_dice",
+        "score": 0.3627906976744186,
+        "explanation": {
+          "method": "dice",
+          "intersection_size": 39,
+          "size_patient": 121,
+          "size_disease": 94,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0000951",
+            "HP:0001574",
+            "HP:0001626",
+            "HP:0001627",
+            "HP:0001871",
+            "HP:0001939",
+            "HP:0002011"
+          ],
+          "n_shared_terms": 39,
+          "patient_coverage": 0.32231404958677684,
+          "disease_coverage": 0.4148936170212766,
+          "n_patient_terms": 121,
+          "n_disease_terms": 94,
+          "n_union_terms": 176
+        }
+      },
+      {
+        "rank": 9,
+        "disease_id": "ORPHA:99104",
+        "label": "Atrial septal defect, coronary sinus type",
+        "method_name": "set_dice",
+        "score": 0.3611111111111111,
+        "explanation": {
+          "method": "dice",
+          "intersection_size": 39,
+          "size_patient": 121,
+          "size_disease": 95,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0000951",
+            "HP:0001574",
+            "HP:0001626",
+            "HP:0001627",
+            "HP:0001713",
+            "HP:0002011",
+            "HP:0002086"
+          ],
+          "n_shared_terms": 39,
+          "patient_coverage": 0.32231404958677684,
+          "disease_coverage": 0.4105263157894737,
+          "n_patient_terms": 121,
+          "n_disease_terms": 95,
+          "n_union_terms": 177
+        }
+      },
+      {
+        "rank": 10,
+        "disease_id": "ORPHA:75249",
+        "label": "Cardiomyopathy, familial restrictive, 6",
+        "method_name": "set_dice",
+        "score": 0.36101083032490977,
+        "explanation": {
+          "method": "dice",
+          "intersection_size": 50,
+          "size_patient": 121,
+          "size_disease": 156,
+          "top_shared_terms": [
+            "HP:0000001",
+            "HP:0000118",
+            "HP:0000707",
+            "HP:0001507",
+            "HP:0001626",
+            "HP:0001627",
+            "HP:0001637",
+            "HP:0001638",
+            "HP:0001644",
+            "HP:0001678"
+          ],
+          "n_shared_terms": 50,
+          "patient_coverage": 0.4132231404958678,
+          "disease_coverage": 0.32051282051282054,
+          "n_patient_terms": 121,
+          "n_disease_terms": 156,
+          "n_union_terms": 227
+        }
+      }
+    ],
+    "denoising_autoencoder": [
+      {
+        "disease_id": "MONDO:0014565",
+        "label": "cataract 43",
+        "score": 0.999998927116394,
+        "method_name": "denoising_autoencoder",
+        "rank": 1,
+        "explanation": "{'method': 'denoising_autoencoder', 'score': 0.999998927116394, 'top_shared_terms': [], 'n_shared_terms': 0, 'patient_coverage': 0.0, 'disease_coverage': 0.0, 'n_patient_terms': 27, 'n_disease_terms': 9, 'n_union_terms': 36}"
+      },
+      {
+        "disease_id": "MONDO:0010885",
+        "label": "angiokeratoma corporis diffusum with arteriovenous fistulas",
+        "score": 0.999998927116394,
+        "method_name": "denoising_autoencoder",
+        "rank": 2,
+        "explanation": "{'method': 'denoising_autoencoder', 'score': 0.999998927116394, 'top_shared_terms': ['HP:0000975'], 'n_shared_terms': 1, 'patient_coverage': 0.037037037037037035, 'disease_coverage': 0.043478260869565216, 'n_patient_terms': 27, 'n_disease_terms': 23, 'n_union_terms': 49}"
+      },
+      {
+        "disease_id": "OMIM:149500",
+        "label": "Kyrle disease",
+        "score": 0.9999988675117493,
+        "method_name": "denoising_autoencoder",
+        "rank": 3,
+        "explanation": "{'method': 'denoising_autoencoder', 'score': 0.9999988675117493, 'top_shared_terms': [], 'n_shared_terms': 0, 'patient_coverage': 0.0, 'disease_coverage': 0.0, 'n_patient_terms': 27, 'n_disease_terms': 14, 'n_union_terms': 41}"
+      },
+      {
+        "disease_id": "MONDO:0007869",
+        "label": "Kyrle disease",
+        "score": 0.9999988675117493,
+        "method_name": "denoising_autoencoder",
+        "rank": 4,
+        "explanation": "{'method': 'denoising_autoencoder', 'score': 0.9999988675117493, 'top_shared_terms': [], 'n_shared_terms': 0, 'patient_coverage': 0.0, 'disease_coverage': 0.0, 'n_patient_terms': 27, 'n_disease_terms': 11, 'n_union_terms': 38}"
+      },
+      {
+        "disease_id": "MONDO:0011547",
+        "label": "cataract 31 multiple types",
+        "score": 0.9999988079071045,
+        "method_name": "denoising_autoencoder",
+        "rank": 5,
+        "explanation": "{'method': 'denoising_autoencoder', 'score': 0.9999988079071045, 'top_shared_terms': [], 'n_shared_terms': 0, 'patient_coverage': 0.0, 'disease_coverage': 0.0, 'n_patient_terms': 27, 'n_disease_terms': 12, 'n_union_terms': 39}"
+      },
+      {
+        "disease_id": "MONDO:0013067",
+        "label": "cataract 34 multiple types",
+        "score": 0.9999988079071045,
+        "method_name": "denoising_autoencoder",
+        "rank": 6,
+        "explanation": "{'method': 'denoising_autoencoder', 'score': 0.9999988079071045, 'top_shared_terms': [], 'n_shared_terms': 0, 'patient_coverage': 0.0, 'disease_coverage': 0.0, 'n_patient_terms': 27, 'n_disease_terms': 16, 'n_union_terms': 43}"
+      },
+      {
+        "disease_id": "OMIM:600419",
+        "label": "Angiokeratoma corporis diffusum with arteriovenous fistulas",
+        "score": 0.9999988079071045,
+        "method_name": "denoising_autoencoder",
+        "rank": 7,
+        "explanation": "{'method': 'denoising_autoencoder', 'score': 0.9999988079071045, 'top_shared_terms': ['HP:0000975'], 'n_shared_terms': 1, 'patient_coverage': 0.037037037037037035, 'disease_coverage': 0.038461538461538464, 'n_patient_terms': 27, 'n_disease_terms': 26, 'n_union_terms': 52}"
+      },
+      {
+        "disease_id": "MONDO:0007664",
+        "label": "glaucoma 1, open angle, A",
+        "score": 0.9999988079071045,
+        "method_name": "denoising_autoencoder",
+        "rank": 8,
+        "explanation": "{'method': 'denoising_autoencoder', 'score': 0.9999988079071045, 'top_shared_terms': [], 'n_shared_terms': 0, 'patient_coverage': 0.0, 'disease_coverage': 0.0, 'n_patient_terms': 27, 'n_disease_terms': 15, 'n_union_terms': 42}"
+      },
+      {
+        "disease_id": "OMIM:260100",
+        "label": "Pa polymorphism of alpha-2-globulin",
+        "score": 0.9999987483024597,
+        "method_name": "denoising_autoencoder",
+        "rank": 9,
+        "explanation": "{'method': 'denoising_autoencoder', 'score': 0.9999987483024597, 'top_shared_terms': [], 'n_shared_terms': 0, 'patient_coverage': 0.0, 'disease_coverage': 0.0, 'n_patient_terms': 27, 'n_disease_terms': 16, 'n_union_terms': 43}"
+      },
+      {
+        "disease_id": "MONDO:0008096",
+        "label": "nevus flammeus of nape of neck",
+        "score": 0.9999987483024597,
+        "method_name": "denoising_autoencoder",
+        "rank": 10,
+        "explanation": "{'method': 'denoising_autoencoder', 'score': 0.9999987483024597, 'top_shared_terms': [], 'n_shared_terms': 0, 'patient_coverage': 0.0, 'disease_coverage': 0.0, 'n_patient_terms': 27, 'n_disease_terms': 10, 'n_union_terms': 37}"
+      }
+    ]
+  }
+}
