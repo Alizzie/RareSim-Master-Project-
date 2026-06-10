@@ -1,40 +1,50 @@
 """
-RareSim TF-IDF Batch Runner
+RareSim Set-Based Batch Runner
 
-Runs the TF-IDF similarity method on every test case and caches results.
+Runs set-based similarity methods on every test case and caches results.
 
 Methods:
-    tfidf
+    set_cosine
+    set_jaccard
+    set_dice
+    set_overlap
 
 Cache:
     results/evaluation/{test_set_name}/cache/case_NNNN.json
 
 Usage:
-    python evaluation/run_tfidf.py \\
-        --test-set test_data/test_cases/MME.json
+    python evaluation/run_set_based.py --test-set test_data/test_cases/MME.json
 """
 
 import argparse
-import sys
 import time
 from pathlib import Path
 
 from _batch_utils import (
-    SRC_DIR, CACHE_BASE_DIR,
-    TFIDF_METHODS,
-    load_test_cases, build_patient, serialize_results,
-    cache_path_for, methods_already_cached, save_cache,
-    print_header, print_case, print_case_ok, print_case_err, print_summary,
+    EVALUATION_DIR,
+    load_test_cases,
+    build_patient,
+    serialize_results,
+    cache_path_for,
+    methods_already_cached,
+    save_cache,
+    print_header,
+    print_case,
+    print_case_ok,
+    print_case_err,
+    print_summary,
     add_common_args,
 )
 
-if str(SRC_DIR) not in sys.path:
-    sys.path.insert(0, str(SRC_DIR))
+from raresim.shared.context import AppContext
+from raresim.shared.math import preprocess_ancestor_sets
+from raresim.shared.pipeline import PipelineConfig
+from raresim.core.schemas import PatientProfile
 
-from shared.context import AppContext
-from shared.math import preprocess_ancestor_sets
-from shared.pipeline import PipelineConfig
-from core.schemas import PatientProfile
+from raresim.similarity_methods.set_based.pipeline import run as run_set_based
+from raresim.similarity_methods.set_based.pipeline import (
+    ALL_METHODS as SET_BASED_METHODS,
+)
 
 
 def run(
@@ -43,16 +53,15 @@ def run(
     config: PipelineConfig | None = None,
     limit: int | None = None,
 ) -> Path:
-    """Run TF-IDF on every test case."""
-    from similarity_methods.tfidf.pipeline import run as run_tfidf
+    """Run set-based similarity methods on every test case."""
 
     if config is None:
         config = PipelineConfig()
 
-    cache_dir = CACHE_BASE_DIR / test_set_path.stem / "cache"
+    cache_dir = EVALUATION_DIR / test_set_path.stem / "cache"
     cache_dir.mkdir(parents=True, exist_ok=True)
 
-    print_header("tfidf", test_set_path, cache_dir, resume, limit)
+    print_header("set-based", test_set_path, cache_dir, resume, limit)
 
     cases = load_test_cases(test_set_path)
     if limit:
@@ -74,7 +83,7 @@ def run(
     for index, (hpo_terms, ground_truth) in enumerate(cases):
         cache_file = cache_path_for(cache_dir, index)
 
-        if resume and methods_already_cached(cache_file, TFIDF_METHODS):
+        if resume and methods_already_cached(cache_file, SET_BASED_METHODS):
             skipped += 1
             continue
 
@@ -83,13 +92,22 @@ def run(
 
         try:
             t0 = time.time()
-            results = run_tfidf(patient, TFIDF_METHODS, config, ctx)
+            results = run_set_based(patient, SET_BASED_METHODS, config, ctx)
             elapsed = time.time() - t0
             total_time += elapsed
 
+            method_elapsed = {
+                m: round(elapsed / len(SET_BASED_METHODS), 3) for m in SET_BASED_METHODS
+            }
+
             save_cache(
-                cache_file, index, hpo_terms, ground_truth,
-                serialize_results(results), {"tfidf": round(elapsed, 3)}, elapsed,
+                cache_file,
+                index,
+                hpo_terms,
+                ground_truth,
+                serialize_results(results),
+                method_elapsed,
+                elapsed,
             )
             processed += 1
             print_case_ok(elapsed, total_time, processed, total - index - 1)
@@ -97,7 +115,9 @@ def run(
         except Exception as e:
             failed += 1
             print_case_err(e)
-            (cache_dir / f"case_{index:04d}.error").write_text(f"{type(e).__name__}: {e}")
+            (cache_dir / f"case_{index:04d}.error").write_text(
+                f"{type(e).__name__}: {e}"
+            )
 
     print_summary(total, processed, skipped, failed, total_time, cache_dir)
     return cache_dir
@@ -105,7 +125,7 @@ def run(
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="RareSim TF-IDF batch runner",
+        description="RareSim set-based similarity batch runner",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=__doc__,
     )

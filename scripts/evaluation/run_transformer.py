@@ -16,25 +16,32 @@ Usage: (whichever gpu is free, change 5 to your gpu id)
 """
 
 import argparse
-import sys
 import time
 from pathlib import Path
 
-from _batch_utils import (
-    SRC_DIR, PROJECT_ROOT, CACHE_BASE_DIR,
+from scripts.evaluation._batch_utils import (
+    EVALUATION_DIR,
     load_test_cases,
-    cache_path_for, methods_already_cached, save_cache,
-    print_header, print_case, print_case_ok, print_case_err, print_summary,
+    cache_path_for,
+    methods_already_cached,
+    save_cache,
+    print_header,
+    print_case,
+    print_case_ok,
+    print_case_err,
+    print_summary,
     add_common_args,
 )
 
-if str(SRC_DIR) not in sys.path:
-    sys.path.insert(0, str(SRC_DIR))
-
-from shared.context import AppContext
-from shared.io import load_json
-from shared.paths import HPO_LABELS_PATH, ALIAS_TO_CANONICAL_PATH
-from core.schemas import PatientProfile
+from raresim.shared.context import AppContext
+from raresim.utils.io import load_json
+from raresim.utils.paths import HPO_LABELS_PATH, ALIAS_TO_CANONICAL_PATH
+from raresim.core.schemas import PatientProfile
+from raresim.similarity_methods.transformer.config import (
+    MODEL_LIST,
+    CANDIDATE_POOL_SIZE,
+)
+from raresim.similarity_methods.transformer.retriever import DiseaseRetriever
 
 
 def run(
@@ -44,10 +51,8 @@ def run(
     top_k: int = 10,
 ) -> Path:
     """Run all transformer models on every test case."""
-    from similarity_methods.transformer.config import MODEL_LIST, CANDIDATE_POOL_SIZE
-    from similarity_methods.transformer.retriever import DiseaseRetriever
 
-    cache_dir = CACHE_BASE_DIR / test_set_path.stem / "cache"
+    cache_dir = EVALUATION_DIR / test_set_path.stem / "cache"
     cache_dir.mkdir(parents=True, exist_ok=True)
 
     print_header("transformer", test_set_path, cache_dir, resume, limit)
@@ -111,8 +116,13 @@ def run(
             total_time += elapsed
 
             save_cache(
-                cache_file, index, hpo_terms, ground_truth,
-                all_results, method_elapsed, elapsed,
+                cache_file,
+                index,
+                hpo_terms,
+                ground_truth,
+                all_results,
+                method_elapsed,
+                elapsed,
             )
             processed += 1
             print_case_ok(elapsed, total_time, processed, total - index - 1)
@@ -120,7 +130,9 @@ def run(
         except Exception as e:
             failed += 1
             print_case_err(e)
-            (cache_dir / f"case_{index:04d}.error").write_text(f"{type(e).__name__}: {e}")
+            (cache_dir / f"case_{index:04d}.error").write_text(
+                f"{type(e).__name__}: {e}"
+            )
 
     print_summary(total, processed, skipped, failed, total_time, cache_dir)
     return cache_dir

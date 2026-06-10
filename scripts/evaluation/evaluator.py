@@ -35,21 +35,12 @@ Output (git-tracked, committed to results/):
 import argparse
 import json
 import math
-import sys
+
 from collections import defaultdict
 from pathlib import Path
-
-# ── Path setup ────────────────────────────────────────────────────────────────
-
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-SRC_DIR = PROJECT_ROOT / "src"
-if str(SRC_DIR) not in sys.path:
-    sys.path.insert(0, str(SRC_DIR))
-
-from shared.io import load_json
-from shared.paths import ALIAS_TO_CANONICAL_PATH, OUTPUTS_DIR
-
-EVALUATION_DIR = OUTPUTS_DIR / "evaluation"
+from raresim.utils.io import load_json
+from raresim.utils.paths import ALIAS_TO_CANONICAL_PATH
+from _batch_utils import EVALUATION_DIR
 
 # ── RRF configuration ─────────────────────────────────────────────────────────
 
@@ -165,23 +156,29 @@ def compute_metrics(ranks: list[int | None], top_k: int = 10) -> dict:
     n = len(ranks)
     if n == 0:
         return {
-            "recall_1": 0, "recall_3": 0, "recall_5": 0,
-            "recall_10": 0, "recall_20": 0,
-            "mrr": 0, "ndcg": 0, "found": 0, "median_rank": None,
+            "recall_1": 0,
+            "recall_3": 0,
+            "recall_5": 0,
+            "recall_10": 0,
+            "recall_20": 0,
+            "mrr": 0,
+            "ndcg": 0,
+            "found": 0,
+            "median_rank": None,
         }
 
     found_ranks = sorted(r for r in ranks if r is not None)
     median_rank = found_ranks[len(found_ranks) // 2] if found_ranks else None
 
     return {
-        "recall_1":    round(sum(1 for r in ranks if r == 1) / n, 4),
-        "recall_3":    round(sum(1 for r in ranks if r is not None and r <= 3) / n, 4),
-        "recall_5":    round(sum(1 for r in ranks if r is not None and r <= 5) / n, 4),
-        "recall_10":   round(sum(1 for r in ranks if r is not None and r <= 10) / n, 4),
-        "recall_20":   round(sum(1 for r in ranks if r is not None and r <= 20) / n, 4),
-        "mrr":         round(sum(1 / r for r in ranks if r is not None) / n, 4),
-        "ndcg":        round(sum(compute_ndcg(r, top_k) for r in ranks) / n, 4),
-        "found":       len(found_ranks),
+        "recall_1": round(sum(1 for r in ranks if r == 1) / n, 4),
+        "recall_3": round(sum(1 for r in ranks if r is not None and r <= 3) / n, 4),
+        "recall_5": round(sum(1 for r in ranks if r is not None and r <= 5) / n, 4),
+        "recall_10": round(sum(1 for r in ranks if r is not None and r <= 10) / n, 4),
+        "recall_20": round(sum(1 for r in ranks if r is not None and r <= 20) / n, 4),
+        "mrr": round(sum(1 / r for r in ranks if r is not None) / n, 4),
+        "ndcg": round(sum(compute_ndcg(r, top_k) for r in ranks) / n, 4),
+        "found": len(found_ranks),
         "median_rank": median_rank,
     }
 
@@ -267,7 +264,11 @@ def evaluate(
         base_methods.update(case.get("results", {}).keys())
     base_methods_sorted = sorted(base_methods)
 
-    all_methods = base_methods_sorted + [RRF_METHOD_NAME, RRF_WEIGHTED_NAME, RRF_TOP_NAME]
+    all_methods = base_methods_sorted + [
+        RRF_METHOD_NAME,
+        RRF_WEIGHTED_NAME,
+        RRF_TOP_NAME,
+    ]
     method_ranks: dict[str, list[int | None]] = {m: [] for m in all_methods}
 
     # ── Pass 1: per-method ranks ───────────────────────────────────────────────
@@ -277,7 +278,9 @@ def evaluate(
         results = case.get("results", {})
         case_ranks: dict[str, int | None] = {}
         for method in base_methods_sorted:
-            rank = find_rank(ground_truth, results.get(method, []), alias_map, reverse_map)
+            rank = find_rank(
+                ground_truth, results.get(method, []), alias_map, reverse_map
+            )
             method_ranks[method].append(rank)
             case_ranks[method] = rank
         rank_matrix_pass1.append((case, case_ranks))
@@ -288,7 +291,9 @@ def evaluate(
         method: sum(1 for r in method_ranks[method] if r is not None and r <= 10) / n
         for method in base_methods_sorted
     }
-    top_methods = [m for m in base_methods_sorted if method_recall10[m] >= RRF_MIN_RECALL10]
+    top_methods = [
+        m for m in base_methods_sorted if method_recall10[m] >= RRF_MIN_RECALL10
+    ]
     if not top_methods:
         top_methods = base_methods_sorted  # fallback: use all
 
@@ -299,20 +304,22 @@ def evaluate(
         results = case.get("results", {})
 
         for ensemble_name, methods, weights in [
-            (RRF_METHOD_NAME,   base_methods_sorted, None),
+            (RRF_METHOD_NAME, base_methods_sorted, None),
             (RRF_WEIGHTED_NAME, base_methods_sorted, method_recall10),
-            (RRF_TOP_NAME,      top_methods,          None),
+            (RRF_TOP_NAME, top_methods, None),
         ]:
             rrf_results = compute_rrf(results, methods, top_k, weights=weights)
             rank = find_rank(ground_truth, rrf_results, alias_map, reverse_map)
             method_ranks[ensemble_name].append(rank)
             case_ranks[ensemble_name] = rank
 
-        rank_matrix.append({
-            "case_index": case["case_index"],
-            "ground_truth": ground_truth,
-            "ranks": case_ranks,
-        })
+        rank_matrix.append(
+            {
+                "case_index": case["case_index"],
+                "ground_truth": ground_truth,
+                "ranks": case_ranks,
+            }
+        )
 
     method_metrics = {m: compute_metrics(method_ranks[m], top_k) for m in all_methods}
     avg_timing = aggregate_method_timing(cases)
@@ -369,12 +376,14 @@ def compute_agreement(results: dict) -> dict:
         if n_found == 1:
             unique_find_count += 1
             solo = found_methods[0]
-            unique_finds.append({
-                "case_id": case_id,
-                "gt": row["ground_truth"],
-                "method": solo,
-                "rank": ranks[solo],
-            })
+            unique_finds.append(
+                {
+                    "case_id": case_id,
+                    "gt": row["ground_truth"],
+                    "method": solo,
+                    "rank": ranks[solo],
+                }
+            )
 
     return {
         "consensus_count": consensus_count,
@@ -593,10 +602,18 @@ def write_summary_tsv(results: dict, cases: list[dict], path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f, delimiter="\t")
-        writer.writerow([
-            "method", "case_id", "n_hpo", "confirmed_diseases",
-            "rank", "matched_id", "status", "query_time_sec",
-        ])
+        writer.writerow(
+            [
+                "method",
+                "case_id",
+                "n_hpo",
+                "confirmed_diseases",
+                "rank",
+                "matched_id",
+                "status",
+                "query_time_sec",
+            ]
+        )
         for case in cases:
             idx = case["case_index"]
             case_id = f"case_{idx:04d}"
@@ -618,13 +635,22 @@ def write_summary_tsv(results: dict, cases: list[dict], path: Path) -> None:
                             )
                             break
                 query_time = case.get("method_elapsed_seconds", {}).get(method, "None")
-                writer.writerow([
-                    method, case_id, n_hpo, confirmed,
-                    rank if rank is not None else "None",
-                    matched_id,
-                    rank is not None,
-                    f"{query_time:.3f}" if isinstance(query_time, float) else query_time,
-                ])
+                writer.writerow(
+                    [
+                        method,
+                        case_id,
+                        n_hpo,
+                        confirmed,
+                        rank if rank is not None else "None",
+                        matched_id,
+                        rank is not None,
+                        (
+                            f"{query_time:.3f}"
+                            if isinstance(query_time, float)
+                            else query_time
+                        ),
+                    ]
+                )
 
 
 # ── CLI ────────────────────────────────────────────────────────────────────────
@@ -637,13 +663,10 @@ def parse_args() -> argparse.Namespace:
         epilog=__doc__,
     )
     parser.add_argument(
-        "--cache-dir",
+        "--datasets",
         type=Path,
         required=True,
-        help=(
-            "Cache directory produced by run_test_files.py "
-            "(e.g. results/evaluation/MME/cache)."
-        ),
+        help=("One dataset name "),
     )
     parser.add_argument(
         "--top-k",
@@ -656,10 +679,11 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
-    test_set_name = args.cache_dir.parent.name  # cache_dir = results/evaluation/MME/cache
+    test_set_name = args.datasets  # cache_dir = results/evaluation/MME/cache
+    cache_dir = EVALUATION_DIR / test_set_name / "cache"
 
-    print(f"\nLoading cached results from {args.cache_dir} ...")
-    cases = load_cache_dir(args.cache_dir)
+    print(f"\nLoading cached results from {cache_dir} ...")
+    cases = load_cache_dir(cache_dir)
     print(f"  Loaded {len(cases)} cases.")
 
     if not cases:

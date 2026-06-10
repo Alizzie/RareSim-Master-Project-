@@ -1,42 +1,52 @@
 """
-RareSim Semantic Batch Runner
+RareSim HPO2Vec Batch Runner
 
-Runs semantic similarity methods on every test case and caches results.
-CPU only — but slow due to pairwise IC calculations over 20k disease profiles.
+Runs the HPO2Vec pipeline on every test case and caches results.
+Loads the pre-trained Word2Vec model from outputs/hpo2vec/hpo2vec_model.
 
-Methods:
-    semantic_resnik_bma
-    semantic_lin_bma
-    semantic_jiang_conrath_bma
+CPU only — fast after the model is loaded.
 
 Cache:
     results/evaluation/{test_set_name}/cache/case_NNNN.json
 
 Usage:
-    python evaluation/run_semantic.py --test-set test_data/test_cases/MME.json
+    python evaluation/run_hpo2vec.py \\
+        --test-set test_data/test_cases/MME.json
+
+Prerequisites:
+    Train the model first if it does not exist:
+        python pipelines/hpo2vec_pipeline.py
 """
 
 import argparse
-import sys
 import time
 from pathlib import Path
 
 from _batch_utils import (
-    SRC_DIR, CACHE_BASE_DIR,
-    SEMANTIC_METHODS,
-    load_test_cases, build_patient, serialize_results,
-    cache_path_for, methods_already_cached, save_cache,
-    print_header, print_case, print_case_ok, print_case_err, print_summary,
+    load_test_cases,
+    build_patient,
+    cache_path_for,
+    methods_already_cached,
+    save_cache,
+    print_header,
+    print_case,
+    print_case_ok,
+    print_case_err,
+    print_summary,
     add_common_args,
+    EVALUATION_DIR,
 )
 
-if str(SRC_DIR) not in sys.path:
-    sys.path.insert(0, str(SRC_DIR))
+from raresim.shared.context import AppContext
+from raresim.shared.math import preprocess_ancestor_sets
+from raresim.utils.paths import MODELS_DIR
+from raresim.core.schemas import PatientProfile
+from raresim.shared.pipeline import PipelineConfig
+from raresim.similarity_methods.hpo2vec.pipeline import run as run_hpo2vec
+from raresim.similarity_methods.hpo2vec.pipeline import METHOD_NAME as HPO2VEC_METHODS
 
-from shared.context import AppContext
-from shared.math import preprocess_ancestor_sets
-from shared.pipeline import PipelineConfig
-from core.schemas import PatientProfile
+METHOD_NAME = "hpo2vec"
+MODEL_PATH = MODELS_DIR / "hpo2vec_model"
 
 
 def run(
@@ -45,16 +55,15 @@ def run(
     config: PipelineConfig | None = None,
     limit: int | None = None,
 ) -> Path:
-    """Run semantic similarity methods on every test case."""
-    from similarity_methods.semantic.pipeline import run as run_semantic
+    """Run HPO2Vec on every test case."""
 
     if config is None:
         config = PipelineConfig()
 
-    cache_dir = CACHE_BASE_DIR / test_set_path.stem / "cache"
+    cache_dir = EVALUATION_DIR / test_set_path.stem / "cache"
     cache_dir.mkdir(parents=True, exist_ok=True)
 
-    print_header("semantic", test_set_path, cache_dir, resume, limit)
+    print_header(METHOD_NAME, test_set_path, cache_dir, resume, limit)
 
     cases = load_test_cases(test_set_path)
     if limit:
@@ -64,10 +73,9 @@ def run(
 
     print("Loading shared context...")
     dummy = PatientProfile("batch_init", "", set(), set())
-    ctx = AppContext.load(dummy, config.use_canonical_profiles)
-    print(f"  Disease profiles : {ctx.app_metadata.n_disease_profiles}")
-    print(f"  HPO labels       : {ctx.app_metadata.n_hpo_labels}")
+    ctx = AppContext.load(dummy, use_canonical_profiles=True)
     ancestor_sets = preprocess_ancestor_sets(ctx.ancestors)
+    print(f"  Disease profiles : {ctx.app_metadata.n_disease_profiles}")
     print("  Ready.\n")
 
     skipped, processed, failed = 0, 0, 0
@@ -76,7 +84,7 @@ def run(
     for index, (hpo_terms, ground_truth) in enumerate(cases):
         cache_file = cache_path_for(cache_dir, index)
 
-        if resume and methods_already_cached(cache_file, SEMANTIC_METHODS):
+        if resume and methods_already_cached(cache_file, [METHOD_NAME]):
             skipped += 1
             continue
 
@@ -85,19 +93,18 @@ def run(
 
         try:
             t0 = time.time()
-            results = run_semantic(patient, SEMANTIC_METHODS, config, ctx)
-            elapsed = time.time() - t0
+            rankings = run_hpo2vec(patient, [HPO2VEC_METHODS], config, ctx)
+            elapsed = round(time.time() - t0, 3)
             total_time += elapsed
 
-            # Split timing evenly across methods in the group
-            method_elapsed = {
-                m: round(elapsed / len(SEMANTIC_METHODS), 3)
-                for m in SEMANTIC_METHODS
-            }
-
             save_cache(
-                cache_file, index, hpo_terms, ground_truth,
-                serialize_results(results), method_elapsed, elapsed,
+                cache_file,
+                index,
+                hpo_terms,
+                ground_truth,
+                {METHOD_NAME: rankings},
+                {METHOD_NAME: elapsed},
+                elapsed,
             )
             processed += 1
             print_case_ok(elapsed, total_time, processed, total - index - 1)
@@ -105,7 +112,9 @@ def run(
         except Exception as e:
             failed += 1
             print_case_err(e)
-            (cache_dir / f"case_{index:04d}.error").write_text(f"{type(e).__name__}: {e}")
+            (cache_dir / f"case_{index:04d}.error").write_text(
+                f"{type(e).__name__}: {e}"
+            )
 
     print_summary(total, processed, skipped, failed, total_time, cache_dir)
     return cache_dir
@@ -113,28 +122,24 @@ def run(
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="RareSim semantic similarity batch runner",
+        description="RareSim HPO2Vec batch runner",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=__doc__,
     )
     add_common_args(parser)
-    parser.add_argument(
-        "--ic-threshold",
-        type=float,
-        default=1.5,
-        help="IC threshold for semantic methods (default: 1.5)",
-    )
     return parser.parse_args()
 
 
 def main() -> None:
     args = parse_args()
+
     config = PipelineConfig(
         top_k=args.top_k,
         ic_threshold=args.ic_threshold,
         use_propagated_terms=True,
         use_canonical_profiles=True,
     )
+
     run(
         test_set_path=args.test_set,
         resume=not args.no_resume,

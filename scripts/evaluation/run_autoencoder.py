@@ -9,7 +9,7 @@ Model cache:
     outputs/autoencoder/vocab.json
 
 Results cache:
-    results/evaluation/{test_set_name}/cache/case_NNNN.json
+    outputs/evaluation/{test_set_name}/cache/case_NNNN.json
 
 Usage:
     python evaluation/run_autoencoder.py \\
@@ -17,24 +17,35 @@ Usage:
 """
 
 import argparse
-import sys
 import time
 from pathlib import Path
 
 from _batch_utils import (
-    SRC_DIR, CACHE_BASE_DIR,
     load_test_cases,
-    cache_path_for, methods_already_cached, save_cache,
-    print_header, print_case, print_case_ok, print_case_err, print_summary,
+    cache_path_for,
+    methods_already_cached,
+    save_cache,
+    print_header,
+    print_case,
+    print_case_ok,
+    print_case_err,
+    print_summary,
     add_common_args,
+    EVALUATION_DIR,
 )
 
-if str(SRC_DIR) not in sys.path:
-    sys.path.insert(0, str(SRC_DIR))
-
-from shared.context import AppContext
-from shared.pipeline import PipelineConfig
-from core.schemas import PatientProfile
+from raresim.shared.context import AppContext
+from raresim.shared.pipeline import PipelineConfig
+from raresim.core.schemas import PatientProfile
+from raresim.similarity_methods.autoencoder.pipeline import (
+    load_or_train,
+    METHOD_NAME,
+    AUTOENCODER_DIR,
+)
+from raresim.similarity_methods.autoencoder.methods import terms_to_vector
+from raresim.shared.result import SimilarityResult
+from raresim.shared.explaination import expand, SET_BASED_EXPLANATION
+from raresim.shared.timer import Timer
 
 METHOD_NAMES = ["denoising_autoencoder"]
 
@@ -46,17 +57,7 @@ def run(
     top_k: int = 10,
     retrain: bool = False,
 ) -> Path:
-    from similarity_methods.autoencoder.pipeline import (
-        load_or_train,
-        METHOD_NAME,
-        AUTOENCODER_DIR,
-    )
-    from similarity_methods.autoencoder.methods import terms_to_vector
-    from shared.result import SimilarityResult
-    from shared.explaination import expand, SET_BASED_EXPLANATION
-    from shared.timer import Timer
-
-    cache_dir = CACHE_BASE_DIR / test_set_path.stem / "cache"
+    cache_dir = EVALUATION_DIR / test_set_path.stem / "cache"
     cache_dir.mkdir(parents=True, exist_ok=True)
 
     print_header("autoencoder", test_set_path, cache_dir, resume, limit)
@@ -245,4 +246,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-    

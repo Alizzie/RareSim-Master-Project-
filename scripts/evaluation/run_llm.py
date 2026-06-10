@@ -16,25 +16,39 @@ Usage: (whichever gpu is free, change 5 to your gpu id)
 """
 
 import argparse
-import sys
 import time
 from pathlib import Path
 
-from _batch_utils import (
-    SRC_DIR, CACHE_BASE_DIR,
+from scripts.evaluation._batch_utils import (
+    EVALUATION_DIR,
     load_test_cases,
-    cache_path_for, methods_already_cached, save_cache,
-    print_header, print_case, print_case_ok, print_case_err, print_summary,
+    cache_path_for,
+    methods_already_cached,
+    save_cache,
+    print_header,
+    print_case,
+    print_case_ok,
+    print_case_err,
+    print_summary,
     add_common_args,
 )
 
-if str(SRC_DIR) not in sys.path:
-    sys.path.insert(0, str(SRC_DIR))
+from raresim.shared.context import AppContext
+from raresim.utils.io import load_json
+from raresim.utils.paths import HPO_LABELS_PATH
+from raresim.core.schemas import PatientProfile
 
-from shared.context import AppContext
-from shared.io import load_json
-from shared.paths import HPO_LABELS_PATH
-from core.schemas import PatientProfile
+from raresim.similarity_methods.llm.methods import (
+    unload_pipeline,
+    load_hf_pipeline,
+    build_retrieval_prompt,
+    query_hf,
+    parse_retrieval_output,
+)
+from raresim.similarity_methods.llm.config import (
+    LLM_MODEL_LIST,
+    MAX_NEW_TOKENS_RETRIEVAL,
+)
 
 
 def run(
@@ -44,13 +58,8 @@ def run(
     top_k: int = 10,
 ) -> Path:
     """Run all LLM models on every test case."""
-    from similarity_methods.llm.methods import (
-        unload_pipeline, load_hf_pipeline,
-        build_retrieval_prompt, query_hf, parse_retrieval_output,
-    )
-    from similarity_methods.llm.config import LLM_MODEL_LIST, MAX_NEW_TOKENS_RETRIEVAL
 
-    cache_dir = CACHE_BASE_DIR / test_set_path.stem / "cache"
+    cache_dir = EVALUATION_DIR / test_set_path.stem / "cache"
     cache_dir.mkdir(parents=True, exist_ok=True)
 
     print_header("llm", test_set_path, cache_dir, resume, limit)
@@ -62,7 +71,9 @@ def run(
 
     print(f"Loaded {total} test cases.")
     print(f"Models  : {LLM_MODEL_LIST}")
-    print(f"Warning : LLM is slow (~3 min/case). Est. total: {total * len(LLM_MODEL_LIST) * 3} min\n")
+    print(
+        f"Warning : LLM is slow (~3 min/case). Est. total: {total * len(LLM_MODEL_LIST) * 3} min\n"
+    )
 
     hpo_labels = load_json(HPO_LABELS_PATH)
     dummy = PatientProfile("batch_init", "", set(), set())
@@ -101,8 +112,13 @@ def run(
                 total_time += elapsed
 
                 save_cache(
-                    cache_file, index, hpo_terms, ground_truth,
-                    {model_name: model_results}, {model_name: elapsed}, elapsed,
+                    cache_file,
+                    index,
+                    hpo_terms,
+                    ground_truth,
+                    {model_name: model_results},
+                    {model_name: elapsed},
+                    elapsed,
                 )
                 processed += 1
                 print_case_ok(elapsed, total_time, processed, total - index - 1)
@@ -110,7 +126,9 @@ def run(
             except Exception as e:
                 failed += 1
                 print_case_err(e)
-                (cache_dir / f"case_{index:04d}.error").write_text(f"{type(e).__name__}: {e}")
+                (cache_dir / f"case_{index:04d}.error").write_text(
+                    f"{type(e).__name__}: {e}"
+                )
 
         unload_pipeline(pipe)
 

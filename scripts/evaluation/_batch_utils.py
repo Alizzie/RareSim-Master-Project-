@@ -6,26 +6,13 @@ Do not run this file directly.
 """
 
 import json
-import sys
-import time
 from pathlib import Path
+from raresim.core.schemas import PatientProfile
+from raresim.utils.io import load_json
+from raresim.shared.math import get_ancestors_inclusive
+from raresim.utils.paths import OUTPUTS_DIR
 
-# ── Path setup ────────────────────────────────────────────────────────────────
-
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-SRC_DIR = PROJECT_ROOT / "src"
-if str(SRC_DIR) not in sys.path:
-    sys.path.insert(0, str(SRC_DIR))
-
-from core.schemas import PatientProfile
-from shared.io import load_json
-from shared.math import preprocess_ancestor_sets, get_ancestors_inclusive
-from shared.paths import OUTPUTS_DIR, ALIAS_TO_CANONICAL_PATH, HPO_LABELS_PATH
-
-# ── Directory constants ────────────────────────────────────────────────────────
-
-RESULTS_DIR = PROJECT_ROOT / "results" / "evaluation"
-CACHE_BASE_DIR = RESULTS_DIR  # cache lives under results/{dataset}/cache/ — committed to git
+EVALUATION_DIR = OUTPUTS_DIR / "evaluation"
 
 # ── Method lists ──────────────────────────────────────────────────────────────
 
@@ -34,12 +21,14 @@ SEMANTIC_METHODS = [
     "semantic_lin_bma",
     "semantic_jiang_conrath_bma",
 ]
+
 SET_BASED_METHODS = [
     "set_cosine",
     "set_jaccard",
     "set_dice",
     "set_overlap",
 ]
+
 TFIDF_METHODS = ["tfidf"]
 
 CPU_METHODS = SEMANTIC_METHODS + SET_BASED_METHODS + TFIDF_METHODS
@@ -149,7 +138,9 @@ def serialize_results(results: dict) -> dict[str, list[dict]]:
         if hasattr(rows, "rankings"):
             serialized[method] = [r.to_dict() for r in rows.rankings]
         elif isinstance(rows, list):
-            serialized[method] = [r.to_dict() if hasattr(r, "to_dict") else r for r in rows]
+            serialized[method] = [
+                r.to_dict() if hasattr(r, "to_dict") else r for r in rows
+            ]
         else:
             serialized[method] = []
     return serialized
@@ -158,7 +149,9 @@ def serialize_results(results: dict) -> dict[str, list[dict]]:
 # ── Console helpers ────────────────────────────────────────────────────────────
 
 
-def print_header(pipeline: str, test_set_path: Path, cache_dir: Path, resume: bool, limit) -> None:
+def print_header(
+    pipeline: str, test_set_path: Path, cache_dir: Path, resume: bool, limit
+) -> None:
     sep = "=" * 64
     print(f"\n{sep}")
     print(f"  RareSim Batch Runner — {pipeline}")
@@ -177,7 +170,9 @@ def print_case(index: int, total: int, hpo_terms, ground_truth) -> None:
     )
 
 
-def print_case_ok(elapsed: float, total_time: float, processed: int, remaining: int) -> None:
+def print_case_ok(
+    elapsed: float, total_time: float, processed: int, remaining: int
+) -> None:
     avg = total_time / processed
     eta = remaining * avg / 60
     print(f"           ✓ {elapsed:.1f}s | avg={avg:.1f}s | est. remaining={eta:.1f}min")
