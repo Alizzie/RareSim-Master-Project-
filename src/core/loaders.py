@@ -19,6 +19,7 @@ OWL_NS = {
     "IAO": "http://purl.obolibrary.org/obo/IAO_",
 }
 
+
 def _local_name(tag: str) -> str:
     """Strip XML namespace and return the local tag name."""
     if "}" in tag:
@@ -35,6 +36,7 @@ def _debug_print_xml_sample(root: ET.Element, max_items: int = 40) -> None:
         print(f"{i:03d} TAG={tag} TEXT={text[:80]}")
         if i >= max_items:
             break
+
 
 def _get_about_id(class_elem: ET.Element) -> Optional[str]:
     return class_elem.attrib.get(f"{{{OWL_NS['rdf']}}}about")
@@ -162,6 +164,51 @@ def load_disease_ontology_metadata(
         }
 
     return results
+
+
+def load_ordo_parents(ordo_path: Path) -> Dict[str, Set[str]]:
+    """
+    Parse the ORDO OWL file and extract IS-A (subClassOf) parent relations.
+
+    Mirrors load_hpo_owl but for Orphanet_ nodes.  Only direct subClassOf
+    relations with an rdf:resource attribute are kept — anonymous Restriction
+    blocks (part-of, has-part, etc.) are intentionally skipped because they
+    carry part-of semantics, not IS-A.
+
+    Returns:
+        dict mapping ORPHA:NNNN → set of ORPHA:NNNN parents.
+        Leaf nodes with no IS-A parents are included with an empty set so
+        compute_ancestors can reach them.
+    """
+    tree = ET.parse(ordo_path)
+    root = tree.getroot()
+
+    ordo_parents: Dict[str, Set[str]] = {}
+
+    for cls in root.findall(".//owl:Class", OWL_NS):
+        about = _get_about_id(cls)
+        if not about or "Orphanet_" not in about:
+            continue
+
+        local = about.split("/")[-1]  # "Orphanet_10"
+        num = local.split("_")[-1]
+        if not num.isdigit():
+            continue
+        orpha_id = f"ORPHA:{num}"
+
+        parents: Set[str] = set()
+        for sub in cls.findall("rdfs:subClassOf", OWL_NS):
+            # Only direct resource references — skip anonymous Restriction blocks
+            ref = sub.attrib.get(f"{{{OWL_NS['rdf']}}}resource", "")
+            if "Orphanet_" not in ref:
+                continue
+            parent_num = ref.split("Orphanet_")[-1]
+            if parent_num.isdigit():
+                parents.add(f"ORPHA:{parent_num}")
+
+        ordo_parents[orpha_id] = parents
+
+    return ordo_parents
 
 
 def load_ordo_metadata(ordo_path: Path, normalize_local_id_func) -> Dict[str, dict]:
