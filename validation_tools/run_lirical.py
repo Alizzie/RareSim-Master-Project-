@@ -54,7 +54,7 @@ def parse_args():
     )
     p.add_argument("--lirical-jar", required=True, help="Path to LIRICAL JAR")
     p.add_argument(
-        "--lirical-data", required=True, help="Path to LIRICAL data directory"
+        "--lirical-data",  help="Path to LIRICAL data directory (default: data) "
     )
     p.add_argument(
         "--mindiff",
@@ -93,8 +93,6 @@ def run_lirical_case(
         "-jar",
         jar,
         "prioritize",
-        "-d",
-        lirical_data,
         "-p",
         ",".join(hpo_ids),
         "--use-orphanet",
@@ -107,6 +105,10 @@ def run_lirical_case(
         "-m",
         str(mindiff),
     ]
+    
+    if lirical_data is not None:
+        cmd += ["-d", lirical_data]
+    
     if negated_hpo_ids:
         cmd += ["-n", ",".join(negated_hpo_ids)]
 
