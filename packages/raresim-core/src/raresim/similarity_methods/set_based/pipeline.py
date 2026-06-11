@@ -1,0 +1,97 @@
+"""
+Main script to run the semantic similarity pipeline, integrating disease profiles,
+patient data, and cosine similarity calculations to rank diseases based on HPO term overlap.
+"""
+
+from raresim.utils.paths import OUTPUTS_DIR
+from raresim.core.context import AppContext
+from raresim.types.result import SimilarityResult
+from raresim.core.pipeline import (
+    PipelineConfig,
+    build_metadata,
+    sort_and_rank,
+)
+from raresim.utils._pipeline_runner import run_pipeline_main
+from raresim.types.schemas import PatientProfile
+from raresim.utils.methods import cosine_similarity
+from raresim.utils.explanation import expand, SET_BASED_EXPLANATION
+from raresim.similarity_methods.set_based.methods import (
+    jaccard_similarity,
+    dice_similarity,
+    overlap_coefficient,
+)
+from raresim.utils.timer import Timer
+
+SETBASED_DIR = OUTPUTS_DIR / "set_based"
+PIPELINE_NAME = "set_based"
+
+METHOD_MAP = {
+    "set_cosine": cosine_similarity,
+    "set_jaccard": jaccard_similarity,
+    "set_overlap": overlap_coefficient,
+    "set_dice": dice_similarity,
+}
+
+ALL_METHODS = list(METHOD_MAP.keys())
+
+
+def run(
+    patient: PatientProfile,
+    selected: list[str],
+    config: PipelineConfig,
+    ctx: AppContext,
+) -> dict[str, list[SimilarityResult]]:
+    """Run the set-based similarity pipeline for the given patient and selected methods."""
+
+    patient_terms = set(patient.get_terms(config.use_propagated_terms))
+
+    all_results = {}
+
+    for method_name, fn in METHOD_MAP.items():
+        if method_name not in selected:
+            continue
+
+        results = []
+        timer = Timer(method_name).start()
+        for disease_id, profile in ctx.disease_profiles.items():
+            disease_terms = set(profile.get(config.terms_key, []))
+            score, explaination = fn(patient_terms, disease_terms)
+            explaination = expand(
+                explaination, patient_terms, disease_terms, SET_BASED_EXPLANATION
+            )
+
+            results.append(
+                SimilarityResult(
+                    disease_id=disease_id,
+                    label=profile.get("label", ""),
+                    score=score,
+                    method_name=method_name,
+                    explanation=explaination,
+                )
+            )
+
+        metadata = build_metadata(
+            method_name=method_name,
+            pipeline_name=PIPELINE_NAME,
+            config=config,
+            n_patient_terms=len(patient_terms),
+            n_disease_terms=len(disease_terms),
+            computation_time=timer.stop(),
+        )
+        all_results[method_name] = sort_and_rank(results, metadata, config.top_k)
+
+    return all_results
+
+
+def main() -> None:
+    """Example main function to run the set-based similarity pipeline."""
+    run_pipeline_main(
+        pipeline_name=PIPELINE_NAME,
+        method_names=list(METHOD_MAP.keys()),
+        run_fn=run,
+        output_dir=SETBASED_DIR,
+    )
+
+
+if __name__ == "__main__":
+    main()

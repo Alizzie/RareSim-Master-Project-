@@ -1,0 +1,22 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "raresim"
+version = "0.1.0"
+dependencies = [
+    "networkx",
+    "pydantic",
+    "python-dotenv",
+    "transformers",
+    "accelerate",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/raresim"]
+
+[tool.pyright]
+venvPath = "."
+venv = ".venv"
+extraPaths = ["packages/raresim-core/src"]
