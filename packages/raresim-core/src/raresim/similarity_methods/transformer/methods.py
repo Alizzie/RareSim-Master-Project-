@@ -16,13 +16,12 @@ import torch
 from sentence_transformers import SentenceTransformer
 from transformers import AutoModel, AutoTokenizer, BertTokenizer, BertTokenizerFast
 
-from similarity_methods.transformer.config import (
+from raresim.similarity_methods.transformer.config import (
     AUTO_TOKENIZER_MODELS,
     BATCH_SIZE,
     MAX_LENGTH,
     SENTENCE_TRANSFORMER_MODELS,
 )
-
 
 # ── Text construction ─────────────────────────────────────────────────────────
 

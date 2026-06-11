@@ -8,25 +8,22 @@ Pipeline:
   6. Rank diseases by some similarity to the patient vector
 """
 
-import numpy as np
-from pathlib import Path
-
 from gensim.models import Word2Vec
 
-from core.schemas import PatientProfile
-from shared.context import AppContext
-from shared.paths import PROJECT_ROOT, SHARED_DIR
-from shared.result import SimilarityResult
-from shared.pipeline import (
+from raresim.types.schemas import PatientProfile
+from raresim.core.context import AppContext
+from raresim.utils.paths import OUTPUTS_DIR, HPO_PARENTS_PATH
+from raresim.types.result import SimilarityResult
+from raresim.core.pipeline import (
     PipelineConfig,
     build_metadata,
     sort_and_rank,
-    run_pipeline_main,
 )
-from shared.io import load_json, save_json
-from shared.timer import Timer
+from raresim.utils._pipeline_runner import run_pipeline_main
+from raresim.utils.io import load_json
+from raresim.utils.timer import Timer
 
-from similarity_methods.hpo2vec.methods import (
+from raresim.similarity_methods.hpo2vec.methods import (
     build_graph,
     generate_walks,
     train_word2vec,
@@ -34,7 +31,7 @@ from similarity_methods.hpo2vec.methods import (
     cosine_similarity_np,
 )
 
-HPO2VEC_DIR = PROJECT_ROOT / "outputs" / "hpo2vec"
+HPO2VEC_DIR = OUTPUTS_DIR / "hpo2vec"
 PIPELINE_NAME = "hpo2vec"
 METHOD_NAME = "hpo2vec_plus"
 
@@ -82,8 +79,7 @@ def run(
     if METHOD_NAME not in selected:
         return {}
 
-    
-    hpo_parents = load_json(SHARED_DIR / "hpo_parents.json")
+    hpo_parents = load_json(HPO_PARENTS_PATH)
 
     # Load or train model
     model = load_or_train(
@@ -98,7 +94,9 @@ def run(
     patient_vec = embed_term_set(patient_terms, model, ctx.ic_values)
 
     if patient_vec is None:
-        print("No patient terms found in Word2Vec vocabulary — check your shared artifacts.")
+        print(
+            "No patient terms found in Word2Vec vocabulary — check your shared artifacts."
+        )
         return {}
 
     timer = Timer(METHOD_NAME).start()

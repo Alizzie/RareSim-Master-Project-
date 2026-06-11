@@ -3,26 +3,26 @@ Main script to run the semantic similarity pipeline, integrating disease profile
 patient data, and cosine similarity calculations to rank diseases based on HPO term overlap.
 """
 
-from shared.paths import PROJECT_ROOT
-from shared.context import AppContext
-from shared.result import SimilarityResult
-from shared.pipeline import (
+from raresim.utils.paths import OUTPUTS_DIR
+from raresim.core.context import AppContext
+from raresim.types.result import SimilarityResult
+from raresim.core.pipeline import (
     PipelineConfig,
     build_metadata,
     sort_and_rank,
-    run_pipeline_main,
 )
-from core.schemas import PatientProfile
-from shared.methods import cosine_similarity
-from shared.explaination import expand, SET_BASED_EXPLANATION
-from similarity_methods.set_based.methods import (
+from raresim.utils._pipeline_runner import run_pipeline_main
+from raresim.types.schemas import PatientProfile
+from raresim.utils.methods import cosine_similarity
+from raresim.utils.explanation import expand, SET_BASED_EXPLANATION
+from raresim.similarity_methods.set_based.methods import (
     jaccard_similarity,
     dice_similarity,
     overlap_coefficient,
 )
-from shared.timer import Timer
+from raresim.utils.timer import Timer
 
-SETBASED_DIR = PROJECT_ROOT / "outputs" / "set_based"
+SETBASED_DIR = OUTPUTS_DIR / "set_based"
 PIPELINE_NAME = "set_based"
 
 METHOD_MAP = {

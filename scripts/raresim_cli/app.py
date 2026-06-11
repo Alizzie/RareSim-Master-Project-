@@ -39,7 +39,8 @@ from raresim.utils.math import preprocess_ancestor_sets, get_ancestors_inclusive
 from raresim.utils.paths import HPO_ANCESTORS_PATH, GUI_DIR
 from raresim.core.cache import save_run_cache
 from raresim.core.context import AppContext
-from raresim.utils.io import load_json, load_patient_with_extraction, save_json
+from raresim.utils.io import load_json, save_json
+from raresim.utils.patient_loader import load_patient_with_extraction
 from raresim.utils.paths import ALIAS_TO_CANONICAL_PATH, HPO_LABELS_PATH
 from raresim.core.pipeline import PipelineConfig
 from raresim.hpo_extraction import build_patient_profile
@@ -220,11 +221,11 @@ def main() -> None:
 
     # ── Display ───────────────────────────────────────────────────────────────
     for method_results in all_results.values():
-        print_results_table(method_results)
+        gu.print_results_table(method_results)
 
     for method_name, results in all_raw_results.items():
         try:
-            print_raw_results(method_name, results)
+            gu.print_raw_results(method_name, results)
         except Exception as e:
             print(f"  [warning] Could not print results for {method_name}: {e}")
 

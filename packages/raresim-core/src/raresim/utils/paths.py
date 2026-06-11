@@ -20,6 +20,7 @@ STANDARDIZED_PHENOPACKETS_DIR = DATASET_DIR / "phenopackets/standardized_to_json
 OUTPUTS_DIR = PROJECT_ROOT / "outputs"
 ARTIFACTS_DIR = OUTPUTS_DIR / "artifacts"
 TRANSFORMER_DIR = OUTPUTS_DIR / "transformer"
+WEBAPP_DIR = OUTPUTS_DIR / "webapp"
 GUI_DIR = OUTPUTS_DIR / "gui"
 
 
@@ -34,4 +35,5 @@ PATIENT_PATH = ARTIFACTS_DIR / "example_patient.json"
 ALIAS_TO_CANONICAL_PATH = ARTIFACTS_DIR / "alias_to_canonical.json"
 INFORMATION_CONTENT_PATH = ARTIFACTS_DIR / "information_content.json"
 HPO_ANCESTORS_PATH = ARTIFACTS_DIR / "hpo_ancestors.json"
+HPO_PARENTS_PATH = ARTIFACTS_DIR / "hpo_parents.json"
 EXAMPLE_PATIENT_PATH = PATIENT_DIR / "example_patient.json"

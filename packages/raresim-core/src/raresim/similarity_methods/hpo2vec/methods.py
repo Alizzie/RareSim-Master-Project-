@@ -1,3 +1,5 @@
+"""HPO2Vec similarity methods"""
+
 import random
 from typing import Dict, List, Optional, Set
 
@@ -8,19 +10,18 @@ from gensim.models import Word2Vec
 # Controls the random walk and Word2Vec training behaviour
 # My defaults
 
-WALK_LENGTH = 80        # number of steps per random walk
-WALKS_PER_NODE = 10     # how many walks to start from each node
-P = 1.0                 # return param: controls likelihood of revisiting a node
-                        # lower p = more likely to backtrack 
-Q = 0.5                 # in out parameter: controls BFS vs DFS behaviour
-                        # q < 1 = biased toward DFS
-                        # q > 1 = toward BFS
-EMBEDDING_DIM = 128     # dimension of the learned embeddings
-WINDOW_SIZE = 10        # Word2Vec context window aka how many neighbours to consider
-MIN_COUNT = 1           # minimum term frequency to include in vocabulary
-WORKERS = 4             # parallel workers for Word2Vec training
-EPOCHS = 5              # training epochs
-
+WALK_LENGTH = 80  # number of steps per random walk
+WALKS_PER_NODE = 10  # how many walks to start from each node
+P = 1.0  # return param: controls likelihood of revisiting a node
+# lower p = more likely to backtrack
+Q = 0.5  # in out parameter: controls BFS vs DFS behaviour
+# q < 1 = biased toward DFS
+# q > 1 = toward BFS
+EMBEDDING_DIM = 128  # dimension of the learned embeddings
+WINDOW_SIZE = 10  # Word2Vec context window aka how many neighbours to consider
+MIN_COUNT = 1  # minimum term frequency to include in vocabulary
+WORKERS = 4  # parallel workers for Word2Vec training
+EPOCHS = 5  # training epochs
 
 
 # Step 1L Build the graph
@@ -31,6 +32,7 @@ EPOCHS = 5              # training epochs
 #
 # Both diseases and HPO terms are nodes, all in the same graph
 # A walk can hop from a disease to its phenotypes and then up the HPO hierarchy
+
 
 def build_graph(
     hpo_parents: Dict[str, List[str]],
@@ -49,12 +51,12 @@ def build_graph(
         graph.setdefault(a, []).append(b)
         graph.setdefault(b, []).append(a)
 
-    # IS_A 
+    # IS_A
     for child, parents in hpo_parents.items():
         for parent in parents:
             add_edge(child, parent)
 
-    # HAS_PHENOTYPE 
+    # HAS_PHENOTYPE
     for disease_id, profile in disease_profiles.items():
         for hpo_id in profile.get(terms_key, []):
             add_edge(disease_id, hpo_id)
@@ -68,6 +70,7 @@ def build_graph(
 # Bias the walk toward more specific terms using IC values, so the walks
 # spend more time around rare phenotypes and less around
 # generic stuff like "Problem with nervous system"
+
 
 def _transition_probs(
     current: str,
@@ -95,7 +98,7 @@ def _transition_probs(
             bias = 1.0 / p
         else:
             # Check if neighbour is also a neighbour of previous
-            bias = 1.0 
+            bias = 1.0
             # Note: full Node2Vec precomputes distance-1 sets for efficiency
 
         probs.append(ic_weight * bias)
@@ -125,7 +128,7 @@ def random_walk(
         neighbours = graph.get(current, [])
 
         if not neighbours:
-            break # end
+            break  # end
 
         probs = _transition_probs(current, previous, neighbours, ic_values, p, q)
         next_node = random.choices(neighbours, weights=probs, k=1)[0]
@@ -155,7 +158,7 @@ def generate_walks(
     print(f"  Generating {walks_per_node} walks × {len(all_nodes)} nodes...")
 
     for _ in range(walks_per_node):
-        random.shuffle(all_nodes) # shuffle
+        random.shuffle(all_nodes)  # shuffle
         for node in all_nodes:
             walk = random_walk(node, graph, ic_values, walk_length, p, q)
             all_walks.append(walk)
@@ -165,6 +168,7 @@ def generate_walks(
 
 
 # Step 3: Train Word2Vec on the walks
+
 
 def train_word2vec(
     walks: List[List[str]],
@@ -177,7 +181,9 @@ def train_word2vec(
     """
     Train Word2Vec on the random walks
     """
-    print(f"  Training Word2Vec: dim={embedding_dim}, window={window_size}, epochs={epochs}...")
+    print(
+        f"  Training Word2Vec: dim={embedding_dim}, window={window_size}, epochs={epochs}..."
+    )
 
     model = Word2Vec(
         sentences=walks,
@@ -198,6 +204,7 @@ def train_word2vec(
 # Collapse a set of HPO term vectors into one vector using IC weighted averaging
 # Same logic for both patient and disease
 
+
 def embed_term_set(
     terms: Set[str],
     model: Word2Vec,
@@ -214,7 +221,7 @@ def embed_term_set(
     for term in terms:
         if term not in model.wv:
             continue
-        ic = ic_values.get(term, 1.0) # default weight 1 for terms without IC
+        ic = ic_values.get(term, 1.0)  # default weight 1 for terms without IC
         vectors.append(model.wv[term])
         weights.append(ic)
 
@@ -222,13 +229,14 @@ def embed_term_set(
         return None
 
     weights = np.array(weights)
-    weights = weights / weights.sum() # normalize
+    weights = weights / weights.sum()  # normalize
 
     return np.average(vectors, axis=0, weights=weights)
 
 
 #
 # Step 6: Similarity and ranking
+
 
 def cosine_similarity_np(vec_a: np.ndarray, vec_b: np.ndarray) -> float:
     """Cosine similarity between two dense numpy vectors."""

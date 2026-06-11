@@ -7,17 +7,15 @@ Models (generative/decoder models):
 - Mistral/Mistral-7B-Instruct-v0.2 : works ok at the moment
 """
 
-from shared.paths import PROJECT_ROOT, TRANSFORMER_DIR
+from raresim.utils.paths import OUTPUTS_DIR, TRANSFORMER_DIR
 
-LLM_DIR = PROJECT_ROOT / "outputs" / "llm"
+LLM_DIR = OUTPUTS_DIR / "llm"
 LLM_DIR.mkdir(parents=True, exist_ok=True)
 
 # Transformer results to use as input for explainer
-TRANSFORMER_RESULTS_PATH = (
-    TRANSFORMER_DIR / "all_model_results_summary_canonical.json"
-)
+TRANSFORMER_RESULTS_PATH = TRANSFORMER_DIR / "all_model_results_summary_canonical.json"
 
-# Models to run in the LLM pipeline
+# Models to run in the LLM pipeline
 LLM_MODEL_LIST = [
     "mistralai/Mistral-7B-Instruct-v0.2",
 ]
@@ -26,10 +24,10 @@ LLM_MODEL_LIST = [
 EXPLAINER_MODEL = "mistralai/Mistral-7B-Instruct-v0.2"
 
 # ── Generation settings ───────────────────────────────────────────────────────
-MAX_NEW_TOKENS_RETRIEVAL = 2048 
+MAX_NEW_TOKENS_RETRIEVAL = 2048
 MAX_NEW_TOKENS_EXPLAINER = 1024
 TEMPERATURE = 0.1
-DO_SAMPLE = True 
+DO_SAMPLE = True
 
 # ── Pipeline settings ─────────────────────────────────────────────────────────
 TOP_K = 10

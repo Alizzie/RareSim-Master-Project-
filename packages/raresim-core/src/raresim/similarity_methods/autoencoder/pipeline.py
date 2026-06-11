@@ -15,29 +15,30 @@ The denoising part:
     the underlying phenotype structure, not just memorize the term presence
 """
 
-from shared.io import load_patient, save_json
-from shared.paths import SHARED_DIR
-
 import numpy as np
-from pathlib import Path
+from raresim.utils.io import save_json, load_json
+from raresim.utils.patient_loader import load_patient
+from raresim.utils.paths import OUTPUTS_DIR, PATIENT_DIR
 
-from core.schemas import PatientProfile
-from shared.context import AppContext
-from shared.paths import PROJECT_ROOT
-from shared.result import SimilarityResult
-from shared.pipeline import PipelineConfig, build_metadata, sort_and_rank, run_pipeline_main
-from shared.explaination import expand, SET_BASED_EXPLANATION
-from shared.timer import Timer
-from shared.io import load_json, save_json
+from raresim.types.schemas import PatientProfile
+from raresim.core.context import AppContext
+from raresim.types.result import SimilarityResult
+from raresim.core.pipeline import (
+    PipelineConfig,
+    build_metadata,
+    sort_and_rank,
+)
+from raresim.utils.explanation import expand, SET_BASED_EXPLANATION
+from raresim.utils.timer import Timer
 
-from similarity_methods.autoencoder.methods import (
+from raresim.similarity_methods.autoencoder.methods import (
     DenoisingAutoencoder,
     build_vocabulary,
     terms_to_vector,
     cosine_similarity_np,
 )
 
-AUTOENCODER_DIR = PROJECT_ROOT / "outputs" / "autoencoder"
+AUTOENCODER_DIR = OUTPUTS_DIR / "autoencoder"
 PIPELINE_NAME = "autoencoder"
 METHOD_NAME = "denoising_autoencoder"
 
@@ -45,15 +46,13 @@ METHOD_NAME = "denoising_autoencoder"
 MODEL_PATH = AUTOENCODER_DIR / "autoencoder_model.npz"
 VOCAB_PATH = AUTOENCODER_DIR / "vocab.json"
 
-
-HIDDEN_DIM = 512        # encoder/decoder hidden layer size
-LATENT_DIM = 128        # size of the compressed latent representation
-LEARNING_RATE = 0.01    # SGD learning rate
-MOMENTUM = 0.9          # SGD momentum
-NOISE_RATE = 0.2        # fraction of present HPO terms to randomly drop during training
-EPOCHS = 50             # training epochs
-BATCH_SIZE = 64         # minibatch size
-
+HIDDEN_DIM = 512  # encoder/decoder hidden layer size
+LATENT_DIM = 128  # size of the compressed latent representation
+LEARNING_RATE = 0.01  # SGD learning rate
+MOMENTUM = 0.9  # SGD momentum
+NOISE_RATE = 0.2  # fraction of present HPO terms to randomly drop during training
+EPOCHS = 50  # training epochs
+BATCH_SIZE = 64  # minibatch size
 
 
 def train_autoencoder(
@@ -70,10 +69,13 @@ def train_autoencoder(
     print(f"  Vocabulary size: {len(vocab)} HPO terms")
 
     print("  Vectorizing disease profiles...")
-    vectors = np.array([
-        terms_to_vector(set(profile.get(terms_key, [])), vocab, term_to_idx)
-        for profile in disease_profiles.values()
-    ], dtype=np.float32)
+    vectors = np.array(
+        [
+            terms_to_vector(set(profile.get(terms_key, [])), vocab, term_to_idx)
+            for profile in disease_profiles.values()
+        ],
+        dtype=np.float32,
+    )
     print(f"  Training matrix shape: {vectors.shape}")
 
     print("  Training denoising autoencoder...")
@@ -182,7 +184,7 @@ def run(
 
 def main() -> None:
     config = PipelineConfig()
-    patient = load_patient(SHARED_DIR / "example_patient.json")
+    patient = load_patient(PATIENT_DIR / "example_patient.json")
     ctx = AppContext.load(
         patient=patient, use_canonical_profiles=config.use_canonical_profiles
     )

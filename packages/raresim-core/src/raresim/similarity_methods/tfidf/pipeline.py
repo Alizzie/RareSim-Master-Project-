@@ -9,26 +9,26 @@ Pipeline:
   5. Rank diseases by similarity score
 """
 
-from core.schemas import PatientProfile
-from shared.context import AppContext
-from shared.paths import PROJECT_ROOT
-from shared.result import SimilarityResult
-from shared.methods import cosine_similarity
-from shared.pipeline import (
+from raresim.types.schemas import PatientProfile
+from raresim.core.context import AppContext
+from raresim.utils.paths import OUTPUTS_DIR
+from raresim.types.result import SimilarityResult
+from raresim.utils.methods import cosine_similarity
+from raresim.core.pipeline import (
     PipelineConfig,
     build_metadata,
     sort_and_rank,
-    run_pipeline_main,
 )
-from shared.explaination import (
+from raresim.utils._pipeline_runner import run_pipeline_main
+from raresim.utils.explanation import (
     expand,
     SET_BASED_EXPLANATION,
     with_top_idf_weighted_terms,
 )
-from similarity_methods.tfidf.methods import build_tfidf_vector, compute_idf
-from shared.timer import Timer
+from raresim.similarity_methods.tfidf.methods import build_tfidf_vector, compute_idf
+from raresim.utils.timer import Timer
 
-TFIDF_DIR = PROJECT_ROOT / "outputs" / "tfidf"
+TFIDF_DIR = OUTPUTS_DIR / "tfidf"
 PIPELINE_NAME = "tfidf"
 METHOD_NAME = "tfidf"
 

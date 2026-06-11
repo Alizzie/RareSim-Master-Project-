@@ -16,19 +16,17 @@ from typing import Dict, List, Tuple
 
 import numpy as np
 
-from shared.io import load_json, save_json
-from similarity_methods.transformer.config import CACHE_ROOT, MAX_LENGTH, TOP_K
-from similarity_methods.transformer.methods import (
+from raresim.utils.io import load_json, save_json
+from raresim.similarity_methods.transformer.config import CACHE_ROOT, MAX_LENGTH, TOP_K
+from raresim.similarity_methods.transformer.methods import (
     build_disease_texts,
     build_patient_text,
     embed_texts,
     get_model_type,
     hash_text,
-    hpo_terms_to_labels,
     load_embedding_backend,
     make_safe_model_name,
 )
-
 
 # ── Cache utilities ───────────────────────────────────────────────────────────
 
@@ -48,7 +46,9 @@ def get_cache_paths(model_name: str) -> Dict[str, Path]:
 
 def persistent_cache_exists(cache_paths: Dict[str, Path]) -> bool:
     """Check if the full embedding cache exists for one model."""
-    return all(cache_paths[k].exists() for k in ["ids", "labels", "texts", "embeddings"])
+    return all(
+        cache_paths[k].exists() for k in ["ids", "labels", "texts", "embeddings"]
+    )
 
 
 def load_persistent_cache(
@@ -163,9 +163,9 @@ def collapse_ranked_results_to_canonical(
                 grouped[canonical_id]["score"] = score
                 grouped[canonical_id]["disease_text_preview"] = disease_texts[idx][:300]
 
-    collapsed = sorted(
-        grouped.values(), key=lambda row: row["score"], reverse=True
-    )[:top_k]
+    collapsed = sorted(grouped.values(), key=lambda row: row["score"], reverse=True)[
+        :top_k
+    ]
 
     results = []
     for rank_idx, row in enumerate(collapsed, start=1):
@@ -372,4 +372,3 @@ class DiseaseRetriever:
             hpo_labels=self.hpo_labels,
             top_k=top_k,
         )
-        

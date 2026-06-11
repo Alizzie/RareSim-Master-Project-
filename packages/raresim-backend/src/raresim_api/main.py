@@ -9,28 +9,25 @@ Run:
     uvicorn src.api.backend.main:app --reload --port 8000
 """
 
+import traceback
 import time
-from pathlib import Path
-from typing import List, Optional
+from typing import Optional
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 # ── RareSim imports ───────────────────────────────────────────────────────────
-import sys
-
-SRC_DIR = Path(__file__).resolve().parents[2]
-if str(SRC_DIR) not in sys.path:
-    sys.path.insert(0, str(SRC_DIR))
-
 from raresim.core.context import AppContext
-from raresim.utils.io import load_json, load_patient_with_extraction, save_json
+from raresim.utils.io import load_json, save_json
+from raresim.utils.patient_loader import load_patient_with_extraction
 from raresim.utils.paths import (
+    WEBAPP_DIR,
     ALIAS_TO_CANONICAL_PATH,
     HPO_LABELS_PATH,
-    SHARED_DIR,
+    HPO_ANCESTORS_PATH,
 )
+from raresim.utils.math import preprocess_ancestor_sets, get_ancestors_inclusive
 from raresim.core.pipeline import PipelineConfig
 from raresim.hpo_extraction import build_patient_profile
 
@@ -76,9 +73,9 @@ class ExtractRequest(BaseModel):
 
 class DiagnoseRequest(BaseModel):
     mode: str  # 'hpo' or 'text'
-    hpo_terms: List[str] = []
+    hpo_terms: list[str] = []
     raw_text: Optional[str] = None
-    methods: List[str]
+    methods: list[str]
     top_k: int = 10
 
 
@@ -126,7 +123,6 @@ def diagnose(req: DiagnoseRequest):
         mode='text' — use req.raw_text for transformer/llm,
                       req.hpo_terms for semantic/set-based (pre-extracted)
     """
-    import traceback
 
     try:
         if not req.methods:
@@ -147,8 +143,6 @@ def diagnose(req: DiagnoseRequest):
         start = time.time()
 
         # ── Build patient dict ────────────────────────────────────────────────────
-        from shared.math import preprocess_ancestor_sets, get_ancestors_inclusive
-        from shared.paths import HPO_ANCESTORS_PATH
 
         ancestors = load_json(HPO_ANCESTORS_PATH)
         ancestor_sets = preprocess_ancestor_sets(ancestors)
@@ -166,7 +160,7 @@ def diagnose(req: DiagnoseRequest):
             "methods_used": ["web_input"],
         }
 
-        tmp_path = SHARED_DIR / "web_patient_tmp.json"
+        tmp_path = WEBAPP_DIR / "web_patient_tmp.json"
         save_json(patient_dict, tmp_path)
         patient = load_patient_with_extraction(tmp_path, hpo_labels)
 

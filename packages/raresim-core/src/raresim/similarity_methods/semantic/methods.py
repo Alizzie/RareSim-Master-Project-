@@ -22,7 +22,7 @@ Performance:
 import math
 from typing import Dict, Optional, Set, Tuple
 
-from shared.math import get_ancestors_inclusive
+from raresim.utils.math import get_ancestors_inclusive
 
 # ── MICA cache ────────────────────────────────────────────────────────────────
 # Keyed on (term_a, term_b) — valid as long as ancestor_sets and ic_values
@@ -230,4 +230,3 @@ def jiang_conrath_similarity(
 
     score = 1.0 / (1.0 + distance)
     return score, mica_term
-    

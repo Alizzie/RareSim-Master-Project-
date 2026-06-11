@@ -10,8 +10,8 @@ import gc
 import re
 from typing import Dict, List, Tuple
 
-from shared.timer import timer
-from similarity_methods.llm.config import (
+from raresim.utils.timer import timer
+from raresim.similarity_methods.llm.config import (
     DO_SAMPLE,
     EXPLAINER_MODEL,
     MAX_NEW_TOKENS_EXPLAINER,
@@ -20,7 +20,6 @@ from similarity_methods.llm.config import (
     TOP_K,
     TOP_K_RERANK,
 )
-
 
 # ── HuggingFace backend ───────────────────────────────────────────────────────
 
@@ -49,6 +48,7 @@ def load_hf_pipeline(model_name: str, max_new_tokens: int = MAX_NEW_TOKENS_RETRI
         # Try 4-bit quantization first — uses less GPU memory
         try:
             from transformers import BitsAndBytesConfig
+
             quant_config = BitsAndBytesConfig(load_in_4bit=True)
             model = AutoModelForCausalLM.from_pretrained(
                 model_name,
@@ -89,6 +89,7 @@ def unload_pipeline(pipe) -> None:
     Call this after each model finishes to free memory for the next model.
     """
     import torch
+
     del pipe
     gc.collect()
     torch.cuda.empty_cache()
@@ -106,7 +107,7 @@ def query_hf(
     """
     output = pipe(prompt, max_new_tokens=max_tokens)
     generated = output[0]["generated_text"]
-    return generated[len(prompt):].strip() if generated else ""
+    return generated[len(prompt) :].strip() if generated else ""
 
 
 # ── Retrieval prompt builder ──────────────────────────────────────────────────
@@ -117,9 +118,7 @@ def build_retrieval_prompt(
     hpo_labels: Dict[str, str],
     top_k: int = TOP_K,
 ) -> str:
-    hpo_term_labels = [
-        hpo_labels.get(t, t) for t in patient.get("hpo_terms", [])
-    ]
+    hpo_term_labels = [hpo_labels.get(t, t) for t in patient.get("hpo_terms", [])]
     raw_text = patient.get("raw_text", "").strip()
 
     content_parts = [
@@ -201,7 +200,9 @@ def parse_retrieval_output(
     generated_text = re.sub(r"ORPHA(\d+)", r"ORPHA:\1", generated_text)
     generated_text = re.sub(r"OMIM(\d+)", r"OMIM:\1", generated_text)
     generated_text = re.sub(r"\[SOLUTION\]", "", generated_text)
-    generated_text = re.sub(r"\[INST\].*?\[/INST\]", "", generated_text, flags=re.DOTALL)
+    generated_text = re.sub(
+        r"\[INST\].*?\[/INST\]", "", generated_text, flags=re.DOTALL
+    )
 
     normalized = " ".join(
         line.strip() for line in generated_text.splitlines() if line.strip()
@@ -231,16 +232,18 @@ def parse_retrieval_output(
             ordo_id, disease_name, disease_profiles
         )
 
-        results.append({
-            "rank": rank,
-            "disease_name": label,
-            "ordo_id": matched_id,
-            "matched_phenotypes": matched_phenotypes,
-            "confidence": confidence,
-            "validated_against_profiles": validated,
-            "model": model_name,
-            "method": "llm_retrieval",
-        })
+        results.append(
+            {
+                "rank": rank,
+                "disease_name": label,
+                "ordo_id": matched_id,
+                "matched_phenotypes": matched_phenotypes,
+                "confidence": confidence,
+                "validated_against_profiles": validated,
+                "model": model_name,
+                "method": "llm_retrieval",
+            }
+        )
 
         rank += 1
         if rank > top_k:
@@ -293,7 +296,9 @@ def retrieve_diseases_llm(
     results = parse_retrieval_output(generated, disease_profiles, model_name, top_k)
 
     n_validated = sum(r["validated_against_profiles"] for r in results)
-    print(f"[llm] Found {len(results)} diseases ({n_validated} validated against profiles)")
+    print(
+        f"[llm] Found {len(results)} diseases ({n_validated} validated against profiles)"
+    )
 
     return results, pipe
 
@@ -442,10 +447,10 @@ def explain_top_results(
 
     for i, result in enumerate(candidates):
         disease_id = (
-            result.get("canonical_disease_id") 
-            or result.get("disease_id") 
+            result.get("canonical_disease_id")
+            or result.get("disease_id")
             or result.get("ordo_id")
-)
+        )
 
         if not disease_id or disease_id not in disease_profiles:
             result["llm_explanation"] = "Disease profile not found."

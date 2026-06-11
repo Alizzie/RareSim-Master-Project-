@@ -1,14 +1,14 @@
 """Set-based similarity methods for comparing patient and disease term vectors."""
 
 from typing import Tuple
-from shared.math import (
+from raresim.utils.math import (
     TermInput,
     jaccard as _jaccard,
     dice as _dice,
     overlap_coefficient as _overlap,
     to_binary_vector,
 )
-from shared.methods import _empty_explanation
+from raresim.utils.methods import _empty_explanation
 
 
 def jaccard_similarity(pat: TermInput, disease: TermInput) -> Tuple[float, dict]:

@@ -8,15 +8,19 @@ Models (generative/decoder — not embedding models):
 - Mistral/Mistral-7B-Instruct-v0.2
 """
 
-from shared.io import load_json, save_json
-from shared.paths import DISEASE_PROFILES_PATH, HPO_LABELS_PATH, PATIENT_PATH
-from shared.timer import timer
-from similarity_methods.llm.config import (
+from raresim.utils.io import load_json, save_json
+from raresim.utils.paths import DISEASE_PROFILES_PATH, HPO_LABELS_PATH, PATIENT_PATH
+from raresim.utils.timer import timer
+from raresim.similarity_methods.llm.config import (
     LLM_DIR,
     LLM_MODEL_LIST,
     TOP_K,
 )
-from similarity_methods.llm.methods import retrieve_diseases_llm, unload_pipeline, explain_top_results
+from raresim.similarity_methods.llm.methods import (
+    retrieve_diseases_llm,
+    unload_pipeline,
+    explain_top_results,
+)
 
 PIPELINE_NAME = "llm"
 
@@ -114,6 +118,7 @@ def main() -> None:
         summary_path = LLM_DIR / f"llm_all_models_top{TOP_K}.json"
         save_json(all_results, summary_path)
         print(f"\nSaved combined summary to: {summary_path}")
+
 
 if __name__ == "__main__":
     main()

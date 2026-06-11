@@ -39,23 +39,23 @@ class AppContext:
         ancestors = load_json(ARTIFACTS_DIR / "hpo_ancestors.json")
 
         unfound_terms = [
-            term for term in patient.hpo_terms if term not in hpo_labels[0]
+            term for term in patient.hpo_terms if term not in hpo_labels.keys()
         ]
 
         print("Loading shared data...")
 
         app_metadata = AppMetadata(
-            n_hpo_labels=len(hpo_labels[0]),
-            n_disease_profiles=len(disease_profiles[0]),
+            n_hpo_labels=len(hpo_labels.keys()),
+            n_disease_profiles=len(disease_profiles.keys()),
             n_patient_terms=len(patient.hpo_terms),
             n_patient_propagated_terms=len(patient.propagated_hpo_terms),
             unfound_patient_terms=unfound_terms,
         )
 
         return cls(
-            disease_profiles=disease_profiles[0],
-            hpo_labels=hpo_labels[0],
-            ic_values=ic_values[0],
-            ancestors=ancestors[0],
+            disease_profiles=disease_profiles,
+            hpo_labels=hpo_labels,
+            ic_values=ic_values,
+            ancestors=ancestors,
             app_metadata=app_metadata,
         )

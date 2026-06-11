@@ -3,18 +3,14 @@ Denoising Autoencoder methods for HPO-based disease similarity
 
 """
 
-import json
-import math
-import random
 from pathlib import Path
-from typing import Dict, List, Optional, Set, Tuple
+from typing import Dict, List, Set, Tuple
 
 import numpy as np
 
-
-
 # The vocabulary is the set of all HPO terms seen across all disease profiles
 # A fixed, sorted vocabulary = consistent indexing
+
 
 def build_vocabulary(
     disease_profiles: Dict[str, dict],
@@ -42,6 +38,7 @@ def terms_to_vector(
             vec[term_to_idx[term]] = 1.0
     return vec
 
+
 def corrupt_vector(
     vec: np.ndarray,
     noise_rate: float = 0.2,
@@ -62,6 +59,7 @@ def corrupt_vector(
 #   Input (vocab_size) → Hidden (hidden_dim) → Latent (latent_dim)
 #   Latent (latent_dim) → Hidden (hidden_dim) → Output (vocab_size)
 
+
 def sigmoid(x: np.ndarray) -> np.ndarray:
     return 1.0 / (1.0 + np.exp(-np.clip(x, -500, 500)))
 
@@ -76,7 +74,7 @@ class DenoisingAutoencoder:
     Training:
         - Input: corrupted binary HPO vector
         - Target: clean binary HPO vector
-        - Loss: binary cross entropy 
+        - Loss: binary cross entropy
         - Optimizer: minibatch SGD with momentum
     """
 
@@ -154,7 +152,13 @@ class DenoisingAutoencoder:
         Updates weights in place using SGD with momentum
         Returns the batch loss
         """
-        x, h1, z, h3, out = cache["x"], cache["h1"], cache["z"], cache["h3"], cache["out"]
+        x, h1, z, h3, out = (
+            cache["x"],
+            cache["h1"],
+            cache["z"],
+            cache["h3"],
+            cache["out"],
+        )
         batch_size = x.shape[0]
 
         # Binary cross entropy loss
@@ -182,7 +186,7 @@ class DenoisingAutoencoder:
         db1 = np.sum(d_h1 * sigmoid_grad(h1), axis=0)
 
         # SGD with momentum updates
-        for (W, b, dW, db, vW, vb) in [
+        for W, b, dW, db, vW, vb in [
             (self.W1, self.b1, dW1, db1, self.vW1, self.vb1),
             (self.W2, self.b2, dW2, db2, self.vW2, self.vb2),
             (self.W3, self.b3, dW3, db3, self.vW3, self.vb3),
@@ -214,7 +218,7 @@ class DenoisingAutoencoder:
             batch_losses = []
 
             for start in range(0, n, batch_size):
-                batch_idx = indices[start: start + batch_size]
+                batch_idx = indices[start : start + batch_size]
                 x_clean = vectors[batch_idx]
 
                 # Corrupt each vector in the batch
@@ -238,10 +242,14 @@ class DenoisingAutoencoder:
         """Save model weights to a npz file"""
         np.savez(
             path,
-            W1=self.W1, b1=self.b1,
-            W2=self.W2, b2=self.b2,
-            W3=self.W3, b3=self.b3,
-            W4=self.W4, b4=self.b4,
+            W1=self.W1,
+            b1=self.b1,
+            W2=self.W2,
+            b2=self.b2,
+            W3=self.W3,
+            b3=self.b3,
+            W4=self.W4,
+            b4=self.b4,
             vocab_size=self.vocab_size,
             hidden_dim=self.hidden_dim,
             latent_dim=self.latent_dim,

@@ -12,22 +12,22 @@ Models (encoder-only, produce embeddings):
 - BioBERT     : trained on PubMed abstracts and PMC full-text articles
 """
 
-from shared.io import load_json, save_json
-from shared.paths import (
+from raresim.utils.io import load_json, save_json
+from raresim.utils.paths import (
     ALIAS_TO_CANONICAL_PATH,
     DISEASE_PROFILES_PATH,
     HPO_LABELS_PATH,
     PATIENT_PATH,
 )
-from shared.timer import timer
-from similarity_methods.transformer.config import (
+from raresim.utils.timer import timer
+from raresim.similarity_methods.transformer.config import (
     CANDIDATE_POOL_SIZE,
     MODEL_LIST,
     TOP_K,
     TRANSFORMER_DIR,
 )
-from similarity_methods.transformer.methods import make_safe_model_name
-from similarity_methods.transformer.retriever import DiseaseRetriever
+from raresim.similarity_methods.transformer.methods import make_safe_model_name
+from raresim.similarity_methods.transformer.retriever import DiseaseRetriever
 
 PIPELINE_NAME = "transformer"
 

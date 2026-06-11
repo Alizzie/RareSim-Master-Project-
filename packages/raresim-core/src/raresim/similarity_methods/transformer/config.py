@@ -12,9 +12,9 @@ All models are encoder-only (not generative) and produce fixed-size
 embeddings used for cosine similarity ranking.
 """
 
-from shared.paths import PROJECT_ROOT
+from raresim.utils.paths import OUTPUTS_DIR
 
-TRANSFORMER_DIR = PROJECT_ROOT / "outputs" / "transformer"
+TRANSFORMER_DIR = OUTPUTS_DIR / "transformer"
 CACHE_ROOT = TRANSFORMER_DIR / "cache"
 
 TRANSFORMER_DIR.mkdir(parents=True, exist_ok=True)
@@ -25,7 +25,7 @@ MODEL_LIST = [
     "emilyalsentzer/Bio_ClinicalBERT",
     "sentence-transformers/all-MiniLM-L6-v2",
     "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
-    "dmis-lab/biobert-v1.1", 
+    "dmis-lab/biobert-v1.1",
 ]
 
 # Sentence transformer models — use SentenceTransformer library

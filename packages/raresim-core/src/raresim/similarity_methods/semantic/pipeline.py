@@ -6,31 +6,31 @@ Implements IC-based pairwise HPO similarity using Best Match Average (BMA):
 - Jiang-Conrath BMA
 """
 
-from core.schemas import PatientProfile
-from shared.context import AppContext
-from shared.paths import PROJECT_ROOT
-from shared.result import SimilarityResult
-from shared.pipeline import (
+from raresim.types.schemas import PatientProfile
+from raresim.core.context import AppContext
+from raresim.utils.paths import OUTPUTS_DIR
+from raresim.types.result import SimilarityResult
+from raresim.core.pipeline import (
     PipelineConfig,
     build_metadata,
     sort_and_rank,
-    run_pipeline_main,
 )
-from shared.explaination import expand, SEMANTIC_EXPLANATION
-from shared.math import (
+from raresim.utils._pipeline_runner import run_pipeline_main
+from raresim.utils.explanation import expand, SEMANTIC_EXPLANATION
+from raresim.utils.math import (
     filter_terms_by_ic,
     preprocess_ancestor_sets,
 )
-from shared.methods import best_match_scores
+from raresim.utils.methods import best_match_scores
 
-from similarity_methods.semantic.methods import (
+from raresim.similarity_methods.semantic.methods import (
     resnik_similarity,
     lin_similarity,
     jiang_conrath_similarity,
 )
-from shared.timer import Timer
+from raresim.utils.timer import Timer
 
-SEMANTIC_DIR = PROJECT_ROOT / "outputs" / "semantic"
+SEMANTIC_DIR = OUTPUTS_DIR / "semantic"
 PIPELINE_NAME = "semantic"
 
 # BMA methods: pairwise term-to-term comparison averaged bidirectionally
