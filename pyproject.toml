@@ -1,24 +1,5 @@
-[project]
-name = "raresim-master-project"
-version = "0.1.0"
-description = "A master project for rare disease similarity analysis between patient profiles and rare diseases"
-requires-python = ">=3.10"
+[tool.pytest.ini_options]
+testpaths = ["tests"]
 
-dependencies = [
-    "numpy",
-    "transformers",
-    "neo4j",
-]
-
-[tool.setuptools.packages.find]
-where = ["src"]
-
-[project.optional-dependencies]
-dev = [
-    "pytest",
-    "pytest-cov",
-]
-
-[build-system]
-requires = ['setuptools==82.0.1']
-build-backend = 'setuptools.build_meta'
+[tool.uv.workspace]
+members = ["packages/*"]

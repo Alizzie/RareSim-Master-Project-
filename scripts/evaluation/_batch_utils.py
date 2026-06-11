@@ -7,9 +7,9 @@ Do not run this file directly.
 
 import json
 from pathlib import Path
-from raresim.core.schemas import PatientProfile
+from raresim.types.schemas import PatientProfile
 from raresim.utils.io import load_json
-from raresim.shared.math import get_ancestors_inclusive
+from raresim.utils.math import get_ancestors_inclusive
 from raresim.utils.paths import OUTPUTS_DIR
 
 EVALUATION_DIR = OUTPUTS_DIR / "evaluation"

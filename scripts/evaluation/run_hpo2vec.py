@@ -37,11 +37,11 @@ from _batch_utils import (
     EVALUATION_DIR,
 )
 
-from raresim.shared.context import AppContext
-from raresim.shared.math import preprocess_ancestor_sets
+from raresim.core.context import AppContext
+from raresim.utils.math import preprocess_ancestor_sets
 from raresim.utils.paths import MODELS_DIR
-from raresim.core.schemas import PatientProfile
-from raresim.shared.pipeline import PipelineConfig
+from raresim.types.schemas import PatientProfile
+from raresim.core.pipeline import PipelineConfig
 from raresim.similarity_methods.hpo2vec.pipeline import run as run_hpo2vec
 from raresim.similarity_methods.hpo2vec.pipeline import METHOD_NAME as HPO2VEC_METHODS
 

@@ -1,0 +1,16 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "raresim-api"
+version = "0.1.0"
+dependencies = ["raresim", "fastapi", "uvicorn"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/raresim_api"]
+
+[tool.pyright]
+venvPath = "."
+venv = ".venv"
+extraPaths = ["packages/raresim-backend/src"]

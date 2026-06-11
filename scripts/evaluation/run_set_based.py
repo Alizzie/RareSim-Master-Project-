@@ -36,10 +36,10 @@ from _batch_utils import (
     add_common_args,
 )
 
-from raresim.shared.context import AppContext
-from raresim.shared.math import preprocess_ancestor_sets
-from raresim.shared.pipeline import PipelineConfig
-from raresim.core.schemas import PatientProfile
+from raresim.core.context import AppContext
+from raresim.utils.math import preprocess_ancestor_sets
+from raresim.core.pipeline import PipelineConfig
+from raresim.types.schemas import PatientProfile
 
 from raresim.similarity_methods.set_based.pipeline import run as run_set_based
 from raresim.similarity_methods.set_based.pipeline import (

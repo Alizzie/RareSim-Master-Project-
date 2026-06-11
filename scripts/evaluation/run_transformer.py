@@ -33,10 +33,10 @@ from scripts.evaluation._batch_utils import (
     add_common_args,
 )
 
-from raresim.shared.context import AppContext
+from raresim.core.context import AppContext
 from raresim.utils.io import load_json
 from raresim.utils.paths import HPO_LABELS_PATH, ALIAS_TO_CANONICAL_PATH
-from raresim.core.schemas import PatientProfile
+from raresim.types.schemas import PatientProfile
 from raresim.similarity_methods.transformer.config import (
     MODEL_LIST,
     CANDIDATE_POOL_SIZE,

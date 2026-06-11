@@ -34,18 +34,18 @@ from _batch_utils import (
     EVALUATION_DIR,
 )
 
-from raresim.shared.context import AppContext
-from raresim.shared.pipeline import PipelineConfig
-from raresim.core.schemas import PatientProfile
+from raresim.core.context import AppContext
+from raresim.core.pipeline import PipelineConfig
+from raresim.types.schemas import PatientProfile
 from raresim.similarity_methods.autoencoder.pipeline import (
     load_or_train,
     METHOD_NAME,
     AUTOENCODER_DIR,
 )
 from raresim.similarity_methods.autoencoder.methods import terms_to_vector
-from raresim.shared.result import SimilarityResult
-from raresim.shared.explaination import expand, SET_BASED_EXPLANATION
-from raresim.shared.timer import Timer
+from raresim.types.result import SimilarityResult
+from raresim.utils.explanation import expand, SET_BASED_EXPLANATION
+from raresim.utils.timer import Timer
 
 METHOD_NAMES = ["denoising_autoencoder"]
 
