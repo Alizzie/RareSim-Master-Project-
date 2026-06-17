@@ -1,8 +1,8 @@
 """Run Dx29 on benchmark datasets and evaluate results."""
 
-import requests
 import argparse
 import time
+import sys
 from pathlib import Path
 from _utils import (
     resolve_datasets,
@@ -11,6 +11,7 @@ from _utils import (
     compute_stats,
     print_stats,
 )
+import requests
 from raresim.utils.paths import OUTPUTS_DIR, DATASET_DIR
 
 VAL_OUTPUTS_DIR = OUTPUTS_DIR / "validation_tools"
@@ -92,10 +93,13 @@ def summarize_ranking(
 ):
     """Summarize the ranking results for a case and append a row to the accumulator."""
     rank_found, matched_id, sim_score, disease_codes = None, None, None, None
+    predicted_disease = []
 
     for rank, (disease_id, score) in ranking.items():
         if disease_id is None:
             continue
+
+        predicted_disease.append(disease_id)
         for ground_id in ground_truth:
             if ground_id == disease_id:
                 rank_found, matched_id, disease_codes, sim_score = (
@@ -109,7 +113,9 @@ def summarize_ranking(
             break
 
     if rank_found is None:
-        print(f"  {case_id}: ground truth '{ground_truth}' not found in predictions.")
+        print(
+            f"  {case_id}: ground truth '{ground_truth}' not found in predictions in {predicted_disease}."
+        )
 
     rows.append(
         {

@@ -9,10 +9,14 @@ Usage: python evaluation/standardize_phenopackets.py
 
 import json
 from pathlib import Path
-from raresim.utils.paths import PHENOPACKETS_DIR, STANDARDIZED_PHENOPACKETS_DIR
+from raresim.utils.paths import (
+    PHENOPACKETS_DIR,
+    STANDARDIZED_PHENOPACKETS_DIR,
+    ORPHA_MAPPING_INDEX,
+)
 
 
-def phenopacket_to_standard(phenopacket: dict) -> list:
+def phenopacket_to_standard(phenopacket: dict, orpha_mapping: dict) -> list:
     """Convert a single phenopacket to [[HP terms], [disease codes]]"""
 
     # Extract HPO terms (exclude negated ones)
@@ -37,6 +41,12 @@ def phenopacket_to_standard(phenopacket: dict) -> list:
             if disease_id:
                 disease_codes.append(disease_id)
 
+    # Also append ORPHA code if a mapping exists, keep original too
+    extra_codes = [
+        orpha_mapping[code] for code in disease_codes if code in orpha_mapping
+    ]
+    disease_codes = sorted(set(disease_codes + extra_codes))
+
     # Sort and deduplicate
     hpo_terms = sorted(set(hpo_terms))
     disease_codes = sorted(set(disease_codes))
@@ -60,6 +70,8 @@ def process_phenopackets(input_folder: Path):
     results = []
     skipped = 0
 
+    orpha_mapping = json.loads(ORPHA_MAPPING_INDEX.read_text())
+
     for f in sorted(files):
         data = json.loads(f.read_text())
         cases = (
@@ -67,7 +79,7 @@ def process_phenopackets(input_folder: Path):
         )  # Handle both single and list of phenopackets
 
         for case in cases:
-            hpo_terms, disease_codes = phenopacket_to_standard(case)
+            hpo_terms, disease_codes = phenopacket_to_standard(case, orpha_mapping)
 
             if not hpo_terms or not disease_codes:
                 print(
