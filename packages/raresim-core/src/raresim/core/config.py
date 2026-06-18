@@ -1,6 +1,6 @@
 """Configuration file for the project, defining paths, constants, and settings."""
 
-from raresim.utils.paths import ONTOLOGY_DIR, ARTIFACTS_DIR
+from raresim.utils.paths import ONTOLOGY_DIR
 
 HPO_PATH = ONTOLOGY_DIR / "hpo.owl"
 ORDO_PATH = ONTOLOGY_DIR / "ordo.owl"

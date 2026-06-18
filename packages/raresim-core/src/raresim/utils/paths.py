@@ -1,6 +1,8 @@
+"""Path and file constants for RareSim project."""
+
+import os
 from pathlib import Path
 from dotenv import load_dotenv
-import os
 
 load_dotenv()
 
@@ -19,6 +21,7 @@ STANDARDIZED_PHENOPACKETS_DIR = DATASET_DIR / "phenopackets/standardized_to_json
 # Dirs outputs
 OUTPUTS_DIR = PROJECT_ROOT / "outputs"
 ARTIFACTS_DIR = OUTPUTS_DIR / "artifacts"
+SIMILARITY_DIR = OUTPUTS_DIR / "similarity_methods"
 TRANSFORMER_DIR = OUTPUTS_DIR / "transformer"
 WEBAPP_DIR = OUTPUTS_DIR / "webapp"
 GUI_DIR = OUTPUTS_DIR / "gui"

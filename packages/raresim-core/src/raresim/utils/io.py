@@ -32,9 +32,8 @@ def save_individual_results(
     results: dict[str, MethodResults], output_dir: Path
 ) -> None:
     """Save for each method separately, with method name in the filename."""
-    output_dir.mkdir(parents=True, exist_ok=True)
     for method_name, method_results in results.items():
-        top_k = method_results.metadata.top_k
+        top_k = method_results.config.top_k
         save_json(
             method_results.to_dict(), output_dir / f"{method_name}_top{top_k}.json"
         )

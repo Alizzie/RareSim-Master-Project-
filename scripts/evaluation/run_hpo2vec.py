@@ -38,7 +38,7 @@ from _batch_utils import (
 )
 
 from raresim.core.context import AppContext
-from raresim.utils.math import preprocess_ancestor_sets
+from raresim.utils.hpo_utils import preprocess_ancestor_sets
 from raresim.utils.paths import MODELS_DIR
 from raresim.types.schemas import PatientProfile
 from raresim.core.pipeline import PipelineConfig

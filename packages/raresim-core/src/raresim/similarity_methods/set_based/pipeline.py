@@ -1,38 +1,26 @@
 """
-Main script to run the semantic similarity pipeline, integrating disease profiles,
-patient data, and cosine similarity calculations to rank diseases based on HPO term overlap.
+Set-based similarity pipeline.
+
+Uses: Jaccard, Dice, Overlap Coefficient, Cosine (binary).
+Explanation: delegated to similarity_methods/set_based/explanation.py.
 """
 
-from raresim.utils.paths import OUTPUTS_DIR
-from raresim.core.context import AppContext
+from raresim.utils._pipeline_runner import run_pipeline_main
+from raresim.utils.timer import Timer
 from raresim.types.result import SimilarityResult
+from raresim.types.schemas import PatientProfile
+from raresim.core.context import AppContext
 from raresim.core.pipeline import (
     PipelineConfig,
-    build_metadata,
+    build_run_stats,
     sort_and_rank,
 )
-from raresim.utils._pipeline_runner import run_pipeline_main
-from raresim.types.schemas import PatientProfile
-from raresim.utils.methods import cosine_similarity
-from raresim.utils.explanation import expand, SET_BASED_EXPLANATION
-from raresim.similarity_methods.set_based.methods import (
-    jaccard_similarity,
-    dice_similarity,
-    overlap_coefficient,
+from raresim.similarity_methods.set_based.config import (
+    METHOD_MAP,
+    PIPELINE_NAME,
+    SETBASED_DIR,
 )
-from raresim.utils.timer import Timer
-
-SETBASED_DIR = OUTPUTS_DIR / "set_based"
-PIPELINE_NAME = "set_based"
-
-METHOD_MAP = {
-    "set_cosine": cosine_similarity,
-    "set_jaccard": jaccard_similarity,
-    "set_overlap": overlap_coefficient,
-    "set_dice": dice_similarity,
-}
-
-ALL_METHODS = list(METHOD_MAP.keys())
+from raresim.similarity_methods.set_based.explanation import build_explanation
 
 
 def run(
@@ -44,6 +32,7 @@ def run(
     """Run the set-based similarity pipeline for the given patient and selected methods."""
 
     patient_terms = set(patient.get_terms(config.use_propagated_terms))
+    patient_raw_terms = set(patient.hpo_terms)
 
     all_results = {}
 
@@ -52,12 +41,26 @@ def run(
             continue
 
         results = []
+        n_skipped = 0
         timer = Timer(method_name).start()
+
         for disease_id, profile in ctx.disease_profiles.items():
             disease_terms = set(profile.get(config.terms_key, []))
-            score, explaination = fn(patient_terms, disease_terms)
-            explaination = expand(
-                explaination, patient_terms, disease_terms, SET_BASED_EXPLANATION
+
+            if not disease_terms:
+                n_skipped += 1
+                continue
+
+            score = fn(patient_terms, disease_terms)
+
+            explaination = build_explanation(
+                method_name=method_name,
+                patient_terms=patient_terms,
+                disease_terms=disease_terms,
+                score=score,
+                hpo_labels=ctx.hpo_labels,
+                ic_values=ctx.ic_values,
+                patient_raw_terms=patient_raw_terms,
             )
 
             results.append(
@@ -66,19 +69,22 @@ def run(
                     label=profile.get("label", ""),
                     score=score,
                     method_name=method_name,
-                    explanation=explaination,
+                    explanation=explaination.to_dict(),
                 )
             )
 
-        metadata = build_metadata(
-            method_name=method_name,
-            pipeline_name=PIPELINE_NAME,
-            config=config,
-            n_patient_terms=len(patient_terms),
-            n_disease_terms=len(disease_terms),
+        stats = build_run_stats(
+            n_patient_terms_raw=len(patient_raw_terms),
+            n_patient_terms_propagated=len(patient.propagated_hpo_terms),
+            n_patient_terms_used=len(patient_terms),
+            n_diseases_scored=len(results),
+            n_diseases_skipped=n_skipped,
             computation_time=timer.stop(),
         )
-        all_results[method_name] = sort_and_rank(results, metadata, config.top_k)
+
+        all_results[method_name] = sort_and_rank(
+            results, config, stats, method_name, PIPELINE_NAME
+        )
 
     return all_results
 

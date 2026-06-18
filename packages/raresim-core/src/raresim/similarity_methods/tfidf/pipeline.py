@@ -13,7 +13,7 @@ from raresim.types.schemas import PatientProfile
 from raresim.core.context import AppContext
 from raresim.utils.paths import OUTPUTS_DIR
 from raresim.types.result import SimilarityResult
-from raresim.utils.methods import cosine_similarity
+from raresim.utils.shared_methods import cosine_similarity
 from raresim.core.pipeline import (
     PipelineConfig,
     build_metadata,

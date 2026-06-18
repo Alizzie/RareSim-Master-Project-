@@ -1,5 +1,5 @@
 """
-Application conetxt for loading shared data like disease profiles, HPO labels, IC values,
+Application context for loading shared data like disease profiles, HPO labels, IC values,
 and ancestors. This centralizes data access and ensures consistency across different
 similarity methods and pipelines.
 """
@@ -33,6 +33,7 @@ class AppContext:
             else "disease_profiles.json"
         )
 
+        print("Loading shared data...")
         disease_profiles = load_json(ARTIFACTS_DIR / profile_file)
         hpo_labels = load_json(ARTIFACTS_DIR / "hpo_labels.json")
         ic_values = load_json(ARTIFACTS_DIR / "information_content.json")
@@ -42,13 +43,14 @@ class AppContext:
             term for term in patient.hpo_terms if term not in hpo_labels.keys()
         ]
 
-        print("Loading shared data...")
+        if unfound_terms:
+            print(
+                f"  Warning: {len(unfound_terms)} patient term(s) not found in HPO labels."
+            )
 
         app_metadata = AppMetadata(
             n_hpo_labels=len(hpo_labels.keys()),
             n_disease_profiles=len(disease_profiles.keys()),
-            n_patient_terms=len(patient.hpo_terms),
-            n_patient_propagated_terms=len(patient.propagated_hpo_terms),
             unfound_patient_terms=unfound_terms,
         )
 

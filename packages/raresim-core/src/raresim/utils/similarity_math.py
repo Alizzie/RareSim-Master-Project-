@@ -1,19 +1,22 @@
 """
-Core math functions for similarity calculations.
+Pure mathematical primitives for similarity calculations.
+
 All functions operate on dicts (sparse vectors) as the canonical input type.
 Sets are converted to binary vectors before computation.
+
+Type aliases
+------------
+TermSet    : set of string term IDs
+TermVector : sparse float vector keyed by term ID
+TermInput  : either of the above (converted internally as needed)
 """
 
-from typing import Callable, Dict, List, Optional, Set, Union, Tuple
 import math
+import numpy as np
 
-TermSet = Set[str]
-TermVector = Dict[str, float]
-TermInput = Union[TermSet, TermVector]
-PairwiseSimilarityFn = Callable[
-    [str, str, Dict[str, Set[str]], Dict[str, float]],
-    Tuple[float, Optional[str]],
-]
+TermSet = set[str]
+TermVector = dict[str, float]
+TermInput = TermSet | TermVector
 
 
 def to_binary_vector(terms: TermInput) -> TermVector:
@@ -37,6 +40,12 @@ def cosine_similarity(
     Accepts sets (converted to binary vectors) or dicts.
     Returns a value in [0, 1] where 1 = identical profile.
     Formula: cos(A, B) = (A * B) / (||A|| x ||B||)
+
+    Args:
+        vec_a, vec_b : term vectors or sets.
+        use_binary   : if True, convert both inputs to binary before scoring.
+                       Useful when you have weighted vectors but want a
+                       binary comparison.
     """
 
     a = to_binary_vector(vec_a) if use_binary or isinstance(vec_a, set) else vec_a
@@ -54,6 +63,22 @@ def cosine_similarity(
         return 0.0
 
     return dot / (a_norm * b_norm)
+
+
+def cosine_similarity_dense(vec_a: np.ndarray, vec_b: np.ndarray) -> float:
+    """
+    Cosine similarity between two dense numpy vectors.
+
+    Kept here so HPO2Vec and Autoencoder pipelines share one implementation
+    instead of each defining their own. Import numpy lazily so the rest of
+    utils/math.py has no numpy dependency.
+    """
+
+    norm_a = np.linalg.norm(vec_a)
+    norm_b = np.linalg.norm(vec_b)
+    if norm_a == 0.0 or norm_b == 0.0:
+        return 0.0
+    return float(np.dot(vec_a, vec_b) / (norm_a * norm_b))
 
 
 def jaccard(vec_a: TermInput, vec_b: TermInput) -> float:
@@ -101,55 +126,6 @@ def overlap_coefficient(vec_a: TermInput, vec_b: TermInput) -> float:
     return len(a & b) / min(len(a), len(b))
 
 
-def filter_terms_by_ic(
-    terms: Set[str],
-    ic_values: Dict[str, float],
-    ic_threshold: Optional[float],
-) -> Set[str]:
-    """
-    Filter a set of HPO terms by minimum IC value.
-
-    Removes overly broad terms (low IC) that add noise to similarity scores.
-    Example: HP:0000118 (Phenotypic abnormality) has very low IC and is excluded.
-
-    Args:
-        terms:        Set of HPO term IDs.
-        ic_values:    Dict mapping HPO ID → IC value.
-        ic_threshold: Minimum IC to keep a term. None = keep all.
-    """
-    if ic_threshold is None:
-        return set(terms)
-    return {term for term in terms if ic_values.get(term, 0.0) >= ic_threshold}
-
-
-def sum_ic(terms: Set[str], ic_values: Dict[str, float]) -> float:
+def sum_ic(terms: set[str], ic_values: dict[str, float]) -> float:
     """Sum IC values for a set of HPO terms."""
     return sum(ic_values.get(term, 0.0) for term in terms)
-
-
-def preprocess_ancestor_sets(
-    ancestors: Dict[str, List[str]],
-) -> Dict[str, Set[str]]:
-    """
-    Convert ancestor lists to inclusive ancestor sets.
-
-    Inclusive means the term itself is included in its own ancestor set.
-    Precomputed once and reused across all BMA comparisons for efficiency.
-
-    Args:
-        ancestors: Dict mapping HPO ID → list of ancestor IDs.
-
-    Returns:
-        Dict mapping HPO ID → set of ancestor IDs (including self).
-    """
-    return {
-        term: set(parent_terms) | {term} for term, parent_terms in ancestors.items()
-    }
-
-
-def get_ancestors_inclusive(
-    term: str,
-    ancestor_sets: Dict[str, Set[str]],
-) -> Set[str]:
-    """Return the inclusive ancestor set for a term (includes the term itself)."""
-    return ancestor_sets.get(term, {term})

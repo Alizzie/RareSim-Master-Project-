@@ -6,51 +6,43 @@ Implements IC-based pairwise HPO similarity using Best Match Average (BMA):
 - Jiang-Conrath BMA
 """
 
-from raresim.types.schemas import PatientProfile
 from raresim.core.context import AppContext
-from raresim.utils.paths import OUTPUTS_DIR
-from raresim.types.result import SimilarityResult
 from raresim.core.pipeline import (
     PipelineConfig,
-    build_metadata,
+    build_run_stats,
     sort_and_rank,
 )
+
+from raresim.types.schemas import PatientProfile
+from raresim.types.result import SimilarityResult, RunStats
+
 from raresim.utils._pipeline_runner import run_pipeline_main
-from raresim.utils.explanation import expand, SEMANTIC_EXPLANATION
-from raresim.utils.math import (
+from raresim.utils.hpo_utils import (
     filter_terms_by_ic,
     preprocess_ancestor_sets,
 )
-from raresim.utils.methods import best_match_scores
-
-from raresim.similarity_methods.semantic.methods import (
-    resnik_similarity,
-    lin_similarity,
-    jiang_conrath_similarity,
-)
 from raresim.utils.timer import Timer
 
-SEMANTIC_DIR = OUTPUTS_DIR / "semantic"
-PIPELINE_NAME = "semantic"
-
-# BMA methods: pairwise term-to-term comparison averaged bidirectionally
-BMA_METHODS = {
-    "semantic_resnik_bma": resnik_similarity,
-    "semantic_lin_bma": lin_similarity,
-    "semantic_jiang_conrath_bma": jiang_conrath_similarity,
-}
-
-ALL_METHODS = list(BMA_METHODS)
+from raresim.similarity_methods.semantic.explanation import build_explanation
+from raresim.similarity_methods.semantic.methods import best_match_scores
+from raresim.similarity_methods.semantic.config import (
+    BMA_METHODS,
+    ALL_METHODS,
+    PIPELINE_NAME,
+    SEMANTIC_DIR,
+)
 
 
 def _run_bma_method(
     method_name: str,
     similarity_fn,
-    patient_terms: set,
+    patient_terms: set[str],
+    all_patient_terms_before_filter: set[str],
+    patient_raw_terms: set[str],
     config: PipelineConfig,
     ctx: AppContext,
     ancestor_sets: dict,
-) -> list[SimilarityResult]:
+) -> tuple[list[SimilarityResult], RunStats]:
     """
     Run one BMA method over all disease profiles.
 
@@ -59,11 +51,27 @@ def _run_bma_method(
     2. Compute bidirectional best match scores (patient→disease, disease→patient)
     3. Average the two directions → final BMA score
     4. Build explanation with BMA averages + shared coverage expanders
+
+    Args:
+        method_name:                    e.g. "semantic_resnik_bma".
+        similarity_fn:                  Pairwise similarity function.
+        patient_terms:                  Patient terms after IC filtering.
+        all_patient_terms_before_filter: Patient terms before IC filter,
+                                         passed through to explanation builder
+                                         to compute filter impact.
+        patient_raw_terms:              Non-propagated patient terms for
+                                         direct vs propagated classification.
+        config:                         Pipeline configuration.
+        ctx:                            AppContext.
+        ancestor_sets:                  Preprocessed inclusive ancestor sets.
+
+    Returns:
+        (results list, runstats)
     """
     results = []
     skipped = 0
-
     timer = Timer(method_name).start()
+
     for disease_id, profile in ctx.disease_profiles.items():
         disease_terms = filter_terms_by_ic(
             set(profile.get(config.terms_key, [])),
@@ -83,24 +91,20 @@ def _run_bma_method(
         )
         score = 0.5 * (p2d_avg + d2p_avg)
 
-        explanation = {
-            "method": method_name,
-            "patient_to_disease_avg": p2d_avg,
-            "disease_to_patient_avg": d2p_avg,
-            "ic_threshold_used": config.ic_threshold,
-            "n_patient_terms_after_ic_filter": len(patient_terms),
-            "n_disease_terms_after_ic_filter": len(disease_terms),
-            "top_patient_to_disease_matches": sorted(
-                p2d_matches, key=lambda x: x["score"], reverse=True
-            )[:5],
-            "top_disease_to_patient_matches": sorted(
-                d2p_matches, key=lambda x: x["score"], reverse=True
-            )[:5],
-        }
-
-        # add shared coverage expanders (shared_terms, coverage, term_counts, unmatched)
-        explanation = expand(
-            explanation, patient_terms, disease_terms, SEMANTIC_EXPLANATION
+        explanation = build_explanation(
+            method_name=method_name,
+            patient_terms=patient_terms,
+            disease_terms=disease_terms,
+            score=score,
+            p2d_avg=p2d_avg,
+            d2p_avg=d2p_avg,
+            p2d_matches=p2d_matches,
+            d2p_matches=d2p_matches,
+            all_patient_terms_before_filter=all_patient_terms_before_filter,
+            hpo_labels=ctx.hpo_labels,
+            ic_values=ctx.ic_values,
+            ic_threshold=config.ic_threshold,
+            patient_raw_terms=patient_raw_terms,
         )
 
         results.append(
@@ -109,20 +113,20 @@ def _run_bma_method(
                 label=profile.get("label", ""),
                 score=score,
                 method_name=method_name,
-                explanation=explanation,
+                explanation=explanation.to_dict(),
             )
         )
 
-    metadata = build_metadata(
-        method_name=method_name,
-        pipeline_name=PIPELINE_NAME,
-        config=config,
-        n_patient_terms=len(patient_terms),
-        n_disease_terms=0,
+    stats = build_run_stats(
+        n_patient_terms_raw=len(patient_raw_terms),
+        n_patient_terms_propagated=len(all_patient_terms_before_filter),
+        n_patient_terms_used=len(patient_terms),
+        n_diseases_scored=len(results),
+        n_diseases_skipped=skipped,
         computation_time=timer.stop(),
     )
 
-    return results, metadata
+    return results, stats
 
 
 def run(
@@ -141,10 +145,12 @@ def run(
         ctx:      AppContext with disease profiles, IC values, ancestors.
 
     Returns:
-        Dict mapping method_name → ranked list of SimilarityResult.
+        Dict mapping method_name -> ranked list of SimilarityResult.
     """
+    patient_raw_terms = set(patient.hpo_terms)
+    patient_terms_before_filter = set(patient.get_terms(config.use_propagated_terms))
     patient_terms = filter_terms_by_ic(
-        set(patient.get_terms(config.use_propagated_terms)),
+        patient_terms_before_filter,
         ctx.ic_values,
         config.ic_threshold,
     )
@@ -161,16 +167,28 @@ def run(
     for method_name, similarity_fn in BMA_METHODS.items():
         if method_name not in selected:
             continue
-        results, metadata = _run_bma_method(
-            method_name, similarity_fn, patient_terms, config, ctx, ancestor_sets
+
+        results, stats = _run_bma_method(
+            method_name=method_name,
+            similarity_fn=similarity_fn,
+            patient_terms=patient_terms,
+            all_patient_terms_before_filter=patient_terms_before_filter,
+            patient_raw_terms=patient_raw_terms,
+            config=config,
+            ctx=ctx,
+            ancestor_sets=ancestor_sets,
         )
 
-        all_results[method_name] = sort_and_rank(results, metadata, config.top_k)
+        all_results[method_name] = sort_and_rank(
+            results, config, stats, method_name, PIPELINE_NAME
+        )
 
     return all_results
 
 
 def main() -> None:
+    """Main entry point for running the semantic similarity pipeline."""
+
     run_pipeline_main(
         pipeline_name=PIPELINE_NAME,
         method_names=ALL_METHODS,

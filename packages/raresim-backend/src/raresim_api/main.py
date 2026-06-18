@@ -27,7 +27,10 @@ from raresim.utils.paths import (
     HPO_LABELS_PATH,
     HPO_ANCESTORS_PATH,
 )
-from raresim.utils.math import preprocess_ancestor_sets, get_ancestors_inclusive
+from raresim.utils.hpo_utils import (
+    preprocess_ancestor_sets,
+    get_ancestors_inclusive,
+)
 from raresim.core.pipeline import PipelineConfig
 from raresim.hpo_extraction import build_patient_profile
 

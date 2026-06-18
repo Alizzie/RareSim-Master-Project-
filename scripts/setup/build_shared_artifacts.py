@@ -16,15 +16,15 @@ from raresim.core.config import (
     MONDO_PATH,
     ORDO_PATH,
     ORPHADATA_PRODUCT4_PATH,
-    OUTPUT_DIR,
+    ONTOLOGY_DIR,
 )
-from raresim.domain.disease_profiles import (
+from raresim.ontology.disease_profiles import (
     build_canonical_disease_profiles,
     expand_alias_profiles,
 )
-from raresim.core.hpo_utils import compute_ancestors, propagate_hpo_terms
-from raresim.domain.ic import compute_information_content, compute_term_frequencies
-from raresim.domain.loaders import (
+from raresim.ontology.hpo_utils import compute_ancestors, propagate_hpo_terms
+from raresim.ontology.ic import compute_information_content, compute_term_frequencies
+from raresim.ontology.loaders import (
     load_hpo_owl,
     load_hpoa_annotations,
     load_hoom_hpo_annotations,
@@ -36,8 +36,8 @@ from raresim.domain.loaders import (
 )
 from raresim.utils.mapping_utils import build_orpha_mapping_index
 from raresim.utils.normalizers import normalize_hpo_id, normalize_owl_local_id
-from raresim.domain.phenotype_merge import merge_phenotype_annotation_records
-from raresim.domain.disease_ancestors import build_ordered_ancestor_chains
+from raresim.ontology.phenotype_merge import merge_phenotype_annotation_records
+from raresim.ontology.disease_ancestors import build_ordered_ancestor_chains
 from raresim.types.schemas import PatientProfile
 
 
@@ -290,12 +290,12 @@ def main() -> None:
     }
 
     for filename, data in outputs.items():
-        save_json(data, OUTPUT_DIR / filename)
+        save_json(data, ONTOLOGY_DIR / filename)
 
     print("Done.")
     print(f"Canonical profiles saved: {len(canonical_profiles)}")
     print(f"Expanded alias profiles saved: {len(expanded_profiles)}")
-    print(f"Artifacts saved to: {OUTPUT_DIR}")
+    print(f"Artifacts saved to: {ONTOLOGY_DIR}")
 
 
 if __name__ == "__main__":

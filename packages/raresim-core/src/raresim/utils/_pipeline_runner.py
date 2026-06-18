@@ -40,17 +40,9 @@ def run_pipeline_main(
         patient=patient, use_canonical_profiles=config.use_canonical_profiles
     )
 
+    print(f"[{pipeline_name}] Running pipeline with methods: {method_names}")
     results = run_fn(patient, method_names, config, ctx)
 
-    output_dir.mkdir(parents=True, exist_ok=True)
+    print(f"[{pipeline_name}] Pipeline finished. Saving results to {output_dir}...")
     save_results(results, output_dir / f"{pipeline_name}_top{config.top_k}.json")
-
-    for method_name, rows in results.items():
-        save_individual_results(
-            rows, output_dir / f"{method_name}_top{config.top_k}.json"
-        )
-        print(f"\nTop results for {method_name}:")
-        for r in rows:
-            print(
-                f"  rank={r.rank:>2} | {r.disease_id:<15} | score={r.score:.4f} | {r.label}"
-            )
+    save_individual_results(results, output_dir)
