@@ -28,14 +28,13 @@ Usage:
 """
 
 import argparse
-import json
 import sys
 import time
 from pathlib import Path
 
-from shared.io import load_json, save_json
-from shared.paths import HPO_LABELS_PATH, OUTPUTS_DIR
-from hpo_extraction import build_patient_profile
+from raresim.utils.io import load_json, save_json
+from raresim.utils.paths import HPO_LABELS_PATH, OUTPUTS_DIR
+from raresim.hpo_extraction import build_patient_profile
 
 INPUT_PATH = Path("test_data") / "medicalCases.json"
 OUTPUT_DIR = OUTPUTS_DIR / "evaluation" / "medical_cases"
@@ -57,7 +56,13 @@ def parse_args() -> argparse.Namespace:
         "--methods",
         nargs="+",
         default=["dictionary", "fast_hpo_cr"],
-        choices=["dictionary", "biomedical_ner", "fast_hpo_cr", "chatgpt", "phenobrain_api"],
+        choices=[
+            "dictionary",
+            "biomedical_ner",
+            "fast_hpo_cr",
+            "chatgpt",
+            "phenobrain_api",
+        ],
         help="Extraction methods to use (default: dictionary fast_hpo_cr)",
     )
     parser.add_argument(
@@ -81,15 +86,16 @@ def load_existing_results(output_dir: Path) -> dict:
     return {}
 
 
-def merge_case_results(existing: dict, new_hpo_terms: list, new_extracted_terms: list, new_methods: list) -> dict:
+def merge_case_results(
+    existing: dict, new_hpo_terms: list, new_extracted_terms: list, new_methods: list
+) -> dict:
     """Merge new extraction results into an existing case, combining HPO terms and provenance."""
     # Merge HPO terms
     merged_hpo = sorted(set(existing.get("hpo_terms", [])) | set(new_hpo_terms))
 
     # Merge extracted terms — deduplicate by (hpo_id, method)
     existing_terms = {
-        (t["hpo_id"], t["method"]): t
-        for t in existing.get("extracted_terms", [])
+        (t["hpo_id"], t["method"]): t for t in existing.get("extracted_terms", [])
     }
     for t in new_extracted_terms:
         existing_terms[(t["hpo_id"], t["method"])] = t
@@ -150,7 +156,7 @@ def main() -> None:
     raw_cases = load_json(args.input)
     orpha_codes = list(raw_cases.keys())
     if args.limit:
-        orpha_codes = orpha_codes[:args.limit]
+        orpha_codes = orpha_codes[: args.limit]
     total = len(orpha_codes)
     print(f"  {total} cases to process")
     print(f"  Methods: {args.methods}")
@@ -181,7 +187,9 @@ def main() -> None:
                 continue
             # Only run the remaining methods
             run_methods = remaining
-            print(f"[{i+1:>5}/{total}] ORPHA:{orpha_code} | merging methods: {run_methods}")
+            print(
+                f"[{i+1:>5}/{total}] ORPHA:{orpha_code} | merging methods: {run_methods}"
+            )
         else:
             run_methods = args.methods
             print(f"[{i+1:>5}/{total}] ORPHA:{orpha_code} | {len(raw_text)} chars")
@@ -217,7 +225,9 @@ def main() -> None:
                 }
 
             processed += 1
-            print(f"         ✓ {results[case_id]['n_hpo_terms']} HPO terms in {case_elapsed:.1f}s")
+            print(
+                f"         ✓ {results[case_id]['n_hpo_terms']} HPO terms in {case_elapsed:.1f}s"
+            )
 
         except Exception as e:
             failed += 1
