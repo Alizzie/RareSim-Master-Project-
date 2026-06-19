@@ -44,5 +44,7 @@ def run_pipeline_main(
     results = run_fn(patient, method_names, config, ctx)
 
     print(f"[{pipeline_name}] Pipeline finished. Saving results to {output_dir}...")
-    save_results(results, output_dir / f"{pipeline_name}_top{config.top_k}.json")
+    save_results(
+        results, output_dir / f"list_all_{pipeline_name}_top{config.top_k}.json"
+    )
     save_individual_results(results, output_dir)

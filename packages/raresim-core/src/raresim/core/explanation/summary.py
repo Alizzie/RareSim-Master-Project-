@@ -9,12 +9,16 @@ the structured data.
 One generator per method family. All return a plain str.
 """
 
-from raresim.core.explanation.schema import CoverageBlock
+from raresim.core.explanation.schema import (
+    HpoCoverageBlock,
+    TokenCoverageBlock,
+    CoverageBlock,
+)
 
 
 # ── Set-based ─────────────────────────────────────────────────────────────────
 def set_based_summary(
-    coverage: CoverageBlock,
+    coverage: HpoCoverageBlock,
     method_name: str,
     ic_weighted_score: float,
 ) -> str:
@@ -36,7 +40,7 @@ def set_based_summary(
 
 # ── Semantic ──────────────────────────────────────────────────────────────────
 def semantic_summary(
-    coverage: CoverageBlock,
+    coverage: HpoCoverageBlock,
     p2d_avg: float,
     d2p_avg: float,
     top_cluster_label: str | None,
@@ -72,28 +76,73 @@ def semantic_summary(
     return " ".join(parts)
 
 
-# ── TF-IDF (placeholder — populated in the tfidf iteration) ─────────────────
+# ── TF-IDF ─────────────────
+
+
 def tfidf_summary(
     coverage: CoverageBlock,
     ic_weighted_score: float,
+    mode: str = "tfidf_hpo",
+    is_sparse: bool = False,
 ) -> str:
     """
-    Example output:
-        3 of 5 patient terms matched (60% patient / 43% disease coverage).
-         TF-IDF weighted match score: 12.4."
+    Produces a mode-specific summary string.
+
+    Uses isinstance() to narrow the coverage type before accessing
+    subtype-specific fields. This is safer than local re-annotation
+    and lets the type checker verify correctness without type: ignore.
     """
-    pct_patient = round(coverage.patient_coverage * 100)
-    pct_disease = round(coverage.disease_coverage * 100)
+    sparse_warning = (
+        " Warning: disease description is very short — score may be unreliable."
+        if is_sparse
+        else ""
+    )
+
+    if mode == "tfidf_hpo":
+        if not isinstance(coverage, HpoCoverageBlock):
+            raise TypeError(
+                f"tfidf_hpo mode requires HpoCoverageBlock, got {type(coverage).__name__}"
+            )
+        pct_patient = round(coverage.patient_coverage * 100)
+        pct_disease = round(coverage.disease_coverage * 100)
+        return (
+            f"{coverage.n_matched_terms} of {coverage.n_patient_terms} patient HPO terms "
+            f"matched ({pct_patient}% patient / {pct_disease}% disease coverage). "
+            f"TF-IDF weighted match score: {ic_weighted_score:.1f}."
+        )
+
+    if not isinstance(coverage, TokenCoverageBlock):
+        raise TypeError(
+            f"{mode} requires TokenCoverageBlock, got {type(coverage).__name__}"
+        )
+
+    pct_patient = round(coverage.patient_token_coverage * 100)
+    pct_disease = round(coverage.disease_token_coverage * 100)
+    n_matched = coverage.n_matched_tokens
+    n_patient = coverage.n_patient_tokens
+    n_disease = coverage.n_disease_tokens
+
+    if mode == "tfidf_text":
+        return (
+            f"{n_matched} of {n_patient} patient text tokens matched disease description "
+            f"({pct_patient}% patient / {pct_disease}% disease token coverage, "
+            f"{n_disease} disease tokens total)."
+            f"{sparse_warning}"
+        )
+
+    # hybrid
     return (
-        f"{coverage.n_matched_terms} of {coverage.n_patient_terms} patient terms matched "
-        f"({pct_patient}% patient / {pct_disease}% disease coverage). "
-        f"TF-IDF weighted match score: {ic_weighted_score:.1f}."
+        f"{n_matched} of {n_patient} patient HPO label tokens matched disease description "
+        f"({pct_patient}% patient / {pct_disease}% disease token coverage, "
+        f"{n_disease} disease tokens total). "
+        f"See contributing_hpo_terms for phenotype-level traceability."
+        f"{sparse_warning}"
     )
 
 
 # ── Embedding methods (HPO2Vec / Autoencoder) — placeholders ─────────────────
 def embedding_summary(
-    coverage: CoverageBlock,
+    coverage: HpoCoverageBlock,
     method_name: str,
     cosine_score: float,
 ) -> str:
