@@ -9,6 +9,8 @@ from raresim.utils.io import save_json
 from raresim.core.config import (
     APPLY_TRUE_PATH_RULE,
     EXAMPLE_PATIENT,
+)
+from raresim.utils.paths import (
     HPO_PATH,
     HPOA_PATH,
     HOOM_PATH,
@@ -16,7 +18,7 @@ from raresim.core.config import (
     MONDO_PATH,
     ORDO_PATH,
     ORPHADATA_PRODUCT4_PATH,
-    ONTOLOGY_DIR,
+    ARTIFACTS_DIR,
 )
 from raresim.ontology.disease_profiles import (
     build_canonical_disease_profiles,
@@ -290,12 +292,12 @@ def main() -> None:
     }
 
     for filename, data in outputs.items():
-        save_json(data, ONTOLOGY_DIR / filename)
+        save_json(data, ARTIFACTS_DIR / filename)
 
     print("Done.")
     print(f"Canonical profiles saved: {len(canonical_profiles)}")
     print(f"Expanded alias profiles saved: {len(expanded_profiles)}")
-    print(f"Artifacts saved to: {ONTOLOGY_DIR}")
+    print(f"Artifacts saved to: {ARTIFACTS_DIR}")
 
 
 if __name__ == "__main__":

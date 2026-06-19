@@ -12,6 +12,15 @@ from raresim.utils.mapping_utils import (
 from raresim.utils.normalizers import normalize_disease_id, normalize_hpo_id
 from raresim.types.schemas import DiseaseProfile
 
+_DESCRIPTION_FIELDS = (
+    "ordo_label",
+    "ordo_description",
+    "mondo_label",
+    "mondo_description",
+    "hoom_label",
+    "hoom_description",
+)
+
 
 def _pick_merged_description(
     ordo_description: Optional[str],
@@ -61,6 +70,135 @@ def _finalize_profiles(
             profile.mondo_description,
             profile.hoom_description,
         )
+
+
+def _build_source_id_index(
+    profiles: Dict[str, DiseaseProfile],
+) -> Dict[str, list[str]]:
+    """
+    Build an inverted index: any source ID value → list of canonical
+    profile keys that reference it in their source_ids dict.
+
+    This finds connections between profiles that represent the same
+    disease but were created from different annotation sources and
+    therefore have different canonical keys.
+
+    Example:
+        ORPHA:102002 has source_ids = {"mondo_id": "MONDO:0000437", ...}
+        MONDO:0000437 has source_ids = {"monarch_original_id": "MONDO:0000437"}
+
+        Index will contain:
+            "MONDO:0000437" → ["ORPHA:102002", "MONDO:0000437"]
+            "ORPHA:102002"  → ["ORPHA:102002"]
+
+        When processing MONDO:0000437 (poor profile), we find
+        "MONDO:0000437" in the index, see ORPHA:102002 as a candidate,
+        and copy its descriptions across.
+    """
+    index: Dict[str, list[str]] = {}
+
+    for canonical_key, profile in profiles.items():
+        # Index by the canonical key itself
+        index.setdefault(canonical_key, []).append(canonical_key)
+        # Index by every source_id value
+        for val in (profile.source_ids or {}).values():
+            if isinstance(val, str):
+                index.setdefault(val, []).append(canonical_key)
+
+    return index
+
+
+def _propagate_descriptions(
+    profiles: Dict[str, DiseaseProfile],
+) -> int:
+    """
+    Final pass: copy description metadata to canonical profiles that
+    lack it but represent the same disease as a profile that has it.
+
+    This handles the case where the same disease has two canonical entries:
+      - One from ORDO/MONDO metadata  → has description, keyed as ORPHA:NNNN
+      - One from Monarch annotations  → no description, keyed as MONDO:NNNNNNN
+
+    Both exist as independent canonical entries (neither is an alias of
+    the other in alias_to_canonical). The connection is found by looking
+    for shared values in source_ids — ORPHA:102002 stores "mondo_id":
+    "MONDO:0000437", and MONDO:0000437 itself is a canonical key, so
+    searching the index for "MONDO:0000437" finds both.
+
+    Must be called AFTER _finalize_profiles so merged_description is
+    already set on profiles that have source descriptions.
+
+    Returns the number of profiles that received description data.
+    """
+    # Separate profiles into those that have descriptions and those that do not.
+    rich = {
+        k: p
+        for k, p in profiles.items()
+        if p.merged_description and p.merged_description.strip()
+    }
+    poor = {
+        k: p
+        for k, p in profiles.items()
+        if not (p.merged_description and p.merged_description.strip())
+    }
+
+    if not rich or not poor:
+        return 0
+
+    # Build the source ID index over rich profiles only — we only want
+    # to find rich profiles as candidates, not other poor ones.
+    rich_index = _build_source_id_index(rich)
+
+    n_updated = 0
+
+    for poor_key, poor_profile in poor.items():
+        candidates: Set[str] = set()
+
+        # The poor profile's own canonical key may appear as a source_id
+        # value inside a rich profile (e.g. ORPHA:102002 stores mondo_id:
+        # MONDO:0000437, so searching for MONDO:0000437 finds ORPHA:102002)
+        for match_key in rich_index.get(poor_key, []):
+            candidates.add(match_key)
+
+        # Also search by every source_id value of the poor profile itself
+        for val in (poor_profile.source_ids or {}).values():
+            if isinstance(val, str):
+                for match_key in rich_index.get(val, []):
+                    candidates.add(match_key)
+
+        # Never match a profile to itself
+        candidates.discard(poor_key)
+
+        if not candidates:
+            continue
+
+        # Pick the richest candidate — most description fields populated
+        best_key = max(
+            candidates,
+            key=lambda k: sum(
+                1 for f in _DESCRIPTION_FIELDS if getattr(profiles[k], f)
+            ),
+        )
+        best = profiles[best_key]
+
+        # Copy missing description fields from best → poor_profile
+        changed = False
+        for field in _DESCRIPTION_FIELDS:
+            src_val = getattr(best, field)
+            if src_val and not getattr(poor_profile, field):
+                setattr(poor_profile, field, src_val)
+                changed = True
+
+        if changed:
+            # Recompute merged_description now that source fields are populated
+            poor_profile.merged_description = _pick_merged_description(
+                poor_profile.ordo_description,
+                poor_profile.mondo_description,
+                poor_profile.hoom_description,
+            )
+            n_updated += 1
+
+    return n_updated
 
 
 def build_canonical_disease_profiles(
@@ -246,6 +384,13 @@ def build_canonical_disease_profiles(
         hpo_ancestors=hpo_ancestors,
         apply_true_path_rule=apply_true_path_rule,
     )
+
+    n_propagated = _propagate_descriptions(profiles)
+    if n_propagated:
+        print(
+            f"[build_canonical_disease_profiles] "
+            f"Propagated descriptions to {n_propagated} annotation-only profiles."
+        )
 
     return profiles, alias_to_canonical
 
