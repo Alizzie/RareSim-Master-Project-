@@ -25,7 +25,7 @@ from raresim.core.context import AppContext
 from raresim.types.result import SimilarityResult
 from raresim.core.pipeline import (
     PipelineConfig,
-    build_metadata,
+    build_run_stats,
     sort_and_rank,
 )
 from raresim.utils.explanation import expand, SET_BASED_EXPLANATION
@@ -170,7 +170,7 @@ def run(
             )
         )
 
-    metadata = build_metadata(
+    metadata = build_run_stats(
         method_name=METHOD_NAME,
         pipeline_name=PIPELINE_NAME,
         config=config,

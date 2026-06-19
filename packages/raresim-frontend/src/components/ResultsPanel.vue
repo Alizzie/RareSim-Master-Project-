@@ -132,6 +132,21 @@
           </div>
         </div>
       </div>
+      <!-- Method comparison (collapsible) -->
+      <div v-if="comparison" class="comparison-section">
+        <button class="comparison-toggle" @click="showComparison = !showComparison">
+          <span class="chevron" :class="{ open: showComparison }">▸</span>
+          Method comparison
+          <span class="count">{{ comparison.methods.length }} methods</span>
+        </button>
+
+        <MethodComparison
+          v-if="showComparison"
+          :comparison="comparison"
+          :case-id="meta?.case_id || ''"
+          :input-hpo="inputHpo"
+        />
+      </div>
     </div>
 
   </main>
@@ -139,11 +154,14 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import MethodComparison from './MethodComparison.vue'
 
 const props = defineProps({
   state:          { type: String,  default: 'idle' },  // idle | loading | done | error
   results:        { type: Array,   default: () => [] },
   meta:           { type: Object,  default: () => ({}) },
+  comparison: { type: Object, default: null },
+  inputHpo: { type: Array, default: () => [] },
   errorMessage:   { type: String,  default: '' },
   runningMethods: { type: Array,   default: () => [] },
   nDiseases:      { type: Number,  default: 0 },
@@ -152,6 +170,7 @@ const props = defineProps({
 defineEmits(['retry'])
 
 const expandedIdx = ref(null)
+const showComparison = ref(false)
 
 const topScore = computed(() => {
   if (!props.results.length) return '—'
@@ -467,4 +486,30 @@ function methodLabel(id) {
   color: var(--text-secondary);
   margin-left: auto;
 }
+.comparison-section { margin-top: 20px; }
+.comparison-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+}
+.comparison-toggle:hover { border-color: var(--border-strong); }
+.comparison-toggle .chevron {
+  display: inline-block;
+  color: var(--text-secondary);
+  transition: transform .15s;
+}
+.comparison-toggle .chevron.open { transform: rotate(90deg); }
+.comparison-toggle .count { margin-left: auto; color: var(--text-tertiary); font-size: 11px; }
+.comparison-section .mc { margin-top: 12px; }
 </style>

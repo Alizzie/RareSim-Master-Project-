@@ -16,7 +16,7 @@ from raresim.utils.paths import OUTPUTS_DIR, HPO_PARENTS_PATH
 from raresim.types.result import SimilarityResult
 from raresim.core.pipeline import (
     PipelineConfig,
-    build_metadata,
+    build_run_stats,
     sort_and_rank,
 )
 from raresim.utils._pipeline_runner import run_pipeline_main
@@ -138,7 +138,7 @@ def run(
             )
         )
 
-    metadata = build_metadata(
+    metadata = build_run_stats(
         method_name=METHOD_NAME,
         pipeline_name=PIPELINE_NAME,
         config=config,

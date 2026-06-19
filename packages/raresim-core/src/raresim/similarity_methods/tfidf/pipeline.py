@@ -12,11 +12,11 @@ Pipeline:
 from raresim.types.schemas import PatientProfile
 from raresim.core.context import AppContext
 from raresim.utils.paths import OUTPUTS_DIR
-from raresim.types.result import SimilarityResult
+from raresim.types.result import MethodResults, SimilarityResult
 from raresim.utils.shared_methods import cosine_similarity
 from raresim.core.pipeline import (
     PipelineConfig,
-    build_metadata,
+    build_run_stats,
     sort_and_rank,
 )
 from raresim.utils._pipeline_runner import run_pipeline_main
@@ -38,7 +38,7 @@ def run(
     selected: list[str],
     config: PipelineConfig,
     ctx: AppContext,
-) -> dict[str, list[SimilarityResult]]:
+) -> dict[str, MethodResults]:
     """Run the TF-IDF similarity pipeline for the given patient and selected methods."""
 
     if METHOD_NAME not in selected:
@@ -52,14 +52,15 @@ def run(
 
     timer = Timer(METHOD_NAME).start()
     results = []
-
+    skipped = 0
     for disease_id, profile in ctx.disease_profiles.items():
         disease_terms = set(profile.get(config.terms_key, []))
         if not disease_terms:
+            skipped += 1
             continue
 
         disease_vec = build_tfidf_vector(disease_terms, idf)
-        score, explaination = cosine_similarity(patient_vec, disease_vec)
+        score = cosine_similarity(patient_vec, disease_vec)
 
         results.append(
             SimilarityResult(
@@ -68,7 +69,7 @@ def run(
                 score=score,
                 method_name=METHOD_NAME,
                 explanation=expand(
-                    explaination,
+                    {},
                     patient_terms,
                     disease_terms,
                     expanders=[
@@ -79,16 +80,22 @@ def run(
             )
         )
 
-    metadata = build_metadata(
-        method_name=METHOD_NAME,
-        pipeline_name=PIPELINE_NAME,
-        config=config,
-        n_patient_terms=len(patient_terms),
-        n_disease_terms=len(disease_terms),
+    metadata = build_run_stats(
+        n_patient_terms_raw=len(patient_terms),
+        n_patient_terms_propagated=len(patient_terms),
+        n_patient_terms_used=len(patient_terms),
+        n_diseases_scored=len(results),
+        n_diseases_skipped=skipped,
         computation_time=timer.stop(),
     )
 
-    return {"tfidf_cosine": sort_and_rank(results, metadata, config.top_k)}
+    return {"tfidf_cosine": sort_and_rank(
+        results,
+        config,
+        metadata,
+        method_name=METHOD_NAME,
+        pipeline_name=PIPELINE_NAME,
+    )}
 
 
 def main() -> None:

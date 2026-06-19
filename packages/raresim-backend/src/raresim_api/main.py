@@ -6,7 +6,7 @@ Endpoints:
     POST /api/diagnose  — run similarity methods and return ranked diseases
 
 Run:
-    uvicorn src.api.backend.main:app --reload --port 8000
+    uvicorn raresim_api.main:app --reload --port 8000
 """
 
 import traceback
@@ -40,6 +40,8 @@ from raresim.similarity_methods.tfidf.pipeline import run as run_tfidf
 from raresim.similarity_methods.transformer.pipeline import run as run_transformer
 from raresim.similarity_methods.llm.pipeline import run as run_llm
 
+from raresim.core.method_comparison import build_comparison
+
 # ── App setup ─────────────────────────────────────────────────────────────────
 app = FastAPI(title="RareSim API", version="0.1.0")
 
@@ -65,6 +67,33 @@ SET_BASED_METHODS = {"set_cosine", "set_jaccard", "set_dice", "set_overlap"}
 TFIDF_METHODS = {"tfidf"}
 TRANSFORMER_METHODS = {"transformer"}
 LLM_METHODS = {"llm"}
+
+from collections import defaultdict
+
+def _collect_by_method(all_results, all_raw_results):
+    """Per-method ranked lists, keeping each method's own ranks (for comparison)."""
+    by_method = defaultdict(list)
+    for method_results in all_results.values():
+        ranked = (getattr(method_results, "rankings", None)
+                  or getattr(method_results, "ranked", None) or method_results)
+        for r in ranked:
+            by_method[r.method_name].append(
+                {"disease_id": r.disease_id, "label": r.label, "score": r.score, "rank": r.rank})
+    for method_name, results_list in all_raw_results.items():
+        if isinstance(results_list, dict):           # transformer: {model: [...]}
+            for model_name, model_results in results_list.items():
+                name = f"{method_name}_{model_name}"
+                for r in model_results:
+                    by_method[name].append(
+                        {"disease_id": r.get("canonical_disease_id") or r.get("disease_id", ""),
+                         "label": r.get("label", ""), "score": r.get("score", 0.0),
+                         "rank": r.get("rank", 0)})
+        elif isinstance(results_list, list):         # llm
+            for r in results_list:
+                by_method[method_name].append(
+                    {"disease_id": r.get("disease_id", ""), "label": r.get("label", ""),
+                     "score": r.get("score", 0.0), "rank": r.get("rank", 0)})
+    return dict(by_method)
 
 # ── Request / Response models ─────────────────────────────────────────────────
 
@@ -277,8 +306,12 @@ def diagnose(req: DiagnoseRequest):
         for i, r in enumerate(flat_results):
             r["rank"] = i + 1
 
+        by_method = _collect_by_method(all_results, all_raw_results)
+        comparison = build_comparison(by_method, k=req.top_k, top_n=12)
+ 
         return {
             "results": flat_results[: req.top_k],
+            "comparison": comparison,
             "meta": {
                 "n_patient_terms": len(hpo_terms),
                 "n_diseases": len(ctx.disease_profiles),
