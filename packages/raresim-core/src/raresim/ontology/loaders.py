@@ -17,7 +17,19 @@ OWL_NS = {
     "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
     "obo": "http://purl.obolibrary.org/obo/",
     "IAO": "http://purl.obolibrary.org/obo/IAO_",
+    "skos": "http://www.w3.org/2004/02/skos/core#",
 }
+
+
+def _extract_exact_matches(class_elem: ET.Element) -> List[str]:
+    matches = []
+
+    for elem in class_elem.findall("skos:exactMatch", OWL_NS):
+        resource = elem.attrib.get(f"{{{OWL_NS['rdf']}}}resource")
+        if resource:
+            matches.append(resource.strip())
+
+    return matches
 
 
 def _local_name(tag: str) -> str:
@@ -161,6 +173,7 @@ def load_disease_ontology_metadata(
             "label": _extract_label(cls),
             "description": _extract_description(cls),
             "xrefs": _extract_xrefs(cls),
+            "exact_matches": _extract_exact_matches(cls),
         }
 
     return results

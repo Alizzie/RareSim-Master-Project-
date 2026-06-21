@@ -63,13 +63,38 @@ def extract_mondo_from_xrefs(xrefs: List[str]) -> List[str]:
     return matches
 
 
+def extract_orpha_from_exact_matches(exact_matches: List[str]) -> Optional[str]:
+    for value in exact_matches:
+        cleaned = value.strip()
+
+        if "Orphanet_" in cleaned:
+            number = cleaned.split("Orphanet_")[-1]
+            if number.isdigit():
+                return f"ORPHA:{number}"
+
+        normalized = normalize_xref(cleaned)
+        for pattern in ORPHA_PATTERNS:
+            match = pattern.match(normalized)
+            if match:
+                return f"ORPHA:{match.group(1)}"
+
+    return None
+
+
 def build_orpha_mapping_index(
     ordo_metadata: Dict[str, dict],
     mondo_metadata: Dict[str, dict],
     hoom_metadata: Dict[str, dict],
 ) -> Dict[str, str]:
     """
-    Build mapping index to canonical ORPHA IDs from ontology xrefs.
+    Build mapping index to canonical ORPHA IDs.
+
+    Strong rule:
+        - MONDO entries are mapped to ORPHA only if they have a skos:exactMatch
+          to an Orphanet/ORDO ID.
+
+    This avoids copying wrong MONDO descriptions into ORPHA profiles based only
+    on weak hasDbXref mappings.
 
     Returns examples like:
       {
@@ -79,34 +104,57 @@ def build_orpha_mapping_index(
     """
     mapping: Dict[str, str] = {}
 
-    def process_metadata_entry(raw_id: str, meta: dict) -> None:
-        xrefs = meta.get("xrefs", [])
-        orpha_id = extract_orpha_from_xrefs(xrefs)
+    def process_metadata_entry(raw_id: str, meta: dict, source: str) -> None:
+        source = source.upper()
 
-        # If local ID is already ORPHA-like, use it as anchor
+        xrefs = meta.get("xrefs", [])
+        exact_matches = meta.get("exact_matches", [])
+
+        exact_orpha_id = extract_orpha_from_exact_matches(exact_matches)
+        xref_orpha_id = extract_orpha_from_xrefs(xrefs)
+
+        # ORPHA entries are already canonical anchors.
         if raw_id.startswith("ORPHA:"):
             orpha_id = raw_id
+
+        # For MONDO, only trust exactMatch for mapping the MONDO ID itself.
+        # This prevents weak xrefs from attaching wrong MONDO descriptions.
+        elif source == "MONDO":
+            orpha_id = exact_orpha_id
+
+        # For ORDO/HOOM/other metadata, allow exactMatch first, then xref fallback.
+        else:
+            orpha_id = exact_orpha_id or xref_orpha_id
 
         if not orpha_id:
             return
 
+        # Map the entry itself to ORPHA when it is a non-ORPHA alias.
+        # Example: MONDO:0000437 -> ORPHA:102002
+        if raw_id != orpha_id:
+            mapping[raw_id] = orpha_id
+
+        # Map OMIM aliases found in xrefs.
         for omim_id in extract_omim_from_xrefs(xrefs):
             mapping[omim_id] = orpha_id
 
-        for mondo_id in extract_mondo_from_xrefs(xrefs):
-            mapping[mondo_id] = orpha_id
+        # Map MONDO aliases from non-MONDO metadata, especially ORDO metadata.
+        # For MONDO metadata itself, raw_id was already handled above using exactMatch.
+        if source != "MONDO":
+            for mondo_id in extract_mondo_from_xrefs(xrefs):
+                mapping[mondo_id] = orpha_id
 
     for local_id, meta in ordo_metadata.items():
         raw_id = meta.get("normalized_id", local_id)
-        process_metadata_entry(raw_id, meta)
+        process_metadata_entry(raw_id, meta, source="ORDO")
 
     for local_id, meta in mondo_metadata.items():
         raw_id = meta.get("normalized_id", local_id)
-        process_metadata_entry(raw_id, meta)
+        process_metadata_entry(raw_id, meta, source="MONDO")
 
     for local_id, meta in hoom_metadata.items():
         raw_id = meta.get("normalized_id", local_id)
-        process_metadata_entry(raw_id, meta)
+        process_metadata_entry(raw_id, meta, source="HOOM")
 
     return mapping
 

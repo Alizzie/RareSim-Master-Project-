@@ -72,37 +72,53 @@ def _finalize_profiles(
         )
 
 
+def _is_linkable_source_id(key: str, value: object) -> bool:
+    """
+    Return True only for source_ids values that can safely identify
+    the same disease across sources.
+
+    Do not use frequency codes, HPO terms, or arbitrary strings for
+    cross-profile matching.
+    """
+    if not isinstance(value, str):
+        return False
+
+    if key.endswith("_frequency_codes"):
+        return False
+
+    if value.startswith("HP:"):
+        return False
+
+    disease_prefixes = (
+        "ORPHA:",
+        "OMIM:",
+        "MONDO:",
+        "DECIPHER:",
+        "DOID:",
+        "MIM:",
+        "Orphanet_",
+        "MONDO_",
+    )
+
+    return value.startswith(disease_prefixes)
+
+
 def _build_source_id_index(
     profiles: Dict[str, DiseaseProfile],
 ) -> Dict[str, list[str]]:
     """
-    Build an inverted index: any source ID value → list of canonical
-    profile keys that reference it in their source_ids dict.
+    Build an inverted index using only safe disease identifiers.
 
-    This finds connections between profiles that represent the same
-    disease but were created from different annotation sources and
-    therefore have different canonical keys.
-
-    Example:
-        ORPHA:102002 has source_ids = {"mondo_id": "MONDO:0000437", ...}
-        MONDO:0000437 has source_ids = {"monarch_original_id": "MONDO:0000437"}
-
-        Index will contain:
-            "MONDO:0000437" → ["ORPHA:102002", "MONDO:0000437"]
-            "ORPHA:102002"  → ["ORPHA:102002"]
-
-        When processing MONDO:0000437 (poor profile), we find
-        "MONDO:0000437" in the index, see ORPHA:102002 as a candidate,
-        and copy its descriptions across.
+    This avoids false matches caused by non-ID source_ids values such as
+    HPOA frequency codes like '5/5' or 'HP:0040283'.
     """
     index: Dict[str, list[str]] = {}
 
     for canonical_key, profile in profiles.items():
-        # Index by the canonical key itself
         index.setdefault(canonical_key, []).append(canonical_key)
-        # Index by every source_id value
-        for val in (profile.source_ids or {}).values():
-            if isinstance(val, str):
+
+        for key, val in (profile.source_ids or {}).items():
+            if _is_linkable_source_id(key, val):
                 index.setdefault(val, []).append(canonical_key)
 
     return index
@@ -230,10 +246,23 @@ def build_canonical_disease_profiles(
         if hpo_id not in hpo_labels:
             continue
 
+        metadata_by_normalized_id = {}
+
+        for meta in ordo_metadata.values():
+            metadata_by_normalized_id[meta["normalized_id"]] = meta
+
+        for meta in mondo_metadata.values():
+            metadata_by_normalized_id[meta["normalized_id"]] = meta
+
+        for meta in hoom_metadata.values():
+            metadata_by_normalized_id[meta["normalized_id"]] = meta
+
+        source_meta = metadata_by_normalized_id.get(raw_disease_id)
+
         canonical_disease_id = resolve_to_orpha(
             raw_disease_id,
             mapping_index=mapping_index,
-            source_metadata=None,
+            source_metadata=source_meta,
         )
 
         alias_to_canonical[raw_disease_id] = canonical_disease_id
@@ -385,7 +414,14 @@ def build_canonical_disease_profiles(
         apply_true_path_rule=apply_true_path_rule,
     )
 
-    n_propagated = _propagate_descriptions(profiles)
+    # Disabled for now:
+    # Description propagation can copy descriptions between profiles that share
+    # source_ids but are not safe to merge textually. This can contaminate
+    # TF-IDF / text-based ranking with unrelated disease descriptions.
+    #
+    # Correct metadata should already be merged during the ORDO/MONDO/HOOM
+    # metadata passes when IDs canonicalize properly.
+    n_propagated = 0
     if n_propagated:
         print(
             f"[build_canonical_disease_profiles] "
