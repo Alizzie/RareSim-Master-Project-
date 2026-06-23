@@ -12,9 +12,8 @@ All models are encoder-only (not generative) and produce fixed-size
 embeddings used for cosine similarity ranking.
 """
 
-from raresim.utils.paths import OUTPUTS_DIR
+from raresim.utils.paths import TRANSFORMER_DIR
 
-TRANSFORMER_DIR = OUTPUTS_DIR / "transformer"
 CACHE_ROOT = TRANSFORMER_DIR / "cache"
 
 TRANSFORMER_DIR.mkdir(parents=True, exist_ok=True)
@@ -28,14 +27,13 @@ MODEL_LIST = [
     "dmis-lab/biobert-v1.1",
 ]
 
+# Use this when the frontend should run only one transformer model.
+DEFAULT_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
+DEFAULT_MODEL_LIST = [DEFAULT_MODEL]
+
 # Sentence transformer models — use SentenceTransformer library
 SENTENCE_TRANSFORMER_MODELS = {
     "sentence-transformers/all-MiniLM-L6-v2",
-}
-
-# Models that need AutoTokenizer instead of BertTokenizer
-AUTO_TOKENIZER_MODELS = {
-    "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
 }
 
 MAX_LENGTH = 128

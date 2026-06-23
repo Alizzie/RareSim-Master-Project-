@@ -158,6 +158,8 @@ def _ranked_topk(items: list[dict[str, Any]], k: int) -> list[dict[str, Any]]:
             {
                 "disease_id": disease_id,
                 "label": label,
+                "profile_type": item.get("profile_type"),
+                "category_path": item.get("category_path", []),
                 "score": round(_score(item), 6),
                 "rank": index + 1,
             }

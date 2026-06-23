@@ -1,7 +1,6 @@
 """Module to build disease profiles by integrating data from multiple sources."""
 
 from copy import deepcopy
-from typing import Dict, Optional, Set, Tuple
 
 from raresim.ontology.hpo_utils import propagate_hpo_terms
 from raresim.utils.mapping_utils import (
@@ -23,10 +22,10 @@ _DESCRIPTION_FIELDS = (
 
 
 def _pick_merged_description(
-    ordo_description: Optional[str],
-    mondo_description: Optional[str],
-    hoom_description: Optional[str],
-) -> Optional[str]:
+    ordo_description: str | None,
+    mondo_description: str | None,
+    hoom_description: str | None,
+) -> str | None:
     for desc in (ordo_description, mondo_description, hoom_description):
         if desc and desc.strip():
             return desc.strip()
@@ -34,9 +33,9 @@ def _pick_merged_description(
 
 
 def _get_or_create_profile(
-    profiles: Dict[str, DiseaseProfile],
+    profiles: dict[str, DiseaseProfile],
     disease_id: str,
-    label: Optional[str] = None,
+    label: str | None = None,
 ) -> DiseaseProfile:
     if disease_id not in profiles:
         profiles[disease_id] = DiseaseProfile(
@@ -52,8 +51,8 @@ def _get_or_create_profile(
 
 
 def _finalize_profiles(
-    profiles: Dict[str, DiseaseProfile],
-    hpo_ancestors: Dict[str, Set[str]],
+    profiles: dict[str, DiseaseProfile],
+    hpo_ancestors: dict[str, set[str]],
     apply_true_path_rule: bool,
 ) -> None:
     for profile in profiles.values():
@@ -104,15 +103,15 @@ def _is_linkable_source_id(key: str, value: object) -> bool:
 
 
 def _build_source_id_index(
-    profiles: Dict[str, DiseaseProfile],
-) -> Dict[str, list[str]]:
+    profiles: dict[str, DiseaseProfile],
+) -> dict[str, list[str]]:
     """
     Build an inverted index using only safe disease identifiers.
 
     This avoids false matches caused by non-ID source_ids values such as
     HPOA frequency codes like '5/5' or 'HP:0040283'.
     """
-    index: Dict[str, list[str]] = {}
+    index: dict[str, list[str]] = {}
 
     for canonical_key, profile in profiles.items():
         index.setdefault(canonical_key, []).append(canonical_key)
@@ -125,7 +124,7 @@ def _build_source_id_index(
 
 
 def _propagate_descriptions(
-    profiles: Dict[str, DiseaseProfile],
+    profiles: dict[str, DiseaseProfile],
 ) -> int:
     """
     Final pass: copy description metadata to canonical profiles that
@@ -168,7 +167,7 @@ def _propagate_descriptions(
     n_updated = 0
 
     for poor_key, poor_profile in poor.items():
-        candidates: Set[str] = set()
+        candidates: set[str] = set()
 
         # The poor profile's own canonical key may appear as a source_id
         # value inside a rich profile (e.g. ORPHA:102002 stores mondo_id:
@@ -217,196 +216,264 @@ def _propagate_descriptions(
     return n_updated
 
 
-def build_canonical_disease_profiles(
+def _as_optional_str(value: object) -> str | None:
+    """Return a stripped string if value is a non-empty string."""
+    if isinstance(value, str) and value.strip():
+        return value.strip()
+    return None
+
+
+def _build_metadata_lookup(
+    ordo_metadata: dict[str, dict],
+    mondo_metadata: dict[str, dict],
+    hoom_metadata: dict[str, dict],
+) -> dict[str, dict]:
+    """Build lookup from normalized disease ID to source metadata."""
+    metadata_by_normalized_id: dict[str, dict] = {}
+
+    for metadata_source in (ordo_metadata, mondo_metadata, hoom_metadata):
+        for meta in metadata_source.values():
+            normalized_id = _as_optional_str(meta.get("normalized_id"))
+            if normalized_id:
+                metadata_by_normalized_id[normalized_id] = meta
+
+    return metadata_by_normalized_id
+
+
+def _add_negative_terms(
+    profile: DiseaseProfile,
+    disease_id: str,
+    negative_terms_by_disease: dict[str, set[str]],
+) -> None:
+    """Attach negative HPO terms to a profile if they exist."""
+    negative_terms = negative_terms_by_disease.get(disease_id, set())
+
+    if negative_terms:
+        profile.negative_hpo_terms.update(negative_terms)
+
+
+def _mark_canonicalized_if_needed(
+    profile: DiseaseProfile,
+    canonical_disease_id: str,
+    raw_disease_id: str,
+) -> None:
+    """Mark a profile as canonicalized when its ID changed during mapping."""
+    if canonical_disease_id != raw_disease_id:
+        profile.canonicalized_to_orpha = True
+
+
+def _add_annotation_record_to_profile(
+    record: dict,
+    profiles: dict[str, DiseaseProfile],
+    alias_to_canonical: dict[str, str],
+    metadata_by_normalized_id: dict[str, dict],
+    build_data: dict,
+) -> None:
+    """Add one phenotype annotation record to the canonical profile collection."""
+    raw_disease_id = normalize_disease_id(record["database_id"])
+    hpo_id = normalize_hpo_id(record["hpo_id"])
+
+    if raw_disease_id is None or hpo_id is None:
+        return
+
+    if hpo_id not in build_data["hpo_labels"]:
+        return
+
+    source_meta = metadata_by_normalized_id.get(raw_disease_id)
+    canonical_disease_id = resolve_to_orpha(
+        raw_disease_id,
+        mapping_index=build_data["mapping_index"],
+        source_metadata=source_meta,
+    )
+
+    alias_to_canonical[raw_disease_id] = canonical_disease_id
+
+    profile = _get_or_create_profile(
+        profiles,
+        canonical_disease_id,
+        label=_as_optional_str(record.get("disease_name")),
+    )
+    profile.hpo_terms.add(hpo_id)
+
+    source_name = (_as_optional_str(record.get("source")) or "UNKNOWN").lower()
+    profile.source_ids = merge_source_ids(
+        profile.source_ids,
+        f"{source_name}_original_id",
+        raw_disease_id,
+    )
+
+    freq_code = record.get("frequency_code")
+    if freq_code:
+        profile.source_ids = merge_source_ids(
+            profile.source_ids,
+            f"{source_name}_frequency_codes",
+            str(freq_code),
+        )
+
+    disease_term_prov = build_data["term_provenance_by_disease"].get(
+        raw_disease_id,
+        {},
+    )
+    if hpo_id in disease_term_prov:
+        profile.term_provenance[hpo_id] = disease_term_prov[hpo_id]
+
+    _add_negative_terms(
+        profile,
+        raw_disease_id,
+        build_data["negative_terms_by_disease"],
+    )
+    _mark_canonicalized_if_needed(profile, canonical_disease_id, raw_disease_id)
+
+
+def _apply_source_metadata(
+    profile: DiseaseProfile,
+    meta: dict,
+    source_name: str,
+) -> None:
+    """Copy source-specific label and description metadata onto a profile."""
+    label = _as_optional_str(meta.get("label"))
+    description = _as_optional_str(meta.get("description"))
+
+    if source_name == "ORDO":
+        profile.ordo_label = label
+        profile.ordo_description = description
+        profile.profile_type = _as_optional_str(meta.get("profile_type")) or profile.profile_type
+    elif source_name == "MONDO":
+        profile.mondo_label = label
+        profile.mondo_description = description
+    elif source_name == "HOOM":
+        profile.hoom_label = label
+        profile.hoom_description = description
+
+
+def _add_metadata_entry_to_profile(
+    local_id: str,
+    meta: dict,
+    source_name: str,
+    profiles: dict[str, DiseaseProfile],
+    build_data: dict,
+) -> tuple[str, str]:
+    """Add one ORDO, MONDO, or HOOM metadata entry to the profile collection."""
+    raw_disease_id = str(meta["normalized_id"])
+    canonical_disease_id = resolve_to_orpha(
+        raw_disease_id,
+        mapping_index=build_data["mapping_index"],
+        source_metadata=meta,
+    )
+
+    profile = _get_or_create_profile(
+        profiles,
+        canonical_disease_id,
+        label=_as_optional_str(meta.get("label")),
+    )
+
+    _apply_source_metadata(profile, meta, source_name)
+
+    source_prefix = source_name.lower()
+    profile.source_ids = merge_source_ids(
+        profile.source_ids,
+        f"{source_prefix}_id",
+        raw_disease_id,
+    )
+    profile.source_ids = merge_source_ids(
+        profile.source_ids,
+        f"{source_prefix}_local_id",
+        local_id,
+    )
+
+    _add_negative_terms(
+        profile,
+        raw_disease_id,
+        build_data["negative_terms_by_disease"],
+    )
+    _mark_canonicalized_if_needed(profile, canonical_disease_id, raw_disease_id)
+
+    return raw_disease_id, canonical_disease_id
+
+
+def _add_metadata_collection_to_profiles(
+    metadata: dict[str, dict],
+    source_name: str,
+    profiles: dict[str, DiseaseProfile],
+    alias_to_canonical: dict[str, str],
+    build_data: dict,
+) -> None:
+    """Add all metadata entries from one source to canonical disease profiles."""
+    for local_id, meta in metadata.items():
+        raw_disease_id, canonical_disease_id = _add_metadata_entry_to_profile(
+            local_id,
+            meta,
+            source_name,
+            profiles,
+            build_data,
+        )
+        alias_to_canonical[raw_disease_id] = canonical_disease_id
+
+
+def build_canonical_disease_profiles(  # pylint: disable=too-many-arguments,too-many-positional-arguments
     phenotype_annotation_records: list[dict],
-    term_provenance_by_disease: Dict[str, dict],
-    negative_terms_by_disease: Dict[str, Set[str]],
-    hpo_labels: Dict[str, str],
-    hpo_ancestors: Dict[str, Set[str]],
-    ordo_metadata: Dict[str, dict],
-    mondo_metadata: Dict[str, dict],
-    hoom_metadata: Dict[str, dict],
-    mapping_index: Dict[str, str],
+    term_provenance_by_disease: dict[str, dict],
+    negative_terms_by_disease: dict[str, set[str]],
+    hpo_labels: dict[str, str],
+    hpo_ancestors: dict[str, set[str]],
+    ordo_metadata: dict[str, dict],
+    mondo_metadata: dict[str, dict],
+    hoom_metadata: dict[str, dict],
+    mapping_index: dict[str, str],
     apply_true_path_rule: bool = True,
-) -> Tuple[Dict[str, DiseaseProfile], Dict[str, str]]:
+) -> tuple[dict[str, DiseaseProfile], dict[str, str]]:
     """
-    Build canonical profiles keyed by canonical disease IDs
-    (preferably ORPHA when mapping exists).
-    """
-    profiles: Dict[str, DiseaseProfile] = {}
-    alias_to_canonical: Dict[str, str] = {}
+    Build canonical disease profiles keyed by canonical disease IDs.
 
-    # 1. merged disease -> phenotype annotations
+    The canonical ID is preferably an ORPHA ID when a reliable mapping exists.
+    The returned alias map stores links from source-specific IDs to canonical IDs.
+    """
+    profiles: dict[str, DiseaseProfile] = {}
+    alias_to_canonical: dict[str, str] = {}
+
+    metadata_by_normalized_id = _build_metadata_lookup(
+        ordo_metadata,
+        mondo_metadata,
+        hoom_metadata,
+    )
+
+    build_data = {
+        "term_provenance_by_disease": term_provenance_by_disease,
+        "negative_terms_by_disease": negative_terms_by_disease,
+        "hpo_labels": hpo_labels,
+        "mapping_index": mapping_index,
+    }
+
     for record in phenotype_annotation_records:
-        raw_disease_id = normalize_disease_id(record["database_id"])
-        hpo_id = normalize_hpo_id(record["hpo_id"])
-
-        if raw_disease_id is None or hpo_id is None:
-            continue
-        if hpo_id not in hpo_labels:
-            continue
-
-        metadata_by_normalized_id = {}
-
-        for meta in ordo_metadata.values():
-            metadata_by_normalized_id[meta["normalized_id"]] = meta
-
-        for meta in mondo_metadata.values():
-            metadata_by_normalized_id[meta["normalized_id"]] = meta
-
-        for meta in hoom_metadata.values():
-            metadata_by_normalized_id[meta["normalized_id"]] = meta
-
-        source_meta = metadata_by_normalized_id.get(raw_disease_id)
-
-        canonical_disease_id = resolve_to_orpha(
-            raw_disease_id,
-            mapping_index=mapping_index,
-            source_metadata=source_meta,
-        )
-
-        alias_to_canonical[raw_disease_id] = canonical_disease_id
-
-        profile = _get_or_create_profile(
+        _add_annotation_record_to_profile(
+            record,
             profiles,
-            canonical_disease_id,
-            label=record.get("disease_name"),
-        )
-        profile.hpo_terms.add(hpo_id)
-
-        source_name = (record.get("source") or "UNKNOWN").lower()
-        profile.source_ids = merge_source_ids(
-            profile.source_ids,
-            f"{source_name}_original_id",
-            raw_disease_id,
+            alias_to_canonical,
+            metadata_by_normalized_id,
+            build_data,
         )
 
-        freq_code = record.get("frequency_code")
-        if freq_code:
-            profile.source_ids = merge_source_ids(
-                profile.source_ids,
-                f"{source_name}_frequency_codes",
-                freq_code,
-            )
-
-        disease_term_prov = term_provenance_by_disease.get(raw_disease_id, {})
-        if hpo_id in disease_term_prov:
-            profile.term_provenance[hpo_id] = disease_term_prov[hpo_id]
-
-        negative_terms = negative_terms_by_disease.get(raw_disease_id, set())
-        if negative_terms:
-            profile.negative_hpo_terms.update(negative_terms)
-
-        if canonical_disease_id != raw_disease_id:
-            profile.canonicalized_to_orpha = True
-
-    # 2. ORDO metadata
-    for local_id, meta in ordo_metadata.items():
-        raw_disease_id = meta["normalized_id"]
-        canonical_disease_id = resolve_to_orpha(
-            raw_disease_id,
-            mapping_index=mapping_index,
-            source_metadata=meta,
-        )
-
-        alias_to_canonical[raw_disease_id] = canonical_disease_id
-
-        profile = _get_or_create_profile(
-            profiles,
-            canonical_disease_id,
-            label=meta.get("label"),
-        )
-        profile.ordo_label = meta.get("label")
-        profile.ordo_description = meta.get("description")
-        profile.source_ids = merge_source_ids(
-            profile.source_ids,
-            "ordo_id",
-            raw_disease_id,
-        )
-        profile.source_ids = merge_source_ids(
-            profile.source_ids,
-            "ordo_local_id",
-            local_id,
-        )
-
-        negative_terms = negative_terms_by_disease.get(raw_disease_id, set())
-        if negative_terms:
-            profile.negative_hpo_terms.update(negative_terms)
-
-        if canonical_disease_id != raw_disease_id:
-            profile.canonicalized_to_orpha = True
-
-    # 3. MONDO metadata
-    for local_id, meta in mondo_metadata.items():
-        raw_disease_id = meta["normalized_id"]
-        canonical_disease_id = resolve_to_orpha(
-            raw_disease_id,
-            mapping_index=mapping_index,
-            source_metadata=meta,
-        )
-
-        alias_to_canonical[raw_disease_id] = canonical_disease_id
-
-        profile = _get_or_create_profile(
-            profiles,
-            canonical_disease_id,
-            label=meta.get("label"),
-        )
-        profile.mondo_label = meta.get("label")
-        profile.mondo_description = meta.get("description")
-        profile.source_ids = merge_source_ids(
-            profile.source_ids,
-            "mondo_id",
-            raw_disease_id,
-        )
-        profile.source_ids = merge_source_ids(
-            profile.source_ids,
-            "mondo_local_id",
-            local_id,
-        )
-
-        negative_terms = negative_terms_by_disease.get(raw_disease_id, set())
-        if negative_terms:
-            profile.negative_hpo_terms.update(negative_terms)
-
-        if canonical_disease_id != raw_disease_id:
-            profile.canonicalized_to_orpha = True
-
-    # 4. HOOM metadata
-    for local_id, meta in hoom_metadata.items():
-        raw_disease_id = meta["normalized_id"]
-        canonical_disease_id = resolve_to_orpha(
-            raw_disease_id,
-            mapping_index=mapping_index,
-            source_metadata=meta,
-        )
-
-        alias_to_canonical[raw_disease_id] = canonical_disease_id
-
-        profile = _get_or_create_profile(
-            profiles,
-            canonical_disease_id,
-            label=meta.get("label"),
-        )
-        profile.hoom_label = meta.get("label")
-        profile.hoom_description = meta.get("description")
-        profile.source_ids = merge_source_ids(
-            profile.source_ids,
-            "hoom_id",
-            raw_disease_id,
-        )
-        profile.source_ids = merge_source_ids(
-            profile.source_ids,
-            "hoom_local_id",
-            local_id,
-        )
-
-        negative_terms = negative_terms_by_disease.get(raw_disease_id, set())
-        if negative_terms:
-            profile.negative_hpo_terms.update(negative_terms)
-
-        if canonical_disease_id != raw_disease_id:
-            profile.canonicalized_to_orpha = True
+    _add_metadata_collection_to_profiles(
+        ordo_metadata,
+        "ORDO",
+        profiles,
+        alias_to_canonical,
+        build_data,
+    )
+    _add_metadata_collection_to_profiles(
+        mondo_metadata,
+        "MONDO",
+        profiles,
+        alias_to_canonical,
+        build_data,
+    )
+    _add_metadata_collection_to_profiles(
+        hoom_metadata,
+        "HOOM",
+        profiles,
+        alias_to_canonical,
+        build_data,
+    )
 
     _finalize_profiles(
         profiles=profiles,
@@ -414,28 +481,20 @@ def build_canonical_disease_profiles(
         apply_true_path_rule=apply_true_path_rule,
     )
 
-    # Disabled for now:
-    # Description propagation can copy descriptions between profiles that share
-    # source_ids but are not safe to merge textually. This can contaminate
-    # TF-IDF / text-based ranking with unrelated disease descriptions.
-    #
-    # Correct metadata should already be merged during the ORDO/MONDO/HOOM
-    # metadata passes when IDs canonicalize properly.
-    n_propagated = 0
-    if n_propagated:
-        print(
-            f"[build_canonical_disease_profiles] "
-            f"Propagated descriptions to {n_propagated} annotation-only profiles."
-        )
-
     return profiles, alias_to_canonical
 
 
 def expand_alias_profiles(
-    canonical_profiles: Dict[str, DiseaseProfile],
-    alias_to_canonical: Dict[str, str],
-) -> Dict[str, DiseaseProfile]:
-    expanded_profiles: Dict[str, DiseaseProfile] = {}
+    canonical_profiles: dict[str, DiseaseProfile],
+    alias_to_canonical: dict[str, str],
+) -> dict[str, DiseaseProfile]:
+    """
+    Create additional profiles for aliases that point to canonical profiles.
+
+    Each alias profile is a copy of its canonical profile, but its disease_id is
+    replaced by the alias ID and its source_ids include the canonical ID.
+    """
+    expanded_profiles: dict[str, DiseaseProfile] = {}
 
     for canonical_id, profile in canonical_profiles.items():
         expanded_profiles[canonical_id] = deepcopy(profile)

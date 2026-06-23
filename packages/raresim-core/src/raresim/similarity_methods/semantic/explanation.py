@@ -154,7 +154,7 @@ def _build_match_score_index(match_details: list[dict]) -> dict[str, float]:
 # ── Main builder ──────────────────────────────────────────────────────────────
 
 
-def build_explanation(
+def build_explanation(  # pylint: disable=too-many-arguments, too-many-positional-arguments, too-many-locals
     method_name: str,
     patient_terms: set[str],
     disease_terms: set[str],

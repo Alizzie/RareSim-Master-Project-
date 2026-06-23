@@ -3,21 +3,19 @@ Transformer methods — text construction and embedding backends.
 DiseaseRetriever (retriever.py) uses these to build and query embeddings.
 
 Supports:
-- HuggingFace encoder models (BERT-family) with mean pooling
+- HuggingFace encoder models with mean pooling
 - SentenceTransformer models
-- AutoTokenizer for non-BERT models (SapBERT)
+- AutoTokenizer for HuggingFace encoder models
 """
 
 import hashlib
-from typing import Dict, List, Tuple
 
 import numpy as np
 import torch
 from sentence_transformers import SentenceTransformer
-from transformers import AutoModel, AutoTokenizer, BertTokenizer, BertTokenizerFast
+from transformers import AutoModel, AutoTokenizer
 
 from raresim.similarity_methods.transformer.config import (
-    AUTO_TOKENIZER_MODELS,
     BATCH_SIZE,
     MAX_LENGTH,
     SENTENCE_TRANSFORMER_MODELS,
@@ -26,7 +24,7 @@ from raresim.similarity_methods.transformer.config import (
 # ── Text construction ─────────────────────────────────────────────────────────
 
 
-def unique_preserve_order(items: List[str]) -> List[str]:
+def unique_preserve_order(items: list[str]) -> list[str]:
     """Remove duplicates while preserving first occurrence order."""
     seen = set()
     out = []
@@ -38,9 +36,9 @@ def unique_preserve_order(items: List[str]) -> List[str]:
 
 
 def hpo_terms_to_labels(
-    hpo_terms: List[str],
-    hpo_labels: Dict[str, str],
-) -> List[str]:
+    hpo_terms: list[str],
+    hpo_labels: dict[str, str],
+) -> list[str]:
     """Convert HPO IDs into readable phenotype labels, removing duplicates."""
     labels = []
     for term in hpo_terms:
@@ -50,7 +48,7 @@ def hpo_terms_to_labels(
     return unique_preserve_order(labels)
 
 
-def build_patient_text(patient: dict, hpo_labels: Dict[str, str]) -> str:
+def build_patient_text(patient: dict, hpo_labels: dict[str, str]) -> str:
     """
     Build the patient text used for embedding.
 
@@ -71,7 +69,7 @@ def build_patient_text(patient: dict, hpo_labels: Dict[str, str]) -> str:
     return " ".join(parts).strip()
 
 
-def build_disease_text(profile: dict, hpo_labels: Dict[str, str]) -> str:
+def build_disease_text(profile: dict, hpo_labels: dict[str, str]) -> str:
     """
     Build the disease text used for embedding.
 
@@ -97,9 +95,9 @@ def build_disease_text(profile: dict, hpo_labels: Dict[str, str]) -> str:
 
 
 def build_disease_texts(
-    disease_profiles: Dict[str, dict],
-    hpo_labels: Dict[str, str],
-) -> Tuple[List[str], List[str], List[str]]:
+    disease_profiles: dict[str, dict],
+    hpo_labels: dict[str, str],
+) -> tuple[list[str], list[str], list[str]]:
     """Build aligned lists of disease IDs, labels, and embedding texts."""
     disease_ids = []
     disease_labels = []
@@ -161,18 +159,15 @@ def load_hf_model_and_tokenizer(model_name: str):
     use the standard BERT tokenizer. Falls back to BertTokenizerFast
     for standard BERT-family models.
     """
-    # Use AutoTokenizer for models that need it
-    if model_name in AUTO_TOKENIZER_MODELS:
-        tokenizer = AutoTokenizer.from_pretrained(model_name)
-    else:
-        try:
-            tokenizer = BertTokenizerFast.from_pretrained(model_name)
-        except Exception:
-            tokenizer = BertTokenizer.from_pretrained(model_name)
+    tokenizer = AutoTokenizer.from_pretrained(
+        model_name,
+        use_fast=True,
+    )
 
     model = AutoModel.from_pretrained(model_name)
     model.to(get_device())
     model.eval()
+
     return tokenizer, model
 
 
@@ -190,7 +185,7 @@ def mean_pool(
 def embed_texts_hf(
     tokenizer,
     model,
-    texts: List[str],
+    texts: list[str],
     batch_size: int = BATCH_SIZE,
     max_length: int = MAX_LENGTH,
 ) -> np.ndarray:
@@ -227,7 +222,7 @@ def load_sentence_transformer_model(model_name: str):
 
 def embed_texts_sentence_transformer(
     model,
-    texts: List[str],
+    texts: list[str],
     batch_size: int = BATCH_SIZE,
 ) -> np.ndarray:
     """Embed texts with a SentenceTransformer model."""
@@ -261,7 +256,7 @@ def load_embedding_backend(model_name: str) -> dict:
     raise ValueError(f"Unsupported model type: {model_name}")
 
 
-def embed_texts(backend: dict, texts: List[str]) -> np.ndarray:
+def embed_texts(backend: dict, texts: list[str]) -> np.ndarray:
     """Dispatch embedding calls to the appropriate backend."""
     model_type = backend["model_type"]
 

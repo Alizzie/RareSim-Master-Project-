@@ -16,44 +16,84 @@ All three modes use the same cosine similarity scorer and produce
 MethodResults with the same explanation schema.
 """
 
-from raresim.utils._pipeline_runner import run_pipeline_main
-from raresim.utils.timer import Timer
-from raresim.utils.similarity_math import cosine_similarity
-from raresim.utils.hpo_utils import filter_terms_by_ic
-
-from raresim.types.schemas import PatientProfile
-from raresim.types.result import MethodResults, SimilarityResult, RunStats
-
 from raresim.core.context import AppContext
 from raresim.core.pipeline import (
     PipelineConfig,
     build_run_stats,
     sort_and_rank,
 )
-
-from raresim.similarity_methods.tfidf.methods import (
-    compute_idf,
-    compute_text_idf,
-    build_tfidf_vector,
-    build_patient_text_vector,
-    build_disease_text_vector,
-    build_patient_hybrid_vector,
+from raresim.ontology.disease_category import build_category_metadata
+from raresim.similarity_methods.tfidf.config import (
+    ALL_METHODS,
+    DISEASE_TEXT_FIELD,
+    METHOD_HPO,
+    METHOD_HYBRID,
+    METHOD_TEXT,
+    PIPELINE_NAME,
+    TFIDF_DIR,
 )
 from raresim.similarity_methods.tfidf.explanation import build_explanation
-from raresim.similarity_methods.tfidf.config import (
-    TFIDF_DIR,
-    PIPELINE_NAME,
-    ALL_METHODS,
-    METHOD_HPO,
-    METHOD_TEXT,
-    METHOD_HYBRID,
-    DISEASE_TEXT_FIELD,
+from raresim.similarity_methods.tfidf.methods import (
+    build_disease_text_vector,
+    build_patient_hybrid_vector,
+    build_patient_text_vector,
+    build_tfidf_vector,
+    compute_idf,
+    compute_text_idf,
 )
+from raresim.types.result import MethodResults, RunStats, SimilarityResult
+from raresim.types.schemas import PatientProfile
+from raresim.utils._pipeline_runner import run_pipeline_main
+from raresim.utils.hpo_utils import filter_terms_by_ic
+from raresim.utils.similarity_math import cosine_similarity
+from raresim.utils.timer import Timer
+
+
+def _build_result(  # pylint: disable=too-many-arguments, too-many-positional-arguments
+    disease_id: str,
+    profile: dict,
+    score: float,
+    method_name: str,
+    explanation: dict,
+    ctx: AppContext,
+) -> SimilarityResult:
+    """Build a SimilarityResult with category/profile metadata attached."""
+    category_metadata = build_category_metadata(
+        disease_id=disease_id,
+        profile=profile,
+        disease_ancestors=ctx.disease_ancestors,
+        disease_metadata_index=ctx.disease_metadata_index,
+    )
+
+    return SimilarityResult(
+        disease_id=disease_id,
+        label=profile.get("label", ""),
+        profile_type=category_metadata["profile_type"],
+        category_source_id=category_metadata["category_source_id"],
+        category_path=category_metadata["category_path"],
+        matched_aliases=category_metadata["matched_aliases"],
+        score=score,
+        method_name=method_name,
+        explanation=explanation,
+    )
+
+
+def _empty_stats(patient: PatientProfile) -> RunStats:
+    """Return empty run statistics for skipped TF-IDF modes."""
+    return build_run_stats(
+        n_patient_terms_raw=len(patient.hpo_terms),
+        n_patient_terms_propagated=len(patient.get_terms(use_propagated=True)),
+        n_patient_terms_used=0,
+        n_diseases_scored=0,
+        n_diseases_skipped=0,
+        computation_time=0.0,
+    )
+
 
 # ── HPO mode ──────────────────────────────────────────────────────────────────
 
 
-def _run_hpo_mode(
+def _run_hpo_mode(  # pylint: disable=too-many-locals
     patient: PatientProfile,
     config: PipelineConfig,
     ctx: AppContext,
@@ -62,9 +102,8 @@ def _run_hpo_mode(
     Run the HPO-based TF-IDF similarity method.
 
     Patient and disease documents are sets of HPO IDs.
-    Binary TF (term present or not). IDF alone carries the signal.
+    Binary TF. IDF carries the weighting signal.
     """
-
     patient_raw_terms = set(patient.hpo_terms)
     patient_terms = set(patient.get_terms(config.use_propagated_terms))
 
@@ -72,23 +111,25 @@ def _run_hpo_mode(
         print(f"[{METHOD_HPO}] Patient has no HPO terms — skipping.")
         return [], _empty_stats(patient)
 
-    # Compute IDF from the disease profiles (corpus)
     idf = compute_idf(ctx.disease_profiles, propagated_term_key=config.terms_key)
     patient_vec = build_tfidf_vector(patient_terms, idf)
 
     if not patient_vec:
         print(
-            f"[{METHOD_HPO}] Patient HPO terms produced no IDF-weighted vector — skipping."
+            f"[{METHOD_HPO}] Patient HPO terms produced no "
+            "IDF-weighted vector — skipping."
         )
         return [], _empty_stats(patient)
 
-    timer = Timer(METHOD_HPO).start()
-    results, skipped = [], 0
+    method_timer = Timer(METHOD_HPO).start()
+    results = []
+    n_skipped = 0
 
     for disease_id, profile in ctx.disease_profiles.items():
         disease_terms = set(profile.get(config.terms_key, []))
+
         if not disease_terms:
-            skipped += 1
+            n_skipped += 1
             continue
 
         disease_vec = build_tfidf_vector(disease_terms, idf)
@@ -108,22 +149,23 @@ def _run_hpo_mode(
         )
 
         results.append(
-            SimilarityResult(
+            _build_result(
                 disease_id=disease_id,
-                label=profile.get("label", ""),
+                profile=profile,
                 score=score,
                 method_name=METHOD_HPO,
                 explanation=explanation.to_dict(),
+                ctx=ctx,
             )
         )
 
     stats = build_run_stats(
         n_patient_terms_raw=len(patient_raw_terms),
-        n_patient_terms_propagated=len(patient.propagated_hpo_terms),
+        n_patient_terms_propagated=len(patient.get_terms(use_propagated=True)),
         n_patient_terms_used=len(patient_terms),
         n_diseases_scored=len(results),
-        n_diseases_skipped=skipped,
-        computation_time=timer.stop(),
+        n_diseases_skipped=n_skipped,
+        computation_time=method_timer.stop(),
     )
 
     return results, stats
@@ -132,13 +174,14 @@ def _run_hpo_mode(
 # ── Text mode ─────────────────────────────────────────────────────────────────
 
 
-def _run_text_mode(
+def _run_text_mode(  # pylint: disable=too-many-locals
     patient: PatientProfile,
     config: PipelineConfig,
     ctx: AppContext,
 ) -> tuple[list[SimilarityResult], RunStats]:
-
+    """Run the clinical-text TF-IDF similarity method."""
     patient_raw_text = patient.raw_text or ""
+
     if not patient_raw_text.strip():
         print(f"[{METHOD_TEXT}] No raw_text on patient — skipping.")
         return [], _empty_stats(patient)
@@ -150,13 +193,17 @@ def _run_text_mode(
         print(f"[{METHOD_TEXT}] Patient text produced no tokens — skipping.")
         return [], _empty_stats(patient)
 
-    timer = Timer(METHOD_TEXT).start()
-    results, n_skipped = [], 0
+    method_timer = Timer(METHOD_TEXT).start()
+    results = []
+    n_skipped = 0
 
     for disease_id, profile in ctx.disease_profiles.items():
         disease_vec, used_fallback = build_disease_text_vector(
-            profile, idf, DISEASE_TEXT_FIELD
+            profile,
+            idf,
+            DISEASE_TEXT_FIELD,
         )
+
         if not disease_vec:
             n_skipped += 1
             continue
@@ -171,45 +218,50 @@ def _run_text_mode(
             score=score,
             hpo_labels=ctx.hpo_labels,
             ic_values=ctx.ic_values,
-            patient_terms=set(),  # not applicable in text mode
+            patient_terms=set(),
             disease_terms=set(),
             patient_raw_terms=None,
             extra_diagnostics={"disease_used_label_fallback": used_fallback},
         )
 
         results.append(
-            SimilarityResult(
+            _build_result(
                 disease_id=disease_id,
-                label=profile.get("label", ""),
+                profile=profile,
                 score=score,
                 method_name=METHOD_TEXT,
                 explanation=explanation.to_dict(),
+                ctx=ctx,
             )
         )
 
     stats = build_run_stats(
         n_patient_terms_raw=len(patient.hpo_terms),
-        n_patient_terms_propagated=len(patient.propagated_hpo_terms),
+        n_patient_terms_propagated=len(patient.get_terms(use_propagated=True)),
         n_patient_terms_used=len(patient_vec),
         n_diseases_scored=len(results),
         n_diseases_skipped=n_skipped,
-        computation_time=timer.stop(),
+        computation_time=method_timer.stop(),
     )
+
     return results, stats
 
 
 # ── Hybrid mode ───────────────────────────────────────────────────────────────
 
 
-def _run_hybrid_mode(
+def _run_hybrid_mode(  # pylint: disable=too-many-locals
     patient: PatientProfile,
     config: PipelineConfig,
     ctx: AppContext,
 ) -> tuple[list[SimilarityResult], RunStats]:
+    """Run the hybrid HPO-label-to-disease-text TF-IDF method."""
     all_patient_terms = set(patient.get_terms(config.use_propagated_terms))
     patient_raw_terms = set(patient.hpo_terms)
     patient_terms = filter_terms_by_ic(
-        all_patient_terms, ctx.ic_values, config.ic_threshold
+        all_patient_terms,
+        ctx.ic_values,
+        config.ic_threshold,
     )
 
     idf = compute_text_idf(ctx.disease_profiles, text_field=DISEASE_TEXT_FIELD)
@@ -219,12 +271,15 @@ def _run_hybrid_mode(
         print(f"[{METHOD_HYBRID}] Patient HPO labels produced no tokens — skipping.")
         return [], _empty_stats(patient)
 
-    timer = Timer(METHOD_HYBRID).start()
-    results, n_skipped = [], 0
+    method_timer = Timer(METHOD_HYBRID).start()
+    results = []
+    n_skipped = 0
 
     for disease_id, profile in ctx.disease_profiles.items():
         disease_vec, used_fallback = build_disease_text_vector(
-            profile, idf, DISEASE_TEXT_FIELD
+            profile,
+            idf,
+            DISEASE_TEXT_FIELD,
         )
 
         if not disease_vec:
@@ -242,19 +297,20 @@ def _run_hybrid_mode(
             hpo_labels=ctx.hpo_labels,
             ic_values=ctx.ic_values,
             patient_terms=patient_terms,
-            disease_terms=set(),  # disease side is text, not HPO
+            disease_terms=set(),
             patient_raw_terms=patient_raw_terms,
             all_patient_terms_before_filter=all_patient_terms,
             extra_diagnostics={"disease_used_label_fallback": used_fallback},
         )
 
         results.append(
-            SimilarityResult(
+            _build_result(
                 disease_id=disease_id,
-                label=profile.get("label", ""),
+                profile=profile,
                 score=score,
                 method_name=METHOD_HYBRID,
                 explanation=explanation.to_dict(),
+                ctx=ctx,
             )
         )
 
@@ -264,9 +320,17 @@ def _run_hybrid_mode(
         n_patient_terms_used=len(patient_terms),
         n_diseases_scored=len(results),
         n_diseases_skipped=n_skipped,
-        computation_time=timer.stop(),
+        computation_time=method_timer.stop(),
     )
+
     return results, stats
+
+
+_MODE_RUNNERS = {
+    METHOD_HPO: _run_hpo_mode,
+    METHOD_TEXT: _run_text_mode,
+    METHOD_HYBRID: _run_hybrid_mode,
+}
 
 
 def run(
@@ -275,9 +339,8 @@ def run(
     config: PipelineConfig,
     ctx: AppContext,
 ) -> dict[str, MethodResults]:
-    """Run the TF-IDF similarity pipeline for the given patient and selected methods."""
-
-    all_results = {}
+    """Run the TF-IDF similarity pipeline for selected methods."""
+    all_results: dict[str, MethodResults] = {}
 
     for method_name in ALL_METHODS:
         if method_name not in selected:
@@ -288,35 +351,18 @@ def run(
 
         if results:
             all_results[method_name] = sort_and_rank(
-                results, config, stats, method_name, PIPELINE_NAME
+                results,
+                config,
+                stats,
+                method_name,
+                PIPELINE_NAME,
             )
 
     return all_results
 
 
-# ── Helpers ───────────────────────────────────────────────────────────────────
-
-
-def _empty_stats(patient: PatientProfile) -> RunStats:
-    return build_run_stats(
-        n_patient_terms_raw=len(patient.hpo_terms),
-        n_patient_terms_propagated=len(patient.propagated_hpo_terms),
-        n_patient_terms_used=0,
-        n_diseases_scored=0,
-        n_diseases_skipped=0,
-        computation_time=0.0,
-    )
-
-
-_MODE_RUNNERS = {
-    METHOD_HPO: _run_hpo_mode,
-    METHOD_TEXT: _run_text_mode,
-    METHOD_HYBRID: _run_hybrid_mode,
-}
-
-
 def main() -> None:
-    """Example main function to run the tfidf similarity pipeline."""
+    """Run the TF-IDF similarity pipeline."""
     run_pipeline_main(
         pipeline_name=PIPELINE_NAME,
         method_names=ALL_METHODS,

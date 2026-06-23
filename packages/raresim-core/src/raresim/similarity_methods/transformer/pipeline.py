@@ -15,6 +15,8 @@ Models (encoder-only, produce embeddings):
 from raresim.utils.io import load_json, save_json
 from raresim.utils.paths import (
     ALIAS_TO_CANONICAL_PATH,
+    DISEASE_ANCESTORS_PATH,
+    DISEASE_METADATA_INDEX_PATH,
     DISEASE_PROFILES_PATH,
     HPO_LABELS_PATH,
     PATIENT_PATH,
@@ -22,6 +24,7 @@ from raresim.utils.paths import (
 from raresim.utils.timer import timer
 from raresim.similarity_methods.transformer.config import (
     CANDIDATE_POOL_SIZE,
+    DEFAULT_MODEL_LIST,
     MODEL_LIST,
     TOP_K,
     TRANSFORMER_DIR,
@@ -32,12 +35,15 @@ from raresim.similarity_methods.transformer.retriever import DiseaseRetriever
 PIPELINE_NAME = "transformer"
 
 
-def run(
+def run(  # pylint: disable=too-many-arguments,too-many-locals
     disease_profiles: dict,
     hpo_labels: dict,
     patient: dict,
     alias_to_canonical: dict,
-    model_list: list[str] = MODEL_LIST,
+    *,
+    disease_ancestors: dict[str, list[str]] | None = None,
+    disease_metadata_index: dict[str, dict] | None = None,
+    model_list: list[str] | None = None,
     top_k: int = TOP_K,
     candidate_pool_size: int = CANDIDATE_POOL_SIZE,
     rebuild_cache: bool = False,
@@ -50,6 +56,8 @@ def run(
         hpo_labels:          HPO ID → label mapping.
         patient:             Patient profile dict.
         alias_to_canonical:  Alias → canonical disease ID mapping.
+        disease_ancestors:   ORDO ancestor chains for category paths.
+        disease_metadata_index: ORDO labels/types for ancestor display.
         model_list:          List of model names to run.
         top_k:               Number of top results per model.
         candidate_pool_size: Candidates before canonical deduplication.
@@ -58,17 +66,23 @@ def run(
     Returns:
         Dict mapping model_name → list of ranked result dicts.
     """
+    if model_list is None:
+        model_list = list(MODEL_LIST)
     retriever = DiseaseRetriever(
         disease_profiles=disease_profiles,
         hpo_labels=hpo_labels,
         alias_to_canonical=alias_to_canonical,
         model_list=model_list,
+        disease_ancestors=disease_ancestors,
+        disease_metadata_index=disease_metadata_index,
         rebuild_cache=rebuild_cache,
     )
 
-    print(f"\nWarming up {len(model_list)} models...")
-    with timer("warmup all models"):
-        retriever.warmup(preload_models=True)
+
+    print(f"\nPreparing cache for {len(model_list)} model(s)...")
+    with timer("prepare transformer caches"):
+        retriever.warmup(preload_models=False)
+
 
     all_results = {}
 
@@ -102,11 +116,47 @@ def run(
     return all_results
 
 
+
+def run_default_model(  # pylint: disable=too-many-arguments
+    disease_profiles: dict,
+    hpo_labels: dict,
+    patient: dict,
+    alias_to_canonical: dict,
+    *,
+    disease_ancestors: dict[str, list[str]] | None = None,
+    disease_metadata_index: dict[str, dict] | None = None,
+    top_k: int = TOP_K,
+    candidate_pool_size: int = CANDIDATE_POOL_SIZE,
+    rebuild_cache: bool = False,
+) -> dict[str, list[dict]]:
+    """
+    Run only the default transformer model.
+
+    This is the preferred entry point for frontend/API requests because it
+    avoids warming up every transformer model.
+    """
+    return run(
+        disease_profiles=disease_profiles,
+        hpo_labels=hpo_labels,
+        patient=patient,
+        alias_to_canonical=alias_to_canonical,
+        disease_ancestors=disease_ancestors,
+        disease_metadata_index=disease_metadata_index,
+        model_list=DEFAULT_MODEL_LIST,
+        top_k=top_k,
+        candidate_pool_size=candidate_pool_size,
+        rebuild_cache=rebuild_cache,
+    )
+
+
 def main() -> None:
+    """Load shared artifacts and run the transformer retrieval pipeline."""
     disease_profiles = load_json(DISEASE_PROFILES_PATH)
     hpo_labels = load_json(HPO_LABELS_PATH)
     patient = load_json(PATIENT_PATH)
     alias_to_canonical = load_json(ALIAS_TO_CANONICAL_PATH)
+    disease_ancestors = load_json(DISEASE_ANCESTORS_PATH)
+    disease_metadata_index = load_json(DISEASE_METADATA_INDEX_PATH)
 
     with timer("full transformer pipeline"):
         all_results = run(
@@ -114,6 +164,8 @@ def main() -> None:
             hpo_labels=hpo_labels,
             patient=patient,
             alias_to_canonical=alias_to_canonical,
+            disease_ancestors=disease_ancestors,
+            disease_metadata_index=disease_metadata_index,
         )
 
     summary_path = TRANSFORMER_DIR / f"transformer_all_models_top{TOP_K}.json"

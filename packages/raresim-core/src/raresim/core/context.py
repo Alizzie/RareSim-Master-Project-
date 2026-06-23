@@ -19,6 +19,8 @@ class AppContext:
     hpo_labels: dict[str, str]
     ic_values: dict[str, float]
     ancestors: dict[str, list[str]]
+    disease_ancestors: dict[str, list[str]]
+    disease_metadata_index: dict[str, dict]
     app_metadata: AppMetadata
 
     @classmethod
@@ -38,6 +40,8 @@ class AppContext:
         hpo_labels = load_json(ARTIFACTS_DIR / "hpo_labels.json")
         ic_values = load_json(ARTIFACTS_DIR / "information_content.json")
         ancestors = load_json(ARTIFACTS_DIR / "hpo_ancestors.json")
+        disease_ancestors = load_json(ARTIFACTS_DIR / "disease_ancestors.json")
+        disease_metadata_index = load_json(ARTIFACTS_DIR / "disease_metadata_index.json")
 
         unfound_terms = [
             term for term in patient.hpo_terms if term not in hpo_labels.keys()
@@ -59,5 +63,7 @@ class AppContext:
             hpo_labels=hpo_labels,
             ic_values=ic_values,
             ancestors=ancestors,
+            disease_ancestors=disease_ancestors,
+            disease_metadata_index=disease_metadata_index,
             app_metadata=app_metadata,
         )
