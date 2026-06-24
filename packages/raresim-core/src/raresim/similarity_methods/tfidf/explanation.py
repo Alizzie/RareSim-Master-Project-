@@ -19,17 +19,100 @@ from raresim.core.explanation import (
     build_coverage_block,
     build_token_coverage_block,
     ExplanationBlock,
-    tfidf_summary,
 )
 from raresim.similarity_methods.tfidf.config import (
     LOW_IDF_THRESHOLD,
-    TOP_N_IDF_MATCHES,
     METHOD_HPO,
     METHOD_HYBRID,
+    METHOD_HPO_LABELS,
     SPARSE_DISEASE_THRESHOLD,
 )
 from raresim.utils.text_utils import tokenize
 from raresim.core.explanation import build_ic_filter_block
+
+
+def _build_hpo_summary(
+    patient_terms: set[str],
+    disease_terms: set[str],
+    ic_weighted_score: float,
+) -> str:
+    """
+    Produces a mode-specific summary string.
+
+    Uses isinstance() to narrow the coverage type before accessing
+    subtype-specific fields. This is safer than local re-annotation
+    and lets the type checker verify correctness without type: ignore.
+    """
+    coverage = build_coverage_block(patient_terms, disease_terms)
+
+    pct_patient = round(coverage.patient_coverage * 100)
+    pct_disease = round(coverage.disease_coverage * 100)
+    return (
+        f"{coverage.n_matched_terms} of {coverage.n_patient_terms} patient HPO terms "
+        f"matched ({pct_patient}% patient / {pct_disease}% disease coverage). "
+        f"TF-IDF weighted match score: {ic_weighted_score:.1f}."
+    )
+
+
+def _build_token_summary(
+    patient_vec: dict[str, float],
+    disease_vec: dict[str, float],
+    weighted_score: float,
+    mode: str = METHOD_HYBRID,
+) -> str:
+    """
+    Produces a mode-specific summary string.
+
+    Uses isinstance() to narrow the coverage type before accessing
+    subtype-specific fields. This is safer than local re-annotation
+    and lets the type checker verify correctness without type: ignore.
+    """
+
+    coverage = build_token_coverage_block(
+        patient_vec, disease_vec, SPARSE_DISEASE_THRESHOLD
+    )
+
+    is_sparse = coverage.is_sparse_disease
+    sparse_warning = (
+        " Warning: disease description is very short — score may be unreliable."
+        if is_sparse
+        else ""
+    )
+
+    pct_patient = round(coverage.patient_token_coverage * 100)
+    pct_disease = round(coverage.disease_token_coverage * 100)
+    n_matched = coverage.n_matched_tokens
+    n_patient = coverage.n_patient_tokens
+    n_disease = coverage.n_disease_tokens
+
+    if mode == "tfidf_text":
+        return (
+            f"{n_matched} of {n_patient} patient text tokens matched disease description "
+            f"({pct_patient}% patient / {pct_disease}% disease token coverage, "
+            f"{n_disease} disease tokens total)."
+            f"Weighted TFIDF match score: {weighted_score:.1f}."
+            f"{sparse_warning}"
+        )
+
+    if mode == "tfidf_label":
+        return (
+            f"{n_matched} of {n_patient} patient HPO label tokens matched disease HPO labels "
+            f"({pct_patient}% patient / {pct_disease}% disease token coverage, "
+            f"{n_disease} disease tokens total)."
+            f"Weighted TFIDF match score: {weighted_score:.1f}."
+            f"{sparse_warning}"
+        )
+
+    # hybrid
+    return (
+        f"{n_matched} of {n_patient} patient HPO label tokens matched disease description "
+        f"({pct_patient}% patient / {pct_disease}% disease token coverage, "
+        f"{n_disease} disease tokens total). "
+        f"Weighted TFIDF match score: {weighted_score:.1f}."
+        f"See contributing_hpo_terms for phenotype-level traceability."
+        f"{sparse_warning}"
+    )
+
 
 # ── Vector norm helpers ───────────────────────────────────────────────────────
 
@@ -70,58 +153,33 @@ def _build_norm_block(
 # ── IDF match analysis ────────────────────────────────────────────────────────
 
 
-def _build_idf_match_blocks(
-    patient_terms: dict[str, float],
-    disease_terms: dict[str, float],
+def _build_low_idf_matches(
+    patient_vec: dict[str, float],
+    disease_vec: dict[str, float],
     idf: dict[str, float],
     hpo_labels: dict[str, str],
-    top_n: int = TOP_N_IDF_MATCHES,
     low_idf_threshold: float = LOW_IDF_THRESHOLD,
     is_hpo_mode: bool = True,
-) -> tuple[list[dict], list[dict]]:
+) -> list[dict]:
     """
-    Split matched terms into high-signal and low-signal (noise) groups.
-    In HPO mode, labels are looked up from hpo_labels.
-    In text/hybrid mode, the token itself is the label.
-
-    Returns:
-        idf_weighted_matches : top_n shared terms sorted by IDF descending.
-                               These are the actual score drivers.
-        low_idf_matches      : shared terms with IDF below threshold.
-                               These matched but contributed little to the score.
+    Return matched terms whose IDF weight falls below the threshold.
     """
-    shared_keys = set(patient_terms.keys()) & set(disease_terms.keys())
-
-    if is_hpo_mode:
-        all_matches = sorted(
-            [
-                {
-                    "id": t,
-                    "label": hpo_labels.get(t, t) if is_hpo_mode else t,
-                    "idf_weight": round(idf.get(t, 0.0), 4),
-                }
-                for t in shared_keys
-            ],
-            key=lambda x: x["idf_weight"],
-            reverse=True,
-        )
-    else:
-        all_matches = sorted(
-            [
-                {
-                    "token": t,
-                    "idf_weight": round(idf.get(t, 0.0), 4),
-                }
-                for t in shared_keys
-            ],
-            key=lambda x: x["idf_weight"],
-            reverse=True,
-        )
-
-    idf_weighted = all_matches[:top_n]
-    low_idf = [m for m in all_matches if m["idf_weight"] < low_idf_threshold]
-
-    return idf_weighted, low_idf
+    shared_keys = set(patient_vec.keys()) & set(disease_vec.keys())
+    low_idf = []
+    for t in shared_keys:
+        weight = round(idf.get(t, 0.0), 4)
+        if weight < low_idf_threshold:
+            if is_hpo_mode:
+                low_idf.append(
+                    {
+                        "id": t,
+                        "label": hpo_labels.get(t, t),
+                        "idf_weight": weight,
+                    }
+                )
+            else:
+                low_idf.append({"token": t, "idf_weight": weight})
+    return sorted(low_idf, key=lambda x: x["idf_weight"])
 
 
 # ── HPO terms that contributed tokens (hybrid mode) ──────────────────────────
@@ -209,7 +267,11 @@ def build_explanation(
 
     # ── HPO mode ──────────────────────────────────────────────────────────────
     if tfidf_mode == METHOD_HPO:
-        idf_weighted, low_idf = _build_idf_match_blocks(
+        shared_hpo = patient_terms & disease_terms
+        ic_weighted_score = round(sum(ic_values.get(t, 0.0) for t in shared_hpo), 4)
+        match_scores = {t: round(idf.get(t, 0.0), 4) for t in shared_hpo}
+
+        low_idf = _build_low_idf_matches(
             patient_vec,
             disease_vec,
             idf,
@@ -217,12 +279,9 @@ def build_explanation(
             low_idf_threshold=low_idf_threshold,
             is_hpo_mode=True,
         )
-        shared_hpo = patient_terms & disease_terms
-        ic_weighted_score = round(sum(ic_values.get(t, 0.0) for t in shared_hpo), 4)
 
         method_specific = {
             "tfidf_mode": tfidf_mode,
-            "idf_weighted_matches": idf_weighted,
             "low_idf_matches": low_idf,
             "n_low_idf_matches": len(low_idf),
             "low_idf_threshold": low_idf_threshold,
@@ -230,9 +289,10 @@ def build_explanation(
             "vector_norms": norm_block,
         }
 
-        coverage = build_coverage_block(patient_terms, disease_terms)
-        summary = tfidf_summary(
-            coverage=coverage, ic_weighted_score=ic_weighted_score, mode=tfidf_mode
+        summary = _build_hpo_summary(
+            patient_terms=patient_terms,
+            disease_terms=disease_terms,
+            ic_weighted_score=ic_weighted_score,
         )
 
         return build_base_explanation(
@@ -242,12 +302,13 @@ def build_explanation(
             ic_values=ic_values,
             summary=summary,
             patient_raw_terms=patient_raw_terms,
+            match_scores=match_scores,
             method_specific=method_specific,
             diagnostics=diagnostics,
         )
 
     # ── Text and hybrid modes ─────────────────────────────────────────────────
-    idf_weighted, low_idf = _build_idf_match_blocks(
+    low_idf = _build_low_idf_matches(
         patient_vec,
         disease_vec,
         idf,
@@ -256,14 +317,13 @@ def build_explanation(
         is_hpo_mode=False,
     )
 
-    token_coverage = build_token_coverage_block(
-        patient_vec, disease_vec, SPARSE_DISEASE_THRESHOLD
+    idf_weighted_score = round(
+        sum(patient_vec[t] for t in patient_vec if t in disease_vec), 4
     )
-    is_sparse = token_coverage.is_sparse_disease
 
     method_specific = {
         "tfidf_mode": tfidf_mode,
-        "idf_weighted_matches": idf_weighted,
+        "idf_weighted_score": idf_weighted_score,
         "low_idf_matches": low_idf,
         "n_low_idf_matches": len(low_idf),
         "low_idf_threshold": low_idf_threshold,
@@ -271,7 +331,9 @@ def build_explanation(
     }
 
     # Hybrid: add traceability from tokens back to patient HPO terms
-    if tfidf_mode == METHOD_HYBRID and patient_terms:
+    if (
+        tfidf_mode == METHOD_HYBRID or tfidf_mode == METHOD_HPO_LABELS
+    ) and patient_terms:
         method_specific["contributing_hpo_terms"] = _contributing_hpo_terms(
             patient_terms, disease_vec, hpo_labels, ic_values, idf
         )
@@ -286,11 +348,11 @@ def build_explanation(
                 terms_after=len(patient_terms),
             )
 
-    summary = tfidf_summary(
-        coverage=token_coverage,
-        ic_weighted_score=0.0,
+    summary = _build_token_summary(
+        patient_vec=patient_vec,
+        disease_vec=disease_vec,
         mode=tfidf_mode,
-        is_sparse=is_sparse,
+        weighted_score=idf_weighted_score,
     )
 
     return build_base_token_explanation(

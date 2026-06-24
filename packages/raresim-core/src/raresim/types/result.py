@@ -124,7 +124,9 @@ class SimilarityResult:  # pylint: disable=too-many-instance-attributes
             "profile_type": self.profile_type,
             "category_source_id": self.category_source_id,
             "category_path": self.category_path,
-            "matched_aliases": self.matched_aliases,
+            "matched_aliases": [
+                alias for alias in self.matched_aliases if alias != self.disease_id
+            ],
             "score": round(self.score, 6),
             "method_name": self.method_name,
             "explanation": self.explanation,

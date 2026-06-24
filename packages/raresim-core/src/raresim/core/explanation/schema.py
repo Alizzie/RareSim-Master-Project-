@@ -9,7 +9,7 @@ Extension point: ExplanationBlock.method_specific (plain dict, method-owned).
 """
 
 from dataclasses import dataclass, field
-from typing import Any, Literal
+from typing import Any
 
 
 @dataclass
@@ -36,9 +36,10 @@ class TermMatch:
         "direct"     — term appears in both raw (non-propagated) sets.
         "propagated" — term appears only after true-path propagation.
 
-    match_score:
-        For set-based methods this is always 1.0 (binary presence).
-        For semantic methods this is the pairwise BMA score for this term.
+    match_score meaning by method:
+        set-based  : 1.0 (binary presence — no gradation)
+        semantic   : pairwise BMA score (0..N for Resnik, 0..1 for Lin/JC)
+        tfidf_hpo  : IDF weight of the term (actual cosine contribution)
     """
 
     id: str
@@ -82,13 +83,11 @@ class TokenMatch:
 
     token: str
     idf_weight: float
-    match_score: float = 1.0
 
     def to_dict(self) -> dict:
         return {
             "token": self.token,
             "idf_weight": round(self.idf_weight, 4),
-            "match_score": round(self.match_score, 4),
         }
 
 

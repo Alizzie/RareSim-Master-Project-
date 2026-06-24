@@ -1,6 +1,10 @@
 """
 core.explanation — shared explanation schema and base builders.
 
+This package provides the structural contract that all similarity methods
+must satisfy. It does NOT provide summary string generators — those are
+method-specific and live in each method's own explanation.py.
+
 Public API
 ----------
 Schema types:
@@ -10,18 +14,20 @@ Schema types:
     TokenMatch, TokenEntry        — text token types
     MatchedTerm, UnmatchedTerm    — union aliases
 
-Base builders:
-    build_base_explanation        — ExplanationBlock for HPO methods
-    build_coverage_block          — HpoCoverageBlock from HPO term sets
-    build_token_coverage_block    — TokenCoverageBlock from token vectors
-    build_matched_terms           — list[TermMatch] for HPO methods
-    build_unmatched_terms         — list[TermEntry] for HPO methods
-    build_matched_tokens          — list[TokenMatch] for text/hybrid modes
-    build_unmatched_tokens        — list[TokenEntry] for text/hybrid modes
-    build_ic_filter_block         — IC filtering diagnostics dict
+Base builders (for HPO methods):
+    build_base_explanation        — assemble ExplanationBlock from HPO term sets
+    build_coverage_block          — HpoCoverageBlock from two HPO term sets
+    build_matched_terms           — list[TermMatch], sorted by IC descending
+    build_unmatched_terms         — list[TermEntry], sorted by IC descending
 
-Summary generators:
-    set_based_summary, semantic_summary, tfidf_summary, embedding_summary
+Base builders (for token/text methods):
+    build_base_token_explanation  — assemble ExplanationBlock from token vectors
+    build_token_coverage_block    — TokenCoverageBlock from two token vectors
+    build_matched_tokens          — list[TokenMatch], sorted by IDF descending
+    build_unmatched_tokens        — list[TokenEntry], sorted by IDF descending
+
+Shared diagnostics builder:
+    build_ic_filter_block         — IC filtering impact dict for method_specific
 """
 
 from raresim.core.explanation.schema import (
@@ -47,12 +53,6 @@ from raresim.core.explanation.base_explainer import (
     build_unmatched_tokens,
     build_ic_filter_block,
 )
-from raresim.core.explanation.summary import (
-    set_based_summary,
-    semantic_summary,
-    tfidf_summary,
-    embedding_summary,
-)
 
 __all__ = [
     # schema — HPO types
@@ -77,11 +77,6 @@ __all__ = [
     "build_token_coverage_block",
     "build_matched_tokens",
     "build_unmatched_tokens",
-    # shared
+    # shared diagnostics
     "build_ic_filter_block",
-    # summaries
-    "set_based_summary",
-    "semantic_summary",
-    "tfidf_summary",
-    "embedding_summary",
 ]
