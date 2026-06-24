@@ -19,18 +19,22 @@ from transformers import (
 from raresim.ontology.disease_category import build_category_metadata
 from raresim.similarity_methods.llm.config import (
     DO_SAMPLE,
-    EXPLAINER_MODEL,
-    MAX_NEW_TOKENS_EXPLAINER,
     MAX_NEW_TOKENS_RETRIEVAL,
     TEMPERATURE,
     TOP_K,
-    TOP_K_RERANK,
+    DEFAULT_MATCH_SCORE,
+    MATCH_LEVEL_ALIASES,
+    MATCH_LEVEL_SCORES,
+    TEXT_PREVIEW_MAX_LENGTH,
+    DISEASE_HPO_TERMS_PREVIEW_MAX_COUNT,
+    REPETITION_PENALTY,
 )
 from raresim.similarity_methods.llm.explanation import (
     build_explanation,
-    build_metadata,
+    build_method_specific_explanation_block,
 )
-from raresim.utils.timer import timer
+from raresim.types.result import SimilarityResult
+from raresim.types.schemas import PatientProfile
 
 
 def as_string_list(value: object) -> list[str]:
@@ -57,6 +61,15 @@ def merge_aliases(*alias_groups: object) -> list[str]:
 def get_hpo_label(term: str, hpo_labels: dict[str, str]) -> str:
     """Return the HPO label for a term, falling back to the term ID."""
     return hpo_labels.get(term) or term
+
+
+def confidence_to_score(confidence: str | None) -> float:
+    """Convert textual LLM confidence into a numeric score for ranking displays."""
+    value = (confidence or "").strip().lower()
+    value = value.replace("match", "").replace("confidence", "").strip()
+    head = value.split()[0] if value.split() else value
+    level = MATCH_LEVEL_ALIASES.get(value) or MATCH_LEVEL_ALIASES.get(head)
+    return DEFAULT_MATCH_SCORE if level is None else MATCH_LEVEL_SCORES[level]
 
 
 # ── HuggingFace backend ───────────────────────────────────────────────────────
@@ -95,7 +108,7 @@ def load_hf_pipeline(model_name: str, max_new_tokens: int = MAX_NEW_TOKENS_RETRI
         max_new_tokens=max_new_tokens,
         temperature=TEMPERATURE,
         do_sample=DO_SAMPLE,
-        repetition_penalty=1.3,
+        repetition_penalty=REPETITION_PENALTY,
     )
 
 
@@ -132,32 +145,21 @@ def query_hf(
 # ── Shared text/result helpers ────────────────────────────────────────────────
 
 
-def confidence_to_score(confidence: str | None) -> float:
-    """Convert textual LLM confidence into a numeric score for ranking displays."""
-    value = (confidence or "").strip().lower()
-
-    if value.startswith("high") or "strong" in value:
-        return 0.9
-    if value.startswith("medium") or "possible" in value:
-        return 0.6
-    if value.startswith("low") or "weak" in value:
-        return 0.3
-
-    return 0.5
-
-
-def build_patient_context_text(patient: dict, hpo_labels: dict[str, str]) -> str:
+def build_patient_context_text(
+    patient: PatientProfile, hpo_labels: dict[str, str]
+) -> str:
     """Build the patient text shown in LLM explanations."""
-    raw_text = str(patient.get("raw_text") or "").strip()
-    hpo_terms = as_string_list(patient.get("hpo_terms", []))
-    hpo_term_labels = [get_hpo_label(term, hpo_labels) for term in hpo_terms]
+    raw_text = str(patient.raw_text or "").strip()
+    hpo_term_labels = [
+        get_hpo_label(term, hpo_labels)
+        for term in sorted(patient.get_terms(use_propagated=False))
+    ]
 
     parts = []
     if raw_text:
         parts.append(f"Clinical description: {raw_text}")
     if hpo_term_labels:
         parts.append(f"Patient phenotypes: {', '.join(hpo_term_labels)}")
-
     return "\n".join(parts).strip()
 
 
@@ -171,12 +173,14 @@ def build_disease_text_preview(
     description = str(disease_profile.get("merged_description") or "").strip()
 
     hpo_terms = as_string_list(disease_profile.get("hpo_terms", []))
-    hpo_term_labels = [get_hpo_label(term, hpo_labels) for term in hpo_terms[:20]]
+    hpo_term_labels = [
+        get_hpo_label(term, hpo_labels)
+        for term in hpo_terms[:DISEASE_HPO_TERMS_PREVIEW_MAX_COUNT]
+    ]
 
     parts = [f"Disease: {label}"]
-
     if description:
-        parts.append(f"Description: {description[:400]}")
+        parts.append(f"Description: {description[:TEXT_PREVIEW_MAX_LENGTH]}")
 
     if hpo_term_labels:
         parts.append(f"Phenotypes: {', '.join(hpo_term_labels)}")
@@ -184,27 +188,20 @@ def build_disease_text_preview(
     return "\n".join(parts)
 
 
-def get_result_disease_id(result: dict) -> str | None:
-    """Extract a disease ID from heterogeneous result dictionaries."""
-    return (
-        result.get("canonical_disease_id")
-        or result.get("disease_id")
-        or result.get("ordo_id")
-    )
-
-
 # ── Retrieval prompt builder ──────────────────────────────────────────────────
 
 
 def build_retrieval_prompt(
-    patient: dict,
+    patient: PatientProfile,
     hpo_labels: dict[str, str],
     top_k: int = TOP_K,
 ) -> str:
     """Build the prompt that asks the LLM to directly retrieve diseases."""
-    hpo_terms = as_string_list(patient.get("hpo_terms", []))
-    hpo_term_labels = [get_hpo_label(term, hpo_labels) for term in hpo_terms]
-    raw_text = str(patient.get("raw_text") or "").strip()
+    hpo_term_labels = [
+        get_hpo_label(term, hpo_labels)
+        for term in sorted(patient.get_terms(use_propagated=False))
+    ]
+    raw_text = (patient.raw_text or "").strip()
 
     content_parts = [
         "You are a rare disease expert specializing in clinical phenotyping.",
@@ -280,15 +277,16 @@ def find_disease_in_profiles(
 
 def parse_retrieval_output(  # pylint: disable=too-many-arguments,too-many-locals
     generated_text: str,
-    patient: dict,
+    patient: PatientProfile,
     hpo_labels: dict[str, str],
     disease_profiles: dict[str, dict],
     model_name: str,
     *,
+    ic_values: dict[str, float],
     disease_ancestors: dict[str, list[str]] | None = None,
     disease_metadata_index: dict[str, dict] | None = None,
     top_k: int = TOP_K,
-) -> list[dict]:
+) -> list[SimilarityResult]:
     """
     Parse LLM generated text into structured disease results.
 
@@ -301,7 +299,7 @@ def parse_retrieval_output(  # pylint: disable=too-many-arguments,too-many-local
 
     disease_ancestors = disease_ancestors or {}
     disease_metadata_index = disease_metadata_index or {}
-    patient_hpo_terms = as_string_list(patient.get("hpo_terms", []))
+    patient_hpo_terms = sorted(patient.get_terms(use_propagated=False))
     patient_text = build_patient_context_text(patient, hpo_labels)
 
     generated_text = re.sub(r"ORPHA(\d+)", r"ORPHA:\1", generated_text)
@@ -361,43 +359,42 @@ def parse_retrieval_output(  # pylint: disable=too-many-arguments,too-many-local
             hpo_labels=hpo_labels,
         )
 
-        results.append(
-            {
-                "rank": rank,
-                "canonical_disease_id": matched_id,
-                "representative_disease_id": matched_id,
-                "disease_id": matched_id,
-                "ordo_id": matched_id,
-                "label": label,
-                "disease_name": label,
-                "profile_type": category_metadata["profile_type"],
-                "category_source_id": category_metadata["category_source_id"],
-                "category_path": category_metadata["category_path"],
-                "matched_aliases": category_metadata["matched_aliases"],
-                "score": score,
-                "matched_phenotypes": matched_phenotypes,
-                "confidence": confidence,
+        method_specific = build_method_specific_explanation_block(
+            model_name=model_name,
+            matched_phenotypes=matched_phenotypes,
+            confidence=confidence,
+            patient_text=patient_text,
+            disease_text_preview=disease_text_preview,
+            llm_response=generated_text,
+            prompt_name="llm_direct_retrieval",
+        )
+
+        explanation = build_explanation(
+            score=score,
+            model_name=model_name,
+            patient_hpo_terms=patient_hpo_terms,
+            disease_hpo_terms=disease_hpo_terms,
+            ic_values=ic_values,
+            hpo_labels=hpo_labels,
+            method_specific=method_specific,
+            diagnostics_extras={
                 "validated_against_profiles": validated,
-                "model_name": model_name,
-                "model": model_name,
-                "method": "llm_retrieval",
-                "explanation": build_explanation(
-                    score=score,
-                    model_name=model_name,
-                    patient_text=patient_text,
-                    disease_text_preview=disease_text_preview,
-                    patient_hpo_terms=patient_hpo_terms,
-                    disease_hpo_terms=disease_hpo_terms,
-                    hpo_labels=hpo_labels,
-                    llm_response=generated_text,
-                    prompt_name="llm_direct_retrieval",
-                ),
-                "metadata": build_metadata(
-                    model_name=model_name,
-                    top_k=top_k,
-                    prompt_name="llm_direct_retrieval",
-                ),
-            }
+            },
+        )
+
+        results.append(
+            SimilarityResult(
+                disease_id=matched_id,
+                label=label,
+                score=score,
+                method_name="llm_retrieval",
+                profile_type=category_metadata["profile_type"],
+                category_source_id=category_metadata["category_source_id"],
+                category_path=category_metadata["category_path"],
+                matched_aliases=category_metadata["matched_aliases"],
+                rank=rank,
+                explanation=explanation,
+            )
         )
 
         rank += 1
@@ -407,73 +404,18 @@ def parse_retrieval_output(  # pylint: disable=too-many-arguments,too-many-local
     return results
 
 
-# ── Retrieval entry point ─────────────────────────────────────────────────────
-
-
-def retrieve_diseases_llm(  # pylint: disable=too-many-arguments
-    patient: dict,
-    hpo_labels: dict[str, str],
-    disease_profiles: dict[str, dict],
-    model_name: str,
-    *,
-    disease_ancestors: dict[str, list[str]] | None = None,
-    disease_metadata_index: dict[str, dict] | None = None,
-    top_k: int = TOP_K,
-) -> tuple[list[dict], object]:
-    """
-    Use an LLM to directly retrieve and rank rare diseases from patient HPO terms.
-
-    Loads the model, generates results, then returns both the results and the
-    pipeline object so the caller can unload it when ready.
-    """
-    prompt = build_retrieval_prompt(patient, hpo_labels, top_k)
-
-    print(f"\n[llm] Retrieving diseases with: {model_name}")
-
-    with timer(f"load {model_name}"):
-        pipe = load_hf_pipeline(model_name, MAX_NEW_TOKENS_RETRIEVAL)
-
-    with timer(f"generate {model_name}"):
-        generated = query_hf(prompt, pipe, max_tokens=MAX_NEW_TOKENS_RETRIEVAL)
-
-    print("\n--- RAW LLM OUTPUT ---")
-    print(generated)
-    print("--- END OUTPUT ---\n")
-
-    results = parse_retrieval_output(
-        generated_text=generated,
-        patient=patient,
-        hpo_labels=hpo_labels,
-        disease_profiles=disease_profiles,
-        model_name=model_name,
-        disease_ancestors=disease_ancestors,
-        disease_metadata_index=disease_metadata_index,
-        top_k=top_k,
-    )
-
-    n_validated = sum(
-        1 for result in results if result.get("validated_against_profiles")
-    )
-    print(
-        f"[llm] Found {len(results)} diseases "
-        f"({n_validated} validated against profiles)"
-    )
-
-    return results, pipe
-
-
 # ── Explanation prompt builder ────────────────────────────────────────────────
 
 
 def build_explanation_prompt(  # pylint: disable=too-many-locals
-    patient: dict,
+    patient: PatientProfile,
     disease: dict,
     hpo_labels: dict[str, str],
     candidate_score: float | None = None,
     candidate_rank: int | None = None,
 ) -> str:
     """Build a structured clinical reasoning prompt for one patient-disease pair."""
-    patient_terms = as_string_list(patient.get("hpo_terms", []))
+    patient_terms = sorted(patient.get_terms(use_propagated=False))
     disease_terms = as_string_list(disease.get("hpo_terms", []))
 
     patient_labels = [get_hpo_label(term, hpo_labels) for term in patient_terms]
@@ -548,10 +490,24 @@ def build_explanation_prompt(  # pylint: disable=too-many-locals
 # ── Explanation extractor ─────────────────────────────────────────────────────
 
 
-def extract_explanation(generated_text: str) -> str:  # pylint: disable=too-many-branches
-    """Extract and structure the explanation from LLM output."""
+def parse_explanation(generated_text: str) -> dict:  # pylint: disable=too-many-branches
+    """
+    Parse LLM explainer output into its structured parts.
+
+    Returns a dict with:
+        reasoning       — the CLINICAL REASONING text
+        verdict         — e.g. "STRONG MATCH" (empty string if none parsed)
+        verdict_reason  — the VERDICT REASON text
+        text            — the joined human-readable string (same as the old
+                          extract_explanation return value)
+    """
     if not generated_text:
-        return "No explanation generated."
+        return {
+            "reasoning": "",
+            "verdict": "",
+            "verdict_reason": "",
+            "text": "No explanation generated.",
+        }
 
     generated_text = generated_text.strip()
     reasoning = ""
@@ -561,7 +517,6 @@ def extract_explanation(generated_text: str) -> str:  # pylint: disable=too-many
 
     for line in generated_text.splitlines():
         line = line.strip()
-
         if not line:
             continue
 
@@ -589,129 +544,15 @@ def extract_explanation(generated_text: str) -> str:  # pylint: disable=too-many
         parts.append(f"Verdict: {verdict.strip()}")
         if verdict_reason:
             parts.append(verdict_reason.strip())
-        return " | ".join(parts)
+        text = " | ".join(parts)
+    else:
+        sentences = generated_text.split(".")
+        short = ". ".join(s.strip() for s in sentences[:3] if s.strip())
+        text = short + "." if short and not short.endswith(".") else short
 
-    sentences = generated_text.split(".")
-    short = ". ".join(sentence.strip() for sentence in sentences[:3] if sentence.strip())
-    return short + "." if short and not short.endswith(".") else short
-
-
-# ── Explanation entry point ───────────────────────────────────────────────────
-
-
-def explain_top_results(  # pylint: disable=too-many-arguments,too-many-locals
-    patient: dict,
-    candidate_results: list[dict],
-    disease_profiles: dict[str, dict],
-    hpo_labels: dict[str, str],
-    *,
-    disease_ancestors: dict[str, list[str]] | None = None,
-    disease_metadata_index: dict[str, dict] | None = None,
-    model_name: str = EXPLAINER_MODEL,
-    top_k: int = TOP_K_RERANK,
-) -> list[dict]:
-    """
-    Add structured LLM explanations to top-K candidate results.
-
-    This can explain direct LLM retrieval results or transformer top-K results.
-    """
-    disease_ancestors = disease_ancestors or {}
-    disease_metadata_index = disease_metadata_index or {}
-    patient_hpo_terms = as_string_list(patient.get("hpo_terms", []))
-    patient_text = build_patient_context_text(patient, hpo_labels)
-
-    print(f"\n[llm] Loading explainer: {model_name}")
-
-    pipe = None
-    explained = []
-
-    try:
-        with timer("load explainer"):
-            pipe = load_hf_pipeline(model_name, MAX_NEW_TOKENS_EXPLAINER)
-
-        candidates = candidate_results[:top_k]
-
-        for index, original_result in enumerate(candidates, start=1):
-            result = dict(original_result)
-            disease_id = get_result_disease_id(result)
-
-            if not disease_id or disease_id not in disease_profiles:
-                result["llm_explanation_text"] = "Disease profile not found."
-                explained.append(result)
-                continue
-
-            disease = disease_profiles[disease_id]
-            label = str(disease.get("label") or disease_id)
-
-            print(f"  [llm] {index}/{len(candidates)}: {label}")
-
-            with timer(f"explain {label[:40]}"):
-                prompt = build_explanation_prompt(
-                    patient=patient,
-                    disease=disease,
-                    hpo_labels=hpo_labels,
-                    candidate_score=result.get("score"),
-                    candidate_rank=result.get("rank"),
-                )
-                generated = query_hf(
-                    prompt,
-                    pipe,
-                    max_tokens=MAX_NEW_TOKENS_EXPLAINER,
-                )
-                explanation_text = extract_explanation(generated)
-
-            category_metadata = build_category_metadata(
-                disease_id=disease_id,
-                profile=disease,
-                disease_ancestors=disease_ancestors,
-                disease_metadata_index=disease_metadata_index,
-            )
-
-            disease_hpo_terms = as_string_list(disease.get("hpo_terms", []))
-            disease_text_preview = build_disease_text_preview(
-                disease_profile=disease,
-                fallback_label=label,
-                hpo_labels=hpo_labels,
-            )
-            score = float(result.get("score", 0.0))
-
-            result["profile_type"] = (
-                result.get("profile_type") or category_metadata["profile_type"]
-            )
-            result["category_source_id"] = (
-                result.get("category_source_id")
-                or category_metadata["category_source_id"]
-            )
-            result["category_path"] = (
-                result.get("category_path") or category_metadata["category_path"]
-            )
-            result["matched_aliases"] = merge_aliases(
-                result.get("matched_aliases", []),
-                category_metadata["matched_aliases"],
-            )
-
-            result["llm_explanation_text"] = explanation_text
-            result["explainer_model"] = model_name
-            result["llm_explanation"] = build_explanation(
-                score=score,
-                model_name=model_name,
-                patient_text=patient_text,
-                disease_text_preview=disease_text_preview,
-                patient_hpo_terms=patient_hpo_terms,
-                disease_hpo_terms=disease_hpo_terms,
-                hpo_labels=hpo_labels,
-                llm_response=explanation_text,
-                prompt_name="llm_clinical_explanation",
-            )
-            result["llm_explanation_metadata"] = build_metadata(
-                model_name=model_name,
-                top_k=top_k,
-                prompt_name="llm_clinical_explanation",
-            )
-            explained.append(result)
-
-    finally:
-        if pipe is not None:
-            unload_pipeline(pipe)
-
-    return explained
+    return {
+        "reasoning": reasoning.strip(),
+        "verdict": verdict.strip(),
+        "verdict_reason": verdict_reason.strip(),
+        "text": text,
+    }

@@ -33,8 +33,7 @@ STANDARDIZED_PHENOPACKETS_DIR = DATASET_DIR / "phenopackets/standardized_to_json
 OUTPUTS_DIR = PROJECT_ROOT / "outputs"
 ARTIFACTS_DIR = OUTPUTS_DIR / "artifacts"
 SIMILARITY_DIR = OUTPUTS_DIR / "similarity_methods"
-TRANSFORMER_DIR = OUTPUTS_DIR / "transformer"
-LLM_DIR = OUTPUTS_DIR / "llm"
+TRANSFORMER_DIR = SIMILARITY_DIR / "transformer"
 WEBAPP_DIR = OUTPUTS_DIR / "webapp"
 GUI_DIR = OUTPUTS_DIR / "gui"
 

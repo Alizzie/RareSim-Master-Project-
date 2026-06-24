@@ -10,32 +10,32 @@ retriever.py:
     high-level object that runs direct LLM retrieval and explains candidate results
 """
 
-from raresim.ontology.disease_category import build_category_metadata
 from raresim.similarity_methods.llm.config import (
     EXPLAINER_MODEL,
     MAX_NEW_TOKENS_EXPLAINER,
     MAX_NEW_TOKENS_RETRIEVAL,
     TOP_K,
     TOP_K_RERANK,
+    PIPELINE_NAME,
+    TEXT_PREVIEW_MAX_LENGTH,
 )
-from raresim.similarity_methods.llm.explanation import (
-    build_explanation,
-    build_metadata,
-)
+from raresim.core.pipeline import build_run_stats
+from raresim.core.context import AppContext
 from raresim.similarity_methods.llm.methods import (
-    as_string_list,
-    build_disease_text_preview,
     build_explanation_prompt,
     build_patient_context_text,
     build_retrieval_prompt,
-    extract_explanation,
-    get_result_disease_id,
+    parse_explanation,
     load_hf_pipeline,
     parse_retrieval_output,
     query_hf,
     unload_pipeline,
 )
-from raresim.utils.timer import timer
+from raresim.types.result import MethodResults, RunConfig, SimilarityResult
+from raresim.types.schemas import PatientProfile
+from raresim.utils.timer import timer, Timer
+
+from typing import cast
 
 
 class LlmDiseaseRetriever:
@@ -49,24 +49,44 @@ class LlmDiseaseRetriever:
 
     def __init__(  # pylint: disable=too-many-arguments
         self,
-        patient: dict,
+        patient: PatientProfile,
         hpo_labels: dict[str, str],
         disease_profiles: dict[str, dict],
         *,
+        ic_values: dict[str, float] | None = None,
         disease_ancestors: dict[str, list[str]] | None = None,
         disease_metadata_index: dict[str, dict] | None = None,
     ) -> None:
         self.patient = patient
         self.hpo_labels = hpo_labels
+        self.ic_values = ic_values or {}
         self.disease_profiles = disease_profiles
         self.disease_ancestors = disease_ancestors or {}
         self.disease_metadata_index = disease_metadata_index or {}
+
+    @classmethod
+    def from_context(
+        cls, patient: PatientProfile, context: AppContext
+    ) -> "LlmDiseaseRetriever":
+        """
+        Create a retriever from a patient and an AppContext.
+
+        This is a convenience method to avoid passing many arguments.
+        """
+        return cls(
+            patient=patient,
+            hpo_labels=context.hpo_labels,
+            disease_profiles=context.disease_profiles,
+            ic_values=context.ic_values,
+            disease_ancestors=context.disease_ancestors,
+            disease_metadata_index=context.disease_metadata_index,
+        )
 
     def retrieve(
         self,
         model_name: str,
         top_k: int = TOP_K,
-    ) -> tuple[list[dict], object]:
+    ) -> tuple[MethodResults, object]:
         """
         Use an LLM to directly retrieve and rank rare diseases.
 
@@ -78,6 +98,8 @@ class LlmDiseaseRetriever:
             hpo_labels=self.hpo_labels,
             top_k=top_k,
         )
+
+        method_timer = Timer(PIPELINE_NAME).start()
 
         print(f"\n[llm] Retrieving diseases with: {model_name}")
 
@@ -95,10 +117,11 @@ class LlmDiseaseRetriever:
         print(generated)
         print("--- END OUTPUT ---\n")
 
-        results = parse_retrieval_output(
+        rankings = parse_retrieval_output(
             generated_text=generated,
             patient=self.patient,
             hpo_labels=self.hpo_labels,
+            ic_values=self.ic_values,
             disease_profiles=self.disease_profiles,
             model_name=model_name,
             disease_ancestors=self.disease_ancestors,
@@ -106,36 +129,48 @@ class LlmDiseaseRetriever:
             top_k=top_k,
         )
 
+        elapsed = method_timer.stop()
         n_validated = sum(
-            1 for result in results if result.get("validated_against_profiles")
+            1
+            for r in rankings
+            if cast(dict, r.explanation.get("diagnostics", {})).get(
+                "validated_against_profiles"
+            )
         )
 
         print(
-            f"[llm] Found {len(results)} diseases "
+            f"[llm] Found {len(rankings)} diseases "
             f"({n_validated} validated against profiles)"
         )
 
-        return results, pipe
+        method_results = MethodResults(
+            method_name="llm_retrieval",
+            pipeline_name=PIPELINE_NAME,
+            config=self._run_config(top_k=top_k),
+            stats=self._run_stats(rankings, elapsed),
+            rankings=rankings,
+        )
+
+        return method_results, pipe
 
     def explain_results(  # pylint: disable=too-many-locals
         self,
-        candidate_results: list[dict],
+        candidate_results: list[SimilarityResult],
         *,
         model_name: str = EXPLAINER_MODEL,
         top_k: int = TOP_K_RERANK,
-    ) -> list[dict]:
+    ) -> list[SimilarityResult]:
         """
         Add structured LLM explanations to candidate results.
 
         This can explain direct LLM retrieval results or transformer top-K results.
         """
-        patient_hpo_terms = as_string_list(self.patient.get("hpo_terms", []))
         patient_text = build_patient_context_text(self.patient, self.hpo_labels)
 
         print(f"\n[llm] Loading explainer: {model_name}")
 
         pipe = None
-        explained = []
+        explained: list[SimilarityResult] = []
 
         try:
             with timer("load explainer"):
@@ -143,12 +178,16 @@ class LlmDiseaseRetriever:
 
             candidates = candidate_results[:top_k]
 
-            for index, original_result in enumerate(candidates, start=1):
-                result = dict(original_result)
-                disease_id = get_result_disease_id(result)
+            for index, result in enumerate(candidates, start=1):
+                disease_id = result.disease_id
+                method_specific = cast(
+                    dict, result.explanation.setdefault("method_specific", {})
+                )
 
                 if not disease_id or disease_id not in self.disease_profiles:
-                    result["llm_explanation_text"] = "Disease profile not found."
+                    method_specific["clinical_explanation"] = (
+                        "Disease profile not found."
+                    )
                     explained.append(result)
                     continue
 
@@ -162,74 +201,25 @@ class LlmDiseaseRetriever:
                         patient=self.patient,
                         disease=disease,
                         hpo_labels=self.hpo_labels,
-                        candidate_score=result.get("score"),
-                        candidate_rank=result.get("rank"),
+                        candidate_score=result.score,
+                        candidate_rank=result.rank,
                     )
                     generated = query_hf(
                         prompt,
                         pipe,
                         max_tokens=MAX_NEW_TOKENS_EXPLAINER,
                     )
-                    explanation_text = extract_explanation(generated)
+                    explanation_text = parse_explanation(generated)
 
-                category_metadata = build_category_metadata(
-                    disease_id=disease_id,
-                    profile=disease,
-                    disease_ancestors=self.disease_ancestors,
-                    disease_metadata_index=self.disease_metadata_index,
+                method_specific["clinical_explanation"] = explanation_text["text"]
+                method_specific["verdict"] = explanation_text.get("verdict", None)
+                method_specific["verdict_reason"] = explanation_text.get(
+                    "verdict_reason", None
                 )
-
-                existing_aliases = result.get("matched_aliases", [])
-                if not isinstance(existing_aliases, list):
-                    existing_aliases = []
-
-                matched_aliases = sorted(
-                    {
-                        *[str(alias) for alias in existing_aliases if alias],
-                        *category_metadata["matched_aliases"],
-                    }
-                )
-
-                disease_hpo_terms = as_string_list(disease.get("hpo_terms", []))
-                disease_text_preview = build_disease_text_preview(
-                    disease_profile=disease,
-                    fallback_label=label,
-                    hpo_labels=self.hpo_labels,
-                )
-                score = float(result.get("score", 0.0))
-
-                result["profile_type"] = (
-                    result.get("profile_type")
-                    or category_metadata["profile_type"]
-                )
-                result["category_source_id"] = (
-                    result.get("category_source_id")
-                    or category_metadata["category_source_id"]
-                )
-                result["category_path"] = (
-                    result.get("category_path")
-                    or category_metadata["category_path"]
-                )
-                result["matched_aliases"] = matched_aliases
-
-                result["llm_explanation_text"] = explanation_text
-                result["explainer_model"] = model_name
-                result["llm_explanation"] = build_explanation(
-                    score=score,
-                    model_name=model_name,
-                    patient_text=patient_text,
-                    disease_text_preview=disease_text_preview,
-                    patient_hpo_terms=patient_hpo_terms,
-                    disease_hpo_terms=disease_hpo_terms,
-                    hpo_labels=self.hpo_labels,
-                    llm_response=explanation_text,
-                    prompt_name="llm_clinical_explanation",
-                )
-                result["llm_explanation_metadata"] = build_metadata(
-                    model_name=model_name,
-                    top_k=top_k,
-                    prompt_name="llm_clinical_explanation",
-                )
+                method_specific["explainer_model"] = model_name
+                method_specific["patient_text_preview"] = patient_text[
+                    :TEXT_PREVIEW_MAX_LENGTH
+                ]
 
                 explained.append(result)
 
@@ -238,3 +228,23 @@ class LlmDiseaseRetriever:
                 unload_pipeline(pipe)
 
         return explained
+
+    def _run_stats(self, rankings: list[SimilarityResult], elapsed: float):
+        n_patient_terms = len(self.patient.get_terms(use_propagated=False))
+        return build_run_stats(
+            n_patient_terms_raw=n_patient_terms,
+            n_patient_terms_propagated=0,
+            n_patient_terms_used=n_patient_terms,
+            n_diseases_scored=len(rankings),
+            n_diseases_skipped=0,
+            computation_time=elapsed,
+        )
+
+    @staticmethod
+    def _run_config(top_k: int) -> RunConfig:
+        return RunConfig(
+            use_propagated_terms=False,
+            ic_threshold=None,
+            top_k=top_k,
+            use_canonical_profiles=True,
+        )
