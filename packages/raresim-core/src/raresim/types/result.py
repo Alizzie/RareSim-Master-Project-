@@ -51,6 +51,33 @@ class RunConfig:
 
 
 @dataclass
+class PipelineConfig:
+    """
+    Configuration for running similarity pipelines.
+    Maps to the RunConfig schema for embedding in MethodResults.
+    """
+
+    top_k: int = 10
+    use_propagated_terms: bool = True
+    ic_threshold: float = 1.5
+    use_canonical_profiles: bool = True
+
+    @property
+    def terms_key(self) -> str:
+        """Helper to determine which HPO term set to use based on config."""
+        return "propagated_hpo_terms" if self.use_propagated_terms else "hpo_terms"
+
+    def to_run_config(self) -> RunConfig:
+        """Convert to RunConfig for embedding in MethodResults."""
+        return RunConfig(
+            use_propagated_terms=self.use_propagated_terms,
+            ic_threshold=self.ic_threshold,
+            top_k=self.top_k,
+            use_canonical_profiles=self.use_canonical_profiles,
+        )
+
+
+@dataclass
 class RunStats:
     """Runtime statistics observed during a similarity pipeline run."""
 
