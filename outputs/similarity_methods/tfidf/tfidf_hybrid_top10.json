@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "1.1",
   "method_name": "tfidf_hybrid",
   "pipeline_name": "tfidf",
   "config": {
@@ -12,9 +12,9 @@
     "n_patient_terms_raw": 3,
     "n_patient_terms_propagated": 14,
     "n_patient_terms_used": 9,
-    "n_diseases_scored": 19547,
+    "n_diseases_scored": 19653,
     "n_diseases_skipped": 9,
-    "computation_time_seconds": 0.9013
+    "computation_time_seconds": 2.3271
   },
   "rankings": [
     {
@@ -22,6 +22,7 @@
       "disease_id": "ORPHA:543470",
       "label": "Optic atrophy-ataxia-peripheral neuropathy-global developmental delay syndrome",
       "profile_type": null,
+      "category_source_id": "ORPHA:543470",
       "category_path": [
         {
           "disease_id": "ORPHA:557493",
@@ -30,12 +31,17 @@
           "profile_type_label": null
         }
       ],
-      "score": 0.286162,
+      "matched_aliases": [
+        "HP:0040283",
+        "MONDO:0034092",
+        "OCCASIONAL",
+        "ORPHA:543470"
+      ],
+      "score": 0.286305,
       "method_name": "tfidf_hybrid",
       "explanation": {
         "summary": "4 of 19 patient HPO label tokens matched disease description (21% patient / 50% disease token coverage, 8 disease tokens total). See contributing_hpo_terms for phenotype-level traceability.",
         "coverage": {
-          "coverage_type": "token",
           "patient_token_coverage": 0.2105,
           "disease_token_coverage": 0.5,
           "direction_asymmetry": 0.2895,
@@ -48,149 +54,143 @@
         "matched_terms": [
           {
             "token": "global",
-            "idf_weight": 5.1806,
+            "idf_weight": 5.186,
             "match_score": 1.0
           },
           {
             "token": "ataxia",
-            "idf_weight": 3.8624,
+            "idf_weight": 3.8654,
             "match_score": 1.0
           },
           {
             "token": "delay",
-            "idf_weight": 3.3172,
+            "idf_weight": 3.3212,
             "match_score": 1.0
           },
           {
             "token": "developmental",
-            "idf_weight": 3.0299,
+            "idf_weight": 3.0331,
             "match_score": 1.0
           }
         ],
         "unmatched_patient_terms": [
           {
             "token": "erythrocyte",
-            "idf_weight": 7.242
+            "idf_weight": 7.2474
           },
           {
             "token": "nonprogressive",
-            "idf_weight": 6.8853
+            "idf_weight": 6.8907
           },
           {
             "token": "coordination",
-            "idf_weight": 6.6229
+            "idf_weight": 6.6283
           },
           {
             "token": "morphology",
-            "idf_weight": 6.5488
+            "idf_weight": 6.5542
           },
           {
             "token": "forming",
-            "idf_weight": 5.8557
+            "idf_weight": 5.8611
           },
           {
             "token": "abnormality",
-            "idf_weight": 4.7812
+            "idf_weight": 4.7866
           },
           {
             "token": "function",
-            "idf_weight": 4.7049
+            "idf_weight": 4.7103
           },
           {
             "token": "tissues",
-            "idf_weight": 4.608
+            "idf_weight": 4.6134
           },
           {
             "token": "cerebellar",
-            "idf_weight": 4.2901
+            "idf_weight": 4.2955
           },
           {
             "token": "anemia",
-            "idf_weight": 4.2146
+            "idf_weight": 4.2097
           }
         ],
         "method_specific": {
           "tfidf_mode": "tfidf_hybrid",
-          "coverage_unit": "tokens",
           "idf_weighted_matches": [
             {
-              "id": "global",
-              "label": "global",
-              "idf_weight": 5.1806
+              "token": "global",
+              "idf_weight": 5.186
             },
             {
-              "id": "ataxia",
-              "label": "ataxia",
-              "idf_weight": 3.8624
+              "token": "ataxia",
+              "idf_weight": 3.8654
             },
             {
-              "id": "delay",
-              "label": "delay",
-              "idf_weight": 3.3172
+              "token": "delay",
+              "idf_weight": 3.3212
             },
             {
-              "id": "developmental",
-              "label": "developmental",
-              "idf_weight": 3.0299
+              "token": "developmental",
+              "idf_weight": 3.0331
             }
           ],
           "low_idf_matches": [],
           "n_low_idf_matches": 0,
           "low_idf_threshold": 0.5,
           "vector_norms": {
-            "dot_product": 87.86252,
-            "patient_norm": 26.574542,
-            "disease_norm": 11.553816,
-            "score_check": 0.286162
+            "dot_product": 88.037561,
+            "patient_norm": 26.59021,
+            "disease_norm": 11.564239,
+            "score_check": 0.286305
           },
-          "sparse_disease_threshold": false,
           "contributing_hpo_terms": [
             {
               "hpo_id": "HP:0002470",
               "hpo_label": "Nonprogressive cerebellar ataxia",
-              "ic": 7.5785,
+              "ic": 7.5839,
               "matching_tokens": [
                 "ataxia"
               ],
               "token_idf_weights": {
-                "ataxia": 3.8624
+                "ataxia": 3.8654
               }
             },
             {
               "hpo_id": "HP:0001251",
               "hpo_label": "Ataxia",
-              "ic": 2.6911,
+              "ic": 2.6845,
               "matching_tokens": [
                 "ataxia"
               ],
               "token_idf_weights": {
-                "ataxia": 3.8624
+                "ataxia": 3.8654
               }
             },
             {
               "hpo_id": "HP:0001263",
               "hpo_label": "Global developmental delay",
-              "ic": 1.9176,
+              "ic": 1.9147,
               "matching_tokens": [
                 "delay",
                 "developmental",
                 "global"
               ],
               "token_idf_weights": {
-                "global": 5.1806,
-                "delay": 3.3172,
-                "developmental": 3.0299
+                "developmental": 3.0331,
+                "delay": 3.3212,
+                "global": 5.186
               }
             },
             {
               "hpo_id": "HP:0012758",
               "hpo_label": "Neurodevelopmental delay",
-              "ic": 1.6553,
+              "ic": 1.6537,
               "matching_tokens": [
                 "delay"
               ],
               "token_idf_weights": {
-                "delay": 3.3172
+                "delay": 3.3212
               }
             }
           ],
@@ -202,33 +202,33 @@
               {
                 "id": "HP:0000001",
                 "label": "All",
-                "ic": 0.4063
+                "ic": 0.4025
               },
               {
                 "id": "HP:0000118",
                 "label": "Phenotypic abnormality",
-                "ic": 0.4162
+                "ic": 0.4124
               },
               {
                 "id": "HP:0000707",
                 "label": "Abnormality of the nervous system",
-                "ic": 0.891
+                "ic": 0.8868
               },
               {
                 "id": "HP:0012638",
                 "label": "Abnormal nervous system physiology",
-                "ic": 0.9981
+                "ic": 0.993
               },
               {
                 "id": "HP:0012759",
                 "label": "Neurodevelopmental abnormality",
-                "ic": 1.4177
+                "ic": 1.4049
               }
             ]
           }
         },
         "diagnostics": {
-          "raw_score": 0.286162,
+          "raw_score": 0.286305,
           "tfidf_mode": "tfidf_hybrid",
           "low_idf_threshold_applied": 0.5,
           "n_patient_vector_terms": 19,
@@ -242,13 +242,16 @@
       "disease_id": "MONDO:0004922",
       "label": "developmental coordination disorder",
       "profile_type": null,
+      "category_source_id": null,
       "category_path": [],
-      "score": 0.274063,
+      "matched_aliases": [
+        "MONDO:0004922"
+      ],
+      "score": 0.274137,
       "method_name": "tfidf_hybrid",
       "explanation": {
         "summary": "2 of 19 patient HPO label tokens matched disease description (11% patient / 100% disease token coverage, 2 disease tokens total). See contributing_hpo_terms for phenotype-level traceability. Warning: disease description is very short — score may be unreliable.",
         "coverage": {
-          "coverage_type": "token",
           "patient_token_coverage": 0.1053,
           "disease_token_coverage": 1.0,
           "direction_asymmetry": 0.8947,
@@ -261,103 +264,99 @@
         "matched_terms": [
           {
             "token": "coordination",
-            "idf_weight": 6.6229,
+            "idf_weight": 6.6283,
             "match_score": 1.0
           },
           {
             "token": "developmental",
-            "idf_weight": 3.0299,
+            "idf_weight": 3.0331,
             "match_score": 1.0
           }
         ],
         "unmatched_patient_terms": [
           {
             "token": "erythrocyte",
-            "idf_weight": 7.242
+            "idf_weight": 7.2474
           },
           {
             "token": "nonprogressive",
-            "idf_weight": 6.8853
+            "idf_weight": 6.8907
           },
           {
             "token": "morphology",
-            "idf_weight": 6.5488
+            "idf_weight": 6.5542
           },
           {
             "token": "forming",
-            "idf_weight": 5.8557
+            "idf_weight": 5.8611
           },
           {
             "token": "global",
-            "idf_weight": 5.1806
+            "idf_weight": 5.186
           },
           {
             "token": "abnormality",
-            "idf_weight": 4.7812
+            "idf_weight": 4.7866
           },
           {
             "token": "function",
-            "idf_weight": 4.7049
+            "idf_weight": 4.7103
           },
           {
             "token": "tissues",
-            "idf_weight": 4.608
+            "idf_weight": 4.6134
           },
           {
             "token": "cerebellar",
-            "idf_weight": 4.2901
+            "idf_weight": 4.2955
           },
           {
             "token": "anemia",
-            "idf_weight": 4.2146
+            "idf_weight": 4.2097
           }
         ],
         "method_specific": {
           "tfidf_mode": "tfidf_hybrid",
-          "coverage_unit": "tokens",
           "idf_weighted_matches": [
             {
-              "id": "coordination",
-              "label": "coordination",
-              "idf_weight": 6.6229
+              "token": "coordination",
+              "idf_weight": 6.6283
             },
             {
-              "id": "developmental",
-              "label": "developmental",
-              "idf_weight": 3.0299
+              "token": "developmental",
+              "idf_weight": 3.0331
             }
           ],
           "low_idf_matches": [],
           "n_low_idf_matches": 0,
           "low_idf_threshold": 0.5,
           "vector_norms": {
-            "dot_product": 53.043352,
-            "patient_norm": 26.574542,
-            "disease_norm": 7.283087,
-            "score_check": 0.274063
+            "dot_product": 53.134941,
+            "patient_norm": 26.59021,
+            "disease_norm": 7.289372,
+            "score_check": 0.274137
           },
-          "sparse_disease_threshold": true,
           "contributing_hpo_terms": [
             {
               "hpo_id": "HP:0011443",
               "hpo_label": "Abnormality of coordination",
-              "ic": 2.6024,
+              "ic": 2.5955,
               "matching_tokens": [
                 "coordination"
               ],
               "token_idf_weights": {
-                "coordination": 6.6229
+                "coordination": 6.6283
               }
             },
             {
               "hpo_id": "HP:0001263",
               "hpo_label": "Global developmental delay",
-              "ic": 1.9176,
+              "ic": 1.9147,
               "matching_tokens": [
                 "developmental"
               ],
               "token_idf_weights": {
-                "developmental": 3.0299
+                "developmental": 3.0331
               }
             }
           ],
@@ -369,33 +368,33 @@
               {
                 "id": "HP:0000001",
                 "label": "All",
-                "ic": 0.4063
+                "ic": 0.4025
               },
               {
                 "id": "HP:0000118",
                 "label": "Phenotypic abnormality",
-                "ic": 0.4162
+                "ic": 0.4124
               },
               {
                 "id": "HP:0000707",
                 "label": "Abnormality of the nervous system",
-                "ic": 0.891
+                "ic": 0.8868
               },
               {
                 "id": "HP:0012638",
                 "label": "Abnormal nervous system physiology",
-                "ic": 0.9981
+                "ic": 0.993
               },
               {
                 "id": "HP:0012759",
                 "label": "Neurodevelopmental abnormality",
-                "ic": 1.4177
+                "ic": 1.4049
               }
             ]
           }
         },
         "diagnostics": {
-          "raw_score": 0.274063,
+          "raw_score": 0.274137,
           "tfidf_mode": "tfidf_hybrid",
           "low_idf_threshold_applied": 0.5,
           "n_patient_vector_terms": 19,
@@ -409,6 +408,7 @@
       "disease_id": "ORPHA:247765",
       "label": "X-linked cerebellar ataxia",
       "profile_type": "category",
+      "category_source_id": "ORPHA:247765",
       "category_path": [
         {
           "disease_id": "ORPHA:557492",
@@ -417,12 +417,15 @@
           "profile_type_label": null
         }
       ],
-      "score": 0.264605,
+      "matched_aliases": [
+        "MONDO:0016612",
+        "ORPHA:247765"
+      ],
+      "score": 0.264778,
       "method_name": "tfidf_hybrid",
       "explanation": {
         "summary": "2 of 19 patient HPO label tokens matched disease description (11% patient / 67% disease token coverage, 3 disease tokens total). See contributing_hpo_terms for phenotype-level traceability. Warning: disease description is very short — score may be unreliable.",
         "coverage": {
-          "coverage_type": "token",
           "patient_token_coverage": 0.1053,
           "disease_token_coverage": 0.6667,
           "direction_asymmetry": 0.5614,
@@ -435,105 +438,101 @@
         "matched_terms": [
           {
             "token": "cerebellar",
-            "idf_weight": 4.2901,
+            "idf_weight": 4.2955,
             "match_score": 1.0
           },
           {
             "token": "ataxia",
-            "idf_weight": 3.8624,
+            "idf_weight": 3.8654,
             "match_score": 1.0
           }
         ],
         "unmatched_patient_terms": [
           {
             "token": "erythrocyte",
-            "idf_weight": 7.242
+            "idf_weight": 7.2474
           },
           {
             "token": "nonprogressive",
-            "idf_weight": 6.8853
+            "idf_weight": 6.8907
           },
           {
             "token": "coordination",
-            "idf_weight": 6.6229
+            "idf_weight": 6.6283
           },
           {
             "token": "morphology",
-            "idf_weight": 6.5488
+            "idf_weight": 6.5542
           },
           {
             "token": "forming",
-            "idf_weight": 5.8557
+            "idf_weight": 5.8611
           },
           {
             "token": "global",
-            "idf_weight": 5.1806
+            "idf_weight": 5.186
           },
           {
             "token": "abnormality",
-            "idf_weight": 4.7812
+            "idf_weight": 4.7866
           },
           {
             "token": "function",
-            "idf_weight": 4.7049
+            "idf_weight": 4.7103
           },
           {
             "token": "tissues",
-            "idf_weight": 4.608
+            "idf_weight": 4.6134
           },
           {
             "token": "anemia",
-            "idf_weight": 4.2146
+            "idf_weight": 4.2097
           }
         ],
         "method_specific": {
           "tfidf_mode": "tfidf_hybrid",
-          "coverage_unit": "tokens",
           "idf_weighted_matches": [
             {
-              "id": "cerebellar",
-              "label": "cerebellar",
-              "idf_weight": 4.2901
+              "token": "cerebellar",
+              "idf_weight": 4.2955
             },
             {
-              "id": "ataxia",
-              "label": "ataxia",
-              "idf_weight": 3.8624
+              "token": "ataxia",
+              "idf_weight": 3.8654
             }
           ],
           "low_idf_matches": [],
           "n_low_idf_matches": 0,
           "low_idf_threshold": 0.5,
           "vector_norms": {
-            "dot_product": 48.241483,
-            "patient_norm": 26.574542,
-            "disease_norm": 6.860519,
-            "score_check": 0.264605
+            "dot_product": 48.333883,
+            "patient_norm": 26.59021,
+            "disease_norm": 6.86513,
+            "score_check": 0.264778
           },
-          "sparse_disease_threshold": true,
           "contributing_hpo_terms": [
             {
               "hpo_id": "HP:0002470",
               "hpo_label": "Nonprogressive cerebellar ataxia",
-              "ic": 7.5785,
+              "ic": 7.5839,
               "matching_tokens": [
                 "ataxia",
                 "cerebellar"
               ],
               "token_idf_weights": {
-                "cerebellar": 4.2901,
-                "ataxia": 3.8624
+                "ataxia": 3.8654,
+                "cerebellar": 4.2955
               }
             },
             {
               "hpo_id": "HP:0001251",
               "hpo_label": "Ataxia",
-              "ic": 2.6911,
+              "ic": 2.6845,
               "matching_tokens": [
                 "ataxia"
               ],
               "token_idf_weights": {
-                "ataxia": 3.8624
+                "ataxia": 3.8654
               }
             }
           ],
@@ -545,33 +544,33 @@
               {
                 "id": "HP:0000001",
                 "label": "All",
-                "ic": 0.4063
+                "ic": 0.4025
               },
               {
                 "id": "HP:0000118",
                 "label": "Phenotypic abnormality",
-                "ic": 0.4162
+                "ic": 0.4124
               },
               {
                 "id": "HP:0000707",
                 "label": "Abnormality of the nervous system",
-                "ic": 0.891
+                "ic": 0.8868
               },
               {
                 "id": "HP:0012638",
                 "label": "Abnormal nervous system physiology",
-                "ic": 0.9981
+                "ic": 0.993
               },
               {
                 "id": "HP:0012759",
                 "label": "Neurodevelopmental abnormality",
-                "ic": 1.4177
+                "ic": 1.4049
               }
             ]
           }
         },
         "diagnostics": {
-          "raw_score": 0.264605,
+          "raw_score": 0.264778,
           "tfidf_mode": "tfidf_hybrid",
           "low_idf_threshold_applied": 0.5,
           "n_patient_vector_terms": 19,
@@ -585,6 +584,7 @@
       "disease_id": "ORPHA:557056",
       "label": "Global developmental delay, progressive ataxia, and elevated glutamine",
       "profile_type": null,
+      "category_source_id": "ORPHA:557056",
       "category_path": [
         {
           "disease_id": "ORPHA:557493",
@@ -593,12 +593,17 @@
           "profile_type_label": null
         }
       ],
-      "score": 0.259441,
+      "matched_aliases": [
+        "3/3",
+        "MONDO:0034146",
+        "OMIM:618412",
+        "ORPHA:557056"
+      ],
+      "score": 0.259577,
       "method_name": "tfidf_hybrid",
       "explanation": {
         "summary": "4 of 19 patient HPO label tokens matched disease description (21% patient / 57% disease token coverage, 7 disease tokens total). See contributing_hpo_terms for phenotype-level traceability.",
         "coverage": {
-          "coverage_type": "token",
           "patient_token_coverage": 0.2105,
           "disease_token_coverage": 0.5714,
           "direction_asymmetry": 0.3609,
@@ -611,149 +616,143 @@
         "matched_terms": [
           {
             "token": "global",
-            "idf_weight": 5.1806,
+            "idf_weight": 5.186,
             "match_score": 1.0
           },
           {
             "token": "ataxia",
-            "idf_weight": 3.8624,
+            "idf_weight": 3.8654,
             "match_score": 1.0
           },
           {
             "token": "delay",
-            "idf_weight": 3.3172,
+            "idf_weight": 3.3212,
             "match_score": 1.0
           },
           {
             "token": "developmental",
-            "idf_weight": 3.0299,
+            "idf_weight": 3.0331,
             "match_score": 1.0
           }
         ],
         "unmatched_patient_terms": [
           {
             "token": "erythrocyte",
-            "idf_weight": 7.242
+            "idf_weight": 7.2474
           },
           {
             "token": "nonprogressive",
-            "idf_weight": 6.8853
+            "idf_weight": 6.8907
           },
           {
             "token": "coordination",
-            "idf_weight": 6.6229
+            "idf_weight": 6.6283
           },
           {
             "token": "morphology",
-            "idf_weight": 6.5488
+            "idf_weight": 6.5542
           },
           {
             "token": "forming",
-            "idf_weight": 5.8557
+            "idf_weight": 5.8611
           },
           {
             "token": "abnormality",
-            "idf_weight": 4.7812
+            "idf_weight": 4.7866
           },
           {
             "token": "function",
-            "idf_weight": 4.7049
+            "idf_weight": 4.7103
           },
           {
             "token": "tissues",
-            "idf_weight": 4.608
+            "idf_weight": 4.6134
           },
           {
             "token": "cerebellar",
-            "idf_weight": 4.2901
+            "idf_weight": 4.2955
           },
           {
             "token": "anemia",
-            "idf_weight": 4.2146
+            "idf_weight": 4.2097
           }
         ],
         "method_specific": {
           "tfidf_mode": "tfidf_hybrid",
-          "coverage_unit": "tokens",
           "idf_weighted_matches": [
             {
-              "id": "global",
-              "label": "global",
-              "idf_weight": 5.1806
+              "token": "global",
+              "idf_weight": 5.186
             },
             {
-              "id": "ataxia",
-              "label": "ataxia",
-              "idf_weight": 3.8624
+              "token": "ataxia",
+              "idf_weight": 3.8654
             },
             {
-              "id": "delay",
-              "label": "delay",
-              "idf_weight": 3.3172
+              "token": "delay",
+              "idf_weight": 3.3212
             },
             {
-              "id": "developmental",
-              "label": "developmental",
-              "idf_weight": 3.0299
+              "token": "developmental",
+              "idf_weight": 3.0331
             }
           ],
           "low_idf_matches": [],
           "n_low_idf_matches": 0,
           "low_idf_threshold": 0.5,
           "vector_norms": {
-            "dot_product": 87.86252,
-            "patient_norm": 26.574542,
-            "disease_norm": 12.743801,
-            "score_check": 0.259441
+            "dot_product": 88.037561,
+            "patient_norm": 26.59021,
+            "disease_norm": 12.754981,
+            "score_check": 0.259577
           },
-          "sparse_disease_threshold": false,
           "contributing_hpo_terms": [
             {
               "hpo_id": "HP:0002470",
               "hpo_label": "Nonprogressive cerebellar ataxia",
-              "ic": 7.5785,
+              "ic": 7.5839,
               "matching_tokens": [
                 "ataxia"
               ],
               "token_idf_weights": {
-                "ataxia": 3.8624
+                "ataxia": 3.8654
               }
             },
             {
               "hpo_id": "HP:0001251",
               "hpo_label": "Ataxia",
-              "ic": 2.6911,
+              "ic": 2.6845,
               "matching_tokens": [
                 "ataxia"
               ],
               "token_idf_weights": {
-                "ataxia": 3.8624
+                "ataxia": 3.8654
               }
             },
             {
               "hpo_id": "HP:0001263",
               "hpo_label": "Global developmental delay",
-              "ic": 1.9176,
+              "ic": 1.9147,
               "matching_tokens": [
                 "delay",
                 "developmental",
                 "global"
               ],
               "token_idf_weights": {
-                "global": 5.1806,
-                "delay": 3.3172,
-                "developmental": 3.0299
+                "developmental": 3.0331,
+                "delay": 3.3212,
+                "global": 5.186
               }
             },
             {
               "hpo_id": "HP:0012758",
               "hpo_label": "Neurodevelopmental delay",
-              "ic": 1.6553,
+              "ic": 1.6537,
               "matching_tokens": [
                 "delay"
               ],
               "token_idf_weights": {
-                "delay": 3.3172
+                "delay": 3.3212
               }
             }
           ],
@@ -765,33 +764,33 @@
               {
                 "id": "HP:0000001",
                 "label": "All",
-                "ic": 0.4063
+                "ic": 0.4025
               },
               {
                 "id": "HP:0000118",
                 "label": "Phenotypic abnormality",
-                "ic": 0.4162
+                "ic": 0.4124
               },
               {
                 "id": "HP:0000707",
                 "label": "Abnormality of the nervous system",
-                "ic": 0.891
+                "ic": 0.8868
               },
               {
                 "id": "HP:0012638",
                 "label": "Abnormal nervous system physiology",
-                "ic": 0.9981
+                "ic": 0.993
               },
               {
                 "id": "HP:0012759",
                 "label": "Neurodevelopmental abnormality",
-                "ic": 1.4177
+                "ic": 1.4049
               }
             ]
           }
         },
         "diagnostics": {
-          "raw_score": 0.259441,
+          "raw_score": 0.259577,
           "tfidf_mode": "tfidf_hybrid",
           "low_idf_threshold_applied": 0.5,
           "n_patient_vector_terms": 19,
@@ -805,13 +804,16 @@
       "disease_id": "MONDO:0032733",
       "label": "global developmental delay, progressive ataxia, and elevated glutamine",
       "profile_type": null,
+      "category_source_id": null,
       "category_path": [],
-      "score": 0.259441,
+      "matched_aliases": [
+        "MONDO:0032733"
+      ],
+      "score": 0.259577,
       "method_name": "tfidf_hybrid",
       "explanation": {
         "summary": "4 of 19 patient HPO label tokens matched disease description (21% patient / 57% disease token coverage, 7 disease tokens total). See contributing_hpo_terms for phenotype-level traceability.",
         "coverage": {
-          "coverage_type": "token",
           "patient_token_coverage": 0.2105,
           "disease_token_coverage": 0.5714,
           "direction_asymmetry": 0.3609,
@@ -824,149 +826,143 @@
         "matched_terms": [
           {
             "token": "global",
-            "idf_weight": 5.1806,
+            "idf_weight": 5.186,
             "match_score": 1.0
           },
           {
             "token": "ataxia",
-            "idf_weight": 3.8624,
+            "idf_weight": 3.8654,
             "match_score": 1.0
           },
           {
             "token": "delay",
-            "idf_weight": 3.3172,
+            "idf_weight": 3.3212,
             "match_score": 1.0
           },
           {
             "token": "developmental",
-            "idf_weight": 3.0299,
+            "idf_weight": 3.0331,
             "match_score": 1.0
           }
         ],
         "unmatched_patient_terms": [
           {
             "token": "erythrocyte",
-            "idf_weight": 7.242
+            "idf_weight": 7.2474
           },
           {
             "token": "nonprogressive",
-            "idf_weight": 6.8853
+            "idf_weight": 6.8907
           },
           {
             "token": "coordination",
-            "idf_weight": 6.6229
+            "idf_weight": 6.6283
           },
           {
             "token": "morphology",
-            "idf_weight": 6.5488
+            "idf_weight": 6.5542
           },
           {
             "token": "forming",
-            "idf_weight": 5.8557
+            "idf_weight": 5.8611
           },
           {
             "token": "abnormality",
-            "idf_weight": 4.7812
+            "idf_weight": 4.7866
           },
           {
             "token": "function",
-            "idf_weight": 4.7049
+            "idf_weight": 4.7103
           },
           {
             "token": "tissues",
-            "idf_weight": 4.608
+            "idf_weight": 4.6134
           },
           {
             "token": "cerebellar",
-            "idf_weight": 4.2901
+            "idf_weight": 4.2955
           },
           {
             "token": "anemia",
-            "idf_weight": 4.2146
+            "idf_weight": 4.2097
           }
         ],
         "method_specific": {
           "tfidf_mode": "tfidf_hybrid",
-          "coverage_unit": "tokens",
           "idf_weighted_matches": [
             {
-              "id": "global",
-              "label": "global",
-              "idf_weight": 5.1806
+              "token": "global",
+              "idf_weight": 5.186
             },
             {
-              "id": "ataxia",
-              "label": "ataxia",
-              "idf_weight": 3.8624
+              "token": "ataxia",
+              "idf_weight": 3.8654
             },
             {
-              "id": "delay",
-              "label": "delay",
-              "idf_weight": 3.3172
+              "token": "delay",
+              "idf_weight": 3.3212
             },
             {
-              "id": "developmental",
-              "label": "developmental",
-              "idf_weight": 3.0299
+              "token": "developmental",
+              "idf_weight": 3.0331
             }
           ],
           "low_idf_matches": [],
           "n_low_idf_matches": 0,
           "low_idf_threshold": 0.5,
           "vector_norms": {
-            "dot_product": 87.86252,
-            "patient_norm": 26.574542,
-            "disease_norm": 12.743801,
-            "score_check": 0.259441
+            "dot_product": 88.037561,
+            "patient_norm": 26.59021,
+            "disease_norm": 12.754981,
+            "score_check": 0.259577
           },
-          "sparse_disease_threshold": false,
           "contributing_hpo_terms": [
             {
               "hpo_id": "HP:0002470",
               "hpo_label": "Nonprogressive cerebellar ataxia",
-              "ic": 7.5785,
+              "ic": 7.5839,
               "matching_tokens": [
                 "ataxia"
               ],
               "token_idf_weights": {
-                "ataxia": 3.8624
+                "ataxia": 3.8654
               }
             },
             {
               "hpo_id": "HP:0001251",
               "hpo_label": "Ataxia",
-              "ic": 2.6911,
+              "ic": 2.6845,
               "matching_tokens": [
                 "ataxia"
               ],
               "token_idf_weights": {
-                "ataxia": 3.8624
+                "ataxia": 3.8654
               }
             },
             {
               "hpo_id": "HP:0001263",
               "hpo_label": "Global developmental delay",
-              "ic": 1.9176,
+              "ic": 1.9147,
               "matching_tokens": [
                 "delay",
                 "developmental",
                 "global"
               ],
               "token_idf_weights": {
-                "global": 5.1806,
-                "delay": 3.3172,
-                "developmental": 3.0299
+                "developmental": 3.0331,
+                "delay": 3.3212,
+                "global": 5.186
               }
             },
             {
               "hpo_id": "HP:0012758",
               "hpo_label": "Neurodevelopmental delay",
-              "ic": 1.6553,
+              "ic": 1.6537,
               "matching_tokens": [
                 "delay"
               ],
               "token_idf_weights": {
-                "delay": 3.3172
+                "delay": 3.3212
               }
             }
           ],
@@ -978,33 +974,33 @@
               {
                 "id": "HP:0000001",
                 "label": "All",
-                "ic": 0.4063
+                "ic": 0.4025
               },
               {
                 "id": "HP:0000118",
                 "label": "Phenotypic abnormality",
-                "ic": 0.4162
+                "ic": 0.4124
               },
               {
                 "id": "HP:0000707",
                 "label": "Abnormality of the nervous system",
-                "ic": 0.891
+                "ic": 0.8868
               },
               {
                 "id": "HP:0012638",
                 "label": "Abnormal nervous system physiology",
-                "ic": 0.9981
+                "ic": 0.993
               },
               {
                 "id": "HP:0012759",
                 "label": "Neurodevelopmental abnormality",
-                "ic": 1.4177
+                "ic": 1.4049
               }
             ]
           }
         },
         "diagnostics": {
-          "raw_score": 0.259441,
+          "raw_score": 0.259577,
           "tfidf_mode": "tfidf_hybrid",
           "low_idf_threshold_applied": 0.5,
           "n_patient_vector_terms": 19,
@@ -1018,6 +1014,7 @@
       "disease_id": "ORPHA:98758",
       "label": "Spinocerebellar ataxia 6",
       "profile_type": null,
+      "category_source_id": "ORPHA:98758",
       "category_path": [
         {
           "disease_id": "ORPHA:557493",
@@ -1026,12 +1023,16 @@
           "profile_type_label": null
         }
       ],
-      "score": 0.24908,
+      "matched_aliases": [
+        "HP:0040283",
+        "MONDO:0008457",
+        "ORPHA:98758"
+      ],
+      "score": 0.249178,
       "method_name": "tfidf_hybrid",
       "explanation": {
         "summary": "3 of 19 patient HPO label tokens matched disease description (16% patient / 18% disease token coverage, 17 disease tokens total). See contributing_hpo_terms for phenotype-level traceability.",
         "coverage": {
-          "coverage_type": "token",
           "patient_token_coverage": 0.1579,
           "disease_token_coverage": 0.1765,
           "direction_asymmetry": 0.0186,
@@ -1044,126 +1045,121 @@
         "matched_terms": [
           {
             "token": "coordination",
-            "idf_weight": 6.6229,
+            "idf_weight": 6.6283,
             "match_score": 1.0
           },
           {
             "token": "cerebellar",
-            "idf_weight": 4.2901,
+            "idf_weight": 4.2955,
             "match_score": 1.0
           },
           {
             "token": "ataxia",
-            "idf_weight": 3.8624,
+            "idf_weight": 3.8654,
             "match_score": 1.0
           }
         ],
         "unmatched_patient_terms": [
           {
             "token": "erythrocyte",
-            "idf_weight": 7.242
+            "idf_weight": 7.2474
           },
           {
             "token": "nonprogressive",
-            "idf_weight": 6.8853
+            "idf_weight": 6.8907
           },
           {
             "token": "morphology",
-            "idf_weight": 6.5488
+            "idf_weight": 6.5542
           },
           {
             "token": "forming",
-            "idf_weight": 5.8557
+            "idf_weight": 5.8611
           },
           {
             "token": "global",
-            "idf_weight": 5.1806
+            "idf_weight": 5.186
           },
           {
             "token": "abnormality",
-            "idf_weight": 4.7812
+            "idf_weight": 4.7866
           },
           {
             "token": "function",
-            "idf_weight": 4.7049
+            "idf_weight": 4.7103
           },
           {
             "token": "tissues",
-            "idf_weight": 4.608
+            "idf_weight": 4.6134
           },
           {
             "token": "anemia",
-            "idf_weight": 4.2146
+            "idf_weight": 4.2097
           },
           {
-            "token": "neurodevelopmental",
-            "idf_weight": 4.1253
+            "token": "motor",
+            "idf_weight": 4.1088
           }
         ],
         "method_specific": {
           "tfidf_mode": "tfidf_hybrid",
-          "coverage_unit": "tokens",
           "idf_weighted_matches": [
             {
-              "id": "coordination",
-              "label": "coordination",
-              "idf_weight": 6.6229
+              "token": "coordination",
+              "idf_weight": 6.6283
             },
             {
-              "id": "cerebellar",
-              "label": "cerebellar",
-              "idf_weight": 4.2901
+              "token": "cerebellar",
+              "idf_weight": 4.2955
             },
             {
-              "id": "ataxia",
-              "label": "ataxia",
-              "idf_weight": 3.8624
+              "token": "ataxia",
+              "idf_weight": 3.8654
             }
           ],
           "low_idf_matches": [],
           "n_low_idf_matches": 0,
           "low_idf_threshold": 0.5,
           "vector_norms": {
-            "dot_product": 170.183263,
-            "patient_norm": 26.574542,
-            "disease_norm": 25.710624,
-            "score_check": 0.24908
+            "dot_product": 170.485685,
+            "patient_norm": 26.59021,
+            "disease_norm": 25.730941,
+            "score_check": 0.249178
           },
-          "sparse_disease_threshold": false,
           "contributing_hpo_terms": [
             {
               "hpo_id": "HP:0002470",
               "hpo_label": "Nonprogressive cerebellar ataxia",
-              "ic": 7.5785,
+              "ic": 7.5839,
               "matching_tokens": [
                 "ataxia",
                 "cerebellar"
               ],
               "token_idf_weights": {
-                "cerebellar": 4.2901,
-                "ataxia": 3.8624
+                "ataxia": 3.8654,
+                "cerebellar": 4.2955
               }
             },
             {
               "hpo_id": "HP:0001251",
               "hpo_label": "Ataxia",
-              "ic": 2.6911,
+              "ic": 2.6845,
               "matching_tokens": [
                 "ataxia"
               ],
               "token_idf_weights": {
-                "ataxia": 3.8624
+                "ataxia": 3.8654
               }
             },
             {
               "hpo_id": "HP:0011443",
               "hpo_label": "Abnormality of coordination",
-              "ic": 2.6024,
+              "ic": 2.5955,
               "matching_tokens": [
                 "coordination"
               ],
               "token_idf_weights": {
-                "coordination": 6.6229
+                "coordination": 6.6283
               }
             }
           ],
@@ -1175,33 +1171,33 @@
               {
                 "id": "HP:0000001",
                 "label": "All",
-                "ic": 0.4063
+                "ic": 0.4025
               },
               {
                 "id": "HP:0000118",
                 "label": "Phenotypic abnormality",
-                "ic": 0.4162
+                "ic": 0.4124
               },
               {
                 "id": "HP:0000707",
                 "label": "Abnormality of the nervous system",
-                "ic": 0.891
+                "ic": 0.8868
               },
               {
                 "id": "HP:0012638",
                 "label": "Abnormal nervous system physiology",
-                "ic": 0.9981
+                "ic": 0.993
               },
               {
                 "id": "HP:0012759",
                 "label": "Neurodevelopmental abnormality",
-                "ic": 1.4177
+                "ic": 1.4049
               }
             ]
           }
         },
         "diagnostics": {
-          "raw_score": 0.24908,
+          "raw_score": 0.249178,
           "tfidf_mode": "tfidf_hybrid",
           "low_idf_threshold_applied": 0.5,
           "n_patient_vector_terms": 19,
@@ -1215,13 +1211,16 @@
       "disease_id": "MONDO:0044347",
       "label": "erythrocyte disorder",
       "profile_type": null,
+      "category_source_id": null,
       "category_path": [],
-      "score": 0.242436,
+      "matched_aliases": [
+        "MONDO:0044347"
+      ],
+      "score": 0.242439,
       "method_name": "tfidf_hybrid",
       "explanation": {
         "summary": "1 of 19 patient HPO label tokens matched disease description (5% patient / 50% disease token coverage, 2 disease tokens total). See contributing_hpo_terms for phenotype-level traceability. Warning: disease description is very short — score may be unreliable.",
         "coverage": {
-          "coverage_type": "token",
           "patient_token_coverage": 0.0526,
           "disease_token_coverage": 0.5,
           "direction_asymmetry": 0.4474,
@@ -1234,82 +1233,79 @@
         "matched_terms": [
           {
             "token": "erythrocyte",
-            "idf_weight": 7.242,
+            "idf_weight": 7.2474,
             "match_score": 1.0
           }
         ],
         "unmatched_patient_terms": [
           {
             "token": "nonprogressive",
-            "idf_weight": 6.8853
+            "idf_weight": 6.8907
           },
           {
             "token": "coordination",
-            "idf_weight": 6.6229
+            "idf_weight": 6.6283
           },
           {
             "token": "morphology",
-            "idf_weight": 6.5488
+            "idf_weight": 6.5542
           },
           {
             "token": "forming",
-            "idf_weight": 5.8557
+            "idf_weight": 5.8611
           },
           {
             "token": "global",
-            "idf_weight": 5.1806
+            "idf_weight": 5.186
           },
           {
             "token": "abnormality",
-            "idf_weight": 4.7812
+            "idf_weight": 4.7866
           },
           {
             "token": "function",
-            "idf_weight": 4.7049
+            "idf_weight": 4.7103
           },
           {
             "token": "tissues",
-            "idf_weight": 4.608
+            "idf_weight": 4.6134
           },
           {
             "token": "cerebellar",
-            "idf_weight": 4.2901
+            "idf_weight": 4.2955
           },
           {
             "token": "anemia",
-            "idf_weight": 4.2146
+            "idf_weight": 4.2097
           }
         ],
         "method_specific": {
           "tfidf_mode": "tfidf_hybrid",
-          "coverage_unit": "tokens",
           "idf_weighted_matches": [
             {
-              "id": "erythrocyte",
-              "label": "erythrocyte",
-              "idf_weight": 7.242
+              "token": "erythrocyte",
+              "idf_weight": 7.2474
             }
           ],
           "low_idf_matches": [],
           "n_low_idf_matches": 0,
           "low_idf_threshold": 0.5,
           "vector_norms": {
-            "dot_product": 52.446276,
-            "patient_norm": 26.574542,
-            "disease_norm": 8.1405,
-            "score_check": 0.242436
+            "dot_product": 52.524601,
+            "patient_norm": 26.59021,
+            "disease_norm": 8.147778,
+            "score_check": 0.242439
           },
-          "sparse_disease_threshold": true,
           "contributing_hpo_terms": [
             {
               "hpo_id": "HP:0001877",
               "hpo_label": "Abnormal erythrocyte morphology",
-              "ic": 2.9663,
+              "ic": 2.954,
               "matching_tokens": [
                 "erythrocyte"
               ],
               "token_idf_weights": {
-                "erythrocyte": 7.242
+                "erythrocyte": 7.2474
               }
             }
           ],
@@ -1321,33 +1317,33 @@
               {
                 "id": "HP:0000001",
                 "label": "All",
-                "ic": 0.4063
+                "ic": 0.4025
               },
               {
                 "id": "HP:0000118",
                 "label": "Phenotypic abnormality",
-                "ic": 0.4162
+                "ic": 0.4124
               },
               {
                 "id": "HP:0000707",
                 "label": "Abnormality of the nervous system",
-                "ic": 0.891
+                "ic": 0.8868
               },
               {
                 "id": "HP:0012638",
                 "label": "Abnormal nervous system physiology",
-                "ic": 0.9981
+                "ic": 0.993
               },
               {
                 "id": "HP:0012759",
                 "label": "Neurodevelopmental abnormality",
-                "ic": 1.4177
+                "ic": 1.4049
               }
             ]
           }
         },
         "diagnostics": {
-          "raw_score": 0.242436,
+          "raw_score": 0.242439,
           "tfidf_mode": "tfidf_hybrid",
           "low_idf_threshold_applied": 0.5,
           "n_patient_vector_terms": 19,
@@ -1361,13 +1357,16 @@
       "disease_id": "MONDO:0060745",
       "label": "intellectual developmental disorder with or without epilepsy or cerebellar ataxia",
       "profile_type": null,
+      "category_source_id": null,
       "category_path": [],
-      "score": 0.240833,
+      "matched_aliases": [
+        "MONDO:0060745"
+      ],
+      "score": 0.240894,
       "method_name": "tfidf_hybrid",
       "explanation": {
         "summary": "3 of 19 patient HPO label tokens matched disease description (16% patient / 50% disease token coverage, 6 disease tokens total). See contributing_hpo_terms for phenotype-level traceability.",
         "coverage": {
-          "coverage_type": "token",
           "patient_token_coverage": 0.1579,
           "disease_token_coverage": 0.5,
           "direction_asymmetry": 0.3421,
@@ -1380,126 +1379,121 @@
         "matched_terms": [
           {
             "token": "cerebellar",
-            "idf_weight": 4.2901,
+            "idf_weight": 4.2955,
             "match_score": 1.0
           },
           {
             "token": "ataxia",
-            "idf_weight": 3.8624,
+            "idf_weight": 3.8654,
             "match_score": 1.0
           },
           {
             "token": "developmental",
-            "idf_weight": 3.0299,
+            "idf_weight": 3.0331,
             "match_score": 1.0
           }
         ],
         "unmatched_patient_terms": [
           {
             "token": "erythrocyte",
-            "idf_weight": 7.242
+            "idf_weight": 7.2474
           },
           {
             "token": "nonprogressive",
-            "idf_weight": 6.8853
+            "idf_weight": 6.8907
           },
           {
             "token": "coordination",
-            "idf_weight": 6.6229
+            "idf_weight": 6.6283
           },
           {
             "token": "morphology",
-            "idf_weight": 6.5488
+            "idf_weight": 6.5542
           },
           {
             "token": "forming",
-            "idf_weight": 5.8557
+            "idf_weight": 5.8611
           },
           {
             "token": "global",
-            "idf_weight": 5.1806
+            "idf_weight": 5.186
           },
           {
             "token": "abnormality",
-            "idf_weight": 4.7812
+            "idf_weight": 4.7866
           },
           {
             "token": "function",
-            "idf_weight": 4.7049
+            "idf_weight": 4.7103
           },
           {
             "token": "tissues",
-            "idf_weight": 4.608
+            "idf_weight": 4.6134
           },
           {
             "token": "anemia",
-            "idf_weight": 4.2146
+            "idf_weight": 4.2097
           }
         ],
         "method_specific": {
           "tfidf_mode": "tfidf_hybrid",
-          "coverage_unit": "tokens",
           "idf_weighted_matches": [
             {
-              "id": "cerebellar",
-              "label": "cerebellar",
-              "idf_weight": 4.2901
+              "token": "cerebellar",
+              "idf_weight": 4.2955
             },
             {
-              "id": "ataxia",
-              "label": "ataxia",
-              "idf_weight": 3.8624
+              "token": "ataxia",
+              "idf_weight": 3.8654
             },
             {
-              "id": "developmental",
-              "label": "developmental",
-              "idf_weight": 3.0299
+              "token": "developmental",
+              "idf_weight": 3.0331
             }
           ],
           "low_idf_matches": [],
           "n_low_idf_matches": 0,
           "low_idf_threshold": 0.5,
           "vector_norms": {
-            "dot_product": 57.421489,
-            "patient_norm": 26.574542,
-            "disease_norm": 8.972065,
-            "score_check": 0.240833
+            "dot_product": 57.533846,
+            "patient_norm": 26.59021,
+            "disease_norm": 8.982047,
+            "score_check": 0.240894
           },
-          "sparse_disease_threshold": false,
           "contributing_hpo_terms": [
             {
               "hpo_id": "HP:0002470",
               "hpo_label": "Nonprogressive cerebellar ataxia",
-              "ic": 7.5785,
+              "ic": 7.5839,
               "matching_tokens": [
                 "ataxia",
                 "cerebellar"
               ],
               "token_idf_weights": {
-                "cerebellar": 4.2901,
-                "ataxia": 3.8624
+                "ataxia": 3.8654,
+                "cerebellar": 4.2955
               }
             },
             {
               "hpo_id": "HP:0001251",
               "hpo_label": "Ataxia",
-              "ic": 2.6911,
+              "ic": 2.6845,
               "matching_tokens": [
                 "ataxia"
               ],
               "token_idf_weights": {
-                "ataxia": 3.8624
+                "ataxia": 3.8654
               }
             },
             {
               "hpo_id": "HP:0001263",
               "hpo_label": "Global developmental delay",
-              "ic": 1.9176,
+              "ic": 1.9147,
               "matching_tokens": [
                 "developmental"
               ],
               "token_idf_weights": {
-                "developmental": 3.0299
+                "developmental": 3.0331
               }
             }
           ],
@@ -1511,33 +1505,33 @@
               {
                 "id": "HP:0000001",
                 "label": "All",
-                "ic": 0.4063
+                "ic": 0.4025
               },
               {
                 "id": "HP:0000118",
                 "label": "Phenotypic abnormality",
-                "ic": 0.4162
+                "ic": 0.4124
               },
               {
                 "id": "HP:0000707",
                 "label": "Abnormality of the nervous system",
-                "ic": 0.891
+                "ic": 0.8868
               },
               {
                 "id": "HP:0012638",
                 "label": "Abnormal nervous system physiology",
-                "ic": 0.9981
+                "ic": 0.993
               },
               {
                 "id": "HP:0012759",
                 "label": "Neurodevelopmental abnormality",
-                "ic": 1.4177
+                "ic": 1.4049
               }
             ]
           }
         },
         "diagnostics": {
-          "raw_score": 0.240833,
+          "raw_score": 0.240894,
           "tfidf_mode": "tfidf_hybrid",
           "low_idf_threshold_applied": 0.5,
           "n_patient_vector_terms": 19,
@@ -1551,6 +1545,7 @@
       "disease_id": "ORPHA:98771",
       "label": "Spinocerebellar ataxia 18",
       "profile_type": null,
+      "category_source_id": "ORPHA:98771",
       "category_path": [
         {
           "disease_id": "ORPHA:557493",
@@ -1559,12 +1554,16 @@
           "profile_type_label": null
         }
       ],
-      "score": 0.239573,
+      "matched_aliases": [
+        "HP:0040283",
+        "MONDO:0011834",
+        "ORPHA:98771"
+      ],
+      "score": 0.239668,
       "method_name": "tfidf_hybrid",
       "explanation": {
         "summary": "2 of 19 patient HPO label tokens matched disease description (11% patient / 20% disease token coverage, 10 disease tokens total). See contributing_hpo_terms for phenotype-level traceability.",
         "coverage": {
-          "coverage_type": "token",
           "patient_token_coverage": 0.1053,
           "disease_token_coverage": 0.2,
           "direction_asymmetry": 0.0947,
@@ -1577,105 +1576,101 @@
         "matched_terms": [
           {
             "token": "cerebellar",
-            "idf_weight": 4.2901,
+            "idf_weight": 4.2955,
             "match_score": 1.0
           },
           {
             "token": "ataxia",
-            "idf_weight": 3.8624,
+            "idf_weight": 3.8654,
             "match_score": 1.0
           }
         ],
         "unmatched_patient_terms": [
           {
             "token": "erythrocyte",
-            "idf_weight": 7.242
+            "idf_weight": 7.2474
           },
           {
             "token": "nonprogressive",
-            "idf_weight": 6.8853
+            "idf_weight": 6.8907
           },
           {
             "token": "coordination",
-            "idf_weight": 6.6229
+            "idf_weight": 6.6283
           },
           {
             "token": "morphology",
-            "idf_weight": 6.5488
+            "idf_weight": 6.5542
           },
           {
             "token": "forming",
-            "idf_weight": 5.8557
+            "idf_weight": 5.8611
           },
           {
             "token": "global",
-            "idf_weight": 5.1806
+            "idf_weight": 5.186
           },
           {
             "token": "abnormality",
-            "idf_weight": 4.7812
+            "idf_weight": 4.7866
           },
           {
             "token": "function",
-            "idf_weight": 4.7049
+            "idf_weight": 4.7103
           },
           {
             "token": "tissues",
-            "idf_weight": 4.608
+            "idf_weight": 4.6134
           },
           {
             "token": "anemia",
-            "idf_weight": 4.2146
+            "idf_weight": 4.2097
           }
         ],
         "method_specific": {
           "tfidf_mode": "tfidf_hybrid",
-          "coverage_unit": "tokens",
           "idf_weighted_matches": [
             {
-              "id": "cerebellar",
-              "label": "cerebellar",
-              "idf_weight": 4.2901
+              "token": "cerebellar",
+              "idf_weight": 4.2955
             },
             {
-              "id": "ataxia",
-              "label": "ataxia",
-              "idf_weight": 3.8624
+              "token": "ataxia",
+              "idf_weight": 3.8654
             }
           ],
           "low_idf_matches": [],
           "n_low_idf_matches": 0,
           "low_idf_threshold": 0.5,
           "vector_norms": {
-            "dot_product": 126.319917,
-            "patient_norm": 26.574542,
-            "disease_norm": 19.84123,
-            "score_check": 0.239573
+            "dot_product": 126.550707,
+            "patient_norm": 26.59021,
+            "disease_norm": 19.857872,
+            "score_check": 0.239668
           },
-          "sparse_disease_threshold": false,
           "contributing_hpo_terms": [
             {
               "hpo_id": "HP:0002470",
               "hpo_label": "Nonprogressive cerebellar ataxia",
-              "ic": 7.5785,
+              "ic": 7.5839,
               "matching_tokens": [
                 "ataxia",
                 "cerebellar"
               ],
               "token_idf_weights": {
-                "cerebellar": 4.2901,
-                "ataxia": 3.8624
+                "ataxia": 3.8654,
+                "cerebellar": 4.2955
               }
             },
             {
               "hpo_id": "HP:0001251",
               "hpo_label": "Ataxia",
-              "ic": 2.6911,
+              "ic": 2.6845,
               "matching_tokens": [
                 "ataxia"
               ],
               "token_idf_weights": {
-                "ataxia": 3.8624
+                "ataxia": 3.8654
               }
             }
           ],
@@ -1687,33 +1682,33 @@
               {
                 "id": "HP:0000001",
                 "label": "All",
-                "ic": 0.4063
+                "ic": 0.4025
               },
               {
                 "id": "HP:0000118",
                 "label": "Phenotypic abnormality",
-                "ic": 0.4162
+                "ic": 0.4124
               },
               {
                 "id": "HP:0000707",
                 "label": "Abnormality of the nervous system",
-                "ic": 0.891
+                "ic": 0.8868
               },
               {
                 "id": "HP:0012638",
                 "label": "Abnormal nervous system physiology",
-                "ic": 0.9981
+                "ic": 0.993
               },
               {
                 "id": "HP:0012759",
                 "label": "Neurodevelopmental abnormality",
-                "ic": 1.4177
+                "ic": 1.4049
               }
             ]
           }
         },
         "diagnostics": {
-          "raw_score": 0.239573,
+          "raw_score": 0.239668,
           "tfidf_mode": "tfidf_hybrid",
           "low_idf_threshold_applied": 0.5,
           "n_patient_vector_terms": 19,
@@ -1727,6 +1722,7 @@
       "disease_id": "ORPHA:101111",
       "label": "Spinocerebellar ataxia 25",
       "profile_type": null,
+      "category_source_id": "ORPHA:101111",
       "category_path": [
         {
           "disease_id": "ORPHA:557493",
@@ -1735,12 +1731,16 @@
           "profile_type_label": null
         }
       ],
-      "score": 0.233728,
+      "matched_aliases": [
+        "HP:0040282",
+        "MONDO:0012103",
+        "ORPHA:101111"
+      ],
+      "score": 0.233817,
       "method_name": "tfidf_hybrid",
       "explanation": {
         "summary": "2 of 19 patient HPO label tokens matched disease description (11% patient / 18% disease token coverage, 11 disease tokens total). See contributing_hpo_terms for phenotype-level traceability.",
         "coverage": {
-          "coverage_type": "token",
           "patient_token_coverage": 0.1053,
           "disease_token_coverage": 0.1818,
           "direction_asymmetry": 0.0766,
@@ -1753,105 +1753,101 @@
         "matched_terms": [
           {
             "token": "cerebellar",
-            "idf_weight": 4.2901,
+            "idf_weight": 4.2955,
             "match_score": 1.0
           },
           {
             "token": "ataxia",
-            "idf_weight": 3.8624,
+            "idf_weight": 3.8654,
             "match_score": 1.0
           }
         ],
         "unmatched_patient_terms": [
           {
             "token": "erythrocyte",
-            "idf_weight": 7.242
+            "idf_weight": 7.2474
           },
           {
             "token": "nonprogressive",
-            "idf_weight": 6.8853
+            "idf_weight": 6.8907
           },
           {
             "token": "coordination",
-            "idf_weight": 6.6229
+            "idf_weight": 6.6283
           },
           {
             "token": "morphology",
-            "idf_weight": 6.5488
+            "idf_weight": 6.5542
           },
           {
             "token": "forming",
-            "idf_weight": 5.8557
+            "idf_weight": 5.8611
           },
           {
             "token": "global",
-            "idf_weight": 5.1806
+            "idf_weight": 5.186
           },
           {
             "token": "abnormality",
-            "idf_weight": 4.7812
+            "idf_weight": 4.7866
           },
           {
             "token": "function",
-            "idf_weight": 4.7049
+            "idf_weight": 4.7103
           },
           {
             "token": "tissues",
-            "idf_weight": 4.608
+            "idf_weight": 4.6134
           },
           {
             "token": "anemia",
-            "idf_weight": 4.2146
+            "idf_weight": 4.2097
           }
         ],
         "method_specific": {
           "tfidf_mode": "tfidf_hybrid",
-          "coverage_unit": "tokens",
           "idf_weighted_matches": [
             {
-              "id": "cerebellar",
-              "label": "cerebellar",
-              "idf_weight": 4.2901
+              "token": "cerebellar",
+              "idf_weight": 4.2955
             },
             {
-              "id": "ataxia",
-              "label": "ataxia",
-              "idf_weight": 3.8624
+              "token": "ataxia",
+              "idf_weight": 3.8654
             }
           ],
           "low_idf_matches": [],
           "n_low_idf_matches": 0,
           "low_idf_threshold": 0.5,
           "vector_norms": {
-            "dot_product": 126.319917,
-            "patient_norm": 26.574542,
-            "disease_norm": 20.337405,
-            "score_check": 0.233728
+            "dot_product": 126.550707,
+            "patient_norm": 26.59021,
+            "disease_norm": 20.354828,
+            "score_check": 0.233817
           },
-          "sparse_disease_threshold": false,
           "contributing_hpo_terms": [
             {
               "hpo_id": "HP:0002470",
               "hpo_label": "Nonprogressive cerebellar ataxia",
-              "ic": 7.5785,
+              "ic": 7.5839,
               "matching_tokens": [
                 "ataxia",
                 "cerebellar"
               ],
               "token_idf_weights": {
-                "cerebellar": 4.2901,
-                "ataxia": 3.8624
+                "ataxia": 3.8654,
+                "cerebellar": 4.2955
               }
             },
             {
               "hpo_id": "HP:0001251",
               "hpo_label": "Ataxia",
-              "ic": 2.6911,
+              "ic": 2.6845,
               "matching_tokens": [
                 "ataxia"
               ],
               "token_idf_weights": {
-                "ataxia": 3.8624
+                "ataxia": 3.8654
               }
             }
           ],
@@ -1863,33 +1859,33 @@
               {
                 "id": "HP:0000001",
                 "label": "All",
-                "ic": 0.4063
+                "ic": 0.4025
               },
               {
                 "id": "HP:0000118",
                 "label": "Phenotypic abnormality",
-                "ic": 0.4162
+                "ic": 0.4124
               },
               {
                 "id": "HP:0000707",
                 "label": "Abnormality of the nervous system",
-                "ic": 0.891
+                "ic": 0.8868
               },
               {
                 "id": "HP:0012638",
                 "label": "Abnormal nervous system physiology",
-                "ic": 0.9981
+                "ic": 0.993
               },
               {
                 "id": "HP:0012759",
                 "label": "Neurodevelopmental abnormality",
-                "ic": 1.4177
+                "ic": 1.4049
               }
             ]
           }
         },
         "diagnostics": {
-          "raw_score": 0.233728,
+          "raw_score": 0.233817,
           "tfidf_mode": "tfidf_hybrid",
           "low_idf_threshold_applied": 0.5,
           "n_patient_vector_terms": 19,

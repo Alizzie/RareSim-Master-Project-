@@ -29,13 +29,14 @@ from raresim.similarity_methods.tfidf.config import (
     METHOD_HPO,
     METHOD_HYBRID,
     METHOD_TEXT,
+    METHOD_HPO_LABELS,
     PIPELINE_NAME,
     TFIDF_DIR,
 )
 from raresim.similarity_methods.tfidf.explanation import build_explanation
 from raresim.similarity_methods.tfidf.methods import (
     build_disease_text_vector,
-    build_patient_hybrid_vector,
+    build_hpo_label_vector,
     build_patient_text_vector,
     build_tfidf_vector,
     compute_idf,
@@ -265,7 +266,7 @@ def _run_hybrid_mode(  # pylint: disable=too-many-locals
     )
 
     idf = compute_text_idf(ctx.disease_profiles, text_field=DISEASE_TEXT_FIELD)
-    patient_vec = build_patient_hybrid_vector(patient_terms, ctx.hpo_labels, idf)
+    patient_vec = build_hpo_label_vector(patient_terms, ctx.hpo_labels, idf)
 
     if not patient_vec:
         print(f"[{METHOD_HYBRID}] Patient HPO labels produced no tokens — skipping.")
@@ -326,10 +327,86 @@ def _run_hybrid_mode(  # pylint: disable=too-many-locals
     return results, stats
 
 
+# ── HPO Labels mode ───────────────────────────────────────────────────────────────
+def _run_hpo_labels_mode(  # pylint: disable=too-many-locals
+    patient: PatientProfile,
+    config: PipelineConfig,
+    ctx: AppContext,
+) -> tuple[list[SimilarityResult], RunStats]:
+    """Run the HPO-label-to-HPO-label TF-IDF method."""
+    all_patient_terms = set(patient.get_terms(config.use_propagated_terms))
+    patient_raw_terms = set(patient.hpo_terms)
+    patient_terms = filter_terms_by_ic(
+        all_patient_terms,
+        ctx.ic_values,
+        config.ic_threshold,
+    )
+
+    idf = compute_text_idf(ctx.disease_profiles, DISEASE_TEXT_FIELD)
+    patient_vec = build_hpo_label_vector(patient_terms, ctx.hpo_labels, idf)
+
+    if not patient_vec:
+        print(
+            f"[{METHOD_HPO_LABELS}] Patient HPO labels produced no tokens — skipping."
+        )
+        return [], _empty_stats(patient)
+
+    method_timer = Timer(METHOD_HPO_LABELS).start()
+    results = []
+    n_skipped = 0
+
+    for disease_id, profile in ctx.disease_profiles.items():
+        disease_terms = set(profile.get(config.terms_key, []))
+
+        if not disease_terms:
+            n_skipped += 1
+            continue
+
+        disease_vec = build_hpo_label_vector(disease_terms, ctx.hpo_labels, idf)
+        score = cosine_similarity(patient_vec, disease_vec)
+
+        explanation = build_explanation(
+            tfidf_mode=METHOD_HPO_LABELS,
+            patient_vec=patient_vec,
+            disease_vec=disease_vec,
+            idf=idf,
+            score=score,
+            hpo_labels=ctx.hpo_labels,
+            ic_values=ctx.ic_values,
+            patient_terms=patient_terms,
+            disease_terms=disease_terms,
+            patient_raw_terms=patient_raw_terms,
+            all_patient_terms_before_filter=all_patient_terms,
+        )
+
+        results.append(
+            _build_result(
+                disease_id=disease_id,
+                profile=profile,
+                score=score,
+                method_name=METHOD_HPO_LABELS,
+                explanation=explanation.to_dict(),
+                ctx=ctx,
+            )
+        )
+
+    stats = build_run_stats(
+        n_patient_terms_raw=len(patient_raw_terms),
+        n_patient_terms_propagated=len(all_patient_terms),
+        n_patient_terms_used=len(patient_terms),
+        n_diseases_scored=len(results),
+        n_diseases_skipped=n_skipped,
+        computation_time=method_timer.stop(),
+    )
+
+    return results, stats
+
+
 _MODE_RUNNERS = {
     METHOD_HPO: _run_hpo_mode,
     METHOD_TEXT: _run_text_mode,
     METHOD_HYBRID: _run_hybrid_mode,
+    METHOD_HPO_LABELS: _run_hpo_labels_mode,
 }
 
 

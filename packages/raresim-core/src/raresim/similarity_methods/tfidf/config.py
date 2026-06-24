@@ -18,7 +18,10 @@ METHOD_TEXT = "tfidf_text"
 # Hybrid: patient HPO labels (strings) vs disease description text.
 METHOD_HYBRID = "tfidf_hybrid"
 
-ALL_METHODS = [METHOD_HPO, METHOD_TEXT, METHOD_HYBRID]
+# HPO-Labels-based TFIDF: patient HPO labels (strings) vs disease HPO labels (strings).
+METHOD_HPO_LABELS = "tfidf_hpo_labels"
+
+ALL_METHODS = [METHOD_HPO, METHOD_TEXT, METHOD_HYBRID, METHOD_HPO_LABELS]
 
 # IDF terms whose weight falls below this are flagged as common noise.
 LOW_IDF_THRESHOLD = 0.5

@@ -87,7 +87,7 @@ def build_token_coverage_block(
         n_matched_tokens=len(shared),
         n_unmatched_patient_tokens=len(pat_keys - dis_keys),
         direction_asymmetry=abs(pat_cov - dis_cov),
-        sparse_disease_description=is_sparse,
+        is_sparse_disease=is_sparse,
     )
 
 

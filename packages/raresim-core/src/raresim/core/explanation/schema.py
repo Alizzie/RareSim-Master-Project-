@@ -112,13 +112,11 @@ class HpoCoverageBlock:
     n_matched_terms: int
     n_unmatched_patient_terms: int
     direction_asymmetry: float = 0.0
-    coverage_type: Literal["hpo"] = field(default="hpo", init=False, repr=False)
 
     def to_dict(self) -> dict:
         return {
-            "coverage_type": self.coverage_type,
-            "patient_coverage": round(self.patient_coverage, 4),
-            "disease_coverage": round(self.disease_coverage, 4),
+            "patient_hpo_coverage": round(self.patient_coverage, 4),
+            "disease_hpo_coverage": round(self.disease_coverage, 4),
             "direction_asymmetry": round(self.direction_asymmetry, 4),
             "n_patient_terms": self.n_patient_terms,
             "n_disease_terms": self.n_disease_terms,
@@ -152,12 +150,10 @@ class TokenCoverageBlock:
     n_matched_tokens: int
     n_unmatched_patient_tokens: int
     direction_asymmetry: float = 0.0
-    sparse_disease_description: bool = False
-    coverage_type: Literal["token"] = field(default="token", init=False, repr=False)
+    is_sparse_disease: bool = False
 
     def to_dict(self) -> dict:
         return {
-            "coverage_type": self.coverage_type,
             "patient_token_coverage": round(self.patient_token_coverage, 4),
             "disease_token_coverage": round(self.disease_token_coverage, 4),
             "direction_asymmetry": round(self.direction_asymmetry, 4),
@@ -165,7 +161,7 @@ class TokenCoverageBlock:
             "n_disease_tokens": self.n_disease_tokens,
             "n_matched_tokens": self.n_matched_tokens,
             "n_unmatched_patient_tokens": self.n_unmatched_patient_tokens,
-            "sparse_disease_description": self.sparse_disease_description,
+            "sparse_disease_description": self.is_sparse_disease,
         }
 
 

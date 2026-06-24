@@ -18,12 +18,7 @@ from raresim.core.explanation import (
     build_base_token_explanation,
     build_coverage_block,
     build_token_coverage_block,
-    build_matched_tokens,
-    build_unmatched_tokens,
     ExplanationBlock,
-    TokenMatch,
-    TokenEntry,
-    TokenCoverageBlock,
     tfidf_summary,
 )
 from raresim.similarity_methods.tfidf.config import (
@@ -97,41 +92,36 @@ def _build_idf_match_blocks(
     """
     shared_keys = set(patient_terms.keys()) & set(disease_terms.keys())
 
-    all_matches = sorted(
-        [
-            {
-                "id": t,
-                "label": hpo_labels.get(t, t) if is_hpo_mode else t,
-                "idf_weight": round(idf.get(t, 0.0), 4),
-            }
-            for t in shared_keys
-        ],
-        key=lambda x: x["idf_weight"],
-        reverse=True,
-    )
+    if is_hpo_mode:
+        all_matches = sorted(
+            [
+                {
+                    "id": t,
+                    "label": hpo_labels.get(t, t) if is_hpo_mode else t,
+                    "idf_weight": round(idf.get(t, 0.0), 4),
+                }
+                for t in shared_keys
+            ],
+            key=lambda x: x["idf_weight"],
+            reverse=True,
+        )
+    else:
+        all_matches = sorted(
+            [
+                {
+                    "token": t,
+                    "idf_weight": round(idf.get(t, 0.0), 4),
+                }
+                for t in shared_keys
+            ],
+            key=lambda x: x["idf_weight"],
+            reverse=True,
+        )
 
     idf_weighted = all_matches[:top_n]
     low_idf = [m for m in all_matches if m["idf_weight"] < low_idf_threshold]
 
     return idf_weighted, low_idf
-
-
-# ── Token-level coverage (text and hybrid modes) ──────────────────────────────
-
-
-def _build_token_coverage(
-    patient_vec: dict[str, float],
-    disease_vec: dict[str, float],
-    idf: dict[str, float],
-) -> tuple[TokenCoverageBlock, list[TokenMatch], list[TokenEntry]]:
-    """
-    Kept for internal use by _build_idf_match_blocks which needs the
-    shared keys. All external callers should use build_base_token_explanation.
-    """
-    coverage = build_token_coverage_block(patient_vec, disease_vec)
-    matched = build_matched_tokens(patient_vec, disease_vec, idf)
-    unmatched = build_unmatched_tokens(patient_vec, disease_vec, idf)
-    return coverage, matched, unmatched
 
 
 # ── HPO terms that contributed tokens (hybrid mode) ──────────────────────────
@@ -269,17 +259,15 @@ def build_explanation(
     token_coverage = build_token_coverage_block(
         patient_vec, disease_vec, SPARSE_DISEASE_THRESHOLD
     )
-    is_sparse = token_coverage.sparse_disease_description
+    is_sparse = token_coverage.is_sparse_disease
 
     method_specific = {
         "tfidf_mode": tfidf_mode,
-        "coverage_unit": "tokens",
         "idf_weighted_matches": idf_weighted,
         "low_idf_matches": low_idf,
         "n_low_idf_matches": len(low_idf),
         "low_idf_threshold": low_idf_threshold,
         "vector_norms": norm_block,
-        "sparse_disease_threshold": is_sparse,
     }
 
     # Hybrid: add traceability from tokens back to patient HPO terms

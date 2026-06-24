@@ -151,7 +151,7 @@ def build_patient_text_vector(
 # ── Hybrid mode ───────────────────────────────────────────────────────────────
 
 
-def build_patient_hybrid_vector(
+def build_hpo_label_vector(
     hpo_terms: set[str],
     hpo_labels: dict[str, str],
     idf: dict[str, float],
@@ -164,7 +164,7 @@ def build_patient_hybrid_vector(
     disease description text.
 
     Args:
-        hpo_terms:  Patient HPO term IDs.
+        hpo_terms:  HPO term IDs.
         hpo_labels: HPO ID -> label.
         idf:        Text-mode IDF (from compute_text_idf).
     """

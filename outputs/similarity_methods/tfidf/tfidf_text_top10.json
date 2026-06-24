@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "1.1",
   "method_name": "tfidf_text",
   "pipeline_name": "tfidf",
   "config": {
@@ -12,9 +12,9 @@
     "n_patient_terms_raw": 3,
     "n_patient_terms_propagated": 14,
     "n_patient_terms_used": 5,
-    "n_diseases_scored": 19547,
+    "n_diseases_scored": 19653,
     "n_diseases_skipped": 9,
-    "computation_time_seconds": 0.3863
+    "computation_time_seconds": 1.6216
   },
   "rankings": [
     {
@@ -22,6 +22,7 @@
       "disease_id": "ORPHA:247765",
       "label": "X-linked cerebellar ataxia",
       "profile_type": "category",
+      "category_source_id": "ORPHA:247765",
       "category_path": [
         {
           "disease_id": "ORPHA:557492",
@@ -30,12 +31,15 @@
           "profile_type_label": null
         }
       ],
-      "score": 0.575354,
+      "matched_aliases": [
+        "MONDO:0016612",
+        "ORPHA:247765"
+      ],
+      "score": 0.575864,
       "method_name": "tfidf_text",
       "explanation": {
         "summary": "2 of 5 patient text tokens matched disease description (40% patient / 67% disease token coverage, 3 disease tokens total). Warning: disease description is very short — score may be unreliable.",
         "coverage": {
-          "coverage_type": "token",
           "patient_token_coverage": 0.4,
           "disease_token_coverage": 0.6667,
           "direction_asymmetry": 0.2667,
@@ -48,57 +52,53 @@
         "matched_terms": [
           {
             "token": "cerebellar",
-            "idf_weight": 4.2901,
+            "idf_weight": 4.2955,
             "match_score": 1.0
           },
           {
             "token": "ataxia",
-            "idf_weight": 3.8624,
+            "idf_weight": 3.8654,
             "match_score": 1.0
           }
         ],
         "unmatched_patient_terms": [
           {
             "token": "anemia",
-            "idf_weight": 4.2146
+            "idf_weight": 4.2097
           },
           {
             "token": "delay",
-            "idf_weight": 3.3172
+            "idf_weight": 3.3212
           },
           {
             "token": "developmental",
-            "idf_weight": 3.0299
+            "idf_weight": 3.0331
           }
         ],
         "method_specific": {
           "tfidf_mode": "tfidf_text",
-          "coverage_unit": "tokens",
           "idf_weighted_matches": [
             {
-              "id": "cerebellar",
-              "label": "cerebellar",
-              "idf_weight": 4.2901
+              "token": "cerebellar",
+              "idf_weight": 4.2955
             },
             {
-              "id": "ataxia",
-              "label": "ataxia",
-              "idf_weight": 3.8624
+              "token": "ataxia",
+              "idf_weight": 3.8654
             }
           ],
           "low_idf_matches": [],
           "n_low_idf_matches": 0,
           "low_idf_threshold": 0.5,
           "vector_norms": {
-            "dot_product": 33.323008,
-            "patient_norm": 8.442136,
-            "disease_norm": 6.860519,
-            "score_check": 0.575354
-          },
-          "sparse_disease_threshold": true
+            "dot_product": 33.392413,
+            "patient_norm": 8.446543,
+            "disease_norm": 6.86513,
+            "score_check": 0.575864
+          }
         },
         "diagnostics": {
-          "raw_score": 0.575354,
+          "raw_score": 0.575864,
           "tfidf_mode": "tfidf_text",
           "low_idf_threshold_applied": 0.5,
           "n_patient_vector_terms": 5,
@@ -112,13 +112,17 @@
       "disease_id": "OMIM:617643",
       "label": "Cerebellar atrophy, developmental delay, and seizures",
       "profile_type": null,
+      "category_source_id": null,
       "category_path": [],
-      "score": 0.56198,
+      "matched_aliases": [
+        "1/2",
+        "OMIM:617643"
+      ],
+      "score": 0.56254,
       "method_name": "tfidf_text",
       "explanation": {
         "summary": "3 of 5 patient text tokens matched disease description (60% patient / 60% disease token coverage, 5 disease tokens total).",
         "coverage": {
-          "coverage_type": "token",
           "patient_token_coverage": 0.6,
           "disease_token_coverage": 0.6,
           "direction_asymmetry": 0.0,
@@ -131,63 +135,58 @@
         "matched_terms": [
           {
             "token": "cerebellar",
-            "idf_weight": 4.2901,
+            "idf_weight": 4.2955,
             "match_score": 1.0
           },
           {
             "token": "delay",
-            "idf_weight": 3.3172,
+            "idf_weight": 3.3212,
             "match_score": 1.0
           },
           {
             "token": "developmental",
-            "idf_weight": 3.0299,
+            "idf_weight": 3.0331,
             "match_score": 1.0
           }
         ],
         "unmatched_patient_terms": [
           {
             "token": "anemia",
-            "idf_weight": 4.2146
+            "idf_weight": 4.2097
           },
           {
             "token": "ataxia",
-            "idf_weight": 3.8624
+            "idf_weight": 3.8654
           }
         ],
         "method_specific": {
           "tfidf_mode": "tfidf_text",
-          "coverage_unit": "tokens",
           "idf_weighted_matches": [
             {
-              "id": "cerebellar",
-              "label": "cerebellar",
-              "idf_weight": 4.2901
+              "token": "cerebellar",
+              "idf_weight": 4.2955
             },
             {
-              "id": "delay",
-              "label": "delay",
-              "idf_weight": 3.3172
+              "token": "delay",
+              "idf_weight": 3.3212
             },
             {
-              "id": "developmental",
-              "label": "developmental",
-              "idf_weight": 3.0299
+              "token": "developmental",
+              "idf_weight": 3.0331
             }
           ],
           "low_idf_matches": [],
           "n_low_idf_matches": 0,
           "low_idf_threshold": 0.5,
           "vector_norms": {
-            "dot_product": 38.588235,
-            "patient_norm": 8.442136,
-            "disease_norm": 8.133581,
-            "score_check": 0.56198
-          },
-          "sparse_disease_threshold": false
+            "dot_product": 38.68113,
+            "patient_norm": 8.446543,
+            "disease_norm": 8.140787,
+            "score_check": 0.56254
+          }
         },
         "diagnostics": {
-          "raw_score": 0.56198,
+          "raw_score": 0.56254,
           "tfidf_mode": "tfidf_text",
           "low_idf_threshold_applied": 0.5,
           "n_patient_vector_terms": 5,
@@ -201,13 +200,16 @@
       "disease_id": "MONDO:0060551",
       "label": "cerebellar atrophy, developmental delay, and seizures",
       "profile_type": null,
+      "category_source_id": null,
       "category_path": [],
-      "score": 0.56198,
+      "matched_aliases": [
+        "MONDO:0060551"
+      ],
+      "score": 0.56254,
       "method_name": "tfidf_text",
       "explanation": {
         "summary": "3 of 5 patient text tokens matched disease description (60% patient / 60% disease token coverage, 5 disease tokens total).",
         "coverage": {
-          "coverage_type": "token",
           "patient_token_coverage": 0.6,
           "disease_token_coverage": 0.6,
           "direction_asymmetry": 0.0,
@@ -220,63 +222,58 @@
         "matched_terms": [
           {
             "token": "cerebellar",
-            "idf_weight": 4.2901,
+            "idf_weight": 4.2955,
             "match_score": 1.0
           },
           {
             "token": "delay",
-            "idf_weight": 3.3172,
+            "idf_weight": 3.3212,
             "match_score": 1.0
           },
           {
             "token": "developmental",
-            "idf_weight": 3.0299,
+            "idf_weight": 3.0331,
             "match_score": 1.0
           }
         ],
         "unmatched_patient_terms": [
           {
             "token": "anemia",
-            "idf_weight": 4.2146
+            "idf_weight": 4.2097
           },
           {
             "token": "ataxia",
-            "idf_weight": 3.8624
+            "idf_weight": 3.8654
           }
         ],
         "method_specific": {
           "tfidf_mode": "tfidf_text",
-          "coverage_unit": "tokens",
           "idf_weighted_matches": [
             {
-              "id": "cerebellar",
-              "label": "cerebellar",
-              "idf_weight": 4.2901
+              "token": "cerebellar",
+              "idf_weight": 4.2955
             },
             {
-              "id": "delay",
-              "label": "delay",
-              "idf_weight": 3.3172
+              "token": "delay",
+              "idf_weight": 3.3212
             },
             {
-              "id": "developmental",
-              "label": "developmental",
-              "idf_weight": 3.0299
+              "token": "developmental",
+              "idf_weight": 3.0331
             }
           ],
           "low_idf_matches": [],
           "n_low_idf_matches": 0,
           "low_idf_threshold": 0.5,
           "vector_norms": {
-            "dot_product": 38.588235,
-            "patient_norm": 8.442136,
-            "disease_norm": 8.133581,
-            "score_check": 0.56198
-          },
-          "sparse_disease_threshold": false
+            "dot_product": 38.68113,
+            "patient_norm": 8.446543,
+            "disease_norm": 8.140787,
+            "score_check": 0.56254
+          }
         },
         "diagnostics": {
-          "raw_score": 0.56198,
+          "raw_score": 0.56254,
           "tfidf_mode": "tfidf_text",
           "low_idf_threshold_applied": 0.5,
           "n_patient_vector_terms": 5,
@@ -290,13 +287,16 @@
       "disease_id": "MONDO:0060745",
       "label": "intellectual developmental disorder with or without epilepsy or cerebellar ataxia",
       "profile_type": null,
+      "category_source_id": null,
       "category_path": [],
-      "score": 0.561145,
+      "matched_aliases": [
+        "MONDO:0060745"
+      ],
+      "score": 0.561407,
       "method_name": "tfidf_text",
       "explanation": {
         "summary": "3 of 5 patient text tokens matched disease description (60% patient / 50% disease token coverage, 6 disease tokens total).",
         "coverage": {
-          "coverage_type": "token",
           "patient_token_coverage": 0.6,
           "disease_token_coverage": 0.5,
           "direction_asymmetry": 0.1,
@@ -309,63 +309,58 @@
         "matched_terms": [
           {
             "token": "cerebellar",
-            "idf_weight": 4.2901,
+            "idf_weight": 4.2955,
             "match_score": 1.0
           },
           {
             "token": "ataxia",
-            "idf_weight": 3.8624,
+            "idf_weight": 3.8654,
             "match_score": 1.0
           },
           {
             "token": "developmental",
-            "idf_weight": 3.0299,
+            "idf_weight": 3.0331,
             "match_score": 1.0
           }
         ],
         "unmatched_patient_terms": [
           {
             "token": "anemia",
-            "idf_weight": 4.2146
+            "idf_weight": 4.2097
           },
           {
             "token": "delay",
-            "idf_weight": 3.3172
+            "idf_weight": 3.3212
           }
         ],
         "method_specific": {
           "tfidf_mode": "tfidf_text",
-          "coverage_unit": "tokens",
           "idf_weighted_matches": [
             {
-              "id": "cerebellar",
-              "label": "cerebellar",
-              "idf_weight": 4.2901
+              "token": "cerebellar",
+              "idf_weight": 4.2955
             },
             {
-              "id": "ataxia",
-              "label": "ataxia",
-              "idf_weight": 3.8624
+              "token": "ataxia",
+              "idf_weight": 3.8654
             },
             {
-              "id": "developmental",
-              "label": "developmental",
-              "idf_weight": 3.0299
+              "token": "developmental",
+              "idf_weight": 3.0331
             }
           ],
           "low_idf_matches": [],
           "n_low_idf_matches": 0,
           "low_idf_threshold": 0.5,
           "vector_norms": {
-            "dot_product": 42.503014,
-            "patient_norm": 8.442136,
-            "disease_norm": 8.972065,
-            "score_check": 0.561145
-          },
-          "sparse_disease_threshold": false
+            "dot_product": 42.592376,
+            "patient_norm": 8.446543,
+            "disease_norm": 8.982047,
+            "score_check": 0.561407
+          }
         },
         "diagnostics": {
-          "raw_score": 0.561145,
+          "raw_score": 0.561407,
           "tfidf_mode": "tfidf_text",
           "low_idf_threshold_applied": 0.5,
           "n_patient_vector_terms": 5,
@@ -379,13 +374,17 @@
       "disease_id": "OMIM:618501",
       "label": "Cerebellar atrophy with seizures and variable developmental delay",
       "profile_type": null,
+      "category_source_id": null,
       "category_path": [],
-      "score": 0.516233,
+      "matched_aliases": [
+        "3/3",
+        "OMIM:618501"
+      ],
+      "score": 0.516694,
       "method_name": "tfidf_text",
       "explanation": {
         "summary": "3 of 5 patient text tokens matched disease description (60% patient / 50% disease token coverage, 6 disease tokens total).",
         "coverage": {
-          "coverage_type": "token",
           "patient_token_coverage": 0.6,
           "disease_token_coverage": 0.5,
           "direction_asymmetry": 0.1,
@@ -398,63 +397,58 @@
         "matched_terms": [
           {
             "token": "cerebellar",
-            "idf_weight": 4.2901,
+            "idf_weight": 4.2955,
             "match_score": 1.0
           },
           {
             "token": "delay",
-            "idf_weight": 3.3172,
+            "idf_weight": 3.3212,
             "match_score": 1.0
           },
           {
             "token": "developmental",
-            "idf_weight": 3.0299,
+            "idf_weight": 3.0331,
             "match_score": 1.0
           }
         ],
         "unmatched_patient_terms": [
           {
             "token": "anemia",
-            "idf_weight": 4.2146
+            "idf_weight": 4.2097
           },
           {
             "token": "ataxia",
-            "idf_weight": 3.8624
+            "idf_weight": 3.8654
           }
         ],
         "method_specific": {
           "tfidf_mode": "tfidf_text",
-          "coverage_unit": "tokens",
           "idf_weighted_matches": [
             {
-              "id": "cerebellar",
-              "label": "cerebellar",
-              "idf_weight": 4.2901
+              "token": "cerebellar",
+              "idf_weight": 4.2955
             },
             {
-              "id": "delay",
-              "label": "delay",
-              "idf_weight": 3.3172
+              "token": "delay",
+              "idf_weight": 3.3212
             },
             {
-              "id": "developmental",
-              "label": "developmental",
-              "idf_weight": 3.0299
+              "token": "developmental",
+              "idf_weight": 3.0331
             }
           ],
           "low_idf_matches": [],
           "n_low_idf_matches": 0,
           "low_idf_threshold": 0.5,
           "vector_norms": {
-            "dot_product": 38.588235,
-            "patient_norm": 8.442136,
-            "disease_norm": 8.85436,
-            "score_check": 0.516233
-          },
-          "sparse_disease_threshold": false
+            "dot_product": 38.68113,
+            "patient_norm": 8.446543,
+            "disease_norm": 8.863116,
+            "score_check": 0.516694
+          }
         },
         "diagnostics": {
-          "raw_score": 0.516233,
+          "raw_score": 0.516694,
           "tfidf_mode": "tfidf_text",
           "low_idf_threshold_applied": 0.5,
           "n_patient_vector_terms": 5,
@@ -468,13 +462,16 @@
       "disease_id": "MONDO:0032788",
       "label": "cerebellar atrophy with seizures and variable developmental delay",
       "profile_type": null,
+      "category_source_id": null,
       "category_path": [],
-      "score": 0.516233,
+      "matched_aliases": [
+        "MONDO:0032788"
+      ],
+      "score": 0.516694,
       "method_name": "tfidf_text",
       "explanation": {
         "summary": "3 of 5 patient text tokens matched disease description (60% patient / 50% disease token coverage, 6 disease tokens total).",
         "coverage": {
-          "coverage_type": "token",
           "patient_token_coverage": 0.6,
           "disease_token_coverage": 0.5,
           "direction_asymmetry": 0.1,
@@ -487,63 +484,58 @@
         "matched_terms": [
           {
             "token": "cerebellar",
-            "idf_weight": 4.2901,
+            "idf_weight": 4.2955,
             "match_score": 1.0
           },
           {
             "token": "delay",
-            "idf_weight": 3.3172,
+            "idf_weight": 3.3212,
             "match_score": 1.0
           },
           {
             "token": "developmental",
-            "idf_weight": 3.0299,
+            "idf_weight": 3.0331,
             "match_score": 1.0
           }
         ],
         "unmatched_patient_terms": [
           {
             "token": "anemia",
-            "idf_weight": 4.2146
+            "idf_weight": 4.2097
           },
           {
             "token": "ataxia",
-            "idf_weight": 3.8624
+            "idf_weight": 3.8654
           }
         ],
         "method_specific": {
           "tfidf_mode": "tfidf_text",
-          "coverage_unit": "tokens",
           "idf_weighted_matches": [
             {
-              "id": "cerebellar",
-              "label": "cerebellar",
-              "idf_weight": 4.2901
+              "token": "cerebellar",
+              "idf_weight": 4.2955
             },
             {
-              "id": "delay",
-              "label": "delay",
-              "idf_weight": 3.3172
+              "token": "delay",
+              "idf_weight": 3.3212
             },
             {
-              "id": "developmental",
-              "label": "developmental",
-              "idf_weight": 3.0299
+              "token": "developmental",
+              "idf_weight": 3.0331
             }
           ],
           "low_idf_matches": [],
           "n_low_idf_matches": 0,
           "low_idf_threshold": 0.5,
           "vector_norms": {
-            "dot_product": 38.588235,
-            "patient_norm": 8.442136,
-            "disease_norm": 8.85436,
-            "score_check": 0.516233
-          },
-          "sparse_disease_threshold": false
+            "dot_product": 38.68113,
+            "patient_norm": 8.446543,
+            "disease_norm": 8.863116,
+            "score_check": 0.516694
+          }
         },
         "diagnostics": {
-          "raw_score": 0.516233,
+          "raw_score": 0.516694,
           "tfidf_mode": "tfidf_text",
           "low_idf_threshold_applied": 0.5,
           "n_patient_vector_terms": 5,
@@ -557,6 +549,7 @@
       "disease_id": "ORPHA:98771",
       "label": "Spinocerebellar ataxia 18",
       "profile_type": null,
+      "category_source_id": "ORPHA:98771",
       "category_path": [
         {
           "disease_id": "ORPHA:557493",
@@ -565,12 +558,16 @@
           "profile_type_label": null
         }
       ],
-      "score": 0.486945,
+      "matched_aliases": [
+        "HP:0040283",
+        "MONDO:0011834",
+        "ORPHA:98771"
+      ],
+      "score": 0.487248,
       "method_name": "tfidf_text",
       "explanation": {
         "summary": "2 of 5 patient text tokens matched disease description (40% patient / 20% disease token coverage, 10 disease tokens total).",
         "coverage": {
-          "coverage_type": "token",
           "patient_token_coverage": 0.4,
           "disease_token_coverage": 0.2,
           "direction_asymmetry": 0.2,
@@ -583,57 +580,53 @@
         "matched_terms": [
           {
             "token": "cerebellar",
-            "idf_weight": 4.2901,
+            "idf_weight": 4.2955,
             "match_score": 1.0
           },
           {
             "token": "ataxia",
-            "idf_weight": 3.8624,
+            "idf_weight": 3.8654,
             "match_score": 1.0
           }
         ],
         "unmatched_patient_terms": [
           {
             "token": "anemia",
-            "idf_weight": 4.2146
+            "idf_weight": 4.2097
           },
           {
             "token": "delay",
-            "idf_weight": 3.3172
+            "idf_weight": 3.3212
           },
           {
             "token": "developmental",
-            "idf_weight": 3.0299
+            "idf_weight": 3.0331
           }
         ],
         "method_specific": {
           "tfidf_mode": "tfidf_text",
-          "coverage_unit": "tokens",
           "idf_weighted_matches": [
             {
-              "id": "cerebellar",
-              "label": "cerebellar",
-              "idf_weight": 4.2901
+              "token": "cerebellar",
+              "idf_weight": 4.2955
             },
             {
-              "id": "ataxia",
-              "label": "ataxia",
-              "idf_weight": 3.8624
+              "token": "ataxia",
+              "idf_weight": 3.8654
             }
           ],
           "low_idf_matches": [],
           "n_low_idf_matches": 0,
           "low_idf_threshold": 0.5,
           "vector_norms": {
-            "dot_product": 81.564491,
-            "patient_norm": 8.442136,
-            "disease_norm": 19.84123,
-            "score_check": 0.486945
-          },
-          "sparse_disease_threshold": false
+            "dot_product": 81.726297,
+            "patient_norm": 8.446543,
+            "disease_norm": 19.857872,
+            "score_check": 0.487248
+          }
         },
         "diagnostics": {
-          "raw_score": 0.486945,
+          "raw_score": 0.487248,
           "tfidf_mode": "tfidf_text",
           "low_idf_threshold_applied": 0.5,
           "n_patient_vector_terms": 5,
@@ -647,6 +640,7 @@
       "disease_id": "ORPHA:101111",
       "label": "Spinocerebellar ataxia 25",
       "profile_type": null,
+      "category_source_id": "ORPHA:101111",
       "category_path": [
         {
           "disease_id": "ORPHA:557493",
@@ -655,12 +649,16 @@
           "profile_type_label": null
         }
       ],
-      "score": 0.475065,
+      "matched_aliases": [
+        "HP:0040282",
+        "MONDO:0012103",
+        "ORPHA:101111"
+      ],
+      "score": 0.475352,
       "method_name": "tfidf_text",
       "explanation": {
         "summary": "2 of 5 patient text tokens matched disease description (40% patient / 18% disease token coverage, 11 disease tokens total).",
         "coverage": {
-          "coverage_type": "token",
           "patient_token_coverage": 0.4,
           "disease_token_coverage": 0.1818,
           "direction_asymmetry": 0.2182,
@@ -673,57 +671,53 @@
         "matched_terms": [
           {
             "token": "cerebellar",
-            "idf_weight": 4.2901,
+            "idf_weight": 4.2955,
             "match_score": 1.0
           },
           {
             "token": "ataxia",
-            "idf_weight": 3.8624,
+            "idf_weight": 3.8654,
             "match_score": 1.0
           }
         ],
         "unmatched_patient_terms": [
           {
             "token": "anemia",
-            "idf_weight": 4.2146
+            "idf_weight": 4.2097
           },
           {
             "token": "delay",
-            "idf_weight": 3.3172
+            "idf_weight": 3.3212
           },
           {
             "token": "developmental",
-            "idf_weight": 3.0299
+            "idf_weight": 3.0331
           }
         ],
         "method_specific": {
           "tfidf_mode": "tfidf_text",
-          "coverage_unit": "tokens",
           "idf_weighted_matches": [
             {
-              "id": "cerebellar",
-              "label": "cerebellar",
-              "idf_weight": 4.2901
+              "token": "cerebellar",
+              "idf_weight": 4.2955
             },
             {
-              "id": "ataxia",
-              "label": "ataxia",
-              "idf_weight": 3.8624
+              "token": "ataxia",
+              "idf_weight": 3.8654
             }
           ],
           "low_idf_matches": [],
           "n_low_idf_matches": 0,
           "low_idf_threshold": 0.5,
           "vector_norms": {
-            "dot_product": 81.564491,
-            "patient_norm": 8.442136,
-            "disease_norm": 20.337405,
-            "score_check": 0.475065
-          },
-          "sparse_disease_threshold": false
+            "dot_product": 81.726297,
+            "patient_norm": 8.446543,
+            "disease_norm": 20.354828,
+            "score_check": 0.475352
+          }
         },
         "diagnostics": {
-          "raw_score": 0.475065,
+          "raw_score": 0.475352,
           "tfidf_mode": "tfidf_text",
           "low_idf_threshold_applied": 0.5,
           "n_patient_vector_terms": 5,
@@ -737,6 +731,7 @@
       "disease_id": "ORPHA:98769",
       "label": "Spinocerebellar ataxia 15",
       "profile_type": null,
+      "category_source_id": "ORPHA:98769",
       "category_path": [
         {
           "disease_id": "ORPHA:557493",
@@ -745,12 +740,16 @@
           "profile_type_label": null
         }
       ],
-      "score": 0.470207,
+      "matched_aliases": [
+        "HP:0040282",
+        "MONDO:0011694",
+        "ORPHA:98769"
+      ],
+      "score": 0.47051,
       "method_name": "tfidf_text",
       "explanation": {
         "summary": "2 of 5 patient text tokens matched disease description (40% patient / 18% disease token coverage, 11 disease tokens total).",
         "coverage": {
-          "coverage_type": "token",
           "patient_token_coverage": 0.4,
           "disease_token_coverage": 0.1818,
           "direction_asymmetry": 0.2182,
@@ -763,57 +762,53 @@
         "matched_terms": [
           {
             "token": "cerebellar",
-            "idf_weight": 4.2901,
+            "idf_weight": 4.2955,
             "match_score": 1.0
           },
           {
             "token": "ataxia",
-            "idf_weight": 3.8624,
+            "idf_weight": 3.8654,
             "match_score": 1.0
           }
         ],
         "unmatched_patient_terms": [
           {
             "token": "anemia",
-            "idf_weight": 4.2146
+            "idf_weight": 4.2097
           },
           {
             "token": "delay",
-            "idf_weight": 3.3172
+            "idf_weight": 3.3212
           },
           {
             "token": "developmental",
-            "idf_weight": 3.0299
+            "idf_weight": 3.0331
           }
         ],
         "method_specific": {
           "tfidf_mode": "tfidf_text",
-          "coverage_unit": "tokens",
           "idf_weighted_matches": [
             {
-              "id": "cerebellar",
-              "label": "cerebellar",
-              "idf_weight": 4.2901
+              "token": "cerebellar",
+              "idf_weight": 4.2955
             },
             {
-              "id": "ataxia",
-              "label": "ataxia",
-              "idf_weight": 3.8624
+              "token": "ataxia",
+              "idf_weight": 3.8654
             }
           ],
           "low_idf_matches": [],
           "n_low_idf_matches": 0,
           "low_idf_threshold": 0.5,
           "vector_norms": {
-            "dot_product": 81.564491,
-            "patient_norm": 8.442136,
-            "disease_norm": 20.547529,
-            "score_check": 0.470207
-          },
-          "sparse_disease_threshold": false
+            "dot_product": 81.726297,
+            "patient_norm": 8.446543,
+            "disease_norm": 20.564294,
+            "score_check": 0.47051
+          }
         },
         "diagnostics": {
-          "raw_score": 0.470207,
+          "raw_score": 0.47051,
           "tfidf_mode": "tfidf_text",
           "low_idf_threshold_applied": 0.5,
           "n_patient_vector_terms": 5,
@@ -827,6 +822,7 @@
       "disease_id": "ORPHA:139485",
       "label": "Coenzyme Q10 deficiency, primary, 4",
       "profile_type": null,
+      "category_source_id": "ORPHA:139485",
       "category_path": [
         {
           "disease_id": "ORPHA:557493",
@@ -835,12 +831,16 @@
           "profile_type_label": null
         }
       ],
-      "score": 0.463686,
+      "matched_aliases": [
+        "HP:0040284",
+        "MONDO:0012784",
+        "ORPHA:139485"
+      ],
+      "score": 0.463924,
       "method_name": "tfidf_text",
       "explanation": {
         "summary": "2 of 5 patient text tokens matched disease description (40% patient / 40% disease token coverage, 5 disease tokens total).",
         "coverage": {
-          "coverage_type": "token",
           "patient_token_coverage": 0.4,
           "disease_token_coverage": 0.4,
           "direction_asymmetry": 0.0,
@@ -853,57 +853,53 @@
         "matched_terms": [
           {
             "token": "cerebellar",
-            "idf_weight": 4.2901,
+            "idf_weight": 4.2955,
             "match_score": 1.0
           },
           {
             "token": "ataxia",
-            "idf_weight": 3.8624,
+            "idf_weight": 3.8654,
             "match_score": 1.0
           }
         ],
         "unmatched_patient_terms": [
           {
             "token": "anemia",
-            "idf_weight": 4.2146
+            "idf_weight": 4.2097
           },
           {
             "token": "delay",
-            "idf_weight": 3.3172
+            "idf_weight": 3.3212
           },
           {
             "token": "developmental",
-            "idf_weight": 3.0299
+            "idf_weight": 3.0331
           }
         ],
         "method_specific": {
           "tfidf_mode": "tfidf_text",
-          "coverage_unit": "tokens",
           "idf_weighted_matches": [
             {
-              "id": "cerebellar",
-              "label": "cerebellar",
-              "idf_weight": 4.2901
+              "token": "cerebellar",
+              "idf_weight": 4.2955
             },
             {
-              "id": "ataxia",
-              "label": "ataxia",
-              "idf_weight": 3.8624
+              "token": "ataxia",
+              "idf_weight": 3.8654
             }
           ],
           "low_idf_matches": [],
           "n_low_idf_matches": 0,
           "low_idf_threshold": 0.5,
           "vector_norms": {
-            "dot_product": 33.323008,
-            "patient_norm": 8.442136,
-            "disease_norm": 8.512715,
-            "score_check": 0.463686
-          },
-          "sparse_disease_threshold": false
+            "dot_product": 33.392413,
+            "patient_norm": 8.446543,
+            "disease_norm": 8.521613,
+            "score_check": 0.463924
+          }
         },
         "diagnostics": {
-          "raw_score": 0.463686,
+          "raw_score": 0.463924,
           "tfidf_mode": "tfidf_text",
           "low_idf_threshold_applied": 0.5,
           "n_patient_vector_terms": 5,
