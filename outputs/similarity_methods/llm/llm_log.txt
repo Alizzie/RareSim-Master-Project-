@@ -1,0 +1,69 @@
+nohup: ignoring input
+[llm] Loaded patient: patient_001
+[llm] HPO terms: {'HP:0002470', 'HP:0001903', 'HP:0001263'}
+[llm] Propagated HPO Terms: {'HP:0001871', 'HP:0000001', 'HP:0012758', 'HP:0012759', 'HP:0001251', 'HP:0001263', 'HP:0002470', 'HP:0001877', 'HP:0000118', 'HP:0012638', 'HP:0000707', 'HP:0011443', 'HP:0001903', 'HP:0011442'}
+[llm] Method Names: ['mistralai/Mistral-7B-Instruct-v0.2']
+Loading shared data...
+[llm] Running pipeline with methods: ['mistralai/Mistral-7B-Instruct-v0.2']
+
+============================================================
+  Model: mistralai/Mistral-7B-Instruct-v0.2
+============================================================
+
+[llm] Retrieving diseases with: mistralai/Mistral-7B-Instruct-v0.2
+  [llm] Loading: mistralai/Mistral-7B-Instruct-v0.2
+Downloading shards:   0%|          | 0/3 [00:00<?, ?it/s]Downloading shards:  67%|██████▋   | 2/3 [00:42<00:21, 21.16s/it]Downloading shards: 100%|██████████| 3/3 [01:23<00:00, 29.55s/it]Downloading shards: 100%|██████████| 3/3 [01:23<00:00, 27.87s/it]
+Loading checkpoint shards:   0%|          | 0/3 [00:00<?, ?it/s]Loading checkpoint shards:  33%|███▎      | 1/3 [00:09<00:19,  9.91s/it]Loading checkpoint shards:  67%|██████▋   | 2/3 [00:18<00:08,  8.91s/it]Loading checkpoint shards: 100%|██████████| 3/3 [00:25<00:00,  8.40s/it]Loading checkpoint shards: 100%|██████████| 3/3 [00:25<00:00,  8.64s/it]
+Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+  [llm] Loaded with 4-bit quantization
+  [timer] load mistralai/Mistral-7B-Instruct-v0.2: 114.275s
+  [timer] generate mistralai/Mistral-7B-Instruct-v0.2: 28.781s
+
+--- RAW LLM OUTPUT ---
+DISEASE: Pelizaeus-Merzbacher Disease (Leukodystrophies) | ORDO: ORPHA:268474 | MATCH: global developmental delay, cerebellar ataxia | CONFIDENCE: high
+DISEASE: Vitamin B12 Deficiency | ORDO: ORPHA:219001 | MATCH: anemia, developmental delay | CONFIDANCE: medium
+DISEASE: Menkes Syndrome | ORDO: ORPHA:259200 | MATCH: global developmental delay, anemia | CONFIDENCE: medium
+DISEASE: Fanconi Anemia Type C | ORDO: ORPHA:219030 | MATCH: anemia, developmental delay | CONFIDENCE: medium
+DISEASE: Niemann-Pick Disease Type A | ORDO: ORPHA:211400 | MATCH: global developmental delay, anemia | CONFIDENCE: low
+DISEASE: Refsum's Disease | ORDO: ORPHA:266500 | MATCH: developmental delay, anemia | CONFIDENCE: low
+DISEASE: Krabbe Leukodystrophy | ORDO: ORPHA:256500 | MATCH: global developmental delay, cerebellar ataxia | CONFIDENCE: low
+DISEASE: Adrenoleukodystrophy X-linked | ORDO: ORPHA:300600 | MATCH: global developmental delay, cerebellar ataxia | CONFIDENCE: low
+DISEASE: Hurler Syndrome | ORDO: ORPHA:252800 | MATCH: global developmental delay | CONFIDENCE: very low
+DISEASE: Marfanoid Progeria Syndrome | ORDO: ORPHA:248350 | MATCH: cerebellar ataxia, anemia | CONFIDENCE: extremely low
+--- END OUTPUT ---
+
+[llm] Found 9 diseases (7 validated against profiles)
+  [timer] total mistralai/Mistral-7B-Instruct-v0.2: 143.122s
+  [llm] GPU memory released
+
+[llm] Explaining top results for: mistralai/Mistral-7B-Instruct-v0.2
+
+[llm] Loading explainer: mistralai/Mistral-7B-Instruct-v0.2
+  [llm] Loading: mistralai/Mistral-7B-Instruct-v0.2
+Loading checkpoint shards:   0%|          | 0/3 [00:00<?, ?it/s]Loading checkpoint shards:  33%|███▎      | 1/3 [00:02<00:04,  2.37s/it]Loading checkpoint shards:  67%|██████▋   | 2/3 [00:04<00:02,  2.36s/it]Loading checkpoint shards: 100%|██████████| 3/3 [00:06<00:00,  2.27s/it]Loading checkpoint shards: 100%|██████████| 3/3 [00:06<00:00,  2.30s/it]
+Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+  [llm] Loaded with 4-bit quantization
+  [timer] load explainer: 7.697s
+  [llm] 1/9: Pelizaeus-Merzbacher disease
+  [timer] explain Pelizaeus-Merzbacher disease: 15.940s
+  [llm] 2/9: vitamin B12 deficiency
+  [timer] explain vitamin B12 deficiency: 12.571s
+  [llm] 4/9: anemia
+  [timer] explain anemia: 10.133s
+  [llm] 5/9: Pick disease
+  [timer] explain Pick disease: 13.322s
+  [llm] 6/9: Disease
+  [timer] explain Disease: 13.661s
+  [llm] 7/9: leukodystrophy
+  [timer] explain leukodystrophy: 16.190s
+  [llm] 8/9: Hurler syndrome
+  [timer] explain Hurler syndrome: 14.138s
+  [llm] GPU memory released
+  [timer] full llm pipeline: 247.958s
+[llm] Pipeline finished. Saving results to /home/user/peilindu/RareSim-Master-Project-/outputs/similarity_methods/llm...

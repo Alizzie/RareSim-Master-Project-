@@ -48,7 +48,7 @@ HPO_PATH = ONTOLOGY_DIR / "hpo.owl"
 ORDO_PATH = ONTOLOGY_DIR / "ordo.owl"
 MONDO_PATH = ONTOLOGY_DIR / "mondo_rare.owl"
 HOOM_PATH = ONTOLOGY_DIR / "hoom.owl"
-HPOA_PATH = ONTOLOGY_DIR / "phenotype.hpoa.owl"
+HPOA_PATH = ONTOLOGY_DIR / "phenotype.hpoa"
 
 ORPHADATA_PRODUCT4_PATH = ONTOLOGY_DIR / "en_product4_HPO.xml"
 MONARCH_DISEASE_TO_HPO_PATH = (
