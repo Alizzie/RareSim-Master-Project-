@@ -36,3 +36,8 @@ def save_individual_results(
         top_k = method_results.config.top_k
         safe_name = method_name.replace("/", "_")
         save_json(method_results.to_dict(), output_dir / f"{safe_name}_top{top_k}.json")
+
+
+def make_safe_model_name(model_name: str) -> str:
+    """Convert a model/method name into a filesystem-safe string."""
+    return model_name.replace("/", "_")

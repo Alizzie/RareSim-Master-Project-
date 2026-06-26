@@ -16,10 +16,15 @@ from pathlib import Path
 import numpy as np
 
 from raresim.ontology.disease_category import build_category_metadata
-from raresim.similarity_methods.transformer.config import CACHE_ROOT, TOP_K
+from raresim.similarity_methods.transformer.config import (
+    CACHE_ROOT,
+    TEXT_PREVIEW_LENGTH,
+    METHOD_NAME,
+    PIPELINE_NAME,
+)
 from raresim.similarity_methods.transformer.explanation import (
     build_explanation,
-    build_metadata,
+    build_method_specific_explanation_block,
 )
 from raresim.similarity_methods.transformer.methods import (
     build_disease_texts,
@@ -28,10 +33,13 @@ from raresim.similarity_methods.transformer.methods import (
     get_model_type,
     hash_text,
     load_embedding_backend,
-    make_safe_model_name,
 )
-from raresim.utils.io import load_json, save_json
-
+from raresim.types.schemas import PatientProfile
+from raresim.types.result import SimilarityResult, MethodResults, RunConfig
+from raresim.core.context import AppContext
+from raresim.core.pipeline import build_run_stats
+from raresim.utils.timer import Timer
+from raresim.utils.io import load_json, save_json, make_safe_model_name
 
 # ── Cache utilities ───────────────────────────────────────────────────────────
 
@@ -53,8 +61,7 @@ def get_cache_paths(model_name: str) -> dict[str, Path]:
 def persistent_cache_exists(cache_paths: dict[str, Path]) -> bool:
     """Check if the full embedding cache exists for one model."""
     return all(
-        cache_paths[key].exists()
-        for key in ["ids", "labels", "texts", "embeddings"]
+        cache_paths[key].exists() for key in ["ids", "labels", "texts", "embeddings"]
     )
 
 
@@ -63,9 +70,7 @@ def load_json_string_list(input_path: Path) -> list[str]:
     data = load_json(input_path)
 
     if not isinstance(data, list):
-        raise TypeError(
-            f"Expected a list in {input_path}, got {type(data).__name__}"
-        )
+        raise TypeError(f"Expected a list in {input_path}, got {type(data).__name__}")
 
     return [str(item) for item in data]
 
@@ -141,10 +146,11 @@ def collapse_ranked_results_to_canonical(  # pylint: disable=too-many-arguments,
     model_name: str,
     model_type: str,
     patient_text: str,
+    top_k: int,
     patient_hpo_terms: list[str],
     hpo_labels: dict[str, str],
-    top_k: int,
-) -> list[dict]:
+    ic_values: dict[str, float],
+) -> list[SimilarityResult]:
     """
     Collapse alias-level results into canonical disease-level results.
 
@@ -166,7 +172,7 @@ def collapse_ranked_results_to_canonical(  # pylint: disable=too-many-arguments,
                 "label": disease_labels[idx],
                 "score": score,
                 "matched_aliases": [disease_id],
-                "disease_text_preview": disease_texts[idx][:300],
+                "disease_text_preview": disease_texts[idx][:TEXT_PREVIEW_LENGTH],
             }
             continue
 
@@ -176,7 +182,9 @@ def collapse_ranked_results_to_canonical(  # pylint: disable=too-many-arguments,
             grouped[canonical_id]["representative_disease_id"] = disease_id
             grouped[canonical_id]["label"] = disease_labels[idx]
             grouped[canonical_id]["score"] = score
-            grouped[canonical_id]["disease_text_preview"] = disease_texts[idx][:300]
+            grouped[canonical_id]["disease_text_preview"] = disease_texts[idx][
+                :TEXT_PREVIEW_LENGTH
+            ]
 
     collapsed = sorted(
         grouped.values(),
@@ -205,41 +213,35 @@ def collapse_ranked_results_to_canonical(  # pylint: disable=too-many-arguments,
             disease_metadata_index=disease_metadata_index,
         )
 
-        matched_aliases = _merge_aliases(
-            row["matched_aliases"],
-            category_metadata["matched_aliases"],
+        method_specific_block = build_method_specific_explanation_block(
+            method_name="transformer",
+            model_name=model_name,
+            model_type=model_type,
+            patient_text=patient_text,
+            disease_text_preview=row["disease_text_preview"],
         )
 
         results.append(
-            {
-                "rank": rank_idx,
-                "disease_id": canonical_id,
-                "canonical_disease_id": canonical_id,
-                "representative_disease_id": representative_id,
-                "label": row["label"],
-                "profile_type": category_metadata["profile_type"],
-                "category_source_id": category_metadata["category_source_id"],
-                "category_path": category_metadata["category_path"],
-                "matched_aliases": matched_aliases,
-                "model_name": model_name,
-                "model_type": model_type,
-                "score": row["score"],
-                "explanation": build_explanation(
+            SimilarityResult(
+                disease_id=canonical_id,
+                label=row["label"],
+                score=row["score"],
+                method_name="transformer",
+                profile_type=category_metadata["profile_type"],
+                category_source_id=category_metadata["category_source_id"],
+                category_path=category_metadata["category_path"],
+                matched_aliases=category_metadata["matched_aliases"],
+                rank=rank_idx,
+                explanation=build_explanation(
                     score=row["score"],
                     model_name=model_name,
-                    model_type=model_type,
-                    patient_text=patient_text,
-                    disease_text_preview=row["disease_text_preview"],
                     patient_hpo_terms=patient_hpo_terms,
                     disease_hpo_terms=disease_hpo_terms,
+                    ic_values=ic_values,
                     hpo_labels=hpo_labels,
+                    method_specific=method_specific_block,
                 ),
-                "metadata": build_metadata(
-                    model_name=model_name,
-                    model_type=model_type,
-                    top_k=top_k,
-                ),
-            }
+            )
         )
 
     return results
@@ -261,18 +263,22 @@ class DiseaseRetriever:  # pylint: disable=too-many-instance-attributes
         hpo_labels: dict[str, str],
         alias_to_canonical: dict[str, str],
         model_list: list[str],
+        patient: PatientProfile,
         *,
         disease_ancestors: dict[str, list[str]] | None = None,
         disease_metadata_index: dict[str, dict] | None = None,
         rebuild_cache: bool = False,
+        ic_values: dict[str, float] | None = None,
     ) -> None:
         self.disease_profiles = disease_profiles
         self.hpo_labels = hpo_labels
         self.alias_to_canonical = alias_to_canonical
         self.model_list = model_list
+        self.patient = patient
         self.disease_ancestors = disease_ancestors or {}
         self.disease_metadata_index = disease_metadata_index or {}
         self.rebuild_cache = rebuild_cache
+        self.ic_values = ic_values or {}
 
         (
             self.global_disease_ids,
@@ -287,6 +293,27 @@ class DiseaseRetriever:  # pylint: disable=too-many-instance-attributes
         self.model_registry: dict[str, dict] = {}
         self.patient_embedding_cache: dict[tuple[str, str], np.ndarray] = {}
 
+    @classmethod
+    def from_context(
+        cls,
+        patient: PatientProfile,
+        ctx: AppContext,
+        model_list: list[str],
+        *,
+        rebuild_cache: bool = False,
+    ) -> "DiseaseRetriever":
+        """Create a DiseaseRetriever from an AppContext."""
+        return cls(
+            patient=patient,
+            disease_profiles=ctx.disease_profiles,
+            hpo_labels=ctx.hpo_labels,
+            alias_to_canonical=ctx.alias_to_canonical,
+            model_list=model_list,
+            disease_ancestors=ctx.disease_ancestors,
+            disease_metadata_index=ctx.disease_metadata_index,
+            rebuild_cache=rebuild_cache,
+            ic_values=ctx.ic_values,
+        )
 
     def warmup(self, preload_models: bool = False) -> None:
         """
@@ -300,7 +327,6 @@ class DiseaseRetriever:  # pylint: disable=too-many-instance-attributes
             print(f"  Preparing: {model_name}")
             backend = self._get_backend(model_name) if preload_models else None
             self._ensure_model_resources(model_name, backend=backend)
-
 
     def _get_backend(self, model_name: str) -> dict:
         """Load or return an embedding backend for a model."""
@@ -375,13 +401,15 @@ class DiseaseRetriever:  # pylint: disable=too-many-instance-attributes
     def rank(
         self,
         model_name: str,
-        patient: dict,
-        top_k: int = TOP_K,
+        patient: PatientProfile,
+        top_k: int,
         candidate_pool_size: int = 200,
-    ) -> list[dict]:
+    ) -> MethodResults:
         """Rank diseases for a patient using the specified model."""
         if model_name not in self.model_list:
             raise ValueError(f"Model not available: {model_name}")
+
+        method_timer = Timer(PIPELINE_NAME).start()
 
         self._ensure_model_resources(model_name)
 
@@ -389,7 +417,7 @@ class DiseaseRetriever:  # pylint: disable=too-many-instance-attributes
         if not patient_text:
             raise ValueError("Patient text is empty.")
 
-        patient_hpo_terms = patient.get("hpo_terms", [])
+        patient_hpo_terms = patient.get_terms(use_propagated=False)
         patient_embedding = self._get_patient_embedding(model_name, patient_text)
 
         resources = self.model_registry[model_name]
@@ -397,7 +425,7 @@ class DiseaseRetriever:  # pylint: disable=too-many-instance-attributes
         pool_size = min(candidate_pool_size, len(scores))
         ranked_indices = np.argsort(-scores)[:pool_size]
 
-        return collapse_ranked_results_to_canonical(
+        rankings = collapse_ranked_results_to_canonical(
             ranked_indices=ranked_indices,
             scores=scores,
             disease_ids=resources["disease_ids"],
@@ -410,7 +438,40 @@ class DiseaseRetriever:  # pylint: disable=too-many-instance-attributes
             model_name=model_name,
             model_type=resources["model_type"],
             patient_text=patient_text,
-            patient_hpo_terms=patient_hpo_terms,
+            patient_hpo_terms=list(patient_hpo_terms),
             hpo_labels=self.hpo_labels,
+            ic_values=self.ic_values,
             top_k=top_k,
+        )
+
+        elapsed = method_timer.stop()
+
+        method_results = MethodResults(
+            method_name=METHOD_NAME,
+            pipeline_name=PIPELINE_NAME,
+            config=self._run_config(top_k=top_k),
+            stats=self._run_stats(rankings, elapsed),
+            rankings=rankings,
+        )
+
+        return method_results
+
+    def _run_stats(self, rankings: list[SimilarityResult], elapsed: float):
+        n_patient_terms = len(self.patient.get_terms(use_propagated=False))
+        return build_run_stats(
+            n_patient_terms_raw=n_patient_terms,
+            n_patient_terms_propagated=0,
+            n_patient_terms_used=n_patient_terms,
+            n_diseases_scored=len(rankings),
+            n_diseases_skipped=0,
+            computation_time=elapsed,
+        )
+
+    @staticmethod
+    def _run_config(top_k: int) -> RunConfig:
+        return RunConfig(
+            use_propagated_terms=False,
+            ic_threshold=None,
+            top_k=top_k,
+            use_canonical_profiles=True,
         )

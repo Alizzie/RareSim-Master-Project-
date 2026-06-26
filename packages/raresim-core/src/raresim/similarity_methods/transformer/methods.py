@@ -15,40 +15,16 @@ import torch
 from sentence_transformers import SentenceTransformer
 from transformers import AutoModel, AutoTokenizer
 
+from raresim.types.schemas import PatientProfile
 from raresim.similarity_methods.transformer.config import (
     BATCH_SIZE,
     MAX_LENGTH,
     SENTENCE_TRANSFORMER_MODELS,
 )
-
-# ── Text construction ─────────────────────────────────────────────────────────
-
-
-def unique_preserve_order(items: list[str]) -> list[str]:
-    """Remove duplicates while preserving first occurrence order."""
-    seen = set()
-    out = []
-    for item in items:
-        if item and item not in seen:
-            seen.add(item)
-            out.append(item)
-    return out
+from raresim.utils.hpo_utils import get_hpo_label
 
 
-def hpo_terms_to_labels(
-    hpo_terms: list[str],
-    hpo_labels: dict[str, str],
-) -> list[str]:
-    """Convert HPO IDs into readable phenotype labels, removing duplicates."""
-    labels = []
-    for term in hpo_terms:
-        label = hpo_labels.get(term)
-        if label:
-            labels.append(label.strip())
-    return unique_preserve_order(labels)
-
-
-def build_patient_text(patient: dict, hpo_labels: dict[str, str]) -> str:
+def build_patient_text(patient: PatientProfile, hpo_labels: dict[str, str]) -> str:
     """
     Build the patient text used for embedding.
 
@@ -56,9 +32,8 @@ def build_patient_text(patient: dict, hpo_labels: dict[str, str]) -> str:
     - raw clinical description (if available)
     - HPO phenotype labels
     """
-    raw_text = (patient.get("raw_text") or "").strip()
-    hpo_terms = patient.get("hpo_terms", [])
-    phenotype_labels = hpo_terms_to_labels(hpo_terms, hpo_labels)
+    raw_text = (patient.raw_text or "").strip()
+    phenotype_labels = [get_hpo_label(term, hpo_labels) for term in patient.hpo_terms]
 
     parts = []
     if raw_text:
@@ -81,7 +56,7 @@ def build_disease_text(profile: dict, hpo_labels: dict[str, str]) -> str:
     label = (profile.get("label") or "").strip()
     desc = (profile.get("merged_description") or "").strip()
     hpo_terms = profile.get("hpo_terms", [])
-    phenotype_labels = hpo_terms_to_labels(hpo_terms, hpo_labels)
+    phenotype_labels = [get_hpo_label(term, hpo_labels) for term in hpo_terms]
 
     parts = []
     if label:
@@ -127,11 +102,6 @@ def l2_normalize(matrix: np.ndarray) -> np.ndarray:
     norms = np.linalg.norm(matrix, axis=1, keepdims=True)
     norms = np.clip(norms, a_min=1e-12, a_max=None)
     return matrix / norms
-
-
-def make_safe_model_name(model_name: str) -> str:
-    """Convert model name into a filesystem-safe string."""
-    return model_name.replace("/", "_")
 
 
 def get_model_type(model_name: str) -> str:

@@ -33,7 +33,6 @@ STANDARDIZED_PHENOPACKETS_DIR = DATASET_DIR / "phenopackets/standardized_to_json
 OUTPUTS_DIR = PROJECT_ROOT / "outputs"
 ARTIFACTS_DIR = OUTPUTS_DIR / "artifacts"
 SIMILARITY_DIR = OUTPUTS_DIR / "similarity_methods"
-TRANSFORMER_DIR = SIMILARITY_DIR / "transformer"
 WEBAPP_DIR = OUTPUTS_DIR / "webapp"
 GUI_DIR = OUTPUTS_DIR / "gui"
 
@@ -67,7 +66,7 @@ ONTOLOGY_PATHS = {
 
 # ── Built artifact files (outputs of build_shared_artifacts) ──────────────────
 
-DISEASE_PROFILES_PATH = ARTIFACTS_DIR / "canonical_disease_profiles.json"
+CAN_DISEASE_PROFILES_PATH = ARTIFACTS_DIR / "canonical_disease_profiles.json"
 HPO_LABELS_PATH = ARTIFACTS_DIR / "hpo_labels.json"
 PATIENT_PATH = ARTIFACTS_DIR / "example_patient.json"
 ALIAS_TO_CANONICAL_PATH = ARTIFACTS_DIR / "alias_to_canonical.json"
@@ -79,3 +78,4 @@ ORPHA_MAPPING_INDEX = ARTIFACTS_DIR / "orpha_mapping_index.json"
 DISEASE_PARENTS_PATH = ARTIFACTS_DIR / "disease_parents.json"
 DISEASE_ANCESTORS_PATH = ARTIFACTS_DIR / "disease_ancestors.json"
 DISEASE_METADATA_INDEX_PATH = ARTIFACTS_DIR / "disease_metadata_index.json"
+DISEASE_PROFILES_PATH = ARTIFACTS_DIR / "disease_profiles.json"

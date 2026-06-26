@@ -31,7 +31,7 @@ def build_method_specific_explanation_block(
         "confidence": confidence,
         "uses_ic_values": False,
         "uses_dense_embeddings": False,
-        "deduplicated_to_canonical": True,
+        "uses_direct_hpo_overlap_for_score": False,
         "matched_phenotypes": matched_phenotypes,
         "score_note": (
             "LLM-based ranking score or confidence score. The model compares the "

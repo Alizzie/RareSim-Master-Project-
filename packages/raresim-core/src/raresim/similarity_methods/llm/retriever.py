@@ -14,7 +14,6 @@ from raresim.similarity_methods.llm.config import (
     EXPLAINER_MODEL,
     MAX_NEW_TOKENS_EXPLAINER,
     MAX_NEW_TOKENS_RETRIEVAL,
-    TOP_K,
     TOP_K_RERANK,
     PIPELINE_NAME,
     TEXT_PREVIEW_MAX_LENGTH,
@@ -85,7 +84,7 @@ class LlmDiseaseRetriever:
     def retrieve(
         self,
         model_name: str,
-        top_k: int = TOP_K,
+        top_k: int,
     ) -> tuple[MethodResults, object]:
         """
         Use an LLM to directly retrieve and rank rare diseases.

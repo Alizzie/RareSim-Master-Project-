@@ -21,7 +21,6 @@ from raresim.similarity_methods.llm.config import (
     DO_SAMPLE,
     MAX_NEW_TOKENS_RETRIEVAL,
     TEMPERATURE,
-    TOP_K,
     DEFAULT_MATCH_SCORE,
     MATCH_LEVEL_ALIASES,
     MATCH_LEVEL_SCORES,
@@ -194,7 +193,7 @@ def build_disease_text_preview(
 def build_retrieval_prompt(
     patient: PatientProfile,
     hpo_labels: dict[str, str],
-    top_k: int = TOP_K,
+    top_k: int,
 ) -> str:
     """Build the prompt that asks the LLM to directly retrieve diseases."""
     hpo_term_labels = [
@@ -281,11 +280,11 @@ def parse_retrieval_output(  # pylint: disable=too-many-arguments,too-many-local
     hpo_labels: dict[str, str],
     disease_profiles: dict[str, dict],
     model_name: str,
+    top_k: int,
     *,
     ic_values: dict[str, float],
     disease_ancestors: dict[str, list[str]] | None = None,
     disease_metadata_index: dict[str, dict] | None = None,
-    top_k: int = TOP_K,
 ) -> list[SimilarityResult]:
     """
     Parse LLM generated text into structured disease results.
