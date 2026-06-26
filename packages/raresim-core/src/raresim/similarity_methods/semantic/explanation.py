@@ -5,7 +5,7 @@ Semantic similarity (BMA) explanation builder.
 - Delegate all shared spine fields to core.explanation.base_explainer.
 
 Covered fields in the explanation:
-    bma_directions      — p→d avg, d→p avg, asymmetry + interpretation.
+    bma_directions      — p->d avg, d->p avg, asymmetry + interpretation.
     semantic_clusters   — group matched terms by their MICA.
     weak_patient_matches — patient terms that found poor BMA partners.
     ic_filter_impact    — terms removed by IC threshold filtering.
