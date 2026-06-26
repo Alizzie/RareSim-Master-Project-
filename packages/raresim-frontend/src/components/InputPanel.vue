@@ -24,6 +24,49 @@
       </div>
     </div>
 
+         <!-- ══ PHENOTYPE SEARCH ══ -->
+<div class="search-section">
+  <div class="section-label">Phenotype search</div>
+  <div class="search-wrap">
+    <input
+      v-model="searchQuery"
+      class="search-input"
+      placeholder="Search phenotypes e.g. ataxia…"
+      @input="onSearch"
+    />
+  </div>
+  <div v-if="searchResults.length" class="search-results">
+    <div
+      v-for="r in searchResults"
+      :key="r.hpo_id"
+      class="search-result-row"
+    >
+      <div class="search-result-info">
+        <span class="search-result-label">{{ r.label }}</span>
+        <span class="search-result-id">{{ r.hpo_id }}</span>
+      </div>
+      <div class="search-result-actions">
+        <button class="btn-include" @click="includeTerm(r)">+ Include</button>
+        <button class="btn-exclude" @click="excludeTerm(r)">− Exclude</button>
+      </div>
+    </div>
+  </div>
+  <div v-if="excludedTerms.length" class="terms-section">
+    <div class="section-label">Excluded terms ({{ excludedTerms.length }})</div>
+    <div class="tags-wrap">
+      <span
+        v-for="t in excludedTerms"
+        :key="t.hpo_id"
+        class="tag tag-excluded"
+      >
+        {{ t.label }}
+        <span class="tag-id">{{ t.hpo_id }}</span>
+        <button class="tag-remove" @click="removeExcluded(t.hpo_id)">×</button>
+      </span>
+    </div>
+  </div>
+</div>
+
     <!-- ══ HPO MODE ══ -->
     <div v-if="mode === 'hpo'" class="mode-body">
       <p class="input-hint">
@@ -130,6 +173,7 @@
           </div>
           <span class="method-label">{{ m.label }}</span>
           <span class="method-badge">{{ m.badge }}</span>
+          <span v-if="m.note && selectedMethods.has(m.id)" class="method-note">{{ m.note }}</span>
         </label>
       </div>
     </div>
@@ -172,6 +216,7 @@
 <script setup>
 import { ref, computed, reactive } from 'vue'
 import { extractTerms } from '../api/index.js'
+import { searchHpo } from '../api/index.js'
 
 // ── icons (inline SVG components) ─────────────────────────────────────────
 const IconTerms = {
@@ -208,6 +253,10 @@ const lastExtractMethod = ref('')
 const extracting    = ref(false)
 const extractError  = ref('')
 const topK          = ref(10)
+const searchQuery = ref('')
+const searchResults = ref([])
+const excludedTerms = ref([])
+let searchTimeout = null
 
 const selectedMethods = reactive(new Set(['semantic_resnik_bma', 'transformer']))
 
@@ -220,6 +269,8 @@ const availableMethods = [
   { id: 'tfidf',                       label: 'TF-IDF',       badge: 'txt' },
   { id: 'transformer',                 label: 'Transformer',  badge: 'emb' },
   { id: 'llm',                         label: 'LLM',          badge: 'llm' },
+  { id: 'hpo2vec_plus',                label: 'HPO2Vec+',     badge: 'emb' },
+  { id: 'denoising_autoencoder', label: 'Autoencoder', badge: 'nn', note: 'Works best with 10+ HPO terms' },
 ]
 
 // ── computed ───────────────────────────────────────────────────────────────
@@ -262,6 +313,36 @@ function removeTerm(id) {
   hpoRaw.value = parsedTerms.value.join(', ')
 }
 
+function onSearch() {
+  clearTimeout(searchTimeout)
+  if (searchQuery.value.length < 2) { searchResults.value = []; return }
+  searchTimeout = setTimeout(async () => {
+    const data = await searchHpo(searchQuery.value)
+    searchResults.value = data.terms
+  }, 300)
+}
+
+function includeTerm(term) {
+  if (!parsedTerms.value.includes(term.hpo_id)) {
+    parsedTerms.value.push(term.hpo_id)
+    hpoRaw.value = parsedTerms.value.join(', ')
+  }
+  searchResults.value = []
+  searchQuery.value = ''
+}
+
+function excludeTerm(term) {
+  if (!excludedTerms.value.find(t => t.hpo_id === term.hpo_id)) {
+    excludedTerms.value.push(term)
+  }
+  searchResults.value = []
+  searchQuery.value = ''
+}
+
+function removeExcluded(id) {
+  excludedTerms.value = excludedTerms.value.filter(t => t.hpo_id !== id)
+}
+
 // ── Extraction ─────────────────────────────────────────────────────────────
 async function runExtraction() {
   extracting.value = true
@@ -292,6 +373,7 @@ function buildPayload() {
   return {
     mode: mode.value,
     hpo_terms: hpoTerms,
+    excluded_hpo_terms: excludedTerms.value.map(t => t.hpo_id),
     raw_text: mode.value === 'text' ? rawText.value : null,
     methods: [...selectedMethods],
     top_k: topK.value,
@@ -655,4 +737,112 @@ function buildPayload() {
   flex-shrink: 0;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Phenotype search ── */
+.search-section {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.search-wrap {
+  margin-top: 8px;
+  position: relative;
+}
+.search-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-family: var(--sans);
+  font-size: 13px;
+  background: var(--bg);
+  color: var(--text);
+  outline: none;
+  transition: border .15s;
+}
+.search-input:focus {
+  border-color: var(--accent);
+  background: var(--surface);
+}
+.search-results {
+  margin-top: 6px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  max-height: 220px;
+  overflow-y: auto;
+}
+.search-result-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  gap: 8px;
+}
+.search-result-row:last-child { border-bottom: none; }
+.search-result-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.search-result-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.search-result-id {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-tertiary);
+}
+.search-result-actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.btn-include, .btn-exclude {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 3px 8px;
+  border-radius: 99px;
+  border: 1px solid;
+  cursor: pointer;
+  transition: all .15s;
+  white-space: nowrap;
+}
+.btn-include {
+  background: var(--green-light);
+  color: var(--green);
+  border-color: #BBDFD2;
+}
+.btn-include:hover { background: var(--green); color: white; }
+.btn-exclude {
+  background: var(--red-light);
+  color: var(--red);
+  border-color: #F0C0BB;
+}
+.btn-exclude:hover { background: var(--red); color: white; }
+.tag-excluded {
+  background: var(--red-light);
+  color: var(--red);
+  border: 1px solid #F0C0BB;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  display: inline-flex;
+}
+.method-note {
+  font-size: 10px;
+  color: var(--text-tertiary);
+  width: 100%;
+  margin-top: 2px;
+}
 </style>
+

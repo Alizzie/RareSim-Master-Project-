@@ -13,7 +13,7 @@ from gensim.models import Word2Vec
 from raresim.types.schemas import PatientProfile
 from raresim.core.context import AppContext
 from raresim.utils.paths import OUTPUTS_DIR, HPO_PARENTS_PATH
-from raresim.types.result import SimilarityResult
+from raresim.types.result import SimilarityResult,  MethodResults
 from raresim.core.pipeline import (
     PipelineConfig,
     build_run_stats,
@@ -73,7 +73,7 @@ def run(
     selected: list[str],
     config: PipelineConfig,
     ctx: AppContext,
-) -> dict[str, list[SimilarityResult]]:
+) -> dict[str, MethodResults]:
     """Run the HPO2Vec+ similarity pipeline."""
 
     if METHOD_NAME not in selected:
@@ -139,15 +139,15 @@ def run(
         )
 
     metadata = build_run_stats(
-        method_name=METHOD_NAME,
-        pipeline_name=PIPELINE_NAME,
-        config=config,
-        n_patient_terms=len(patient_terms),
-        n_disease_terms=0,
-        computation_time=timer.stop(),
-    )
+    n_patient_terms_raw=len(patient_terms),
+    n_patient_terms_propagated=len(patient_terms),
+    n_patient_terms_used=len(patient_terms),
+    n_diseases_scored=len(results),
+    n_diseases_skipped=0,
+    computation_time=timer.stop(),
+)
 
-    return {METHOD_NAME: sort_and_rank(results, metadata, config.top_k)}
+    return {METHOD_NAME: sort_and_rank(results, config, metadata, METHOD_NAME, PIPELINE_NAME)}
 
 
 def main() -> None:

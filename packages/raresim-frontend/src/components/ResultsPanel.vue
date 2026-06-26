@@ -34,19 +34,31 @@
     <!-- ── Results ── -->
     <div v-else-if="state === 'done'" class="results-view">
 
-      <!-- Header -->
-      <div class="results-header">
-        <div class="results-title">Diagnosis Results</div>
-        <div class="results-meta">
-          <span>{{ results.length }} candidates</span>
-          <span class="meta-sep">·</span>
-          <span>{{ meta.methods_run?.length || 0 }} method{{ meta.methods_run?.length !== 1 ? 's' : '' }}</span>
-          <span class="meta-sep">·</span>
-          <span>{{ meta.n_patient_terms }} HPO terms</span>
-          <span v-if="meta.runtime_seconds" class="meta-sep">·</span>
-          <span v-if="meta.runtime_seconds">{{ meta.runtime_seconds.toFixed(1) }}s</span>
-        </div>
-      </div>
+<!-- Header -->
+<div class="results-header">
+  <div class="results-title">Diagnosis Results</div>
+  <div class="results-meta">
+    <span>{{ results.length }} candidates</span>
+    <span class="meta-sep">·</span>
+    <span>{{ meta.methods_run?.length || 0 }} method{{ meta.methods_run?.length !== 1 ? 's' : '' }}</span>
+    <span class="meta-sep">·</span>
+    <span>{{ meta.n_patient_terms }} HPO terms</span>
+    <span v-if="meta.runtime_seconds" class="meta-sep">·</span>
+    <span v-if="meta.runtime_seconds">{{ meta.runtime_seconds.toFixed(1) }}s</span>
+  </div>
+  <div class="save-wrap">
+    <select v-model="saveFormat" class="save-format-select">
+      <option value="json">JSON</option>
+      <option value="phenopacket">Phenopacket</option>
+    </select>
+    <button class="btn-save" :disabled="saving" @click="handleSave">
+      <span v-if="saving">Saving…</span>
+      <span v-else-if="saveStatus === 'saved'">✓ Saved</span>
+      <span v-else-if="saveStatus === 'error'">Failed</span>
+      <span v-else>Save Patient</span>
+    </button>
+  </div>
+</div>
 
       <!-- Status chips -->
       <div class="status-bar">
@@ -155,6 +167,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import MethodComparison from './MethodComparison.vue'
+import { savePatient } from '../api/index.js'
 
 const props = defineProps({
   state:          { type: String,  default: 'idle' },  // idle | loading | done | error
@@ -171,6 +184,9 @@ defineEmits(['retry'])
 
 const expandedIdx = ref(null)
 const showComparison = ref(false)
+const saving = ref(false)
+const saveStatus = ref('')
+const saveFormat = ref('json')
 
 const topScore = computed(() => {
   if (!props.results.length) return '—'
@@ -183,6 +199,27 @@ const maxScore = computed(() =>
 
 function toggleExpand(i) {
   expandedIdx.value = expandedIdx.value === i ? null : i
+}
+
+async function handleSave() {
+    saving.value = true
+    saveStatus.value = ''
+    try {
+        await savePatient({
+            patient_id: 'patient_' + Date.now(),
+            hpo_terms: props.inputHpo,
+            raw_text: '',
+            results: props.results,
+            methods: props.meta.methods_run || [],
+            format: saveFormat.value,
+        })
+        saveStatus.value = 'saved'
+        setTimeout(() => saveStatus.value = '', 3000)
+    } catch (e) {
+        saveStatus.value = 'error'
+    } finally {
+        saving.value = false
+    }
 }
 
 function rankClass(rank) {
@@ -214,6 +251,8 @@ const METHOD_LABELS = {
   tfidf:                      'TF-IDF',
   transformer:                'Transformer',
   llm:                        'LLM',
+  hpo2vec_plus:               'HPO2Vec+',
+  denoising_autoencoder:      'Autoencoder',
 }
 function methodLabel(id) {
   return METHOD_LABELS[id] || id
@@ -227,6 +266,26 @@ function methodLabel(id) {
   padding: 28px 32px;
   background: var(--bg);
 }
+
+.btn-save {
+  padding: 6px 14px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all .15s;
+  white-space: nowrap;
+}
+.btn-save:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-light);
+}
+.btn-save:disabled { opacity: .5; cursor: not-allowed; }
 
 /* ── Empty ── */
 .empty-state {

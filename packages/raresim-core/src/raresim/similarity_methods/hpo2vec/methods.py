@@ -10,18 +10,9 @@ from gensim.models import Word2Vec
 # Controls the random walk and Word2Vec training behaviour
 # My defaults
 
-WALK_LENGTH = 80  # number of steps per random walk
-WALKS_PER_NODE = 10  # how many walks to start from each node
-P = 1.0  # return param: controls likelihood of revisiting a node
-# lower p = more likely to backtrack
-Q = 0.5  # in out parameter: controls BFS vs DFS behaviour
-# q < 1 = biased toward DFS
-# q > 1 = toward BFS
-EMBEDDING_DIM = 128  # dimension of the learned embeddings
-WINDOW_SIZE = 10  # Word2Vec context window aka how many neighbours to consider
-MIN_COUNT = 1  # minimum term frequency to include in vocabulary
-WORKERS = 4  # parallel workers for Word2Vec training
-EPOCHS = 5  # training epochs
+from raresim.similarity_methods.hpo2vec.config import (
+    WALK_LENGTH, WALKS_PER_NODE, P, Q, EMBEDDING_DIM, WINDOW_SIZE, MIN_COUNT, WORKERS, EPOCHS
+)
 
 
 # Step 1L Build the graph
@@ -76,30 +67,31 @@ def _transition_probs(
     current: str,
     previous: Optional[str],
     neighbours: List[str],
+    graph: Dict[str, List[str]],
     ic_values: Dict[str, float],
     p: float,
     q: float,
 ) -> List[float]:
     """
-    How likely we are to move to each neighbour on the next step
-    IC weights push toward specific terms
-    Disease nodes dont have IC so they default to a neutral weight of 1
+    How likely we are to move to each neighbour on the next step.
+    IC weights push toward specific terms.
+    Disease nodes dont have IC so they default to a neutral weight of 1.
+    p controls backtracking, q controls BFS vs DFS exploration.
     """
     probs = []
+    prev_neighbours = set(graph.get(previous, [])) if previous is not None else set()
 
     for neighbour in neighbours:
         ic_weight = ic_values.get(neighbour, 1.0)
 
         if previous is None:
-            # First step: wont have any bias
-            bias = 1.0
+            bias = 1.0  # first step, no history yet
         elif neighbour == previous:
-            # Returning to previous node? Penalize by p
-            bias = 1.0 / p
+            bias = 1.0 / p  # going back — penalized by p
+        elif neighbour in prev_neighbours:
+            bias = 1.0      # distance 1 from previous — neutral
         else:
-            # Check if neighbour is also a neighbour of previous
-            bias = 1.0
-            # Note: full Node2Vec precomputes distance-1 sets for efficiency
+            bias = 1.0 / q  # distance 2 from previous — controlled by q
 
         probs.append(ic_weight * bias)
 
@@ -130,7 +122,7 @@ def random_walk(
         if not neighbours:
             break  # end
 
-        probs = _transition_probs(current, previous, neighbours, ic_values, p, q)
+        probs = _transition_probs(current, previous, neighbours, graph, ic_values, p, q)
         next_node = random.choices(neighbours, weights=probs, k=1)[0]
 
         previous = current

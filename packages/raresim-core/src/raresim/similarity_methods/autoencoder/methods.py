@@ -272,9 +272,8 @@ class DenoisingAutoencoder:
 
 
 def cosine_similarity_np(vec_a: np.ndarray, vec_b: np.ndarray) -> float:
-    """Cosine similarity between two dense numpy vectors."""
     norm_a = np.linalg.norm(vec_a)
     norm_b = np.linalg.norm(vec_b)
-    if norm_a == 0.0 or norm_b == 0.0:
+    if norm_a < 1e-8 or norm_b < 1e-8:
         return 0.0
     return float(np.dot(vec_a, vec_b) / (norm_a * norm_b))

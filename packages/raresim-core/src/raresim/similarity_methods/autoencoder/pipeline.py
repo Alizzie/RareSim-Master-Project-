@@ -22,7 +22,7 @@ from raresim.utils.paths import OUTPUTS_DIR, PATIENT_DIR
 
 from raresim.types.schemas import PatientProfile
 from raresim.core.context import AppContext
-from raresim.types.result import SimilarityResult
+from raresim.types.result import SimilarityResult, MethodResults
 from raresim.core.pipeline import (
     PipelineConfig,
     build_run_stats,
@@ -46,13 +46,9 @@ METHOD_NAME = "denoising_autoencoder"
 MODEL_PATH = AUTOENCODER_DIR / "autoencoder_model.npz"
 VOCAB_PATH = AUTOENCODER_DIR / "vocab.json"
 
-HIDDEN_DIM = 512  # encoder/decoder hidden layer size
-LATENT_DIM = 128  # size of the compressed latent representation
-LEARNING_RATE = 0.01  # SGD learning rate
-MOMENTUM = 0.9  # SGD momentum
-NOISE_RATE = 0.2  # fraction of present HPO terms to randomly drop during training
-EPOCHS = 50  # training epochs
-BATCH_SIZE = 64  # minibatch size
+from raresim.similarity_methods.autoencoder.config import (
+    HIDDEN_DIM, LATENT_DIM, LEARNING_RATE, MOMENTUM, NOISE_RATE, EPOCHS, BATCH_SIZE
+)
 
 
 def train_autoencoder(
@@ -125,7 +121,7 @@ def run(
     selected: list[str],
     config: PipelineConfig,
     ctx: AppContext,
-) -> dict[str, list[SimilarityResult]]:
+) -> dict[str, MethodResults]:
     """Run it"""
 
     if METHOD_NAME not in selected:
@@ -138,6 +134,8 @@ def run(
 
     # Embed the patient
     patient_terms = set(patient.get_terms(config.use_propagated_terms))
+    if len(patient_terms) < 10:
+        print(f"[autoencoder] Warning: only {len(patient_terms)} patient terms. Autoencoder works best with 10+ terms. Consider using propagated terms")
     patient_vec = terms_to_vector(patient_terms, vocab, term_to_idx)
     patient_latent = model.encode(patient_vec.reshape(1, -1))[0]
 
@@ -171,15 +169,15 @@ def run(
         )
 
     metadata = build_run_stats(
-        method_name=METHOD_NAME,
-        pipeline_name=PIPELINE_NAME,
-        config=config,
-        n_patient_terms=len(patient_terms),
-        n_disease_terms=0,
-        computation_time=timer.stop(),
-    )
+    n_patient_terms_raw=len(patient_terms),
+    n_patient_terms_propagated=len(patient_terms),
+    n_patient_terms_used=len(patient_terms),
+    n_diseases_scored=len(results),
+    n_diseases_skipped=0,
+    computation_time=timer.stop(),
+)
 
-    return {METHOD_NAME: sort_and_rank(results, metadata, config.top_k)}
+    return {METHOD_NAME: sort_and_rank(results, config, metadata, METHOD_NAME, PIPELINE_NAME)}
 
 
 def main() -> None:
