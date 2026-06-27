@@ -18,6 +18,7 @@ The denoising part:
 import numpy as np
 
 from raresim.core.context import AppContext
+from raresim.types.result import SimilarityResult, MethodResults
 from raresim.core.pipeline import (
     PipelineConfig,
     build_run_stats,
@@ -27,8 +28,8 @@ from raresim.ontology.disease_category import build_category_metadata
 from raresim.similarity_methods.autoencoder.methods import (
     DenoisingAutoencoder,
     build_vocabulary,
-    cosine_similarity_np,
     terms_to_vector,
+    euclidean_similarity, 
 )
 from raresim.types.result import MethodResults, SimilarityResult
 from raresim.types.schemas import PatientProfile
@@ -45,13 +46,9 @@ METHOD_NAME = "denoising_autoencoder"
 MODEL_PATH = AUTOENCODER_DIR / "autoencoder_model.npz"
 VOCAB_PATH = AUTOENCODER_DIR / "vocab.json"
 
-HIDDEN_DIM = 512  # encoder/decoder hidden layer size
-LATENT_DIM = 128  # size of the compressed latent representation
-LEARNING_RATE = 0.01  # SGD learning rate
-MOMENTUM = 0.9  # SGD momentum
-NOISE_RATE = 0.2  # fraction of present HPO terms to randomly drop during training
-EPOCHS = 50  # training epochs
-BATCH_SIZE = 64  # minibatch size
+from raresim.similarity_methods.autoencoder.config import (
+    HIDDEN_DIM, LATENT_DIM, LEARNING_RATE, MOMENTUM, NOISE_RATE, EPOCHS, BATCH_SIZE
+)
 
 
 def train_autoencoder(
@@ -151,8 +148,7 @@ def run(  # pylint: disable=too-many-locals
     selected: list[str],
     config: PipelineConfig,
     ctx: AppContext,
-) -> dict[str, MethodResults]:
-    """Run the denoising autoencoder similarity pipeline."""
+) -> dict[str, list[SimilarityResult]]:
     if METHOD_NAME not in selected:
         return {}
 
@@ -161,7 +157,6 @@ def run(  # pylint: disable=too-many-locals
         terms_key=config.terms_key,
     )
 
-    patient_raw_terms = set(patient.hpo_terms)
     patient_terms = set(patient.get_terms(config.use_propagated_terms))
 
     if not patient_terms:
@@ -171,7 +166,20 @@ def run(  # pylint: disable=too-many-locals
     patient_vec = terms_to_vector(patient_terms, vocab, term_to_idx)
     patient_latent = model.encode(patient_vec.reshape(1, -1))[0]
 
-    method_timer = Timer(METHOD_NAME).start()
+    sample_latents = []
+    for disease_id, profile in list(ctx.disease_profiles.items())[:50]:
+        disease_terms = set(profile.get(config.terms_key, []))
+        if disease_terms:
+            vec = terms_to_vector(disease_terms, vocab, term_to_idx)
+            sample_latents.append(model.encode(vec.reshape(1, -1))[0])
+
+    lat = np.array(sample_latents)
+    always_positive = (lat > 0).all(axis=0).sum()
+    print(f"Dims always positive: {always_positive}/{lat.shape[1]}")
+    for i in range(5):
+        print(f"euc(0,{i+1}) = {euclidean_similarity(lat[0], lat[i+1]):.4f}")
+
+    timer = Timer(METHOD_NAME).start()
     results = []
     n_skipped = 0
 
@@ -184,7 +192,7 @@ def run(  # pylint: disable=too-many-locals
 
         disease_vec = terms_to_vector(disease_terms, vocab, term_to_idx)
         disease_latent = model.encode(disease_vec.reshape(1, -1))[0]
-        score = cosine_similarity_np(patient_latent, disease_latent)
+        score = euclidean_similarity(patient_latent, disease_latent)
 
         category_metadata = build_category_metadata(
             disease_id=disease_id,
@@ -212,24 +220,16 @@ def run(  # pylint: disable=too-many-locals
             )
         )
 
-    stats = build_run_stats(
-        n_patient_terms_raw=len(patient_raw_terms),
-        n_patient_terms_propagated=len(patient.get_terms(use_propagated=True)),
-        n_patient_terms_used=len(patient_terms),
-        n_diseases_scored=len(results),
-        n_diseases_skipped=n_skipped,
-        computation_time=method_timer.stop(),
+    metadata = build_run_stats(
+    n_patient_terms_raw=len(patient_terms),
+    n_patient_terms_propagated=len(patient_terms),
+    n_patient_terms_used=len(patient_terms),
+    n_diseases_scored=len(results),
+    n_diseases_skipped=0,
+    computation_time=timer.stop(),
     )
 
-    return {
-        METHOD_NAME: sort_and_rank(
-            results,
-            config,
-            stats,
-            METHOD_NAME,
-            PIPELINE_NAME,
-        )
-    }
+    return {METHOD_NAME: sort_and_rank(results, config, metadata, METHOD_NAME, PIPELINE_NAME)}
 
 
 def main() -> None:
