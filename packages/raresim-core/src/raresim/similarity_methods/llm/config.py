@@ -7,14 +7,16 @@ Models (generative/decoder models):
 - Mistral/Mistral-7B-Instruct-v0.2 : works ok at the moment
 """
 
-from raresim.utils.paths import TRANSFORMER_DIR, SIMILARITY_DIR
+from raresim.utils.paths import SIMILARITY_DIR
 
 PIPELINE_NAME = "llm"
 LLM_DIR = SIMILARITY_DIR / PIPELINE_NAME
 LLM_DIR.mkdir(parents=True, exist_ok=True)
 
 # Transformer results to use as input for explainer
-TRANSFORMER_RESULTS_PATH = TRANSFORMER_DIR / "all_model_results_summary_canonical.json"
+TRANSFORMER_RESULTS_PATH = (
+    SIMILARITY_DIR / "transformer" / "all_model_results_summary_canonical.json"
+)
 
 # Models to run in the LLM pipeline
 LLM_MODEL_LIST = [

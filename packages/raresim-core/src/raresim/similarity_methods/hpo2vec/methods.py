@@ -92,7 +92,7 @@ def _transition_probs(
         elif neighbour == previous:
             bias = 1.0 / p  # going back — penalized by p
         elif neighbour in prev_neighbours:
-            bias = 1.0      # distance 1 from previous — neutral
+            bias = 1.0  # distance 1 from previous — neutral
         else:
             bias = 1.0 / q  # distance 2 from previous — controlled by q
 
@@ -227,16 +227,3 @@ def embed_term_set(
     weights = weights / weights.sum()  # normalize
 
     return np.average(vectors, axis=0, weights=weights)
-
-
-#
-# Step 6: Similarity and ranking
-
-
-def cosine_similarity_np(vec_a: np.ndarray, vec_b: np.ndarray) -> float:
-    """Cosine similarity between two dense numpy vectors."""
-    norm_a = np.linalg.norm(vec_a)
-    norm_b = np.linalg.norm(vec_b)
-    if norm_a == 0.0 or norm_b == 0.0:
-        return 0.0
-    return float(np.dot(vec_a, vec_b) / (norm_a * norm_b))

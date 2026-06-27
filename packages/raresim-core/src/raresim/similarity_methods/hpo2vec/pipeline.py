@@ -23,7 +23,6 @@ from raresim.core.pipeline import (
 from raresim.ontology.disease_category import build_category_metadata
 from raresim.similarity_methods.hpo2vec.methods import (
     build_graph,
-    cosine_similarity_np,
     embed_term_set,
     generate_walks,
     train_word2vec,
@@ -47,6 +46,7 @@ from raresim.types.result import MethodResults, SimilarityResult
 from raresim.types.schemas import PatientProfile
 from raresim.utils._pipeline_runner import run_pipeline_main
 from raresim.utils.timer import Timer
+from raresim.utils.similarity_math import cosine_similarity_dense
 
 
 def _model_cache_path(terms_key: str) -> Path:
@@ -159,7 +159,7 @@ def run(  # pylint: disable=too-many-locals
                 n_skipped += 1
                 continue
 
-            score = cosine_similarity_np(patient_vec, disease_vec)
+            score = cosine_similarity_dense(patient_vec, disease_vec)
 
             category_metadata = build_category_metadata(
                 disease_id=disease_id,

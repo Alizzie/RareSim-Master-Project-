@@ -9,7 +9,7 @@ Models (generative/decoder — not embedding models):
 """
 
 from raresim.core.context import AppContext
-from raresim.core.pipeline import PipelineConfig
+from raresim.core.pipeline import PipelineConfig, sort_and_rank
 from raresim.similarity_methods.llm.config import (
     LLM_DIR,
     LLM_MODEL_LIST,
@@ -18,7 +18,7 @@ from raresim.similarity_methods.llm.config import (
 from raresim.types.result import MethodResults
 from raresim.similarity_methods.llm.methods import unload_pipeline
 from raresim.similarity_methods.llm.retriever import LlmDiseaseRetriever
-from raresim.utils.timer import timer
+from raresim.utils.timer import timer, Timer
 from raresim.utils._pipeline_runner import run_pipeline_main
 from raresim.types.schemas import PatientProfile
 
@@ -45,11 +45,12 @@ def run(  # pylint: disable=too-many-arguments
         print(f"\n{'=' * 60}")
         print(f"  Model: {model_name}")
         print(f"{'=' * 60}")
+        method_timer = Timer(model_name).start()
 
         pipe = None
         try:
             with timer(f"total {model_name}"):
-                results, pipe = retriever.retrieve(
+                rankings, pipe = retriever.retrieve(
                     model_name=model_name,
                     top_k=config.top_k,
                 )
@@ -57,13 +58,20 @@ def run(  # pylint: disable=too-many-arguments
             if pipe is not None:
                 unload_pipeline(pipe)
 
-        if results.rankings:
+        if rankings:
             print(f"\n[llm] Explaining top results for: {model_name}")
-            results.rankings = retriever.explain_results(
-                candidate_results=results.rankings
-            )
+            rankings = retriever.explain_results(candidate_results=rankings)
 
-        all_results[model_name] = results
+        elapsed = method_timer.stop()
+        stats = retriever.run_stats(rankings, elapsed)
+        all_results[model_name] = sort_and_rank(
+            rankings,
+            config,
+            stats,
+            model_name,
+            PIPELINE_NAME,
+        )
+
     return all_results
 
 

@@ -10,12 +10,12 @@ retriever.py:
     high-level object that runs direct LLM retrieval and explains candidate results
 """
 
+from typing import cast
 from raresim.similarity_methods.llm.config import (
     EXPLAINER_MODEL,
     MAX_NEW_TOKENS_EXPLAINER,
     MAX_NEW_TOKENS_RETRIEVAL,
     TOP_K_RERANK,
-    PIPELINE_NAME,
     TEXT_PREVIEW_MAX_LENGTH,
 )
 from raresim.core.pipeline import build_run_stats
@@ -30,11 +30,9 @@ from raresim.similarity_methods.llm.methods import (
     query_hf,
     unload_pipeline,
 )
-from raresim.types.result import MethodResults, RunConfig, SimilarityResult
+from raresim.types.result import RunStats, SimilarityResult
 from raresim.types.schemas import PatientProfile
-from raresim.utils.timer import timer, Timer
-
-from typing import cast
+from raresim.utils.timer import timer
 
 
 class LlmDiseaseRetriever:
@@ -85,7 +83,7 @@ class LlmDiseaseRetriever:
         self,
         model_name: str,
         top_k: int,
-    ) -> tuple[MethodResults, object]:
+    ) -> tuple[list[SimilarityResult], object]:
         """
         Use an LLM to directly retrieve and rank rare diseases.
 
@@ -97,8 +95,6 @@ class LlmDiseaseRetriever:
             hpo_labels=self.hpo_labels,
             top_k=top_k,
         )
-
-        method_timer = Timer(PIPELINE_NAME).start()
 
         print(f"\n[llm] Retrieving diseases with: {model_name}")
 
@@ -128,7 +124,6 @@ class LlmDiseaseRetriever:
             top_k=top_k,
         )
 
-        elapsed = method_timer.stop()
         n_validated = sum(
             1
             for r in rankings
@@ -142,15 +137,7 @@ class LlmDiseaseRetriever:
             f"({n_validated} validated against profiles)"
         )
 
-        method_results = MethodResults(
-            method_name="llm_retrieval",
-            pipeline_name=PIPELINE_NAME,
-            config=self._run_config(top_k=top_k),
-            stats=self._run_stats(rankings, elapsed),
-            rankings=rankings,
-        )
-
-        return method_results, pipe
+        return rankings, pipe
 
     def explain_results(  # pylint: disable=too-many-locals
         self,
@@ -228,7 +215,7 @@ class LlmDiseaseRetriever:
 
         return explained
 
-    def _run_stats(self, rankings: list[SimilarityResult], elapsed: float):
+    def run_stats(self, rankings: list[SimilarityResult], elapsed: float) -> RunStats:
         n_patient_terms = len(self.patient.get_terms(use_propagated=False))
         return build_run_stats(
             n_patient_terms_raw=n_patient_terms,
@@ -237,13 +224,4 @@ class LlmDiseaseRetriever:
             n_diseases_scored=len(rankings),
             n_diseases_skipped=0,
             computation_time=elapsed,
-        )
-
-    @staticmethod
-    def _run_config(top_k: int) -> RunConfig:
-        return RunConfig(
-            use_propagated_terms=False,
-            ic_threshold=None,
-            top_k=top_k,
-            use_canonical_profiles=True,
         )
