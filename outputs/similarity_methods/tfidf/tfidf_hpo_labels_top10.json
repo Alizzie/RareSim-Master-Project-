@@ -1,0 +1,2235 @@
+{
+  "schema_version": "1.1",
+  "method_name": "tfidf_hpo_labels",
+  "pipeline_name": "tfidf",
+  "config": {
+    "use_propagated_terms": true,
+    "ic_threshold": 1.5,
+    "top_k": 10,
+    "use_canonical_profiles": true
+  },
+  "stats": {
+    "n_patient_terms_raw": 3,
+    "n_patient_terms_propagated": 14,
+    "n_patient_terms_used": 9,
+    "n_diseases_scored": 13147,
+    "n_diseases_skipped": 6515,
+    "computation_time_seconds": 4.566
+  },
+  "rankings": [
+    {
+      "rank": 1,
+      "disease_id": "MONDO:0005868",
+      "label": "myelophthisic anemia",
+      "profile_type": null,
+      "category_source_id": null,
+      "category_path": [],
+      "matched_aliases": [],
+      "score": 0.671887,
+      "method_name": "tfidf_hpo_labels",
+      "explanation": {
+        "summary": "8 of 19 patient HPO label tokens matched disease description (42% patient / 80% disease token coverage, 10 disease tokens total). Weighted TFIDF match score: 53.9.See contributing_hpo_terms for phenotype-level traceability.",
+        "coverage": {
+          "patient_token_coverage": 0.4211,
+          "disease_token_coverage": 0.8,
+          "direction_asymmetry": 0.3789,
+          "n_patient_tokens": 19,
+          "n_disease_tokens": 10,
+          "n_matched_tokens": 8,
+          "n_unmatched_patient_tokens": 11,
+          "sparse_disease_description": false
+        },
+        "matched_terms": [
+          {
+            "token": "erythrocyte",
+            "idf_weight": 7.2474
+          },
+          {
+            "token": "morphology",
+            "idf_weight": 6.5542
+          },
+          {
+            "token": "forming",
+            "idf_weight": 5.8611
+          },
+          {
+            "token": "abnormality",
+            "idf_weight": 4.7866
+          },
+          {
+            "token": "tissues",
+            "idf_weight": 4.6134
+          },
+          {
+            "token": "anemia",
+            "idf_weight": 4.2097
+          },
+          {
+            "token": "blood",
+            "idf_weight": 4.0458
+          },
+          {
+            "token": "abnormal",
+            "idf_weight": 3.8654
+          }
+        ],
+        "unmatched_patient_terms": [
+          {
+            "token": "nonprogressive",
+            "idf_weight": 6.8907
+          },
+          {
+            "token": "coordination",
+            "idf_weight": 6.6283
+          },
+          {
+            "token": "global",
+            "idf_weight": 5.186
+          },
+          {
+            "token": "function",
+            "idf_weight": 4.7103
+          },
+          {
+            "token": "cerebellar",
+            "idf_weight": 4.2955
+          },
+          {
+            "token": "motor",
+            "idf_weight": 4.1088
+          },
+          {
+            "token": "neurodevelopmental",
+            "idf_weight": 4.0965
+          },
+          {
+            "token": "central",
+            "idf_weight": 3.9515
+          },
+          {
+            "token": "ataxia",
+            "idf_weight": 3.8654
+          },
+          {
+            "token": "delay",
+            "idf_weight": 3.3212
+          }
+        ],
+        "method_specific": {
+          "tfidf_mode": "tfidf_hpo_labels",
+          "idf_weighted_score": 53.8814,
+          "low_idf_matches": [],
+          "n_low_idf_matches": 0,
+          "low_idf_threshold": 0.5,
+          "vector_norms": {
+            "dot_product": 355.842626,
+            "patient_norm": 26.59021,
+            "disease_norm": 19.917731,
+            "score_check": 0.671887
+          },
+          "contributing_hpo_terms": [
+            {
+              "hpo_id": "HP:0001903",
+              "hpo_label": "Anemia",
+              "ic": 3.0818,
+              "matching_tokens": [
+                "anemia"
+              ],
+              "token_idf_weights": {
+                "anemia": 4.2097
+              }
+            },
+            {
+              "hpo_id": "HP:0001877",
+              "hpo_label": "Abnormal erythrocyte morphology",
+              "ic": 2.954,
+              "matching_tokens": [
+                "abnormal",
+                "erythrocyte",
+                "morphology"
+              ],
+              "token_idf_weights": {
+                "abnormal": 3.8654,
+                "morphology": 6.5542,
+                "erythrocyte": 7.2474
+              }
+            },
+            {
+              "hpo_id": "HP:0011443",
+              "hpo_label": "Abnormality of coordination",
+              "ic": 2.5955,
+              "matching_tokens": [
+                "abnormality"
+              ],
+              "token_idf_weights": {
+                "abnormality": 4.7866
+              }
+            },
+            {
+              "hpo_id": "HP:0001871",
+              "hpo_label": "Abnormality of blood and blood-forming tissues",
+              "ic": 2.0644,
+              "matching_tokens": [
+                "abnormality",
+                "blood",
+                "forming",
+                "tissues"
+              ],
+              "token_idf_weights": {
+                "tissues": 4.6134,
+                "abnormality": 4.7866,
+                "forming": 5.8611,
+                "blood": 4.0458
+              }
+            },
+            {
+              "hpo_id": "HP:0011442",
+              "hpo_label": "Abnormal central motor function",
+              "ic": 1.8564,
+              "matching_tokens": [
+                "abnormal"
+              ],
+              "token_idf_weights": {
+                "abnormal": 3.8654
+              }
+            }
+          ],
+          "ic_filter_impact": {
+            "terms_before_filter": 14,
+            "terms_after_filter": 9,
+            "n_removed": 5,
+            "removed_terms": [
+              {
+                "id": "HP:0000001",
+                "label": "All",
+                "ic": 0.4025
+              },
+              {
+                "id": "HP:0000118",
+                "label": "Phenotypic abnormality",
+                "ic": 0.4124
+              },
+              {
+                "id": "HP:0000707",
+                "label": "Abnormality of the nervous system",
+                "ic": 0.8868
+              },
+              {
+                "id": "HP:0012638",
+                "label": "Abnormal nervous system physiology",
+                "ic": 0.993
+              },
+              {
+                "id": "HP:0012759",
+                "label": "Neurodevelopmental abnormality",
+                "ic": 1.4049
+              }
+            ]
+          }
+        },
+        "diagnostics": {
+          "raw_score": 0.671887,
+          "tfidf_mode": "tfidf_hpo_labels",
+          "low_idf_threshold_applied": 0.5,
+          "n_patient_vector_terms": 19,
+          "n_disease_vector_terms": 10
+        }
+      }
+    },
+    {
+      "rank": 2,
+      "disease_id": "MONDO:0008687",
+      "label": "Woronets trait",
+      "profile_type": null,
+      "category_source_id": null,
+      "category_path": [],
+      "matched_aliases": [],
+      "score": 0.625398,
+      "method_name": "tfidf_hpo_labels",
+      "explanation": {
+        "summary": "7 of 19 patient HPO label tokens matched disease description (37% patient / 64% disease token coverage, 11 disease tokens total). Weighted TFIDF match score: 49.7.See contributing_hpo_terms for phenotype-level traceability.",
+        "coverage": {
+          "patient_token_coverage": 0.3684,
+          "disease_token_coverage": 0.6364,
+          "direction_asymmetry": 0.2679,
+          "n_patient_tokens": 19,
+          "n_disease_tokens": 11,
+          "n_matched_tokens": 7,
+          "n_unmatched_patient_tokens": 12,
+          "sparse_disease_description": false
+        },
+        "matched_terms": [
+          {
+            "token": "erythrocyte",
+            "idf_weight": 7.2474
+          },
+          {
+            "token": "morphology",
+            "idf_weight": 6.5542
+          },
+          {
+            "token": "forming",
+            "idf_weight": 5.8611
+          },
+          {
+            "token": "abnormality",
+            "idf_weight": 4.7866
+          },
+          {
+            "token": "tissues",
+            "idf_weight": 4.6134
+          },
+          {
+            "token": "blood",
+            "idf_weight": 4.0458
+          },
+          {
+            "token": "abnormal",
+            "idf_weight": 3.8654
+          }
+        ],
+        "unmatched_patient_terms": [
+          {
+            "token": "nonprogressive",
+            "idf_weight": 6.8907
+          },
+          {
+            "token": "coordination",
+            "idf_weight": 6.6283
+          },
+          {
+            "token": "global",
+            "idf_weight": 5.186
+          },
+          {
+            "token": "function",
+            "idf_weight": 4.7103
+          },
+          {
+            "token": "cerebellar",
+            "idf_weight": 4.2955
+          },
+          {
+            "token": "anemia",
+            "idf_weight": 4.2097
+          },
+          {
+            "token": "motor",
+            "idf_weight": 4.1088
+          },
+          {
+            "token": "neurodevelopmental",
+            "idf_weight": 4.0965
+          },
+          {
+            "token": "central",
+            "idf_weight": 3.9515
+          },
+          {
+            "token": "ataxia",
+            "idf_weight": 3.8654
+          }
+        ],
+        "method_specific": {
+          "tfidf_mode": "tfidf_hpo_labels",
+          "idf_weighted_score": 49.6718,
+          "low_idf_matches": [],
+          "n_low_idf_matches": 0,
+          "low_idf_threshold": 0.5,
+          "vector_norms": {
+            "dot_product": 370.858161,
+            "patient_norm": 26.59021,
+            "disease_norm": 22.301252,
+            "score_check": 0.625398
+          },
+          "contributing_hpo_terms": [
+            {
+              "hpo_id": "HP:0001877",
+              "hpo_label": "Abnormal erythrocyte morphology",
+              "ic": 2.954,
+              "matching_tokens": [
+                "abnormal",
+                "erythrocyte",
+                "morphology"
+              ],
+              "token_idf_weights": {
+                "abnormal": 3.8654,
+                "morphology": 6.5542,
+                "erythrocyte": 7.2474
+              }
+            },
+            {
+              "hpo_id": "HP:0011443",
+              "hpo_label": "Abnormality of coordination",
+              "ic": 2.5955,
+              "matching_tokens": [
+                "abnormality"
+              ],
+              "token_idf_weights": {
+                "abnormality": 4.7866
+              }
+            },
+            {
+              "hpo_id": "HP:0001871",
+              "hpo_label": "Abnormality of blood and blood-forming tissues",
+              "ic": 2.0644,
+              "matching_tokens": [
+                "abnormality",
+                "blood",
+                "forming",
+                "tissues"
+              ],
+              "token_idf_weights": {
+                "tissues": 4.6134,
+                "abnormality": 4.7866,
+                "forming": 5.8611,
+                "blood": 4.0458
+              }
+            },
+            {
+              "hpo_id": "HP:0011442",
+              "hpo_label": "Abnormal central motor function",
+              "ic": 1.8564,
+              "matching_tokens": [
+                "abnormal"
+              ],
+              "token_idf_weights": {
+                "abnormal": 3.8654
+              }
+            }
+          ],
+          "ic_filter_impact": {
+            "terms_before_filter": 14,
+            "terms_after_filter": 9,
+            "n_removed": 5,
+            "removed_terms": [
+              {
+                "id": "HP:0000001",
+                "label": "All",
+                "ic": 0.4025
+              },
+              {
+                "id": "HP:0000118",
+                "label": "Phenotypic abnormality",
+                "ic": 0.4124
+              },
+              {
+                "id": "HP:0000707",
+                "label": "Abnormality of the nervous system",
+                "ic": 0.8868
+              },
+              {
+                "id": "HP:0012638",
+                "label": "Abnormal nervous system physiology",
+                "ic": 0.993
+              },
+              {
+                "id": "HP:0012759",
+                "label": "Neurodevelopmental abnormality",
+                "ic": 1.4049
+              }
+            ]
+          }
+        },
+        "diagnostics": {
+          "raw_score": 0.625398,
+          "tfidf_mode": "tfidf_hpo_labels",
+          "low_idf_threshold_applied": 0.5,
+          "n_patient_vector_terms": 19,
+          "n_disease_vector_terms": 11
+        }
+      }
+    },
+    {
+      "rank": 3,
+      "disease_id": "MONDO:0044222",
+      "label": "obsolete blood group, p1pk system",
+      "profile_type": null,
+      "category_source_id": null,
+      "category_path": [],
+      "matched_aliases": [],
+      "score": 0.619394,
+      "method_name": "tfidf_hpo_labels",
+      "explanation": {
+        "summary": "7 of 19 patient HPO label tokens matched disease description (37% patient / 64% disease token coverage, 11 disease tokens total). Weighted TFIDF match score: 49.7.See contributing_hpo_terms for phenotype-level traceability.",
+        "coverage": {
+          "patient_token_coverage": 0.3684,
+          "disease_token_coverage": 0.6364,
+          "direction_asymmetry": 0.2679,
+          "n_patient_tokens": 19,
+          "n_disease_tokens": 11,
+          "n_matched_tokens": 7,
+          "n_unmatched_patient_tokens": 12,
+          "sparse_disease_description": false
+        },
+        "matched_terms": [
+          {
+            "token": "erythrocyte",
+            "idf_weight": 7.2474
+          },
+          {
+            "token": "morphology",
+            "idf_weight": 6.5542
+          },
+          {
+            "token": "forming",
+            "idf_weight": 5.8611
+          },
+          {
+            "token": "abnormality",
+            "idf_weight": 4.7866
+          },
+          {
+            "token": "tissues",
+            "idf_weight": 4.6134
+          },
+          {
+            "token": "blood",
+            "idf_weight": 4.0458
+          },
+          {
+            "token": "abnormal",
+            "idf_weight": 3.8654
+          }
+        ],
+        "unmatched_patient_terms": [
+          {
+            "token": "nonprogressive",
+            "idf_weight": 6.8907
+          },
+          {
+            "token": "coordination",
+            "idf_weight": 6.6283
+          },
+          {
+            "token": "global",
+            "idf_weight": 5.186
+          },
+          {
+            "token": "function",
+            "idf_weight": 4.7103
+          },
+          {
+            "token": "cerebellar",
+            "idf_weight": 4.2955
+          },
+          {
+            "token": "anemia",
+            "idf_weight": 4.2097
+          },
+          {
+            "token": "motor",
+            "idf_weight": 4.1088
+          },
+          {
+            "token": "neurodevelopmental",
+            "idf_weight": 4.0965
+          },
+          {
+            "token": "central",
+            "idf_weight": 3.9515
+          },
+          {
+            "token": "ataxia",
+            "idf_weight": 3.8654
+          }
+        ],
+        "method_specific": {
+          "tfidf_mode": "tfidf_hpo_labels",
+          "idf_weighted_score": 49.6718,
+          "low_idf_matches": [],
+          "n_low_idf_matches": 0,
+          "low_idf_threshold": 0.5,
+          "vector_norms": {
+            "dot_product": 416.680794,
+            "patient_norm": 26.59021,
+            "disease_norm": 25.299649,
+            "score_check": 0.619394
+          },
+          "contributing_hpo_terms": [
+            {
+              "hpo_id": "HP:0001877",
+              "hpo_label": "Abnormal erythrocyte morphology",
+              "ic": 2.954,
+              "matching_tokens": [
+                "abnormal",
+                "erythrocyte",
+                "morphology"
+              ],
+              "token_idf_weights": {
+                "abnormal": 3.8654,
+                "morphology": 6.5542,
+                "erythrocyte": 7.2474
+              }
+            },
+            {
+              "hpo_id": "HP:0011443",
+              "hpo_label": "Abnormality of coordination",
+              "ic": 2.5955,
+              "matching_tokens": [
+                "abnormality"
+              ],
+              "token_idf_weights": {
+                "abnormality": 4.7866
+              }
+            },
+            {
+              "hpo_id": "HP:0001871",
+              "hpo_label": "Abnormality of blood and blood-forming tissues",
+              "ic": 2.0644,
+              "matching_tokens": [
+                "abnormality",
+                "blood",
+                "forming",
+                "tissues"
+              ],
+              "token_idf_weights": {
+                "tissues": 4.6134,
+                "abnormality": 4.7866,
+                "forming": 5.8611,
+                "blood": 4.0458
+              }
+            },
+            {
+              "hpo_id": "HP:0011442",
+              "hpo_label": "Abnormal central motor function",
+              "ic": 1.8564,
+              "matching_tokens": [
+                "abnormal"
+              ],
+              "token_idf_weights": {
+                "abnormal": 3.8654
+              }
+            }
+          ],
+          "ic_filter_impact": {
+            "terms_before_filter": 14,
+            "terms_after_filter": 9,
+            "n_removed": 5,
+            "removed_terms": [
+              {
+                "id": "HP:0000001",
+                "label": "All",
+                "ic": 0.4025
+              },
+              {
+                "id": "HP:0000118",
+                "label": "Phenotypic abnormality",
+                "ic": 0.4124
+              },
+              {
+                "id": "HP:0000707",
+                "label": "Abnormality of the nervous system",
+                "ic": 0.8868
+              },
+              {
+                "id": "HP:0012638",
+                "label": "Abnormal nervous system physiology",
+                "ic": 0.993
+              },
+              {
+                "id": "HP:0012759",
+                "label": "Neurodevelopmental abnormality",
+                "ic": 1.4049
+              }
+            ]
+          }
+        },
+        "diagnostics": {
+          "raw_score": 0.619394,
+          "tfidf_mode": "tfidf_hpo_labels",
+          "low_idf_threshold_applied": 0.5,
+          "n_patient_vector_terms": 19,
+          "n_disease_vector_terms": 11
+        }
+      }
+    },
+    {
+      "rank": 4,
+      "disease_id": "DECIPHER:65",
+      "label": "Atr-16 syndrome",
+      "profile_type": null,
+      "category_source_id": null,
+      "category_path": [],
+      "matched_aliases": [],
+      "score": 0.615086,
+      "method_name": "tfidf_hpo_labels",
+      "explanation": {
+        "summary": "9 of 19 patient HPO label tokens matched disease description (47% patient / 56% disease token coverage, 16 disease tokens total). Weighted TFIDF match score: 58.5.See contributing_hpo_terms for phenotype-level traceability.",
+        "coverage": {
+          "patient_token_coverage": 0.4737,
+          "disease_token_coverage": 0.5625,
+          "direction_asymmetry": 0.0888,
+          "n_patient_tokens": 19,
+          "n_disease_tokens": 16,
+          "n_matched_tokens": 9,
+          "n_unmatched_patient_tokens": 10,
+          "sparse_disease_description": false
+        },
+        "matched_terms": [
+          {
+            "token": "erythrocyte",
+            "idf_weight": 7.2474
+          },
+          {
+            "token": "morphology",
+            "idf_weight": 6.5542
+          },
+          {
+            "token": "forming",
+            "idf_weight": 5.8611
+          },
+          {
+            "token": "abnormality",
+            "idf_weight": 4.7866
+          },
+          {
+            "token": "function",
+            "idf_weight": 4.7103
+          },
+          {
+            "token": "tissues",
+            "idf_weight": 4.6134
+          },
+          {
+            "token": "neurodevelopmental",
+            "idf_weight": 4.0965
+          },
+          {
+            "token": "blood",
+            "idf_weight": 4.0458
+          },
+          {
+            "token": "abnormal",
+            "idf_weight": 3.8654
+          }
+        ],
+        "unmatched_patient_terms": [
+          {
+            "token": "nonprogressive",
+            "idf_weight": 6.8907
+          },
+          {
+            "token": "coordination",
+            "idf_weight": 6.6283
+          },
+          {
+            "token": "global",
+            "idf_weight": 5.186
+          },
+          {
+            "token": "cerebellar",
+            "idf_weight": 4.2955
+          },
+          {
+            "token": "anemia",
+            "idf_weight": 4.2097
+          },
+          {
+            "token": "motor",
+            "idf_weight": 4.1088
+          },
+          {
+            "token": "central",
+            "idf_weight": 3.9515
+          },
+          {
+            "token": "ataxia",
+            "idf_weight": 3.8654
+          },
+          {
+            "token": "delay",
+            "idf_weight": 3.3212
+          },
+          {
+            "token": "developmental",
+            "idf_weight": 3.0331
+          }
+        ],
+        "method_specific": {
+          "tfidf_mode": "tfidf_hpo_labels",
+          "idf_weighted_score": 58.4785,
+          "low_idf_matches": [],
+          "n_low_idf_matches": 0,
+          "low_idf_threshold": 0.5,
+          "vector_norms": {
+            "dot_product": 544.440017,
+            "patient_norm": 26.59021,
+            "disease_norm": 33.288377,
+            "score_check": 0.615086
+          },
+          "contributing_hpo_terms": [
+            {
+              "hpo_id": "HP:0001877",
+              "hpo_label": "Abnormal erythrocyte morphology",
+              "ic": 2.954,
+              "matching_tokens": [
+                "abnormal",
+                "erythrocyte",
+                "morphology"
+              ],
+              "token_idf_weights": {
+                "abnormal": 3.8654,
+                "morphology": 6.5542,
+                "erythrocyte": 7.2474
+              }
+            },
+            {
+              "hpo_id": "HP:0011443",
+              "hpo_label": "Abnormality of coordination",
+              "ic": 2.5955,
+              "matching_tokens": [
+                "abnormality"
+              ],
+              "token_idf_weights": {
+                "abnormality": 4.7866
+              }
+            },
+            {
+              "hpo_id": "HP:0001871",
+              "hpo_label": "Abnormality of blood and blood-forming tissues",
+              "ic": 2.0644,
+              "matching_tokens": [
+                "abnormality",
+                "blood",
+                "forming",
+                "tissues"
+              ],
+              "token_idf_weights": {
+                "tissues": 4.6134,
+                "abnormality": 4.7866,
+                "forming": 5.8611,
+                "blood": 4.0458
+              }
+            },
+            {
+              "hpo_id": "HP:0011442",
+              "hpo_label": "Abnormal central motor function",
+              "ic": 1.8564,
+              "matching_tokens": [
+                "abnormal",
+                "function"
+              ],
+              "token_idf_weights": {
+                "abnormal": 3.8654,
+                "function": 4.7103
+              }
+            },
+            {
+              "hpo_id": "HP:0012758",
+              "hpo_label": "Neurodevelopmental delay",
+              "ic": 1.6537,
+              "matching_tokens": [
+                "neurodevelopmental"
+              ],
+              "token_idf_weights": {
+                "neurodevelopmental": 4.0965
+              }
+            }
+          ],
+          "ic_filter_impact": {
+            "terms_before_filter": 14,
+            "terms_after_filter": 9,
+            "n_removed": 5,
+            "removed_terms": [
+              {
+                "id": "HP:0000001",
+                "label": "All",
+                "ic": 0.4025
+              },
+              {
+                "id": "HP:0000118",
+                "label": "Phenotypic abnormality",
+                "ic": 0.4124
+              },
+              {
+                "id": "HP:0000707",
+                "label": "Abnormality of the nervous system",
+                "ic": 0.8868
+              },
+              {
+                "id": "HP:0012638",
+                "label": "Abnormal nervous system physiology",
+                "ic": 0.993
+              },
+              {
+                "id": "HP:0012759",
+                "label": "Neurodevelopmental abnormality",
+                "ic": 1.4049
+              }
+            ]
+          }
+        },
+        "diagnostics": {
+          "raw_score": 0.615086,
+          "tfidf_mode": "tfidf_hpo_labels",
+          "low_idf_threshold_applied": 0.5,
+          "n_patient_vector_terms": 19,
+          "n_disease_vector_terms": 16
+        }
+      }
+    },
+    {
+      "rank": 5,
+      "disease_id": "MONDO:0022656",
+      "label": "cardiomyopathy spherocytosis",
+      "profile_type": null,
+      "category_source_id": null,
+      "category_path": [],
+      "matched_aliases": [],
+      "score": 0.608631,
+      "method_name": "tfidf_hpo_labels",
+      "explanation": {
+        "summary": "7 of 19 patient HPO label tokens matched disease description (37% patient / 70% disease token coverage, 10 disease tokens total). Weighted TFIDF match score: 49.7.See contributing_hpo_terms for phenotype-level traceability.",
+        "coverage": {
+          "patient_token_coverage": 0.3684,
+          "disease_token_coverage": 0.7,
+          "direction_asymmetry": 0.3316,
+          "n_patient_tokens": 19,
+          "n_disease_tokens": 10,
+          "n_matched_tokens": 7,
+          "n_unmatched_patient_tokens": 12,
+          "sparse_disease_description": false
+        },
+        "matched_terms": [
+          {
+            "token": "erythrocyte",
+            "idf_weight": 7.2474
+          },
+          {
+            "token": "morphology",
+            "idf_weight": 6.5542
+          },
+          {
+            "token": "forming",
+            "idf_weight": 5.8611
+          },
+          {
+            "token": "abnormality",
+            "idf_weight": 4.7866
+          },
+          {
+            "token": "tissues",
+            "idf_weight": 4.6134
+          },
+          {
+            "token": "blood",
+            "idf_weight": 4.0458
+          },
+          {
+            "token": "abnormal",
+            "idf_weight": 3.8654
+          }
+        ],
+        "unmatched_patient_terms": [
+          {
+            "token": "nonprogressive",
+            "idf_weight": 6.8907
+          },
+          {
+            "token": "coordination",
+            "idf_weight": 6.6283
+          },
+          {
+            "token": "global",
+            "idf_weight": 5.186
+          },
+          {
+            "token": "function",
+            "idf_weight": 4.7103
+          },
+          {
+            "token": "cerebellar",
+            "idf_weight": 4.2955
+          },
+          {
+            "token": "anemia",
+            "idf_weight": 4.2097
+          },
+          {
+            "token": "motor",
+            "idf_weight": 4.1088
+          },
+          {
+            "token": "neurodevelopmental",
+            "idf_weight": 4.0965
+          },
+          {
+            "token": "central",
+            "idf_weight": 3.9515
+          },
+          {
+            "token": "ataxia",
+            "idf_weight": 3.8654
+          }
+        ],
+        "method_specific": {
+          "tfidf_mode": "tfidf_hpo_labels",
+          "idf_weighted_score": 49.6718,
+          "low_idf_matches": [],
+          "n_low_idf_matches": 0,
+          "low_idf_threshold": 0.5,
+          "vector_norms": {
+            "dot_product": 338.121142,
+            "patient_norm": 26.59021,
+            "disease_norm": 20.892808,
+            "score_check": 0.608631
+          },
+          "contributing_hpo_terms": [
+            {
+              "hpo_id": "HP:0001877",
+              "hpo_label": "Abnormal erythrocyte morphology",
+              "ic": 2.954,
+              "matching_tokens": [
+                "abnormal",
+                "erythrocyte",
+                "morphology"
+              ],
+              "token_idf_weights": {
+                "abnormal": 3.8654,
+                "morphology": 6.5542,
+                "erythrocyte": 7.2474
+              }
+            },
+            {
+              "hpo_id": "HP:0011443",
+              "hpo_label": "Abnormality of coordination",
+              "ic": 2.5955,
+              "matching_tokens": [
+                "abnormality"
+              ],
+              "token_idf_weights": {
+                "abnormality": 4.7866
+              }
+            },
+            {
+              "hpo_id": "HP:0001871",
+              "hpo_label": "Abnormality of blood and blood-forming tissues",
+              "ic": 2.0644,
+              "matching_tokens": [
+                "abnormality",
+                "blood",
+                "forming",
+                "tissues"
+              ],
+              "token_idf_weights": {
+                "tissues": 4.6134,
+                "abnormality": 4.7866,
+                "forming": 5.8611,
+                "blood": 4.0458
+              }
+            },
+            {
+              "hpo_id": "HP:0011442",
+              "hpo_label": "Abnormal central motor function",
+              "ic": 1.8564,
+              "matching_tokens": [
+                "abnormal"
+              ],
+              "token_idf_weights": {
+                "abnormal": 3.8654
+              }
+            }
+          ],
+          "ic_filter_impact": {
+            "terms_before_filter": 14,
+            "terms_after_filter": 9,
+            "n_removed": 5,
+            "removed_terms": [
+              {
+                "id": "HP:0000001",
+                "label": "All",
+                "ic": 0.4025
+              },
+              {
+                "id": "HP:0000118",
+                "label": "Phenotypic abnormality",
+                "ic": 0.4124
+              },
+              {
+                "id": "HP:0000707",
+                "label": "Abnormality of the nervous system",
+                "ic": 0.8868
+              },
+              {
+                "id": "HP:0012638",
+                "label": "Abnormal nervous system physiology",
+                "ic": 0.993
+              },
+              {
+                "id": "HP:0012759",
+                "label": "Neurodevelopmental abnormality",
+                "ic": 1.4049
+              }
+            ]
+          }
+        },
+        "diagnostics": {
+          "raw_score": 0.608631,
+          "tfidf_mode": "tfidf_hpo_labels",
+          "low_idf_threshold_applied": 0.5,
+          "n_patient_vector_terms": 19,
+          "n_disease_vector_terms": 10
+        }
+      }
+    },
+    {
+      "rank": 6,
+      "disease_id": "ORPHA:284332",
+      "label": "Spinocerebellar ataxia, autosomal recessive 6",
+      "profile_type": null,
+      "category_source_id": "ORPHA:284332",
+      "category_path": [
+        {
+          "disease_id": "ORPHA:557493",
+          "label": "Disorder",
+          "profile_type": null,
+          "profile_type_label": null
+        }
+      ],
+      "matched_aliases": [
+        "FREQUENT",
+        "HP:0040283",
+        "MONDO:0011950"
+      ],
+      "score": 0.579982,
+      "method_name": "tfidf_hpo_labels",
+      "explanation": {
+        "summary": "14 of 19 patient HPO label tokens matched disease description (74% patient / 15% disease token coverage, 94 disease tokens total). Weighted TFIDF match score: 81.1.See contributing_hpo_terms for phenotype-level traceability.",
+        "coverage": {
+          "patient_token_coverage": 0.7368,
+          "disease_token_coverage": 0.1489,
+          "direction_asymmetry": 0.5879,
+          "n_patient_tokens": 19,
+          "n_disease_tokens": 94,
+          "n_matched_tokens": 14,
+          "n_unmatched_patient_tokens": 5,
+          "sparse_disease_description": false
+        },
+        "matched_terms": [
+          {
+            "token": "nonprogressive",
+            "idf_weight": 6.8907
+          },
+          {
+            "token": "coordination",
+            "idf_weight": 6.6283
+          },
+          {
+            "token": "morphology",
+            "idf_weight": 6.5542
+          },
+          {
+            "token": "global",
+            "idf_weight": 5.186
+          },
+          {
+            "token": "abnormality",
+            "idf_weight": 4.7866
+          },
+          {
+            "token": "function",
+            "idf_weight": 4.7103
+          },
+          {
+            "token": "cerebellar",
+            "idf_weight": 4.2955
+          },
+          {
+            "token": "motor",
+            "idf_weight": 4.1088
+          },
+          {
+            "token": "neurodevelopmental",
+            "idf_weight": 4.0965
+          },
+          {
+            "token": "central",
+            "idf_weight": 3.9515
+          }
+        ],
+        "unmatched_patient_terms": [
+          {
+            "token": "erythrocyte",
+            "idf_weight": 7.2474
+          },
+          {
+            "token": "forming",
+            "idf_weight": 5.8611
+          },
+          {
+            "token": "tissues",
+            "idf_weight": 4.6134
+          },
+          {
+            "token": "anemia",
+            "idf_weight": 4.2097
+          },
+          {
+            "token": "blood",
+            "idf_weight": 4.0458
+          }
+        ],
+        "method_specific": {
+          "tfidf_mode": "tfidf_hpo_labels",
+          "idf_weighted_score": 81.1322,
+          "low_idf_matches": [],
+          "n_low_idf_matches": 0,
+          "low_idf_threshold": 0.5,
+          "vector_norms": {
+            "dot_product": 2033.076803,
+            "patient_norm": 26.59021,
+            "disease_norm": 131.830921,
+            "score_check": 0.579982
+          },
+          "contributing_hpo_terms": [
+            {
+              "hpo_id": "HP:0002470",
+              "hpo_label": "Nonprogressive cerebellar ataxia",
+              "ic": 7.5839,
+              "matching_tokens": [
+                "ataxia",
+                "cerebellar",
+                "nonprogressive"
+              ],
+              "token_idf_weights": {
+                "cerebellar": 4.2955,
+                "nonprogressive": 6.8907,
+                "ataxia": 3.8654
+              }
+            },
+            {
+              "hpo_id": "HP:0001877",
+              "hpo_label": "Abnormal erythrocyte morphology",
+              "ic": 2.954,
+              "matching_tokens": [
+                "abnormal",
+                "morphology"
+              ],
+              "token_idf_weights": {
+                "abnormal": 3.8654,
+                "morphology": 6.5542
+              }
+            },
+            {
+              "hpo_id": "HP:0001251",
+              "hpo_label": "Ataxia",
+              "ic": 2.6845,
+              "matching_tokens": [
+                "ataxia"
+              ],
+              "token_idf_weights": {
+                "ataxia": 3.8654
+              }
+            },
+            {
+              "hpo_id": "HP:0011443",
+              "hpo_label": "Abnormality of coordination",
+              "ic": 2.5955,
+              "matching_tokens": [
+                "abnormality",
+                "coordination"
+              ],
+              "token_idf_weights": {
+                "coordination": 6.6283,
+                "abnormality": 4.7866
+              }
+            },
+            {
+              "hpo_id": "HP:0001871",
+              "hpo_label": "Abnormality of blood and blood-forming tissues",
+              "ic": 2.0644,
+              "matching_tokens": [
+                "abnormality"
+              ],
+              "token_idf_weights": {
+                "abnormality": 4.7866
+              }
+            },
+            {
+              "hpo_id": "HP:0001263",
+              "hpo_label": "Global developmental delay",
+              "ic": 1.9147,
+              "matching_tokens": [
+                "delay",
+                "developmental",
+                "global"
+              ],
+              "token_idf_weights": {
+                "delay": 3.3212,
+                "global": 5.186,
+                "developmental": 3.0331
+              }
+            },
+            {
+              "hpo_id": "HP:0011442",
+              "hpo_label": "Abnormal central motor function",
+              "ic": 1.8564,
+              "matching_tokens": [
+                "abnormal",
+                "central",
+                "function",
+                "motor"
+              ],
+              "token_idf_weights": {
+                "abnormal": 3.8654,
+                "motor": 4.1088,
+                "function": 4.7103,
+                "central": 3.9515
+              }
+            },
+            {
+              "hpo_id": "HP:0012758",
+              "hpo_label": "Neurodevelopmental delay",
+              "ic": 1.6537,
+              "matching_tokens": [
+                "delay",
+                "neurodevelopmental"
+              ],
+              "token_idf_weights": {
+                "delay": 3.3212,
+                "neurodevelopmental": 4.0965
+              }
+            }
+          ],
+          "ic_filter_impact": {
+            "terms_before_filter": 14,
+            "terms_after_filter": 9,
+            "n_removed": 5,
+            "removed_terms": [
+              {
+                "id": "HP:0000001",
+                "label": "All",
+                "ic": 0.4025
+              },
+              {
+                "id": "HP:0000118",
+                "label": "Phenotypic abnormality",
+                "ic": 0.4124
+              },
+              {
+                "id": "HP:0000707",
+                "label": "Abnormality of the nervous system",
+                "ic": 0.8868
+              },
+              {
+                "id": "HP:0012638",
+                "label": "Abnormal nervous system physiology",
+                "ic": 0.993
+              },
+              {
+                "id": "HP:0012759",
+                "label": "Neurodevelopmental abnormality",
+                "ic": 1.4049
+              }
+            ]
+          }
+        },
+        "diagnostics": {
+          "raw_score": 0.579982,
+          "tfidf_mode": "tfidf_hpo_labels",
+          "low_idf_threshold_applied": 0.5,
+          "n_patient_vector_terms": 19,
+          "n_disease_vector_terms": 94
+        }
+      }
+    },
+    {
+      "rank": 7,
+      "disease_id": "MONDO:0009606",
+      "label": "methemoglobinemia due to deficiency of methemoglobin reductase",
+      "profile_type": null,
+      "category_source_id": null,
+      "category_path": [],
+      "matched_aliases": [],
+      "score": 0.575413,
+      "method_name": "tfidf_hpo_labels",
+      "explanation": {
+        "summary": "14 of 19 patient HPO label tokens matched disease description (74% patient / 17% disease token coverage, 83 disease tokens total). Weighted TFIDF match score: 81.4.See contributing_hpo_terms for phenotype-level traceability.",
+        "coverage": {
+          "patient_token_coverage": 0.7368,
+          "disease_token_coverage": 0.1687,
+          "direction_asymmetry": 0.5682,
+          "n_patient_tokens": 19,
+          "n_disease_tokens": 83,
+          "n_matched_tokens": 14,
+          "n_unmatched_patient_tokens": 5,
+          "sparse_disease_description": false
+        },
+        "matched_terms": [
+          {
+            "token": "erythrocyte",
+            "idf_weight": 7.2474
+          },
+          {
+            "token": "morphology",
+            "idf_weight": 6.5542
+          },
+          {
+            "token": "forming",
+            "idf_weight": 5.8611
+          },
+          {
+            "token": "global",
+            "idf_weight": 5.186
+          },
+          {
+            "token": "abnormality",
+            "idf_weight": 4.7866
+          },
+          {
+            "token": "function",
+            "idf_weight": 4.7103
+          },
+          {
+            "token": "tissues",
+            "idf_weight": 4.6134
+          },
+          {
+            "token": "motor",
+            "idf_weight": 4.1088
+          },
+          {
+            "token": "neurodevelopmental",
+            "idf_weight": 4.0965
+          },
+          {
+            "token": "blood",
+            "idf_weight": 4.0458
+          }
+        ],
+        "unmatched_patient_terms": [
+          {
+            "token": "nonprogressive",
+            "idf_weight": 6.8907
+          },
+          {
+            "token": "coordination",
+            "idf_weight": 6.6283
+          },
+          {
+            "token": "cerebellar",
+            "idf_weight": 4.2955
+          },
+          {
+            "token": "anemia",
+            "idf_weight": 4.2097
+          },
+          {
+            "token": "ataxia",
+            "idf_weight": 3.8654
+          }
+        ],
+        "method_specific": {
+          "tfidf_mode": "tfidf_hpo_labels",
+          "idf_weighted_score": 81.4003,
+          "low_idf_matches": [],
+          "n_low_idf_matches": 0,
+          "low_idf_threshold": 0.5,
+          "vector_norms": {
+            "dot_product": 2486.060708,
+            "patient_norm": 26.59021,
+            "disease_norm": 162.48395,
+            "score_check": 0.575413
+          },
+          "contributing_hpo_terms": [
+            {
+              "hpo_id": "HP:0001877",
+              "hpo_label": "Abnormal erythrocyte morphology",
+              "ic": 2.954,
+              "matching_tokens": [
+                "abnormal",
+                "erythrocyte",
+                "morphology"
+              ],
+              "token_idf_weights": {
+                "abnormal": 3.8654,
+                "morphology": 6.5542,
+                "erythrocyte": 7.2474
+              }
+            },
+            {
+              "hpo_id": "HP:0011443",
+              "hpo_label": "Abnormality of coordination",
+              "ic": 2.5955,
+              "matching_tokens": [
+                "abnormality"
+              ],
+              "token_idf_weights": {
+                "abnormality": 4.7866
+              }
+            },
+            {
+              "hpo_id": "HP:0001871",
+              "hpo_label": "Abnormality of blood and blood-forming tissues",
+              "ic": 2.0644,
+              "matching_tokens": [
+                "abnormality",
+                "blood",
+                "forming",
+                "tissues"
+              ],
+              "token_idf_weights": {
+                "tissues": 4.6134,
+                "abnormality": 4.7866,
+                "forming": 5.8611,
+                "blood": 4.0458
+              }
+            },
+            {
+              "hpo_id": "HP:0001263",
+              "hpo_label": "Global developmental delay",
+              "ic": 1.9147,
+              "matching_tokens": [
+                "delay",
+                "developmental",
+                "global"
+              ],
+              "token_idf_weights": {
+                "delay": 3.3212,
+                "global": 5.186,
+                "developmental": 3.0331
+              }
+            },
+            {
+              "hpo_id": "HP:0011442",
+              "hpo_label": "Abnormal central motor function",
+              "ic": 1.8564,
+              "matching_tokens": [
+                "abnormal",
+                "central",
+                "function",
+                "motor"
+              ],
+              "token_idf_weights": {
+                "abnormal": 3.8654,
+                "motor": 4.1088,
+                "function": 4.7103,
+                "central": 3.9515
+              }
+            },
+            {
+              "hpo_id": "HP:0012758",
+              "hpo_label": "Neurodevelopmental delay",
+              "ic": 1.6537,
+              "matching_tokens": [
+                "delay",
+                "neurodevelopmental"
+              ],
+              "token_idf_weights": {
+                "delay": 3.3212,
+                "neurodevelopmental": 4.0965
+              }
+            }
+          ],
+          "ic_filter_impact": {
+            "terms_before_filter": 14,
+            "terms_after_filter": 9,
+            "n_removed": 5,
+            "removed_terms": [
+              {
+                "id": "HP:0000001",
+                "label": "All",
+                "ic": 0.4025
+              },
+              {
+                "id": "HP:0000118",
+                "label": "Phenotypic abnormality",
+                "ic": 0.4124
+              },
+              {
+                "id": "HP:0000707",
+                "label": "Abnormality of the nervous system",
+                "ic": 0.8868
+              },
+              {
+                "id": "HP:0012638",
+                "label": "Abnormal nervous system physiology",
+                "ic": 0.993
+              },
+              {
+                "id": "HP:0012759",
+                "label": "Neurodevelopmental abnormality",
+                "ic": 1.4049
+              }
+            ]
+          }
+        },
+        "diagnostics": {
+          "raw_score": 0.575413,
+          "tfidf_mode": "tfidf_hpo_labels",
+          "low_idf_threshold_applied": 0.5,
+          "n_patient_vector_terms": 19,
+          "n_disease_vector_terms": 83
+        }
+      }
+    },
+    {
+      "rank": 8,
+      "disease_id": "ORPHA:231237",
+      "label": "Delta-beta-thalassemia",
+      "profile_type": null,
+      "category_source_id": "ORPHA:231237",
+      "category_path": [
+        {
+          "disease_id": "ORPHA:557493",
+          "label": "Disorder",
+          "profile_type": null,
+          "profile_type_label": null
+        }
+      ],
+      "matched_aliases": [
+        "HP:0040281",
+        "MONDO:0016489"
+      ],
+      "score": 0.5746,
+      "method_name": "tfidf_hpo_labels",
+      "explanation": {
+        "summary": "8 of 19 patient HPO label tokens matched disease description (42% patient / 57% disease token coverage, 14 disease tokens total). Weighted TFIDF match score: 53.9.See contributing_hpo_terms for phenotype-level traceability.",
+        "coverage": {
+          "patient_token_coverage": 0.4211,
+          "disease_token_coverage": 0.5714,
+          "direction_asymmetry": 0.1504,
+          "n_patient_tokens": 19,
+          "n_disease_tokens": 14,
+          "n_matched_tokens": 8,
+          "n_unmatched_patient_tokens": 11,
+          "sparse_disease_description": false
+        },
+        "matched_terms": [
+          {
+            "token": "erythrocyte",
+            "idf_weight": 7.2474
+          },
+          {
+            "token": "morphology",
+            "idf_weight": 6.5542
+          },
+          {
+            "token": "forming",
+            "idf_weight": 5.8611
+          },
+          {
+            "token": "abnormality",
+            "idf_weight": 4.7866
+          },
+          {
+            "token": "tissues",
+            "idf_weight": 4.6134
+          },
+          {
+            "token": "anemia",
+            "idf_weight": 4.2097
+          },
+          {
+            "token": "blood",
+            "idf_weight": 4.0458
+          },
+          {
+            "token": "abnormal",
+            "idf_weight": 3.8654
+          }
+        ],
+        "unmatched_patient_terms": [
+          {
+            "token": "nonprogressive",
+            "idf_weight": 6.8907
+          },
+          {
+            "token": "coordination",
+            "idf_weight": 6.6283
+          },
+          {
+            "token": "global",
+            "idf_weight": 5.186
+          },
+          {
+            "token": "function",
+            "idf_weight": 4.7103
+          },
+          {
+            "token": "cerebellar",
+            "idf_weight": 4.2955
+          },
+          {
+            "token": "motor",
+            "idf_weight": 4.1088
+          },
+          {
+            "token": "neurodevelopmental",
+            "idf_weight": 4.0965
+          },
+          {
+            "token": "central",
+            "idf_weight": 3.9515
+          },
+          {
+            "token": "ataxia",
+            "idf_weight": 3.8654
+          },
+          {
+            "token": "delay",
+            "idf_weight": 3.3212
+          }
+        ],
+        "method_specific": {
+          "tfidf_mode": "tfidf_hpo_labels",
+          "idf_weighted_score": 53.8814,
+          "low_idf_matches": [],
+          "n_low_idf_matches": 0,
+          "low_idf_threshold": 0.5,
+          "vector_norms": {
+            "dot_product": 421.168535,
+            "patient_norm": 26.59021,
+            "disease_norm": 27.565661,
+            "score_check": 0.5746
+          },
+          "contributing_hpo_terms": [
+            {
+              "hpo_id": "HP:0001903",
+              "hpo_label": "Anemia",
+              "ic": 3.0818,
+              "matching_tokens": [
+                "anemia"
+              ],
+              "token_idf_weights": {
+                "anemia": 4.2097
+              }
+            },
+            {
+              "hpo_id": "HP:0001877",
+              "hpo_label": "Abnormal erythrocyte morphology",
+              "ic": 2.954,
+              "matching_tokens": [
+                "abnormal",
+                "erythrocyte",
+                "morphology"
+              ],
+              "token_idf_weights": {
+                "abnormal": 3.8654,
+                "morphology": 6.5542,
+                "erythrocyte": 7.2474
+              }
+            },
+            {
+              "hpo_id": "HP:0011443",
+              "hpo_label": "Abnormality of coordination",
+              "ic": 2.5955,
+              "matching_tokens": [
+                "abnormality"
+              ],
+              "token_idf_weights": {
+                "abnormality": 4.7866
+              }
+            },
+            {
+              "hpo_id": "HP:0001871",
+              "hpo_label": "Abnormality of blood and blood-forming tissues",
+              "ic": 2.0644,
+              "matching_tokens": [
+                "abnormality",
+                "blood",
+                "forming",
+                "tissues"
+              ],
+              "token_idf_weights": {
+                "tissues": 4.6134,
+                "abnormality": 4.7866,
+                "forming": 5.8611,
+                "blood": 4.0458
+              }
+            },
+            {
+              "hpo_id": "HP:0011442",
+              "hpo_label": "Abnormal central motor function",
+              "ic": 1.8564,
+              "matching_tokens": [
+                "abnormal"
+              ],
+              "token_idf_weights": {
+                "abnormal": 3.8654
+              }
+            }
+          ],
+          "ic_filter_impact": {
+            "terms_before_filter": 14,
+            "terms_after_filter": 9,
+            "n_removed": 5,
+            "removed_terms": [
+              {
+                "id": "HP:0000001",
+                "label": "All",
+                "ic": 0.4025
+              },
+              {
+                "id": "HP:0000118",
+                "label": "Phenotypic abnormality",
+                "ic": 0.4124
+              },
+              {
+                "id": "HP:0000707",
+                "label": "Abnormality of the nervous system",
+                "ic": 0.8868
+              },
+              {
+                "id": "HP:0012638",
+                "label": "Abnormal nervous system physiology",
+                "ic": 0.993
+              },
+              {
+                "id": "HP:0012759",
+                "label": "Neurodevelopmental abnormality",
+                "ic": 1.4049
+              }
+            ]
+          }
+        },
+        "diagnostics": {
+          "raw_score": 0.5746,
+          "tfidf_mode": "tfidf_hpo_labels",
+          "low_idf_threshold_applied": 0.5,
+          "n_patient_vector_terms": 19,
+          "n_disease_vector_terms": 14
+        }
+      }
+    },
+    {
+      "rank": 9,
+      "disease_id": "MONDO:0044310",
+      "label": "Diamond-Blackfan anemia 17",
+      "profile_type": null,
+      "category_source_id": null,
+      "category_path": [],
+      "matched_aliases": [],
+      "score": 0.571527,
+      "method_name": "tfidf_hpo_labels",
+      "explanation": {
+        "summary": "8 of 19 patient HPO label tokens matched disease description (42% patient / 57% disease token coverage, 14 disease tokens total). Weighted TFIDF match score: 53.9.See contributing_hpo_terms for phenotype-level traceability.",
+        "coverage": {
+          "patient_token_coverage": 0.4211,
+          "disease_token_coverage": 0.5714,
+          "direction_asymmetry": 0.1504,
+          "n_patient_tokens": 19,
+          "n_disease_tokens": 14,
+          "n_matched_tokens": 8,
+          "n_unmatched_patient_tokens": 11,
+          "sparse_disease_description": false
+        },
+        "matched_terms": [
+          {
+            "token": "erythrocyte",
+            "idf_weight": 7.2474
+          },
+          {
+            "token": "morphology",
+            "idf_weight": 6.5542
+          },
+          {
+            "token": "forming",
+            "idf_weight": 5.8611
+          },
+          {
+            "token": "abnormality",
+            "idf_weight": 4.7866
+          },
+          {
+            "token": "tissues",
+            "idf_weight": 4.6134
+          },
+          {
+            "token": "anemia",
+            "idf_weight": 4.2097
+          },
+          {
+            "token": "blood",
+            "idf_weight": 4.0458
+          },
+          {
+            "token": "abnormal",
+            "idf_weight": 3.8654
+          }
+        ],
+        "unmatched_patient_terms": [
+          {
+            "token": "nonprogressive",
+            "idf_weight": 6.8907
+          },
+          {
+            "token": "coordination",
+            "idf_weight": 6.6283
+          },
+          {
+            "token": "global",
+            "idf_weight": 5.186
+          },
+          {
+            "token": "function",
+            "idf_weight": 4.7103
+          },
+          {
+            "token": "cerebellar",
+            "idf_weight": 4.2955
+          },
+          {
+            "token": "motor",
+            "idf_weight": 4.1088
+          },
+          {
+            "token": "neurodevelopmental",
+            "idf_weight": 4.0965
+          },
+          {
+            "token": "central",
+            "idf_weight": 3.9515
+          },
+          {
+            "token": "ataxia",
+            "idf_weight": 3.8654
+          },
+          {
+            "token": "delay",
+            "idf_weight": 3.3212
+          }
+        ],
+        "method_specific": {
+          "tfidf_mode": "tfidf_hpo_labels",
+          "idf_weighted_score": 53.8814,
+          "low_idf_matches": [],
+          "n_low_idf_matches": 0,
+          "low_idf_threshold": 0.5,
+          "vector_norms": {
+            "dot_product": 566.151508,
+            "patient_norm": 26.59021,
+            "disease_norm": 37.254128,
+            "score_check": 0.571527
+          },
+          "contributing_hpo_terms": [
+            {
+              "hpo_id": "HP:0001903",
+              "hpo_label": "Anemia",
+              "ic": 3.0818,
+              "matching_tokens": [
+                "anemia"
+              ],
+              "token_idf_weights": {
+                "anemia": 4.2097
+              }
+            },
+            {
+              "hpo_id": "HP:0001877",
+              "hpo_label": "Abnormal erythrocyte morphology",
+              "ic": 2.954,
+              "matching_tokens": [
+                "abnormal",
+                "erythrocyte",
+                "morphology"
+              ],
+              "token_idf_weights": {
+                "abnormal": 3.8654,
+                "morphology": 6.5542,
+                "erythrocyte": 7.2474
+              }
+            },
+            {
+              "hpo_id": "HP:0011443",
+              "hpo_label": "Abnormality of coordination",
+              "ic": 2.5955,
+              "matching_tokens": [
+                "abnormality"
+              ],
+              "token_idf_weights": {
+                "abnormality": 4.7866
+              }
+            },
+            {
+              "hpo_id": "HP:0001871",
+              "hpo_label": "Abnormality of blood and blood-forming tissues",
+              "ic": 2.0644,
+              "matching_tokens": [
+                "abnormality",
+                "blood",
+                "forming",
+                "tissues"
+              ],
+              "token_idf_weights": {
+                "tissues": 4.6134,
+                "abnormality": 4.7866,
+                "forming": 5.8611,
+                "blood": 4.0458
+              }
+            },
+            {
+              "hpo_id": "HP:0011442",
+              "hpo_label": "Abnormal central motor function",
+              "ic": 1.8564,
+              "matching_tokens": [
+                "abnormal"
+              ],
+              "token_idf_weights": {
+                "abnormal": 3.8654
+              }
+            }
+          ],
+          "ic_filter_impact": {
+            "terms_before_filter": 14,
+            "terms_after_filter": 9,
+            "n_removed": 5,
+            "removed_terms": [
+              {
+                "id": "HP:0000001",
+                "label": "All",
+                "ic": 0.4025
+              },
+              {
+                "id": "HP:0000118",
+                "label": "Phenotypic abnormality",
+                "ic": 0.4124
+              },
+              {
+                "id": "HP:0000707",
+                "label": "Abnormality of the nervous system",
+                "ic": 0.8868
+              },
+              {
+                "id": "HP:0012638",
+                "label": "Abnormal nervous system physiology",
+                "ic": 0.993
+              },
+              {
+                "id": "HP:0012759",
+                "label": "Neurodevelopmental abnormality",
+                "ic": 1.4049
+              }
+            ]
+          }
+        },
+        "diagnostics": {
+          "raw_score": 0.571527,
+          "tfidf_mode": "tfidf_hpo_labels",
+          "low_idf_threshold_applied": 0.5,
+          "n_patient_vector_terms": 19,
+          "n_disease_vector_terms": 14
+        }
+      }
+    },
+    {
+      "rank": 10,
+      "disease_id": "MONDO:0001245",
+      "label": "microcytic anemia",
+      "profile_type": null,
+      "category_source_id": null,
+      "category_path": [],
+      "matched_aliases": [],
+      "score": 0.566894,
+      "method_name": "tfidf_hpo_labels",
+      "explanation": {
+        "summary": "8 of 19 patient HPO label tokens matched disease description (42% patient / 62% disease token coverage, 13 disease tokens total). Weighted TFIDF match score: 53.9.See contributing_hpo_terms for phenotype-level traceability.",
+        "coverage": {
+          "patient_token_coverage": 0.4211,
+          "disease_token_coverage": 0.6154,
+          "direction_asymmetry": 0.1943,
+          "n_patient_tokens": 19,
+          "n_disease_tokens": 13,
+          "n_matched_tokens": 8,
+          "n_unmatched_patient_tokens": 11,
+          "sparse_disease_description": false
+        },
+        "matched_terms": [
+          {
+            "token": "erythrocyte",
+            "idf_weight": 7.2474
+          },
+          {
+            "token": "morphology",
+            "idf_weight": 6.5542
+          },
+          {
+            "token": "forming",
+            "idf_weight": 5.8611
+          },
+          {
+            "token": "abnormality",
+            "idf_weight": 4.7866
+          },
+          {
+            "token": "tissues",
+            "idf_weight": 4.6134
+          },
+          {
+            "token": "anemia",
+            "idf_weight": 4.2097
+          },
+          {
+            "token": "blood",
+            "idf_weight": 4.0458
+          },
+          {
+            "token": "abnormal",
+            "idf_weight": 3.8654
+          }
+        ],
+        "unmatched_patient_terms": [
+          {
+            "token": "nonprogressive",
+            "idf_weight": 6.8907
+          },
+          {
+            "token": "coordination",
+            "idf_weight": 6.6283
+          },
+          {
+            "token": "global",
+            "idf_weight": 5.186
+          },
+          {
+            "token": "function",
+            "idf_weight": 4.7103
+          },
+          {
+            "token": "cerebellar",
+            "idf_weight": 4.2955
+          },
+          {
+            "token": "motor",
+            "idf_weight": 4.1088
+          },
+          {
+            "token": "neurodevelopmental",
+            "idf_weight": 4.0965
+          },
+          {
+            "token": "central",
+            "idf_weight": 3.9515
+          },
+          {
+            "token": "ataxia",
+            "idf_weight": 3.8654
+          },
+          {
+            "token": "delay",
+            "idf_weight": 3.3212
+          }
+        ],
+        "method_specific": {
+          "tfidf_mode": "tfidf_hpo_labels",
+          "idf_weighted_score": 53.8814,
+          "low_idf_matches": [],
+          "n_low_idf_matches": 0,
+          "low_idf_threshold": 0.5,
+          "vector_norms": {
+            "dot_product": 391.285595,
+            "patient_norm": 26.59021,
+            "disease_norm": 25.957961,
+            "score_check": 0.566894
+          },
+          "contributing_hpo_terms": [
+            {
+              "hpo_id": "HP:0001903",
+              "hpo_label": "Anemia",
+              "ic": 3.0818,
+              "matching_tokens": [
+                "anemia"
+              ],
+              "token_idf_weights": {
+                "anemia": 4.2097
+              }
+            },
+            {
+              "hpo_id": "HP:0001877",
+              "hpo_label": "Abnormal erythrocyte morphology",
+              "ic": 2.954,
+              "matching_tokens": [
+                "abnormal",
+                "erythrocyte",
+                "morphology"
+              ],
+              "token_idf_weights": {
+                "abnormal": 3.8654,
+                "morphology": 6.5542,
+                "erythrocyte": 7.2474
+              }
+            },
+            {
+              "hpo_id": "HP:0011443",
+              "hpo_label": "Abnormality of coordination",
+              "ic": 2.5955,
+              "matching_tokens": [
+                "abnormality"
+              ],
+              "token_idf_weights": {
+                "abnormality": 4.7866
+              }
+            },
+            {
+              "hpo_id": "HP:0001871",
+              "hpo_label": "Abnormality of blood and blood-forming tissues",
+              "ic": 2.0644,
+              "matching_tokens": [
+                "abnormality",
+                "blood",
+                "forming",
+                "tissues"
+              ],
+              "token_idf_weights": {
+                "tissues": 4.6134,
+                "abnormality": 4.7866,
+                "forming": 5.8611,
+                "blood": 4.0458
+              }
+            },
+            {
+              "hpo_id": "HP:0011442",
+              "hpo_label": "Abnormal central motor function",
+              "ic": 1.8564,
+              "matching_tokens": [
+                "abnormal"
+              ],
+              "token_idf_weights": {
+                "abnormal": 3.8654
+              }
+            }
+          ],
+          "ic_filter_impact": {
+            "terms_before_filter": 14,
+            "terms_after_filter": 9,
+            "n_removed": 5,
+            "removed_terms": [
+              {
+                "id": "HP:0000001",
+                "label": "All",
+                "ic": 0.4025
+              },
+              {
+                "id": "HP:0000118",
+                "label": "Phenotypic abnormality",
+                "ic": 0.4124
+              },
+              {
+                "id": "HP:0000707",
+                "label": "Abnormality of the nervous system",
+                "ic": 0.8868
+              },
+              {
+                "id": "HP:0012638",
+                "label": "Abnormal nervous system physiology",
+                "ic": 0.993
+              },
+              {
+                "id": "HP:0012759",
+                "label": "Neurodevelopmental abnormality",
+                "ic": 1.4049
+              }
+            ]
+          }
+        },
+        "diagnostics": {
+          "raw_score": 0.566894,
+          "tfidf_mode": "tfidf_hpo_labels",
+          "low_idf_threshold_applied": 0.5,
+          "n_patient_vector_terms": 19,
+          "n_disease_vector_terms": 13
+        }
+      }
+    }
+  ]
+}

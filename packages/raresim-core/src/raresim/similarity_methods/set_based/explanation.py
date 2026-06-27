@@ -17,10 +17,37 @@ Inherited from base_explainer:
 
 from raresim.core.explanation import (
     build_base_explanation,
-    set_based_summary,
     build_coverage_block,
     ExplanationBlock,
 )
+
+# ── Summary builder ────────────────────────────────────────────────
+
+
+def _build_summary(
+    patient_terms: set[str],
+    disease_terms: set[str],
+    method_name: str,
+    ic_weighted_score: float,
+) -> str:
+    """
+    Build the human-readable summary for a set-based result.
+
+    Surfaces the three values that matter most for this method:
+    matched term count, coverage in both directions, and IC-weighted
+    match quality (a proxy for how specific the shared terms are).
+    """
+    coverage = build_coverage_block(patient_terms, disease_terms)
+    pct_patient = round(coverage.patient_coverage * 100)
+    pct_disease = round(coverage.disease_coverage * 100)
+    short = method_name.replace("set_", "")
+    return (
+        f"{coverage.n_matched_terms} of {coverage.n_patient_terms} patient terms matched "
+        f"({pct_patient}% patient / {pct_disease}% disease coverage). "
+        f"IC-weighted match quality: {ic_weighted_score:.1f}. "
+        f"Method: {short}."
+    )
+
 
 # ── Formula component builders ────────────────────────────────────────────────
 
@@ -143,9 +170,9 @@ def build_explanation(
         "top_ic_matched_terms": top_ic_matched,
     }
 
-    coverage = build_coverage_block(patient_terms, disease_terms)
-    summary = set_based_summary(
-        coverage=coverage,
+    summary = _build_summary(
+        patient_terms=patient_terms,
+        disease_terms=disease_terms,
         method_name=method_name.replace("set_", ""),
         ic_weighted_score=ic_weighted_score,
     )

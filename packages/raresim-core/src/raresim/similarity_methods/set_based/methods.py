@@ -5,8 +5,20 @@ from raresim.utils.similarity_math import (
     jaccard as _jaccard,
     dice as _dice,
     overlap_coefficient as _overlap,
+    cosine_similarity as _cosine,
     to_binary_vector,
 )
+
+
+def cosine_similarity(pat: TermInput, disease: TermInput) -> float:
+    """
+    Cosine similarity between two vectors.
+    """
+    if not pat or not disease:
+        return 0.0
+
+    score = _cosine(pat, disease, False)
+    return score
 
 
 def jaccard_similarity(pat: TermInput, disease: TermInput) -> float:

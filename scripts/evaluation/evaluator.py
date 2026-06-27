@@ -29,7 +29,7 @@ Per-case timing:
     method_elapsed_seconds field written by the batch runner.
 
 Usage:
-    python evaluation/evaluator.py --dataset HMS
+    python scripts/evaluation/evaluator.py --dataset HMS
 
 Adding a new method
 -------------------

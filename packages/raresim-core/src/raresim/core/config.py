@@ -1,35 +1,34 @@
-"""Configuration file for the project, defining paths, constants, and settings."""
+"""
+Build-time behaviour constants for RareSim.
 
-from raresim.utils.paths import ONTOLOGY_DIR
+Controls how artifacts are built — flags, thresholds, and seed data.
+No path constants belong here; those live in utils/paths.py.
 
-HPO_PATH = ONTOLOGY_DIR / "hpo.owl"
-ORDO_PATH = ONTOLOGY_DIR / "ordo.owl"
-MONDO_PATH = ONTOLOGY_DIR / "mondo_rare.owl"
-HOOM_PATH = ONTOLOGY_DIR / "hoom.owl"
-HPOA_PATH = ONTOLOGY_DIR / "phenotype.hpoa.owl"
+Import pattern:
+    from raresim.core.config import APPLY_TRUE_PATH_RULE, EXAMPLE_PATIENT
+"""
 
-ORPHADATA_PRODUCT4_PATH = ONTOLOGY_DIR / "en_product4_HPO.xml"
+# ── Disease profile build settings ────────────────────────────────────────────
 
-MONARCH_DISEASE_TO_HPO_PATH = (
-    ONTOLOGY_DIR / "disease_to_phenotypic_feature_association.all.tsv.gz"
-)
-
-ONTOLOGY_PATHS = {
-    "hpo": HPO_PATH,
-    "ordo": ORDO_PATH,
-    "mondo": MONDO_PATH,
-    "hoom": HOOM_PATH,
-    "hpoa": HPOA_PATH,
-    "orphadata_product4": ORPHADATA_PRODUCT4_PATH,
-    "monarch_disease_hpo": MONARCH_DISEASE_TO_HPO_PATH,
-}
-
-CANONICAL_DISEASE_NAMESPACE = "ORPHA"
+# Apply the true-path rule during HPO term propagation.
+# When True, all ancestor terms of each annotated HPO term are added
+# to the disease profile (standard practice for HPO-based similarity).
 APPLY_TRUE_PATH_RULE = True
+
+# Minimum number of HPO terms a disease profile must have to be included.
+# Profiles below this threshold are filtered out as too sparse for matching.
 MIN_DISEASE_HPO_TERMS = 1
 
+# Canonical disease namespace — profiles are preferentially keyed by
+# Orphanet IDs when a mapping exists.
+CANONICAL_DISEASE_NAMESPACE = "ORPHA"
+
+# ── Example patient ───────────────────────────────────────────────────────────
+
+# Used by build_shared_artifacts.py to generate an example patient profile
+# and by pipeline scripts as a default test case.
 EXAMPLE_PATIENT = {
     "patient_id": "patient_001",
-    "raw_text": ("Patient with developmental delay, cerebellar ataxia, " "and anemia."),
+    "raw_text": "Patient with developmental delay, cerebellar ataxia, and anemia.",
     "hpo_terms": ["HP:0001263", "HP:0002470", "HP:0001903"],
 }

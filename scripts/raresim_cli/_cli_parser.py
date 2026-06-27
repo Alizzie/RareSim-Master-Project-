@@ -2,7 +2,7 @@
 
 import argparse
 from pathlib import Path
-from _constants import ALL_METHODS, EXTRACTION_METHODS, DEFAULTS
+from ._constants import ALL_METHODS, EXTRACTION_METHODS, DEFAULTS
 
 
 def parse_args():

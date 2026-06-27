@@ -9,7 +9,7 @@ import json
 from pathlib import Path
 from raresim.types.schemas import PatientProfile
 from raresim.utils.io import load_json
-from raresim.utils.similarity_math import get_ancestors_inclusive
+from raresim.utils.hpo_utils import get_ancestors_inclusive
 from raresim.utils.paths import OUTPUTS_DIR
 
 EVALUATION_DIR = OUTPUTS_DIR / "evaluation"
