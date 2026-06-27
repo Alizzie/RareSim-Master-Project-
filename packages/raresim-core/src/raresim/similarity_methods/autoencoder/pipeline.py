@@ -35,7 +35,7 @@ from raresim.similarity_methods.autoencoder.methods import (
     DenoisingAutoencoder,
     build_vocabulary,
     terms_to_vector,
-    cosine_similarity_np,
+    euclidean_similarity,  # swap this
 )
 
 AUTOENCODER_DIR = OUTPUTS_DIR / "autoencoder"
@@ -121,23 +121,30 @@ def run(
     selected: list[str],
     config: PipelineConfig,
     ctx: AppContext,
-) -> dict[str, MethodResults]:
-    """Run it"""
-
+) -> dict[str, list[SimilarityResult]]:
     if METHOD_NAME not in selected:
         return {}
 
-    # Load or train model
     model, vocab, term_to_idx = load_or_train(
         ctx.disease_profiles, terms_key=config.terms_key
     )
 
-    # Embed the patient
     patient_terms = set(patient.get_terms(config.use_propagated_terms))
-    if len(patient_terms) < 10:
-        print(f"[autoencoder] Warning: only {len(patient_terms)} patient terms. Autoencoder works best with 10+ terms. Consider using propagated terms")
     patient_vec = terms_to_vector(patient_terms, vocab, term_to_idx)
     patient_latent = model.encode(patient_vec.reshape(1, -1))[0]
+
+    sample_latents = []
+    for disease_id, profile in list(ctx.disease_profiles.items())[:50]:
+        disease_terms = set(profile.get(config.terms_key, []))
+        if disease_terms:
+            vec = terms_to_vector(disease_terms, vocab, term_to_idx)
+            sample_latents.append(model.encode(vec.reshape(1, -1))[0])
+
+    lat = np.array(sample_latents)
+    always_positive = (lat > 0).all(axis=0).sum()
+    print(f"Dims always positive: {always_positive}/{lat.shape[1]}")
+    for i in range(5):
+        print(f"euc(0,{i+1}) = {euclidean_similarity(lat[0], lat[i+1]):.4f}")
 
     timer = Timer(METHOD_NAME).start()
     results = []
@@ -147,11 +154,9 @@ def run(
         if not disease_terms:
             continue
 
-        # Encode the disease into latent space
         disease_vec = terms_to_vector(disease_terms, vocab, term_to_idx)
         disease_latent = model.encode(disease_vec.reshape(1, -1))[0]
-
-        score = cosine_similarity_np(patient_latent, disease_latent)
+        score = euclidean_similarity(patient_latent, disease_latent)
 
         results.append(
             SimilarityResult(
@@ -175,7 +180,7 @@ def run(
     n_diseases_scored=len(results),
     n_diseases_skipped=0,
     computation_time=timer.stop(),
-)
+    )
 
     return {METHOD_NAME: sort_and_rank(results, config, metadata, METHOD_NAME, PIPELINE_NAME)}
 
