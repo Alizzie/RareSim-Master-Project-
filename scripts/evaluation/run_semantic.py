@@ -1,57 +1,78 @@
-"""
-RareSim Semantic Batch Runner
-
-Runs semantic similarity methods on every test case and caches results.
-CPU only — but slow due to pairwise IC calculations over 20k disease profiles.
-
-Methods:
-    semantic_resnik_bma
-    semantic_lin_bma
-    semantic_jiang_conrath_bma
-
-Cache:
-    results/evaluation/{test_set_name}/cache/case_NNNN.json
-
+"""Batch runner for RareSim semantic similarity methods.
 Usage:
-    python evaluation/run_semantic.py --test-set test_data/test_cases/MME.json
+    python -m scripts.evaluation.run_semantic \
+        --test-set <path_to_test_set.json> \
+        [--no-resume] \
+        [--limit <max_cases>] \
+        [--top-k <top_k_results>]
 """
+
+# pylint: disable=broad-exception-caught
 
 import argparse
-import time
 from pathlib import Path
-
-from _batch_utils import (
-    EVALUATION_DIR,
-    load_test_cases,
-    build_patient,
-    serialize_results,
-    cache_path_for,
-    methods_already_cached,
-    save_cache,
-    print_header,
-    print_case,
-    print_case_ok,
-    print_case_err,
-    print_summary,
-    add_common_args,
-)
+from typing import Any
 
 from raresim.core.context import AppContext
-from raresim.utils.hpo_utils import preprocess_ancestor_sets
 from raresim.core.pipeline import PipelineConfig
-from raresim.types.schemas import PatientProfile
+from raresim.similarity_methods.semantic.pipeline import ALL_METHODS
 from raresim.similarity_methods.semantic.pipeline import run as run_semantic
-from raresim.similarity_methods.semantic.pipeline import ALL_METHODS as SEMANTIC_METHODS
+from raresim.types.schemas import PatientProfile
+from raresim.utils.hpo_utils import preprocess_ancestor_sets
+from raresim.utils.timer import Timer
+
+from scripts.evaluation._batch_utils import (
+    EVALUATION_DIR,
+    add_common_args,
+    build_patient,
+    cache_path_for,
+    load_test_cases,
+    methods_already_cached,
+    print_case,
+    print_case_err,
+    print_case_ok,
+    print_header,
+    print_summary,
+    save_cache,
+    serialize_results,
+)
 
 
-def run(
+def _run_methods_for_case(
+    patient: PatientProfile,
+    config: PipelineConfig,
+    ctx: AppContext,
+) -> tuple[dict[str, list[dict[str, Any]]], dict[str, float], float]:
+    """Run semantic methods one by one and time each method separately."""
+    all_results: dict[str, list[dict[str, Any]]] = {}
+    method_elapsed: dict[str, float] = {}
+
+    case_timer = Timer("semantic").start()
+
+    for method in ALL_METHODS:
+        method_timer = Timer(method).start()
+
+        method_results = run_semantic(
+            patient,
+            [method],
+            config,
+            ctx,
+        )
+
+        method_elapsed[method] = round(method_timer.stop(), 3)
+        all_results.update(serialize_results(method_results))
+
+    elapsed = round(case_timer.stop(), 3)
+    return all_results, method_elapsed, elapsed
+
+
+def run(  # pylint: disable=too-many-locals
     test_set_path: Path,
     resume: bool = True,
     config: PipelineConfig | None = None,
     limit: int | None = None,
 ) -> Path:
     """Run semantic similarity methods on every test case."""
-
     if config is None:
         config = PipelineConfig()
 
@@ -61,26 +82,29 @@ def run(
     print_header("semantic", test_set_path, cache_dir, resume, limit)
 
     cases = load_test_cases(test_set_path)
-    if limit:
+    if limit is not None:
         cases = cases[:limit]
+
     total = len(cases)
     print(f"Loaded {total} test cases.\n")
 
     print("Loading shared context...")
     dummy = PatientProfile("batch_init", "", set(), set())
     ctx = AppContext.load(dummy, config.use_canonical_profiles)
+    ancestor_sets = preprocess_ancestor_sets(ctx.ancestors)
     print(f"  Disease profiles : {ctx.app_metadata.n_disease_profiles}")
     print(f"  HPO labels       : {ctx.app_metadata.n_hpo_labels}")
-    ancestor_sets = preprocess_ancestor_sets(ctx.ancestors)
     print("  Ready.\n")
 
-    skipped, processed, failed = 0, 0, 0
+    skipped = 0
+    processed = 0
+    failed = 0
     total_time = 0.0
 
     for index, (hpo_terms, ground_truth) in enumerate(cases):
         cache_file = cache_path_for(cache_dir, index)
 
-        if resume and methods_already_cached(cache_file, SEMANTIC_METHODS):
+        if resume and methods_already_cached(cache_file, ALL_METHODS):
             skipped += 1
             continue
 
@@ -88,33 +112,31 @@ def run(
         print_case(index, total, hpo_terms, ground_truth)
 
         try:
-            t0 = time.time()
-            results = run_semantic(patient, SEMANTIC_METHODS, config, ctx)
-            elapsed = time.time() - t0
+            serialized_results, method_elapsed, elapsed = _run_methods_for_case(
+                patient=patient,
+                config=config,
+                ctx=ctx,
+            )
             total_time += elapsed
-
-            # Split timing evenly across methods in the group
-            method_elapsed = {
-                m: round(elapsed / len(SEMANTIC_METHODS), 3) for m in SEMANTIC_METHODS
-            }
 
             save_cache(
                 cache_file,
                 index,
                 hpo_terms,
                 ground_truth,
-                serialize_results(results),
+                serialized_results,
                 method_elapsed,
                 elapsed,
             )
             processed += 1
             print_case_ok(elapsed, total_time, processed, total - index - 1)
 
-        except Exception as e:
+        except Exception as error:
             failed += 1
-            print_case_err(e)
+            print_case_err(error)
             (cache_dir / f"case_{index:04d}.error").write_text(
-                f"{type(e).__name__}: {e}"
+                f"{type(error).__name__}: {error}",
+                encoding="utf-8",
             )
 
     print_summary(total, processed, skipped, failed, total_time, cache_dir)
@@ -122,6 +144,7 @@ def run(
 
 
 def parse_args() -> argparse.Namespace:
+    """Parse command-line arguments."""
     parser = argparse.ArgumentParser(
         description="RareSim semantic similarity batch runner",
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -132,21 +155,20 @@ def parse_args() -> argparse.Namespace:
         "--ic-threshold",
         type=float,
         default=1.5,
-        help="IC threshold for semantic methods (default: 1.5)",
+        help="IC threshold for semantic methods, default: 1.5",
     )
     return parser.parse_args()
 
 
 def main() -> None:
+    """Run the CLI entry point."""
     args = parse_args()
-
     config = PipelineConfig(
         top_k=args.top_k,
         ic_threshold=args.ic_threshold,
         use_propagated_terms=True,
         use_canonical_profiles=True,
     )
-
     run(
         test_set_path=args.test_set,
         resume=not args.no_resume,

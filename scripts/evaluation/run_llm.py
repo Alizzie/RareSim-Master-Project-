@@ -1,54 +1,256 @@
+"""Batch runner for RareSim direct LLM disease retrieval.
+Usage:
+    python -m scripts.evaluation.run_llm \
+        --test-set <path_to_test_set.json> \
+        [--no-resume] \
+        [--limit <max_cases>] \
+        [--top-k <top_k_results>]
 """
-RareSim LLM Batch Runner
 
-Runs all configured LLM models on every test case and caches results.
-Each model is loaded once, run over all cases, then unloaded before
-the next model is loaded.
-
-Requires GPU.
-
-Cache:
-    results/evaluation/{test_set_name}/cache/case_NNNN.json
-
-Usage: (whichever gpu is free, change 5 to your gpu id)
-    CUDA_VISIBLE_DEVICES=5 python evaluation/run_llm.py \\
-        --test-set test_data/test_cases/MME.json
-"""
+# pylint: disable=broad-exception-caught,too-few-public-methods
 
 import argparse
-import time
+from dataclasses import dataclass
 from pathlib import Path
+from typing import Any, Sequence, cast
+
+from raresim.core.context import AppContext
+from raresim.similarity_methods.llm.config import LLM_MODEL_LIST
+from raresim.similarity_methods.llm.config import MAX_NEW_TOKENS_RETRIEVAL
+from raresim.similarity_methods.llm.methods import (
+    build_retrieval_prompt,
+    load_hf_pipeline,
+    parse_retrieval_output,
+    query_hf,
+    unload_pipeline,
+)
+from raresim.types.schemas import PatientProfile
+from raresim.utils.io import load_json
+from raresim.utils.paths import HPO_LABELS_PATH
+from raresim.utils.timer import Timer
 
 from scripts.evaluation._batch_utils import (
     EVALUATION_DIR,
-    load_test_cases,
-    cache_path_for,
-    methods_already_cached,
-    save_cache,
-    print_header,
-    print_case,
-    print_case_ok,
-    print_case_err,
-    print_summary,
     add_common_args,
+    cache_path_for,
+    load_test_cases,
+    methods_already_cached,
+    print_case,
+    print_case_err,
+    print_case_ok,
+    print_header,
+    print_summary,
+    save_cache,
 )
 
-from raresim.core.context import AppContext
-from raresim.utils.io import load_json
-from raresim.utils.paths import HPO_LABELS_PATH
-from raresim.types.schemas import PatientProfile
 
-from raresim.similarity_methods.llm.methods import (
-    unload_pipeline,
-    load_hf_pipeline,
-    build_retrieval_prompt,
-    query_hf,
-    parse_retrieval_output,
-)
-from raresim.similarity_methods.llm.config import (
-    LLM_MODEL_LIST,
-    MAX_NEW_TOKENS_RETRIEVAL,
-)
+@dataclass
+class LlmResources:
+    """Shared data needed by the LLM runner."""
+
+    ctx: AppContext
+    hpo_labels: Any
+
+
+@dataclass
+class BatchConfig:
+    """Static batch-run configuration."""
+
+    cache_dir: Path
+    resume: bool
+    top_k: int
+    total_cases: int
+
+
+@dataclass
+class RunStats:
+    """Mutable counters for the batch run."""
+
+    skipped: int = 0
+    processed: int = 0
+    failed: int = 0
+    total_time: float = 0.0
+
+
+@dataclass(frozen=True)
+class CaseInput:
+    """One evaluation case."""
+
+    index: int
+    hpo_terms: list[str]
+    ground_truth: list[str]
+
+
+@dataclass(frozen=True)
+class CaseExecution:
+    """Runtime context for one model/case execution."""
+
+    model_name: str
+    pipe: Any
+    resources: LlmResources
+    batch: BatchConfig
+    case: CaseInput
+
+
+def _load_resources() -> LlmResources:
+    """Load shared labels and application context."""
+    hpo_labels = load_json(HPO_LABELS_PATH)
+    dummy = PatientProfile("batch_init", "", set(), set())
+    ctx = AppContext.load(dummy, use_canonical_profiles=True)
+    return LlmResources(ctx=ctx, hpo_labels=hpo_labels)
+
+
+def _build_patient(case: CaseInput) -> PatientProfile:
+    """Build a PatientProfile for one evaluation case."""
+    terms = set(case.hpo_terms)
+    return PatientProfile(
+        patient_id=f"eval_case_{case.index:04d}",
+        raw_text="",
+        hpo_terms=terms,
+        propagated_hpo_terms=terms,
+    )
+
+
+def _serialize_results(results: Sequence[Any]) -> list[dict[str, Any]]:
+    """Convert SimilarityResult objects to JSON-serializable dictionaries."""
+    serialized: list[dict[str, Any]] = []
+
+    for result in results:
+        if isinstance(result, dict):
+            serialized.append(cast(dict[str, Any], result))
+            continue
+
+        to_dict = getattr(result, "to_dict", None)
+        if not callable(to_dict):
+            raise TypeError(
+                "LLM result must be a SimilarityResult-like object or dict, "
+                f"got {type(result).__name__}"
+            )
+
+        result_dict = to_dict()
+        if not isinstance(result_dict, dict):
+            raise TypeError(
+                "LLM result.to_dict() must return a dict, "
+                f"got {type(result_dict).__name__}"
+            )
+
+        serialized.append(cast(dict[str, Any], result_dict))
+
+    return serialized
+
+
+def _run_single_case(execution: CaseExecution) -> tuple[list[dict[str, Any]], float]:
+    """Run one LLM model on one test case."""
+    patient = _build_patient(execution.case)
+    case_timer = Timer(execution.model_name).start()
+
+    prompt = build_retrieval_prompt(
+        patient=patient,
+        hpo_labels=execution.resources.hpo_labels,
+        top_k=execution.batch.top_k,
+    )
+
+    generated_text = query_hf(
+        prompt,
+        execution.pipe,
+        max_tokens=MAX_NEW_TOKENS_RETRIEVAL,
+    )
+
+    model_results = parse_retrieval_output(
+        generated_text=generated_text,
+        patient=patient,
+        hpo_labels=execution.resources.hpo_labels,
+        disease_profiles=execution.resources.ctx.disease_profiles,
+        model_name=execution.model_name,
+        disease_ancestors=execution.resources.ctx.disease_ancestors,
+        disease_metadata_index=execution.resources.ctx.disease_metadata_index,
+        ic_values=execution.resources.ctx.ic_values,
+        top_k=execution.batch.top_k,
+    )
+
+    elapsed = round(case_timer.stop(), 3)
+    return _serialize_results(model_results), elapsed
+
+def _handle_case(
+    execution: CaseExecution,
+    stats: RunStats,
+) -> None:
+    """Run and cache one case, updating batch statistics."""
+    cache_file = cache_path_for(execution.batch.cache_dir, execution.case.index)
+
+    if execution.batch.resume and methods_already_cached(
+        cache_file,
+        [execution.model_name],
+    ):
+        stats.skipped += 1
+        return
+
+    print_case(
+        execution.case.index,
+        execution.batch.total_cases,
+        execution.case.hpo_terms,
+        execution.case.ground_truth,
+    )
+
+    try:
+        serialized_results, elapsed = _run_single_case(execution)
+        stats.total_time += elapsed
+
+        save_cache(
+            cache_file,
+            execution.case.index,
+            execution.case.hpo_terms,
+            execution.case.ground_truth,
+            {execution.model_name: serialized_results},
+            {execution.model_name: elapsed},
+            elapsed,
+        )
+
+        stats.processed += 1
+        remaining = execution.batch.total_cases - execution.case.index - 1
+        print_case_ok(elapsed, stats.total_time, stats.processed, remaining)
+
+    except Exception as error:
+        stats.failed += 1
+        print_case_err(error)
+        (execution.batch.cache_dir / f"case_{execution.case.index:04d}.error").write_text(
+            f"{type(error).__name__}: {error}",
+            encoding="utf-8",
+        )
+
+
+def _run_model_cases(
+    model_name: str,
+    cases: list[tuple[list[str], list[str]]],
+    resources: LlmResources,
+    batch: BatchConfig,
+    stats: RunStats,
+) -> None:
+    """Load one model, run it over all cases, then unload it."""
+    print(f"\n[llm] Loading model: {model_name}")
+    pipe = None
+
+    try:
+        pipe = load_hf_pipeline(model_name, MAX_NEW_TOKENS_RETRIEVAL)
+
+        for index, (hpo_terms, ground_truth) in enumerate(cases):
+            case = CaseInput(
+                index=index,
+                hpo_terms=hpo_terms,
+                ground_truth=ground_truth,
+            )
+            execution = CaseExecution(
+                model_name=model_name,
+                pipe=pipe,
+                resources=resources,
+                batch=batch,
+                case=case,
+            )
+            _handle_case(execution, stats)
+
+    finally:
+        if pipe is not None:
+            unload_pipeline(pipe)
 
 
 def run(
@@ -57,86 +259,48 @@ def run(
     limit: int | None = None,
     top_k: int = 10,
 ) -> Path:
-    """Run all LLM models on every test case."""
-
+    """Run all configured LLM models on every test case."""
     cache_dir = EVALUATION_DIR / test_set_path.stem / "cache"
     cache_dir.mkdir(parents=True, exist_ok=True)
 
     print_header("llm", test_set_path, cache_dir, resume, limit)
 
     cases = load_test_cases(test_set_path)
-    if limit:
+    if limit is not None:
         cases = cases[:limit]
-    total = len(cases)
 
-    print(f"Loaded {total} test cases.")
+    total_cases = len(cases)
+    estimated_minutes = total_cases * len(LLM_MODEL_LIST) * 3
+
+    print(f"Loaded {total_cases} test cases.")
     print(f"Models  : {LLM_MODEL_LIST}")
-    print(
-        f"Warning : LLM is slow (~3 min/case). Est. total: {total * len(LLM_MODEL_LIST) * 3} min\n"
+    print(f"Warning : LLM is slow. Estimated total: {estimated_minutes} min\n")
+
+    resources = _load_resources()
+    batch = BatchConfig(
+        cache_dir=cache_dir,
+        resume=resume,
+        top_k=top_k,
+        total_cases=total_cases,
     )
-
-    hpo_labels = load_json(HPO_LABELS_PATH)
-    dummy = PatientProfile("batch_init", "", set(), set())
-    ctx = AppContext.load(dummy, use_canonical_profiles=True)
-
-    skipped, processed, failed = 0, 0, 0
-    total_time = 0.0
+    stats = RunStats()
 
     for model_name in LLM_MODEL_LIST:
-        print(f"\n[llm] Loading model: {model_name}")
-        pipe = load_hf_pipeline(model_name, MAX_NEW_TOKENS_RETRIEVAL)
+        _run_model_cases(model_name, cases, resources, batch, stats)
 
-        for index, (hpo_terms, ground_truth) in enumerate(cases):
-            cache_file = cache_path_for(cache_dir, index)
-
-            if resume and methods_already_cached(cache_file, [model_name]):
-                skipped += 1
-                continue
-
-            print_case(index, total, hpo_terms, ground_truth)
-
-            try:
-                patient_dict = {
-                    "patient_id": f"eval_case_{index:04d}",
-                    "raw_text": "",
-                    "hpo_terms": list(hpo_terms),
-                }
-
-                t0 = time.time()
-                prompt = build_retrieval_prompt(patient_dict, hpo_labels, top_k)
-                generated = query_hf(prompt, pipe, max_tokens=MAX_NEW_TOKENS_RETRIEVAL)
-                model_results = parse_retrieval_output(
-                    generated, ctx.disease_profiles, model_name, top_k
-                )
-                elapsed = round(time.time() - t0, 3)
-                total_time += elapsed
-
-                save_cache(
-                    cache_file,
-                    index,
-                    hpo_terms,
-                    ground_truth,
-                    {model_name: model_results},
-                    {model_name: elapsed},
-                    elapsed,
-                )
-                processed += 1
-                print_case_ok(elapsed, total_time, processed, total - index - 1)
-
-            except Exception as e:
-                failed += 1
-                print_case_err(e)
-                (cache_dir / f"case_{index:04d}.error").write_text(
-                    f"{type(e).__name__}: {e}"
-                )
-
-        unload_pipeline(pipe)
-
-    print_summary(total, processed, skipped, failed, total_time, cache_dir)
+    print_summary(
+        total_cases,
+        stats.processed,
+        stats.skipped,
+        stats.failed,
+        stats.total_time,
+        cache_dir,
+    )
     return cache_dir
 
 
 def parse_args() -> argparse.Namespace:
+    """Parse command-line arguments."""
     parser = argparse.ArgumentParser(
         description="RareSim LLM batch runner",
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -147,6 +311,7 @@ def parse_args() -> argparse.Namespace:
 
 
 def main() -> None:
+    """Run the CLI entry point."""
     args = parse_args()
     run(
         test_set_path=args.test_set,

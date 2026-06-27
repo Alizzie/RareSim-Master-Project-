@@ -1,73 +1,78 @@
-"""
-RareSim HPO2Vec Batch Runner
-
-Runs the HPO2Vec pipeline on every test case and caches results.
-Loads the pre-trained Word2Vec model from outputs/hpo2vec/hpo2vec_model.
-
-CPU only — fast after the model is loaded.
-
-Cache:
-    results/evaluation/{test_set_name}/cache/case_NNNN.json
-
+"""Batch runner for RareSim HPO2Vec similarity.
 Usage:
-    python evaluation/run_hpo2vec.py \\
-        --test-set test_data/test_cases/MME.json
-
-Prerequisites:
-    Train the model first if it does not exist:
-        python pipelines/hpo2vec_pipeline.py
+    python -m scripts.evaluation.run_hpo2vec \
+        --test-set <path_to_test_set.json> \
+        [--no-resume] \
+        [--limit <max_cases>] \
+        [--top-k <top_k_results>]
 """
+
+# pylint: disable=broad-exception-caught,too-many-locals
 
 import argparse
-import time
 from pathlib import Path
 
-from _batch_utils import (
-    load_test_cases,
-    build_patient,
-    cache_path_for,
-    methods_already_cached,
-    save_cache,
-    print_header,
-    print_case,
-    print_case_ok,
-    print_case_err,
-    print_summary,
-    add_common_args,
-    EVALUATION_DIR,
-)
-
 from raresim.core.context import AppContext
-from raresim.utils.hpo_utils import preprocess_ancestor_sets
-from raresim.utils.paths import MODELS_DIR
-from raresim.types.schemas import PatientProfile
 from raresim.core.pipeline import PipelineConfig
 from raresim.similarity_methods.hpo2vec.pipeline import run as run_hpo2vec
-from raresim.similarity_methods.hpo2vec.pipeline import METHOD_NAME as HPO2VEC_METHODS
+from raresim.types.schemas import PatientProfile
+from raresim.utils.hpo_utils import preprocess_ancestor_sets
+from raresim.utils.paths import MODELS_DIR
+from raresim.utils.timer import Timer
 
-METHOD_NAME = "hpo2vec"
+from scripts.evaluation._batch_utils import (
+    EVALUATION_DIR,
+    add_common_args,
+    build_patient,
+    cache_path_for,
+    load_test_cases,
+    methods_already_cached,
+    print_case,
+    print_case_err,
+    print_case_ok,
+    print_header,
+    print_summary,
+    save_cache,
+    serialize_results,
+)
+
 MODEL_PATH = MODELS_DIR / "hpo2vec_model"
+METHOD_NAME = "hpo2vec"
+METHOD_NAMES = [METHOD_NAME]
 
 
-def run(
+def _warn_if_model_missing() -> None:
+    """Print a warning if the expected HPO2Vec model artifact is missing."""
+    if not MODEL_PATH.exists():
+        print(
+            f"[warning] HPO2Vec model not found at {MODEL_PATH}. "
+            "Train the model before running the batch evaluator."
+        )
+
+
+def run(  # pylint: disable=too-many-locals
     test_set_path: Path,
     resume: bool = True,
     config: PipelineConfig | None = None,
     limit: int | None = None,
 ) -> Path:
-    """Run HPO2Vec on every test case."""
-
+    """Run HPO2Vec on every test case and cache the results."""
     if config is None:
-        config = PipelineConfig()
+        config = PipelineConfig(
+            use_propagated_terms=True,
+            use_canonical_profiles=True,
+        )
 
     cache_dir = EVALUATION_DIR / test_set_path.stem / "cache"
     cache_dir.mkdir(parents=True, exist_ok=True)
 
     print_header(METHOD_NAME, test_set_path, cache_dir, resume, limit)
+    _warn_if_model_missing()
 
     cases = load_test_cases(test_set_path)
-    if limit:
+    if limit is not None:
         cases = cases[:limit]
+
     total = len(cases)
     print(f"Loaded {total} test cases.\n")
 
@@ -75,16 +80,19 @@ def run(
     dummy = PatientProfile("batch_init", "", set(), set())
     ctx = AppContext.load(dummy, use_canonical_profiles=True)
     ancestor_sets = preprocess_ancestor_sets(ctx.ancestors)
+
     print(f"  Disease profiles : {ctx.app_metadata.n_disease_profiles}")
     print("  Ready.\n")
 
-    skipped, processed, failed = 0, 0, 0
+    skipped = 0
+    processed = 0
+    failed = 0
     total_time = 0.0
 
     for index, (hpo_terms, ground_truth) in enumerate(cases):
         cache_file = cache_path_for(cache_dir, index)
 
-        if resume and methods_already_cached(cache_file, [METHOD_NAME]):
+        if resume and methods_already_cached(cache_file, METHOD_NAMES):
             skipped += 1
             continue
 
@@ -92,9 +100,16 @@ def run(
         print_case(index, total, hpo_terms, ground_truth)
 
         try:
-            t0 = time.time()
-            rankings = run_hpo2vec(patient, [HPO2VEC_METHODS], config, ctx)
-            elapsed = round(time.time() - t0, 3)
+            case_timer = Timer(METHOD_NAME).start()
+
+            results = run_hpo2vec(
+                patient,
+                METHOD_NAMES,
+                config,
+                ctx,
+            )
+
+            elapsed = round(case_timer.stop(), 3)
             total_time += elapsed
 
             save_cache(
@@ -102,18 +117,20 @@ def run(
                 index,
                 hpo_terms,
                 ground_truth,
-                {METHOD_NAME: rankings},
+                serialize_results(results),
                 {METHOD_NAME: elapsed},
                 elapsed,
             )
+
             processed += 1
             print_case_ok(elapsed, total_time, processed, total - index - 1)
 
-        except Exception as e:
+        except Exception as error:
             failed += 1
-            print_case_err(e)
+            print_case_err(error)
             (cache_dir / f"case_{index:04d}.error").write_text(
-                f"{type(e).__name__}: {e}"
+                f"{type(error).__name__}: {error}",
+                encoding="utf-8",
             )
 
     print_summary(total, processed, skipped, failed, total_time, cache_dir)
@@ -121,6 +138,7 @@ def run(
 
 
 def parse_args() -> argparse.Namespace:
+    """Parse command-line arguments."""
     parser = argparse.ArgumentParser(
         description="RareSim HPO2Vec batch runner",
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -131,11 +149,11 @@ def parse_args() -> argparse.Namespace:
 
 
 def main() -> None:
+    """Run the CLI entry point."""
     args = parse_args()
 
     config = PipelineConfig(
         top_k=args.top_k,
-        ic_threshold=args.ic_threshold,
         use_propagated_terms=True,
         use_canonical_profiles=True,
     )
@@ -150,3 +168,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+    

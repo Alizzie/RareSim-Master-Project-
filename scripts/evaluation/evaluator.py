@@ -53,9 +53,12 @@ To add a new method:
 
 No evaluator logic needs to change if the result schema follows this format.
 """
-
+# pylint: disable=broad-exception-caught
+# pylint: disable=too-many-locals,too-many-statements,too-many-branches
+# pylint: disable=too-many-arguments,too-many-return-statements
 
 import argparse
+import csv
 import json
 import math
 
@@ -78,6 +81,7 @@ RRF_MIN_RECALL10 = 0.10  # minimum R@10 for a method to join the top ensemble
 
 
 def load_alias_map() -> dict[str, str]:
+    """Load alias-to-canonical disease ID mappings if available."""
     if ALIAS_TO_CANONICAL_PATH.exists():
         return load_json(ALIAS_TO_CANONICAL_PATH)
     print("[warning] alias_to_canonical.json not found — using direct ID matching only")
@@ -85,6 +89,7 @@ def load_alias_map() -> dict[str, str]:
 
 
 def build_reverse_map(alias_map: dict[str, str]) -> dict[str, set[str]]:
+    """Build a reverse lookup from canonical IDs to all equivalent aliases."""
     reverse: dict[str, set[str]] = defaultdict(set)
     for alias, canonical in alias_map.items():
         reverse[canonical].add(alias)
@@ -99,6 +104,7 @@ def get_all_equivalent_ids(
     alias_map: dict[str, str],
     reverse_map: dict[str, set[str]],
 ) -> set[str]:
+    """Return all IDs equivalent to one disease ID according to alias maps."""
     ids = {disease_id}
     canonical = alias_map.get(disease_id, disease_id)
     ids.add(canonical)
@@ -428,6 +434,7 @@ _BAR_WIDTH = 40
 
 
 def _bar(value: int, max_value: int) -> str:
+    """Return a fixed-width text bar for integer counts."""
     if max_value == 0:
         return ""
     filled = round(_BAR_WIDTH * value / max_value)
@@ -435,6 +442,7 @@ def _bar(value: int, max_value: int) -> str:
 
 
 def format_summary(results: dict, test_set_name: str) -> str:
+    """Format the complete evaluation summary as plain text."""
     n = results["n_cases"]
     metrics = results["method_metrics"]
     rank_matrix = results["rank_matrix"]
@@ -453,9 +461,12 @@ def format_summary(results: dict, test_set_name: str) -> str:
     # ── Method comparison table ───────────────────────────────────────────────
     lines += [
         f"\n{'=' * w}",
-        f"  Method Comparison — Recall@k, MRR, NDCG@10, Avg time/case",
+        "  Method Comparison — Recall@k, MRR, NDCG@10, Avg time/case",
         f"{'=' * w}",
-        f"  {'Method':<45} {'R@1':>6} {'R@3':>6} {'R@5':>6} {'R@10':>6} {'R@20':>6} {'MRR':>6} {'NDCG':>6}  {'Found':<10} {'Avg(s)':>7}",
+        "  "
+        f"{'Method':<45} {'R@1':>6} {'R@3':>6} {'R@5':>6} "
+        f"{'R@10':>6} {'R@20':>6} {'MRR':>6} {'NDCG':>6}  "
+        f"{'Found':<10} {'Avg(s)':>7}",
         f"  {'-' * (w - 2)}",
     ]
 
@@ -487,7 +498,7 @@ def format_summary(results: dict, test_set_name: str) -> str:
 
     lines += [
         f"\n{'=' * w}",
-        f"  RRF Ensemble Configuration",
+        "  RRF Ensemble Configuration",
         f"{'=' * w}",
         f"  Threshold  : R@10 >= {RRF_MIN_RECALL10}  for {RRF_TOP_NAME}",
         f"  Top methods: {len(top_methods)} / {n_base} base methods",
@@ -504,7 +515,7 @@ def format_summary(results: dict, test_set_name: str) -> str:
     all_methods = results["methods"]
     lines += [
         f"\n{'=' * w}",
-        f"  Per-Case Rank Matrix  (- = not found in top 10)",
+        "  Per-Case Rank Matrix  (- = not found in top 10)",
         f"{'=' * w}",
     ]
     method_headers = "  ".join(f"{m[:12]:>12}" for m in all_methods)
@@ -524,18 +535,19 @@ def format_summary(results: dict, test_set_name: str) -> str:
 
 
 def format_agreement_section(agreement: dict, n_cases: int) -> str:
+    """Format the method-agreement section as plain text."""
     lines: list[str] = []
     w = 72
     lines += [
         f"\n{'=' * w}",
-        f"  Method Agreement Analysis",
+        "  Method Agreement Analysis",
         f"{'=' * w}",
         f"  Total cases : {n_cases}",
         f"  Consensus   : {agreement['consensus_count']} cases — all methods found it",
         f"  Hard cases  : {agreement['hard_count']} cases — no method found it",
         f"  Easy cases  : {agreement['easy_count']} cases — at least one method ranked it #1",
         f"  Unique finds: {agreement['unique_find_count']} cases — only one method found it",
-        f"\n  How many methods found the correct disease per case:",
+        "\n  How many methods found the correct disease per case:",
     ]
     found_by_n = agreement["found_by_n"]
     n_methods = agreement["n_methods"]
@@ -544,7 +556,7 @@ def format_agreement_section(agreement: dict, n_cases: int) -> str:
         count = found_by_n.get(k, 0)
         lines.append(f"    {k} methods: {count:>3} cases  {_bar(count, max_val)}")
 
-    lines.append(f"\n  How many methods found correct disease at each rank:")
+    lines.append("\n  How many methods found correct disease at each rank:")
     rank_hist = agreement["rank_histogram"]
     if rank_hist:
         max_rank = max(rank_hist.keys())
@@ -553,7 +565,7 @@ def format_agreement_section(agreement: dict, n_cases: int) -> str:
             count = rank_hist.get(r, 0)
             lines.append(f"    rank_{r:>2}: {count:>3}  {_bar(count, max_hist_val)}")
 
-    lines.append(f"\n  Unique finds (only one method found it):")
+    lines.append("\n  Unique finds (only one method found it):")
     if agreement["unique_finds"]:
         for uf in agreement["unique_finds"]:
             lines.append(
@@ -562,7 +574,7 @@ def format_agreement_section(agreement: dict, n_cases: int) -> str:
     else:
         lines.append("    (none)")
 
-    lines.append(f"\n  Hard cases (no method found the correct disease):")
+    lines.append("\n  Hard cases (no method found the correct disease):")
     if agreement["hard_cases"]:
         for hc in agreement["hard_cases"]:
             lines.append(f"    {hc}")
@@ -580,6 +592,7 @@ _BAR_WIDTH_COMPAT = 20
 
 
 def _compat_bar(value: float) -> str:
+    """Return a compact text bar for a 0-1 metric value."""
     filled = round(_BAR_WIDTH_COMPAT * value)
     return _BAR_FULL_COMPAT * filled
 
@@ -617,8 +630,6 @@ def write_stats_txt(results: dict, path: Path) -> None:
 
 def write_summary_tsv(results: dict, cases: list[dict], path: Path) -> None:
     """Write a single _summary.tsv with all methods, one row per case per method."""
-    import csv
-
     rank_matrix = {row["case_index"]: row for row in results["rank_matrix"]}
     all_methods = results["methods"]
 
@@ -680,6 +691,7 @@ def write_summary_tsv(results: dict, cases: list[dict], path: Path) -> None:
 
 
 def parse_args() -> argparse.Namespace:
+    """Parse command-line arguments for evaluation."""
     parser = argparse.ArgumentParser(
         description="RareSim evaluation script",
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -700,7 +712,9 @@ def parse_args() -> argparse.Namespace:
     )
     return parser.parse_args()
 
+
 def main() -> None:
+    """Run evaluation for one cached dataset."""
     args = parse_args()
     test_set_name = str(args.dataset)
     dataset_dir = EVALUATION_DIR / test_set_name
