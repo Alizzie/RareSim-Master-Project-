@@ -3,15 +3,19 @@ Denoising Autoencoder methods for HPO-based disease similarity
 """
 
 from pathlib import Path
-from typing import Dict, List, Set, Tuple
-
 import numpy as np
+
+from raresim.similarity_methods.autoencoder.config import (
+    FALSE_POSITIVE_RATE,
+    NOISE_RATE,
+)
 
 
 def build_vocabulary(
-    disease_profiles: Dict[str, dict],
+    disease_profiles: dict[str, dict],
     terms_key: str = "propagated_hpo_terms",
-) -> List[str]:
+) -> list[str]:
+    """Build a sorted list of unique HPO terms across all disease profiles."""
     vocab = set()
     for profile in disease_profiles.values():
         vocab.update(profile.get(terms_key, []))
@@ -19,9 +23,9 @@ def build_vocabulary(
 
 
 def terms_to_vector(
-    terms: Set[str],
-    vocab: List[str],
-    term_to_idx: Dict[str, int],
+    terms: set[str],
+    vocab: list[str],
+    term_to_idx: dict[str, int],
 ) -> np.ndarray:
     vec = np.zeros(len(vocab), dtype=np.float32)
     for term in terms:
@@ -32,8 +36,8 @@ def terms_to_vector(
 
 def corrupt_vector(
     vec: np.ndarray,
-    noise_rate: float = 0.2,
-    false_positive_rate: float = 0.05,
+    noise_rate: float = NOISE_RATE,
+    false_positive_rate: float = FALSE_POSITIVE_RATE,
 ) -> np.ndarray:
     """
     Corrupt a binary HPO vector:
@@ -58,14 +62,18 @@ def corrupt_vector(
 
 # Activations
 
+
 def relu(x: np.ndarray) -> np.ndarray:
     return np.maximum(0, x)
+
 
 def relu_grad(x: np.ndarray) -> np.ndarray:
     return (x > 0).astype(np.float32)
 
+
 def sigmoid(x: np.ndarray) -> np.ndarray:
     return 1.0 / (1.0 + np.exp(-np.clip(x, -500, 500)))
+
 
 def sigmoid_grad(s: np.ndarray) -> np.ndarray:
     return s * (1.0 - s)
@@ -84,7 +92,7 @@ class DenoisingAutoencoder:
         latent_dim: int = 128,
         learning_rate: float = 0.01,
         momentum: float = 0.9,
-        noise_rate: float = 0.2,
+        noise_rate: float = NOISE_RATE,
     ):
         self.vocab_size = vocab_size
         self.hidden_dim = hidden_dim
@@ -94,16 +102,24 @@ class DenoisingAutoencoder:
         self.noise_rate = noise_rate
 
         # init for ReLU layers (encoder), Xavier for sigmoid (decoder)
-        self.W1 = np.random.randn(vocab_size, hidden_dim).astype(np.float32) * np.sqrt(2.0 / vocab_size)
+        self.W1 = np.random.randn(vocab_size, hidden_dim).astype(np.float32) * np.sqrt(
+            2.0 / vocab_size
+        )
         self.b1 = np.zeros(hidden_dim, dtype=np.float32)
 
-        self.W2 = np.random.randn(hidden_dim, latent_dim).astype(np.float32) * np.sqrt(2.0 / hidden_dim)
+        self.W2 = np.random.randn(hidden_dim, latent_dim).astype(np.float32) * np.sqrt(
+            2.0 / hidden_dim
+        )
         self.b2 = np.zeros(latent_dim, dtype=np.float32)
 
-        self.W3 = np.random.randn(latent_dim, hidden_dim).astype(np.float32) * np.sqrt(2.0 / (latent_dim + hidden_dim))
+        self.W3 = np.random.randn(latent_dim, hidden_dim).astype(np.float32) * np.sqrt(
+            2.0 / (latent_dim + hidden_dim)
+        )
         self.b3 = np.zeros(hidden_dim, dtype=np.float32)
 
-        self.W4 = np.random.randn(hidden_dim, vocab_size).astype(np.float32) * np.sqrt(2.0 / (hidden_dim + vocab_size))
+        self.W4 = np.random.randn(hidden_dim, vocab_size).astype(np.float32) * np.sqrt(
+            2.0 / (hidden_dim + vocab_size)
+        )
         self.b4 = np.zeros(vocab_size, dtype=np.float32)
 
         # Momentum buffers
@@ -127,7 +143,7 @@ class DenoisingAutoencoder:
         out = sigmoid(h3 @ self.W4 + self.b4)
         return out
 
-    def forward(self, x_corrupted: np.ndarray) -> Tuple[np.ndarray, dict]:
+    def forward(self, x_corrupted: np.ndarray) -> tuple[np.ndarray, dict]:
         h1 = relu(x_corrupted @ self.W1 + self.b1)
         z = relu(h1 @ self.W2 + self.b2)
         h3 = sigmoid(z @ self.W3 + self.b3)
@@ -137,7 +153,11 @@ class DenoisingAutoencoder:
 
     def backward(self, x_clean: np.ndarray, cache: dict) -> float:
         x, h1, z, h3, out = (
-            cache["x"], cache["h1"], cache["z"], cache["h3"], cache["out"],
+            cache["x"],
+            cache["h1"],
+            cache["z"],
+            cache["h3"],
+            cache["out"],
         )
         batch_size = x.shape[0]
 
@@ -183,7 +203,7 @@ class DenoisingAutoencoder:
         epochs: int = 50,
         batch_size: int = 64,
         print_every: int = 10,
-    ) -> List[float]:
+    ) -> list[float]:
         n = len(vectors)
         epoch_losses = []
 
@@ -212,10 +232,14 @@ class DenoisingAutoencoder:
     def save(self, path: Path) -> None:
         np.savez(
             path,
-            W1=self.W1, b1=self.b1,
-            W2=self.W2, b2=self.b2,
-            W3=self.W3, b3=self.b3,
-            W4=self.W4, b4=self.b4,
+            W1=self.W1,
+            b1=self.b1,
+            W2=self.W2,
+            b2=self.b2,
+            W3=self.W3,
+            b3=self.b3,
+            W4=self.W4,
+            b4=self.b4,
             vocab_size=self.vocab_size,
             hidden_dim=self.hidden_dim,
             latent_dim=self.latent_dim,

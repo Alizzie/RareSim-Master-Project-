@@ -19,8 +19,6 @@ from raresim.ontology.disease_category import build_category_metadata
 from raresim.similarity_methods.transformer.config import (
     CACHE_ROOT,
     TEXT_PREVIEW_LENGTH,
-    METHOD_NAME,
-    PIPELINE_NAME,
 )
 from raresim.similarity_methods.transformer.explanation import (
     build_explanation,
@@ -35,10 +33,9 @@ from raresim.similarity_methods.transformer.methods import (
     load_embedding_backend,
 )
 from raresim.types.schemas import PatientProfile
-from raresim.types.result import SimilarityResult, MethodResults, RunConfig
+from raresim.types.result import SimilarityResult, RunStats
 from raresim.core.context import AppContext
 from raresim.core.pipeline import build_run_stats
-from raresim.utils.timer import Timer
 from raresim.utils.io import load_json, save_json, make_safe_model_name
 
 # ── Cache utilities ───────────────────────────────────────────────────────────
@@ -102,18 +99,6 @@ def save_persistent_cache(
 
 
 # ── Canonical deduplication ───────────────────────────────────────────────────
-
-
-def _merge_aliases(*alias_groups: list[str]) -> list[str]:
-    """Merge alias lists into a sorted unique list."""
-    aliases = set()
-
-    for group in alias_groups:
-        for alias in group:
-            if alias:
-                aliases.add(str(alias))
-
-    return sorted(aliases)
 
 
 def _get_result_profile(
@@ -404,12 +389,10 @@ class DiseaseRetriever:  # pylint: disable=too-many-instance-attributes
         patient: PatientProfile,
         top_k: int,
         candidate_pool_size: int = 200,
-    ) -> MethodResults:
+    ) -> list[SimilarityResult]:
         """Rank diseases for a patient using the specified model."""
         if model_name not in self.model_list:
             raise ValueError(f"Model not available: {model_name}")
-
-        method_timer = Timer(PIPELINE_NAME).start()
 
         self._ensure_model_resources(model_name)
 
@@ -444,19 +427,9 @@ class DiseaseRetriever:  # pylint: disable=too-many-instance-attributes
             top_k=top_k,
         )
 
-        elapsed = method_timer.stop()
+        return rankings
 
-        method_results = MethodResults(
-            method_name=METHOD_NAME,
-            pipeline_name=PIPELINE_NAME,
-            config=self._run_config(top_k=top_k),
-            stats=self._run_stats(rankings, elapsed),
-            rankings=rankings,
-        )
-
-        return method_results
-
-    def _run_stats(self, rankings: list[SimilarityResult], elapsed: float):
+    def run_stats(self, rankings: list[SimilarityResult], elapsed: float) -> RunStats:
         n_patient_terms = len(self.patient.get_terms(use_propagated=False))
         return build_run_stats(
             n_patient_terms_raw=n_patient_terms,
@@ -465,13 +438,4 @@ class DiseaseRetriever:  # pylint: disable=too-many-instance-attributes
             n_diseases_scored=len(rankings),
             n_diseases_skipped=0,
             computation_time=elapsed,
-        )
-
-    @staticmethod
-    def _run_config(top_k: int) -> RunConfig:
-        return RunConfig(
-            use_propagated_terms=False,
-            ic_threshold=None,
-            top_k=top_k,
-            use_canonical_profiles=True,
         )

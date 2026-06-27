@@ -13,10 +13,10 @@ Models (encoder-only, produce embeddings):
 """
 
 from raresim.core.context import AppContext
-from raresim.core.pipeline import PipelineConfig
+from raresim.core.pipeline import PipelineConfig, sort_and_rank
 from raresim.types.result import MethodResults
 from raresim.types.schemas import PatientProfile
-from raresim.utils.timer import timer
+from raresim.utils.timer import timer, Timer
 from raresim.utils._pipeline_runner import run_pipeline_main
 from raresim.similarity_methods.transformer.config import (
     CANDIDATE_POOL_SIZE,
@@ -51,14 +51,27 @@ def run(
     all_results: dict[str, MethodResults] = {}
     for model_name in selected:
         print(f"\nRunning model: {model_name}")
+        timer = Timer(model_name).start()
 
         with timer(f"rank {model_name}"):
-            all_results[model_name] = retriever.rank(
+            rankings = retriever.rank(
                 model_name=model_name,
                 patient=patient,
                 top_k=config.top_k,
                 candidate_pool_size=CANDIDATE_POOL_SIZE,
             )
+
+        elapsed = timer.stop()
+
+        stats = retriever.run_stats(rankings, elapsed)
+
+        all_results[model_name] = sort_and_rank(
+            rankings,
+            config,
+            stats,
+            model_name,
+            PIPELINE_NAME,
+        )
 
     return all_results
 

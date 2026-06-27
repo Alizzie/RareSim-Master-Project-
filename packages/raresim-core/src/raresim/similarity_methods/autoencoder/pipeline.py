@@ -15,58 +15,84 @@ The denoising part:
     the underlying phenotype structure, not just memorize the term presence
 """
 
+import hashlib
+from pathlib import Path
 import numpy as np
 
 from raresim.core.context import AppContext
-from raresim.types.result import SimilarityResult, MethodResults
-from raresim.core.pipeline import (
-    PipelineConfig,
-    build_run_stats,
-    sort_and_rank,
-)
+from raresim.core.pipeline import PipelineConfig, build_run_stats, sort_and_rank
 from raresim.ontology.disease_category import build_category_metadata
+from raresim.types.result import SimilarityResult, MethodResults
 from raresim.similarity_methods.autoencoder.methods import (
     DenoisingAutoencoder,
     build_vocabulary,
     terms_to_vector,
-    euclidean_similarity, 
+    euclidean_similarity,
 )
-from raresim.types.result import MethodResults, SimilarityResult
+from raresim.similarity_methods.autoencoder.explanation import build_explanation
 from raresim.types.schemas import PatientProfile
-from raresim.utils.explanation import SET_BASED_EXPLANATION, expand
-from raresim.utils.io import load_json, save_json
-from raresim.utils.paths import OUTPUTS_DIR, PATIENT_DIR
-from raresim.utils.patient_loader import load_patient
+from raresim.utils._pipeline_runner import run_pipeline_main
+from raresim.utils.io import save_json, load_json
 from raresim.utils.timer import Timer
 
-AUTOENCODER_DIR = OUTPUTS_DIR / "autoencoder"
-PIPELINE_NAME = "autoencoder"
-METHOD_NAME = "denoising_autoencoder"
-
-MODEL_PATH = AUTOENCODER_DIR / "autoencoder_model.npz"
-VOCAB_PATH = AUTOENCODER_DIR / "vocab.json"
 
 from raresim.similarity_methods.autoencoder.config import (
-    HIDDEN_DIM, LATENT_DIM, LEARNING_RATE, MOMENTUM, NOISE_RATE, EPOCHS, BATCH_SIZE
+    ALL_METHOD,
+    METHOD_NAME,
+    PIPELINE_NAME,
+    AUTOENCODER_DIR,
+    MODEL_CACHE_DIR,
+    HIDDEN_DIM,
+    LATENT_DIM,
+    LEARNING_RATE,
+    MOMENTUM,
+    NOISE_RATE,
+    EPOCHS,
+    BATCH_SIZE,
 )
 
 
-def train_autoencoder(
+def _cache_paths(disease_profiles: dict, terms_key: str) -> tuple[Path, Path]:
+    """
+    Build model + vocab cache paths keyed on the inputs that change the model.
+
+    Includes the vocabulary fingerprint (the model's input dimension depends on
+    it) plus terms_key and the architecture/training hyperparameters, so a
+    different profile set or param sweep never loads a mismatched model.
+    """
+    vocab = build_vocabulary(disease_profiles, terms_key)
+    key_params = {
+        "n_vocab": len(vocab),
+        "vocab_hash": hashlib.sha256("|".join(vocab).encode("utf-8")).hexdigest()[:12],
+        "terms_key": terms_key,
+        "hidden": HIDDEN_DIM,
+        "latent": LATENT_DIM,
+        "lr": LEARNING_RATE,
+        "momentum": MOMENTUM,
+        "noise": NOISE_RATE,
+        "epochs": EPOCHS,
+        "batch": BATCH_SIZE,
+    }
+    key = "_".join(f"{k}={v}" for k, v in sorted(key_params.items()))
+    digest = hashlib.sha256(key.encode("utf-8")).hexdigest()[:12]
+    return (
+        MODEL_CACHE_DIR / f"autoencoder_{digest}.npz",
+        MODEL_CACHE_DIR / f"vocab_{digest}.json",
+    )
+
+
+def _train(
     disease_profiles: dict[str, dict],
+    vocab: list[str],
+    term_to_idx: dict[str, int],
     terms_key: str = "propagated_hpo_terms",
-) -> tuple[DenoisingAutoencoder, list[str], dict[str, int]]:
+) -> DenoisingAutoencoder:
     """
     Build vocabulary, vectorize disease profiles, and train the autoencoder.
 
     Returns:
         trained model, vocabulary list, and term-to-index mapping.
     """
-    print("  Building vocabulary...")
-    raw_vocab = build_vocabulary(disease_profiles, terms_key)
-    vocab = [str(term) for term in raw_vocab]
-    term_to_idx = {term: index for index, term in enumerate(vocab)}
-
-    print(f"  Vocabulary size: {len(vocab)} HPO terms")
 
     print("  Vectorizing disease profiles...")
     vectors = np.array(
@@ -94,51 +120,32 @@ def train_autoencoder(
     )
     model.train(vectors, epochs=EPOCHS, batch_size=BATCH_SIZE)
 
-    return model, vocab, term_to_idx
-
-
-def load_vocab(path) -> list[str]:
-    """Load the saved HPO vocabulary and ensure it is a list of strings."""
-    raw_vocab = load_json(path)
-
-    if not isinstance(raw_vocab, list):
-        raise TypeError(
-            "Expected vocabulary file to contain a list, "
-            f"got {type(raw_vocab).__name__}"
-        )
-
-    return [str(term) for term in raw_vocab]
+    return model
 
 
 def load_or_train(
     disease_profiles: dict[str, dict],
     terms_key: str = "propagated_hpo_terms",
 ) -> tuple[DenoisingAutoencoder, list[str], dict[str, int]]:
-    """
-    Load saved model and vocabulary if they exist, otherwise train from scratch.
+    """Load a cached model for this profile-set + param combination, or train."""
+    MODEL_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    model_path, vocab_path = _cache_paths(disease_profiles, terms_key)
 
-    Delete outputs/autoencoder/ to force retraining.
-    """
-    AUTOENCODER_DIR.mkdir(parents=True, exist_ok=True)
+    if model_path.exists() and vocab_path.exists():
+        print(f"  Loading cached autoencoder: {model_path.name}")
+        model = DenoisingAutoencoder.load(model_path)
+        vocab = [str(t) for t in load_json(vocab_path)]
+        return model, vocab, {t: i for i, t in enumerate(vocab)}
 
-    if MODEL_PATH.exists() and VOCAB_PATH.exists():
-        print("  Loading saved autoencoder model...")
-        model = DenoisingAutoencoder.load(MODEL_PATH)
-        vocab = load_vocab(VOCAB_PATH)
-        term_to_idx = {term: index for index, term in enumerate(vocab)}
+    print("  No cached model for these inputs, training from scratch...")
+    vocab = [str(t) for t in build_vocabulary(disease_profiles, terms_key)]
+    term_to_idx = {t: i for i, t in enumerate(vocab)}
+    print(f"  Vocabulary size: {len(vocab)} HPO terms")
+    model = _train(disease_profiles, vocab, term_to_idx, terms_key)
 
-        print(f"  Vocabulary size: {len(vocab)} HPO terms")
-        return model, vocab, term_to_idx
-
-    print("  No saved model found, training from scratch...")
-    model, vocab, term_to_idx = train_autoencoder(
-        disease_profiles,
-        terms_key,
-    )
-
-    model.save(MODEL_PATH)
-    save_json(vocab, VOCAB_PATH)
-    print(f"  Model saved to: {MODEL_PATH}")
+    model.save(model_path)
+    save_json(vocab, vocab_path)
+    print(f"  Model saved to: {model_path}")
 
     return model, vocab, term_to_idx
 
@@ -148,7 +155,8 @@ def run(  # pylint: disable=too-many-locals
     selected: list[str],
     config: PipelineConfig,
     ctx: AppContext,
-) -> dict[str, list[SimilarityResult]]:
+) -> dict[str, MethodResults]:
+    """Run the denoising autoencoder similarity pipeline."""
     if METHOD_NAME not in selected:
         return {}
 
@@ -157,7 +165,8 @@ def run(  # pylint: disable=too-many-locals
         terms_key=config.terms_key,
     )
 
-    patient_terms = set(patient.get_terms(config.use_propagated_terms))
+    patient_raw_terms = patient.hpo_terms
+    patient_terms = patient.get_terms(config.use_propagated_terms)
 
     if not patient_terms:
         print("[autoencoder] Warning: patient has no HPO terms.")
@@ -165,19 +174,6 @@ def run(  # pylint: disable=too-many-locals
 
     patient_vec = terms_to_vector(patient_terms, vocab, term_to_idx)
     patient_latent = model.encode(patient_vec.reshape(1, -1))[0]
-
-    sample_latents = []
-    for disease_id, profile in list(ctx.disease_profiles.items())[:50]:
-        disease_terms = set(profile.get(config.terms_key, []))
-        if disease_terms:
-            vec = terms_to_vector(disease_terms, vocab, term_to_idx)
-            sample_latents.append(model.encode(vec.reshape(1, -1))[0])
-
-    lat = np.array(sample_latents)
-    always_positive = (lat > 0).all(axis=0).sum()
-    print(f"Dims always positive: {always_positive}/{lat.shape[1]}")
-    for i in range(5):
-        print(f"euc(0,{i+1}) = {euclidean_similarity(lat[0], lat[i+1]):.4f}")
 
     timer = Timer(METHOD_NAME).start()
     results = []
@@ -211,59 +207,42 @@ def run(  # pylint: disable=too-many-locals
                 matched_aliases=category_metadata["matched_aliases"],
                 score=score,
                 method_name=METHOD_NAME,
-                explanation=expand(
-                    {"method": METHOD_NAME, "score": score},
-                    patient_terms,
-                    disease_terms,
-                    expanders=SET_BASED_EXPLANATION,
+                explanation=build_explanation(
+                    method_name=METHOD_NAME,
+                    score=score,
+                    patient_terms=patient_terms,
+                    disease_terms=disease_terms,
+                    hpo_labels=ctx.hpo_labels,
+                    ic_values=ctx.ic_values,
+                    patient_raw_terms=patient_raw_terms,
                 ),
             )
         )
 
     metadata = build_run_stats(
-    n_patient_terms_raw=len(patient_terms),
-    n_patient_terms_propagated=len(patient_terms),
-    n_patient_terms_used=len(patient_terms),
-    n_diseases_scored=len(results),
-    n_diseases_skipped=0,
-    computation_time=timer.stop(),
+        n_patient_terms_raw=len(patient_raw_terms),
+        n_patient_terms_propagated=len(patient.get_terms(use_propagated=True)),
+        n_patient_terms_used=len(patient_terms),
+        n_diseases_scored=len(results),
+        n_diseases_skipped=n_skipped,
+        computation_time=timer.stop(),
     )
 
-    return {METHOD_NAME: sort_and_rank(results, config, metadata, METHOD_NAME, PIPELINE_NAME)}
+    return {
+        METHOD_NAME: sort_and_rank(
+            results, config, metadata, METHOD_NAME, PIPELINE_NAME
+        )
+    }
 
 
 def main() -> None:
     """Load shared artifacts and run the autoencoder pipeline."""
-    config = PipelineConfig()
-    patient = load_patient(PATIENT_DIR / "example_patient.json")
-    ctx = AppContext.load(
-        patient=patient,
-        use_canonical_profiles=config.use_canonical_profiles,
+    run_pipeline_main(
+        pipeline_name=PIPELINE_NAME,
+        method_names=ALL_METHOD,
+        run_fn=run,
+        output_dir=AUTOENCODER_DIR,
     )
-
-    results = run(patient, [METHOD_NAME], config, ctx)
-
-    AUTOENCODER_DIR.mkdir(parents=True, exist_ok=True)
-
-    save_json(
-        {method: method_results.to_dict() for method, method_results in results.items()},
-        AUTOENCODER_DIR / f"{PIPELINE_NAME}_top{config.top_k}.json",
-    )
-
-    for method_name, method_results in results.items():
-        save_json(
-            method_results.to_dict(),
-            AUTOENCODER_DIR / f"{method_name}_top{config.top_k}.json",
-        )
-
-        print(f"\nTop results for {method_name}:")
-        for result in method_results.rankings:
-            print(
-                f"  rank={result.rank:>2} | "
-                f"{result.disease_id:<15} | "
-                f"score={result.score:.4f} | "
-                f"{result.label}"
-            )
 
 
 if __name__ == "__main__":
