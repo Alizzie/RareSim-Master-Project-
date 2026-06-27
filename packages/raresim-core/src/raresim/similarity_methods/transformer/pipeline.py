@@ -51,7 +51,7 @@ def run(
     all_results: dict[str, MethodResults] = {}
     for model_name in selected:
         print(f"\nRunning model: {model_name}")
-        timer = Timer(model_name).start()
+        model_timer = Timer(model_name).start()
 
         with timer(f"rank {model_name}"):
             rankings = retriever.rank(
@@ -61,7 +61,7 @@ def run(
                 candidate_pool_size=CANDIDATE_POOL_SIZE,
             )
 
-        elapsed = timer.stop()
+        elapsed = model_timer.stop()
 
         stats = retriever.run_stats(rankings, elapsed)
 

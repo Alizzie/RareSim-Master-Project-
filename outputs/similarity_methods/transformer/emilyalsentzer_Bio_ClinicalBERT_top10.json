@@ -1,0 +1,687 @@
+{
+  "schema_version": "1.1",
+  "method_name": "emilyalsentzer/Bio_ClinicalBERT",
+  "pipeline_name": "transformer",
+  "config": {
+    "use_propagated_terms": true,
+    "ic_threshold": 1.5,
+    "top_k": 10,
+    "use_canonical_profiles": true
+  },
+  "stats": {
+    "n_patient_terms_raw": 3,
+    "n_patient_terms_propagated": 0,
+    "n_patient_terms_used": 3,
+    "n_diseases_scored": 10,
+    "n_diseases_skipped": 0,
+    "computation_time_seconds": 0.0232
+  },
+  "rankings": [
+    {
+      "rank": 1,
+      "disease_id": "MONDO:0032733",
+      "label": "global developmental delay, progressive ataxia, and elevated glutamine",
+      "profile_type": null,
+      "category_source_id": null,
+      "category_path": [],
+      "matched_aliases": [],
+      "score": 0.968616,
+      "method_name": "transformer",
+      "explanation": {
+        "summary": "Transformer embedding similarity (emilyalsentzer/Bio_ClinicalBERT): 0.9686. The score is based on dense text embeddings, not IC-based HPO scoring.",
+        "coverage": {
+          "patient_hpo_coverage": 0.3333,
+          "disease_hpo_coverage": 0.1429,
+          "direction_asymmetry": 0.1905,
+          "n_patient_terms": 3,
+          "n_disease_terms": 7,
+          "n_matched_terms": 1,
+          "n_unmatched_patient_terms": 2
+        },
+        "matched_terms": [
+          {
+            "id": "HP:0001263",
+            "label": "Global developmental delay",
+            "ic": 1.9041,
+            "match_type": "direct",
+            "match_score": 1.0
+          }
+        ],
+        "unmatched_patient_terms": [
+          {
+            "id": "HP:0002470",
+            "label": "Nonprogressive cerebellar ataxia",
+            "ic": 7.5901
+          },
+          {
+            "id": "HP:0001903",
+            "label": "Anemia",
+            "ic": 3.0759
+          }
+        ],
+        "method_specific": {
+          "embedding_method": "transformer",
+          "embedding_input": "patient text and disease profile text",
+          "embedding_normalization": "l2",
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+          "model_type": "hf_encoder",
+          "uses_ic_values": false,
+          "uses_dense_embeddings": true,
+          "uses_direct_hpo_overlap_for_score": false,
+          "deduplicated_to_canonical": true,
+          "score_note": "Cosine similarity between dense text embeddings. Patient and disease profiles are encoded as vectors; higher scores indicate more similar text representations.",
+          "interpretation_note": "Coverage and matched-term fields are descriptive HPO overlap on raw terms, shown for readability. They do NOT drive the embedding score and are not comparable to the propagated-term coverage of semantic methods.",
+          "patient_text_preview": "Patient description: Patient with developmental delay, cerebellar ataxia, and anemia. Patient phenotypes: Anemia; Global developmental delay; Nonprogressive cerebellar ataxia",
+          "disease_text_preview": "Disease: global developmental delay, progressive ataxia, and elevated glutamine Phenotypes: Delayed speech and language development; Global developmental delay; Cerebellar atrophy; Progressive cerebellar ataxia; Delayed gross motor development; Febrile seizure (within the age range of 3 months to 6 "
+        },
+        "diagnostics": {
+          "raw_score": 0.968616
+        }
+      }
+    },
+    {
+      "rank": 2,
+      "disease_id": "ORPHA:1397",
+      "label": "Hydrocephaly-cerebellar agenesis syndrome",
+      "profile_type": null,
+      "category_source_id": "ORPHA:1397",
+      "category_path": [
+        {
+          "disease_id": "ORPHA:557493",
+          "label": "Disorder",
+          "profile_type": null,
+          "profile_type_label": null
+        }
+      ],
+      "matched_aliases": [
+        "HP:0040281",
+        "MONDO:0010612"
+      ],
+      "score": 0.968134,
+      "method_name": "transformer",
+      "explanation": {
+        "summary": "Transformer embedding similarity (emilyalsentzer/Bio_ClinicalBERT): 0.9681. The score is based on dense text embeddings, not IC-based HPO scoring.",
+        "coverage": {
+          "patient_hpo_coverage": 0.0,
+          "disease_hpo_coverage": 0.0,
+          "direction_asymmetry": 0.0,
+          "n_patient_terms": 3,
+          "n_disease_terms": 5,
+          "n_matched_terms": 0,
+          "n_unmatched_patient_terms": 3
+        },
+        "matched_terms": [],
+        "unmatched_patient_terms": [
+          {
+            "id": "HP:0002470",
+            "label": "Nonprogressive cerebellar ataxia",
+            "ic": 7.5901
+          },
+          {
+            "id": "HP:0001903",
+            "label": "Anemia",
+            "ic": 3.0759
+          },
+          {
+            "id": "HP:0001263",
+            "label": "Global developmental delay",
+            "ic": 1.9041
+          }
+        ],
+        "method_specific": {
+          "embedding_method": "transformer",
+          "embedding_input": "patient text and disease profile text",
+          "embedding_normalization": "l2",
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+          "model_type": "hf_encoder",
+          "uses_ic_values": false,
+          "uses_dense_embeddings": true,
+          "uses_direct_hpo_overlap_for_score": false,
+          "deduplicated_to_canonical": true,
+          "score_note": "Cosine similarity between dense text embeddings. Patient and disease profiles are encoded as vectors; higher scores indicate more similar text representations.",
+          "interpretation_note": "Coverage and matched-term fields are descriptive HPO overlap on raw terms, shown for readability. They do NOT drive the embedding score and are not comparable to the propagated-term coverage of semantic methods.",
+          "patient_text_preview": "Patient description: Patient with developmental delay, cerebellar ataxia, and anemia. Patient phenotypes: Anemia; Global developmental delay; Nonprogressive cerebellar ataxia",
+          "disease_text_preview": "Disease: Hydrocephaly-cerebellar agenesis syndrome Description: This syndrome is characterized by infantile hypotonia followed by onset of ataxia, cataract and intellectual deficit by preschool age. Cerebral atrophy was also reported. Phenotypes: Cataract; Intellectual disability; Ataxia; Hypotonia;"
+        },
+        "diagnostics": {
+          "raw_score": 0.968134
+        }
+      }
+    },
+    {
+      "rank": 3,
+      "disease_id": "ORPHA:557056",
+      "label": "Global developmental delay, progressive ataxia, and elevated glutamine",
+      "profile_type": null,
+      "category_source_id": "ORPHA:557056",
+      "category_path": [
+        {
+          "disease_id": "ORPHA:557493",
+          "label": "Disorder",
+          "profile_type": null,
+          "profile_type_label": null
+        }
+      ],
+      "matched_aliases": [
+        "3/3",
+        "MONDO:0034146",
+        "OMIM:618412"
+      ],
+      "score": 0.966475,
+      "method_name": "transformer",
+      "explanation": {
+        "summary": "Transformer embedding similarity (emilyalsentzer/Bio_ClinicalBERT): 0.9665. The score is based on dense text embeddings, not IC-based HPO scoring.",
+        "coverage": {
+          "patient_hpo_coverage": 0.3333,
+          "disease_hpo_coverage": 0.1111,
+          "direction_asymmetry": 0.2222,
+          "n_patient_terms": 3,
+          "n_disease_terms": 9,
+          "n_matched_terms": 1,
+          "n_unmatched_patient_terms": 2
+        },
+        "matched_terms": [
+          {
+            "id": "HP:0001263",
+            "label": "Global developmental delay",
+            "ic": 1.9041,
+            "match_type": "direct",
+            "match_score": 1.0
+          }
+        ],
+        "unmatched_patient_terms": [
+          {
+            "id": "HP:0002470",
+            "label": "Nonprogressive cerebellar ataxia",
+            "ic": 7.5901
+          },
+          {
+            "id": "HP:0001903",
+            "label": "Anemia",
+            "ic": 3.0759
+          }
+        ],
+        "method_specific": {
+          "embedding_method": "transformer",
+          "embedding_input": "patient text and disease profile text",
+          "embedding_normalization": "l2",
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+          "model_type": "hf_encoder",
+          "uses_ic_values": false,
+          "uses_dense_embeddings": true,
+          "uses_direct_hpo_overlap_for_score": false,
+          "deduplicated_to_canonical": true,
+          "score_note": "Cosine similarity between dense text embeddings. Patient and disease profiles are encoded as vectors; higher scores indicate more similar text representations.",
+          "interpretation_note": "Coverage and matched-term fields are descriptive HPO overlap on raw terms, shown for readability. They do NOT drive the embedding score and are not comparable to the propagated-term coverage of semantic methods.",
+          "patient_text_preview": "Patient description: Patient with developmental delay, cerebellar ataxia, and anemia. Patient phenotypes: Anemia; Global developmental delay; Nonprogressive cerebellar ataxia",
+          "disease_text_preview": "Disease: Global developmental delay, progressive ataxia, and elevated glutamine Phenotypes: Autosomal recessive inheritance; Delayed speech and language development; Global developmental delay; Cerebellar atrophy; Progressive cerebellar ataxia; Delayed gross motor development; Febrile seizure (withi"
+        },
+        "diagnostics": {
+          "raw_score": 0.966475
+        }
+      }
+    },
+    {
+      "rank": 4,
+      "disease_id": "ORPHA:458798",
+      "label": "Spinocerebellar ataxia 41",
+      "profile_type": null,
+      "category_source_id": "ORPHA:458798",
+      "category_path": [
+        {
+          "disease_id": "ORPHA:557493",
+          "label": "Disorder",
+          "profile_type": null,
+          "profile_type_label": null
+        }
+      ],
+      "matched_aliases": [
+        "HP:0040282",
+        "MONDO:0014626"
+      ],
+      "score": 0.965774,
+      "method_name": "transformer",
+      "explanation": {
+        "summary": "Transformer embedding similarity (emilyalsentzer/Bio_ClinicalBERT): 0.9658. The score is based on dense text embeddings, not IC-based HPO scoring.",
+        "coverage": {
+          "patient_hpo_coverage": 0.0,
+          "disease_hpo_coverage": 0.0,
+          "direction_asymmetry": 0.0,
+          "n_patient_terms": 3,
+          "n_disease_terms": 9,
+          "n_matched_terms": 0,
+          "n_unmatched_patient_terms": 3
+        },
+        "matched_terms": [],
+        "unmatched_patient_terms": [
+          {
+            "id": "HP:0002470",
+            "label": "Nonprogressive cerebellar ataxia",
+            "ic": 7.5901
+          },
+          {
+            "id": "HP:0001903",
+            "label": "Anemia",
+            "ic": 3.0759
+          },
+          {
+            "id": "HP:0001263",
+            "label": "Global developmental delay",
+            "ic": 1.9041
+          }
+        ],
+        "method_specific": {
+          "embedding_method": "transformer",
+          "embedding_input": "patient text and disease profile text",
+          "embedding_normalization": "l2",
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+          "model_type": "hf_encoder",
+          "uses_ic_values": false,
+          "uses_dense_embeddings": true,
+          "uses_direct_hpo_overlap_for_score": false,
+          "deduplicated_to_canonical": true,
+          "score_note": "Cosine similarity between dense text embeddings. Patient and disease profiles are encoded as vectors; higher scores indicate more similar text representations.",
+          "interpretation_note": "Coverage and matched-term fields are descriptive HPO overlap on raw terms, shown for readability. They do NOT drive the embedding score and are not comparable to the propagated-term coverage of semantic methods.",
+          "patient_text_preview": "Patient description: Patient with developmental delay, cerebellar ataxia, and anemia. Patient phenotypes: Anemia; Global developmental delay; Nonprogressive cerebellar ataxia",
+          "disease_text_preview": "Disease: Spinocerebellar ataxia 41 Description: Spinocerebellar ataxia type 41 is a rare autosomal dominant cerebellar ataxia type III disorder characterized by adult-onset progressive imbalance and loss of coordination associated with an ataxic gait. Mild atrophy of the cerebellar vermis has been r"
+        },
+        "diagnostics": {
+          "raw_score": 0.965774
+        }
+      }
+    },
+    {
+      "rank": 5,
+      "disease_id": "OMIM:212890",
+      "label": "Cerebellar ataxia, benign, with thermoanalgesia",
+      "profile_type": null,
+      "category_source_id": null,
+      "category_path": [],
+      "matched_aliases": [],
+      "score": 0.964373,
+      "method_name": "transformer",
+      "explanation": {
+        "summary": "Transformer embedding similarity (emilyalsentzer/Bio_ClinicalBERT): 0.9644. The score is based on dense text embeddings, not IC-based HPO scoring.",
+        "coverage": {
+          "patient_hpo_coverage": 0.0,
+          "disease_hpo_coverage": 0.0,
+          "direction_asymmetry": 0.0,
+          "n_patient_terms": 3,
+          "n_disease_terms": 5,
+          "n_matched_terms": 0,
+          "n_unmatched_patient_terms": 3
+        },
+        "matched_terms": [],
+        "unmatched_patient_terms": [
+          {
+            "id": "HP:0002470",
+            "label": "Nonprogressive cerebellar ataxia",
+            "ic": 7.5901
+          },
+          {
+            "id": "HP:0001903",
+            "label": "Anemia",
+            "ic": 3.0759
+          },
+          {
+            "id": "HP:0001263",
+            "label": "Global developmental delay",
+            "ic": 1.9041
+          }
+        ],
+        "method_specific": {
+          "embedding_method": "transformer",
+          "embedding_input": "patient text and disease profile text",
+          "embedding_normalization": "l2",
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+          "model_type": "hf_encoder",
+          "uses_ic_values": false,
+          "uses_dense_embeddings": true,
+          "uses_direct_hpo_overlap_for_score": false,
+          "deduplicated_to_canonical": true,
+          "score_note": "Cosine similarity between dense text embeddings. Patient and disease profiles are encoded as vectors; higher scores indicate more similar text representations.",
+          "interpretation_note": "Coverage and matched-term fields are descriptive HPO overlap on raw terms, shown for readability. They do NOT drive the embedding score and are not comparable to the propagated-term coverage of semantic methods.",
+          "patient_text_preview": "Patient description: Patient with developmental delay, cerebellar ataxia, and anemia. Patient phenotypes: Anemia; Global developmental delay; Nonprogressive cerebellar ataxia",
+          "disease_text_preview": "Disease: Cerebellar ataxia, benign, with thermoanalgesia Phenotypes: Autosomal recessive inheritance; Progressive cerebellar ataxia; Axonal loss; Late onset; Impaired temperature sensation"
+        },
+        "diagnostics": {
+          "raw_score": 0.964373
+        }
+      }
+    },
+    {
+      "rank": 6,
+      "disease_id": "OMIM:617643",
+      "label": "Cerebellar atrophy, developmental delay, and seizures",
+      "profile_type": null,
+      "category_source_id": null,
+      "category_path": [],
+      "matched_aliases": [
+        "1/2"
+      ],
+      "score": 0.963776,
+      "method_name": "transformer",
+      "explanation": {
+        "summary": "Transformer embedding similarity (emilyalsentzer/Bio_ClinicalBERT): 0.9638. The score is based on dense text embeddings, not IC-based HPO scoring.",
+        "coverage": {
+          "patient_hpo_coverage": 0.3333,
+          "disease_hpo_coverage": 0.1111,
+          "direction_asymmetry": 0.2222,
+          "n_patient_terms": 3,
+          "n_disease_terms": 9,
+          "n_matched_terms": 1,
+          "n_unmatched_patient_terms": 2
+        },
+        "matched_terms": [
+          {
+            "id": "HP:0001263",
+            "label": "Global developmental delay",
+            "ic": 1.9041,
+            "match_type": "direct",
+            "match_score": 1.0
+          }
+        ],
+        "unmatched_patient_terms": [
+          {
+            "id": "HP:0002470",
+            "label": "Nonprogressive cerebellar ataxia",
+            "ic": 7.5901
+          },
+          {
+            "id": "HP:0001903",
+            "label": "Anemia",
+            "ic": 3.0759
+          }
+        ],
+        "method_specific": {
+          "embedding_method": "transformer",
+          "embedding_input": "patient text and disease profile text",
+          "embedding_normalization": "l2",
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+          "model_type": "hf_encoder",
+          "uses_ic_values": false,
+          "uses_dense_embeddings": true,
+          "uses_direct_hpo_overlap_for_score": false,
+          "deduplicated_to_canonical": true,
+          "score_note": "Cosine similarity between dense text embeddings. Patient and disease profiles are encoded as vectors; higher scores indicate more similar text representations.",
+          "interpretation_note": "Coverage and matched-term fields are descriptive HPO overlap on raw terms, shown for readability. They do NOT drive the embedding score and are not comparable to the propagated-term coverage of semantic methods.",
+          "patient_text_preview": "Patient description: Patient with developmental delay, cerebellar ataxia, and anemia. Patient phenotypes: Anemia; Global developmental delay; Nonprogressive cerebellar ataxia",
+          "disease_text_preview": "Disease: Cerebellar atrophy, developmental delay, and seizures Phenotypes: Autosomal recessive inheritance; Delayed speech and language development; Global developmental delay; Cerebellar atrophy; Generalized hypotonia; EEG abnormality; Infantile onset; Bilateral tonic-clonic seizure with focal onse"
+        },
+        "diagnostics": {
+          "raw_score": 0.963776
+        }
+      }
+    },
+    {
+      "rank": 7,
+      "disease_id": "ORPHA:448251",
+      "label": "Lichtenstein-Knorr syndrome",
+      "profile_type": null,
+      "category_source_id": "ORPHA:448251",
+      "category_path": [
+        {
+          "disease_id": "ORPHA:557493",
+          "label": "Disorder",
+          "profile_type": null,
+          "profile_type_label": null
+        }
+      ],
+      "matched_aliases": [
+        "1/3",
+        "MONDO:0014572",
+        "OMIM:616291"
+      ],
+      "score": 0.963639,
+      "method_name": "transformer",
+      "explanation": {
+        "summary": "Transformer embedding similarity (emilyalsentzer/Bio_ClinicalBERT): 0.9636. The score is based on dense text embeddings, not IC-based HPO scoring.",
+        "coverage": {
+          "patient_hpo_coverage": 0.0,
+          "disease_hpo_coverage": 0.0,
+          "direction_asymmetry": 0.0,
+          "n_patient_terms": 3,
+          "n_disease_terms": 21,
+          "n_matched_terms": 0,
+          "n_unmatched_patient_terms": 3
+        },
+        "matched_terms": [],
+        "unmatched_patient_terms": [
+          {
+            "id": "HP:0002470",
+            "label": "Nonprogressive cerebellar ataxia",
+            "ic": 7.5901
+          },
+          {
+            "id": "HP:0001903",
+            "label": "Anemia",
+            "ic": 3.0759
+          },
+          {
+            "id": "HP:0001263",
+            "label": "Global developmental delay",
+            "ic": 1.9041
+          }
+        ],
+        "method_specific": {
+          "embedding_method": "transformer",
+          "embedding_input": "patient text and disease profile text",
+          "embedding_normalization": "l2",
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+          "model_type": "hf_encoder",
+          "uses_ic_values": false,
+          "uses_dense_embeddings": true,
+          "uses_direct_hpo_overlap_for_score": false,
+          "deduplicated_to_canonical": true,
+          "score_note": "Cosine similarity between dense text embeddings. Patient and disease profiles are encoded as vectors; higher scores indicate more similar text representations.",
+          "interpretation_note": "Coverage and matched-term fields are descriptive HPO overlap on raw terms, shown for readability. They do NOT drive the embedding score and are not comparable to the propagated-term coverage of semantic methods.",
+          "patient_text_preview": "Patient description: Patient with developmental delay, cerebellar ataxia, and anemia. Patient phenotypes: Anemia; Global developmental delay; Nonprogressive cerebellar ataxia",
+          "disease_text_preview": "Disease: Lichtenstein-Knorr syndrome Description: An autosomal recessive spinocerebellar ataxia caused by disease-causing variants in the SLC9A1 gene, characterized by early-onset cerebellar ataxia, cognitive or developmental delay, seizure, and cerebellar atrophy. Patients may also present with var"
+        },
+        "diagnostics": {
+          "raw_score": 0.963639
+        }
+      }
+    },
+    {
+      "rank": 8,
+      "disease_id": "MONDO:0014104",
+      "label": "cerebellar ataxia, intellectual disability, and dysequilibrium syndrome 4",
+      "profile_type": null,
+      "category_source_id": null,
+      "category_path": [],
+      "matched_aliases": [],
+      "score": 0.963349,
+      "method_name": "transformer",
+      "explanation": {
+        "summary": "Transformer embedding similarity (emilyalsentzer/Bio_ClinicalBERT): 0.9633. The score is based on dense text embeddings, not IC-based HPO scoring.",
+        "coverage": {
+          "patient_hpo_coverage": 0.0,
+          "disease_hpo_coverage": 0.0,
+          "direction_asymmetry": 0.0,
+          "n_patient_terms": 3,
+          "n_disease_terms": 8,
+          "n_matched_terms": 0,
+          "n_unmatched_patient_terms": 3
+        },
+        "matched_terms": [],
+        "unmatched_patient_terms": [
+          {
+            "id": "HP:0002470",
+            "label": "Nonprogressive cerebellar ataxia",
+            "ic": 7.5901
+          },
+          {
+            "id": "HP:0001903",
+            "label": "Anemia",
+            "ic": 3.0759
+          },
+          {
+            "id": "HP:0001263",
+            "label": "Global developmental delay",
+            "ic": 1.9041
+          }
+        ],
+        "method_specific": {
+          "embedding_method": "transformer",
+          "embedding_input": "patient text and disease profile text",
+          "embedding_normalization": "l2",
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+          "model_type": "hf_encoder",
+          "uses_ic_values": false,
+          "uses_dense_embeddings": true,
+          "uses_direct_hpo_overlap_for_score": false,
+          "deduplicated_to_canonical": true,
+          "score_note": "Cosine similarity between dense text embeddings. Patient and disease profiles are encoded as vectors; higher scores indicate more similar text representations.",
+          "interpretation_note": "Coverage and matched-term fields are descriptive HPO overlap on raw terms, shown for readability. They do NOT drive the embedding score and are not comparable to the propagated-term coverage of semantic methods.",
+          "patient_text_preview": "Patient description: Patient with developmental delay, cerebellar ataxia, and anemia. Patient phenotypes: Anemia; Global developmental delay; Nonprogressive cerebellar ataxia",
+          "disease_text_preview": "Disease: cerebellar ataxia, intellectual disability, and dysequilibrium syndrome 4 Description: Any dysequilibrium syndrome in which the cause of the disease is a mutation in the ATP8A2 gene. Phenotypes: Intellectual disability; Dysarthria; Cerebellar atrophy; Truncal ataxia; Cerebral cortical atrop"
+        },
+        "diagnostics": {
+          "raw_score": 0.963349
+        }
+      }
+    },
+    {
+      "rank": 9,
+      "disease_id": "MONDO:0859152",
+      "label": "neurodevelopmental disorder with cerebellar atrophy and motor dysfunction",
+      "profile_type": null,
+      "category_source_id": null,
+      "category_path": [],
+      "matched_aliases": [],
+      "score": 0.963103,
+      "method_name": "transformer",
+      "explanation": {
+        "summary": "Transformer embedding similarity (emilyalsentzer/Bio_ClinicalBERT): 0.9631. The score is based on dense text embeddings, not IC-based HPO scoring.",
+        "coverage": {
+          "patient_hpo_coverage": 0.3333,
+          "disease_hpo_coverage": 0.1,
+          "direction_asymmetry": 0.2333,
+          "n_patient_terms": 3,
+          "n_disease_terms": 10,
+          "n_matched_terms": 1,
+          "n_unmatched_patient_terms": 2
+        },
+        "matched_terms": [
+          {
+            "id": "HP:0001263",
+            "label": "Global developmental delay",
+            "ic": 1.9041,
+            "match_type": "direct",
+            "match_score": 1.0
+          }
+        ],
+        "unmatched_patient_terms": [
+          {
+            "id": "HP:0002470",
+            "label": "Nonprogressive cerebellar ataxia",
+            "ic": 7.5901
+          },
+          {
+            "id": "HP:0001903",
+            "label": "Anemia",
+            "ic": 3.0759
+          }
+        ],
+        "method_specific": {
+          "embedding_method": "transformer",
+          "embedding_input": "patient text and disease profile text",
+          "embedding_normalization": "l2",
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+          "model_type": "hf_encoder",
+          "uses_ic_values": false,
+          "uses_dense_embeddings": true,
+          "uses_direct_hpo_overlap_for_score": false,
+          "deduplicated_to_canonical": true,
+          "score_note": "Cosine similarity between dense text embeddings. Patient and disease profiles are encoded as vectors; higher scores indicate more similar text representations.",
+          "interpretation_note": "Coverage and matched-term fields are descriptive HPO overlap on raw terms, shown for readability. They do NOT drive the embedding score and are not comparable to the propagated-term coverage of semantic methods.",
+          "patient_text_preview": "Patient description: Patient with developmental delay, cerebellar ataxia, and anemia. Patient phenotypes: Anemia; Global developmental delay; Nonprogressive cerebellar ataxia",
+          "disease_text_preview": "Disease: neurodevelopmental disorder with cerebellar atrophy and motor dysfunction Phenotypes: Delayed speech and language development; Ataxia; Hypotonia; Global developmental delay; Motor delay; Cerebellar atrophy; Areflexia; Brisk reflexes; Inability to walk; Appendicular hypotonia"
+        },
+        "diagnostics": {
+          "raw_score": 0.963103
+        }
+      }
+    },
+    {
+      "rank": 10,
+      "disease_id": "MONDO:0014934",
+      "label": "spinocerebellar ataxia, autosomal recessive 24",
+      "profile_type": null,
+      "category_source_id": null,
+      "category_path": [],
+      "matched_aliases": [],
+      "score": 0.963064,
+      "method_name": "transformer",
+      "explanation": {
+        "summary": "Transformer embedding similarity (emilyalsentzer/Bio_ClinicalBERT): 0.9631. The score is based on dense text embeddings, not IC-based HPO scoring.",
+        "coverage": {
+          "patient_hpo_coverage": 0.0,
+          "disease_hpo_coverage": 0.0,
+          "direction_asymmetry": 0.0,
+          "n_patient_terms": 3,
+          "n_disease_terms": 7,
+          "n_matched_terms": 0,
+          "n_unmatched_patient_terms": 3
+        },
+        "matched_terms": [],
+        "unmatched_patient_terms": [
+          {
+            "id": "HP:0002470",
+            "label": "Nonprogressive cerebellar ataxia",
+            "ic": 7.5901
+          },
+          {
+            "id": "HP:0001903",
+            "label": "Anemia",
+            "ic": 3.0759
+          },
+          {
+            "id": "HP:0001263",
+            "label": "Global developmental delay",
+            "ic": 1.9041
+          }
+        ],
+        "method_specific": {
+          "embedding_method": "transformer",
+          "embedding_input": "patient text and disease profile text",
+          "embedding_normalization": "l2",
+          "pooling": "mean",
+          "sentence_transformer_encode": false,
+          "model_name": "emilyalsentzer/Bio_ClinicalBERT",
+          "model_type": "hf_encoder",
+          "uses_ic_values": false,
+          "uses_dense_embeddings": true,
+          "uses_direct_hpo_overlap_for_score": false,
+          "deduplicated_to_canonical": true,
+          "score_note": "Cosine similarity between dense text embeddings. Patient and disease profiles are encoded as vectors; higher scores indicate more similar text representations.",
+          "interpretation_note": "Coverage and matched-term fields are descriptive HPO overlap on raw terms, shown for readability. They do NOT drive the embedding score and are not comparable to the propagated-term coverage of semantic methods.",
+          "patient_text_preview": "Patient description: Patient with developmental delay, cerebellar ataxia, and anemia. Patient phenotypes: Anemia; Global developmental delay; Nonprogressive cerebellar ataxia",
+          "disease_text_preview": "Disease: spinocerebellar ataxia, autosomal recessive 24 Description: Any autosomal recessive cerebellar ataxia in which the cause of the disease is a mutation in the UBA5 gene. Phenotypes: Cataract; Horizontal nystagmus; Dysarthria; Cerebellar atrophy; Spastic gait; Gait ataxia; Limb ataxia"
+        },
+        "diagnostics": {
+          "raw_score": 0.963064
+        }
+      }
+    }
+  ]
+}

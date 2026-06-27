@@ -1,11 +1,11 @@
 {
   "mistralai_Mistral-7B-Instruct-v0.2": {
     "schema_version": "1.1",
-    "method_name": "llm_retrieval",
+    "method_name": "mistralai/Mistral-7B-Instruct-v0.2",
     "pipeline_name": "llm",
     "config": {
-      "use_propagated_terms": false,
-      "ic_threshold": null,
+      "use_propagated_terms": true,
+      "ic_threshold": 1.5,
       "top_k": 10,
       "use_canonical_profiles": true
     },
@@ -13,9 +13,9 @@
       "n_patient_terms_raw": 3,
       "n_patient_terms_propagated": 0,
       "n_patient_terms_used": 3,
-      "n_diseases_scored": 9,
+      "n_diseases_scored": 10,
       "n_diseases_skipped": 0,
-      "computation_time_seconds": 143.122
+      "computation_time_seconds": 146.5751
     },
     "rankings": [
       {
@@ -65,16 +65,16 @@
             "confidence": "high",
             "uses_ic_values": false,
             "uses_dense_embeddings": false,
-            "deduplicated_to_canonical": true,
-            "matched_phenotypes": "global developmental delay, cerebellar ataxia",
+            "uses_direct_hpo_overlap_for_score": false,
+            "matched_phenotypes": "global developmental delay, nonprogressive cerebellar ataxia",
             "score_note": "LLM-based ranking score or confidence score. The model compares the patient profile with disease profile information using prompt-based semantic reasoning by the confidence scoring.",
             "interpretation_note": "Coverage and matched-term fields are descriptive HPO overlap on raw terms, shown for readability. They do NOT drive the LLM score and are not comparable to the propagated-term coverage of semantic methods.",
             "patient_text_preview": "Clinical description: Patient with developmental delay, cerebellar ataxia, and anemia.\nPatient phenotypes: Global developmental delay, Anemia, Nonprogressive cerebellar ataxia",
             "disease_text_preview": "Disease: Pelizaeus-Merzbacher disease\nPhenotypes: Nystagmus, Hypotonia, Leukodystrophy, Abnormal CNS myelination",
-            "llm_response_preview": "DISEASE: Pelizaeus-Merzbacher Disease (Leukodystrophies) | ORDO: ORPHA:268474 | MATCH: global developmental delay, cerebellar ataxia | CONFIDENCE: high\nDISEASE: Vitamin B12 Deficiency | ORDO: ORPHA:219001 | MATCH: anemia, developmental delay | CONFIDANCE: medium\nDISEASE: Menkes Syndrome | ORDO: ORPHA:259200 | MATCH: global developmental delay, anemia | CONFIDENCE: medium\nDISEASE: Fanconi Anemia Ty",
-            "clinical_explanation": "Verdict: Possible Match | Given the presence of several key features associated with Pelizaeus-Merzbacher Disease - namely, global developmental delay, anemia, and nonprogressive cerebellar ataxia within the context of a suspected leukodystrophy - further investigation through genetic testing would help confirm or refute this diagnosis.",
-            "verdict": "Possible Match",
-            "verdict_reason": "Given the presence of several key features associated with Pelizaeus-Merzbacher Disease - namely, global developmental delay, anemia, and nonprogressive cerebellar ataxia within the context of a suspected leukodystrophy - further investigation through genetic testing would help confirm or refute this diagnosis.",
+            "llm_response_preview": "DISEASE: Pelizaeus-Merzbacher Disease (Leukodystrophies) | ORDO: ORPHA:268479 | MATCH: global developmental delay, nonprogressive cerebellar ataxia | CONFIDENCE: high\nDISEASE: Niemann-Pick Type C Disease | ORDO: ORPHA:211310 | MATCH: global developmental delay, anemia | CONFIDence: Medium\nDISEASE: Vitamin B12 Deficiency | ORDO: ORPHA:211310 | MATCH: Developmental delay, anemia | Confidence: Medium",
+            "clinical_explanation": "Verdict: POSSIBLE MATCH | Given the presence of several key features associated with Pelizaeus-Merzbacher Disease including global developmental delay, anemia, nonprogressive cerebellar ataxia, and evidence suggesting possible white matter changes due to cerebellar dysfunction, we consider this case a probable match for Pelizaeus-Merzbacher Disease. Further diagnostic tests will help confirm the diagnosis and rule out alternative explanations.",
+            "verdict": "POSSIBLE MATCH",
+            "verdict_reason": "Given the presence of several key features associated with Pelizaeus-Merzbacher Disease including global developmental delay, anemia, nonprogressive cerebellar ataxia, and evidence suggesting possible white matter changes due to cerebellar dysfunction, we consider this case a probable match for Pelizaeus-Merzbacher Disease. Further diagnostic tests will help confirm the diagnosis and rule out alternative explanations.",
             "explainer_model": "mistralai/Mistral-7B-Instruct-v0.2"
           },
           "diagnostics": {
@@ -85,6 +85,80 @@
       },
       {
         "rank": 2,
+        "disease_id": "ORPHA:377788",
+        "label": "Disease",
+        "profile_type": null,
+        "category_source_id": "ORPHA:377788",
+        "category_path": [
+          {
+            "disease_id": "ORPHA:557493",
+            "label": "Disorder",
+            "profile_type": null,
+            "profile_type_label": null
+          }
+        ],
+        "matched_aliases": [
+          "MONDO:0000001"
+        ],
+        "score": 0.6,
+        "method_name": "llm_retrieval",
+        "explanation": {
+          "summary": "LLM semantic ranking (mistralai/Mistral-7B-Instruct-v0.2) assigned score 0.6000. The score is based on prompt-based semantic comparison, not IC-based HPO scoring.",
+          "coverage": {
+            "patient_hpo_coverage": 0.0,
+            "disease_hpo_coverage": 0.0,
+            "direction_asymmetry": 0.0,
+            "n_patient_terms": 3,
+            "n_disease_terms": 0,
+            "n_matched_terms": 0,
+            "n_unmatched_patient_terms": 3
+          },
+          "matched_terms": [],
+          "unmatched_patient_terms": [
+            {
+              "id": "HP:0002470",
+              "label": "Nonprogressive cerebellar ataxia",
+              "ic": 7.5901
+            },
+            {
+              "id": "HP:0001903",
+              "label": "Anemia",
+              "ic": 3.0759
+            },
+            {
+              "id": "HP:0001263",
+              "label": "Global developmental delay",
+              "ic": 1.9041
+            }
+          ],
+          "method_specific": {
+            "llm_method": "prompt_based_ranking",
+            "model_name": "mistralai/Mistral-7B-Instruct-v0.2",
+            "prompt_name": "llm_direct_retrieval",
+            "method": "llm_retrieval",
+            "confidence": "medium",
+            "uses_ic_values": false,
+            "uses_dense_embeddings": false,
+            "uses_direct_hpo_overlap_for_score": false,
+            "matched_phenotypes": "global developmental delay, anemia",
+            "score_note": "LLM-based ranking score or confidence score. The model compares the patient profile with disease profile information using prompt-based semantic reasoning by the confidence scoring.",
+            "interpretation_note": "Coverage and matched-term fields are descriptive HPO overlap on raw terms, shown for readability. They do NOT drive the LLM score and are not comparable to the propagated-term coverage of semantic methods.",
+            "patient_text_preview": "Clinical description: Patient with developmental delay, cerebellar ataxia, and anemia.\nPatient phenotypes: Global developmental delay, Anemia, Nonprogressive cerebellar ataxia",
+            "disease_text_preview": "Disease: Disease\nDescription: A disease is a disposition to undergo pathological processes that exists in an organism because of one or more disorders in that organism.",
+            "llm_response_preview": "DISEASE: Pelizaeus-Merzbacher Disease (Leukodystrophies) | ORDO: ORPHA:268479 | MATCH: global developmental delay, nonprogressive cerebellar ataxia | CONFIDENCE: high\nDISEASE: Niemann-Pick Type C Disease | ORDO: ORPHA:211310 | MATCH: global developmental delay, anemia | CONFIDence: Medium\nDISEASE: Vitamin B12 Deficiency | ORDO: ORPHA:211310 | MATCH: Developmental delay, anemia | Confidence: Medium",
+            "clinical_explanation": "Verdict: Weak Match | While the presentation has elements consistent with the disease, several key diagnostic markers are absent from the given information.",
+            "verdict": "Weak Match",
+            "verdict_reason": "While the presentation has elements consistent with the disease, several key diagnostic markers are absent from the given information.",
+            "explainer_model": "mistralai/Mistral-7B-Instruct-v0.2"
+          },
+          "diagnostics": {
+            "raw_score": 0.6,
+            "validated_against_profiles": true
+          }
+        }
+      },
+      {
+        "rank": 3,
         "disease_id": "MONDO:0020696",
         "label": "vitamin B12 deficiency",
         "profile_type": null,
@@ -130,155 +204,28 @@
             "confidence": "medium",
             "uses_ic_values": false,
             "uses_dense_embeddings": false,
-            "deduplicated_to_canonical": true,
-            "matched_phenotypes": "anemia, developmental delay",
+            "uses_direct_hpo_overlap_for_score": false,
+            "matched_phenotypes": "Developmental delay, anemia",
             "score_note": "LLM-based ranking score or confidence score. The model compares the patient profile with disease profile information using prompt-based semantic reasoning by the confidence scoring.",
             "interpretation_note": "Coverage and matched-term fields are descriptive HPO overlap on raw terms, shown for readability. They do NOT drive the LLM score and are not comparable to the propagated-term coverage of semantic methods.",
             "patient_text_preview": "Clinical description: Patient with developmental delay, cerebellar ataxia, and anemia.\nPatient phenotypes: Global developmental delay, Anemia, Nonprogressive cerebellar ataxia",
             "disease_text_preview": "Disease: vitamin B12 deficiency\nDescription: A disease characterized by low serum levels of vitamin B12, either inherited or acquired.\nPhenotypes: Decreased circulating vitamin B12 concentration",
-            "llm_response_preview": "DISEASE: Pelizaeus-Merzbacher Disease (Leukodystrophies) | ORDO: ORPHA:268474 | MATCH: global developmental delay, cerebellar ataxia | CONFIDENCE: high\nDISEASE: Vitamin B12 Deficiency | ORDO: ORPHA:219001 | MATCH: anemia, developmental delay | CONFIDANCE: medium\nDISEASE: Menkes Syndrome | ORDO: ORPHA:259200 | MATCH: global developmental delay, anemia | CONFIDENCE: medium\nDISEASE: Fanconi Anemia Ty",
-            "clinical_explanation": "Verdict: Weak Match | Although the patient shows signs consistent with Vitamin B12 Deficiency, their presentation includes extra features like anemia and global developmental delay, making the diagnosis less definitive based on current information provided.",
+            "llm_response_preview": "DISEASE: Pelizaeus-Merzbacher Disease (Leukodystrophies) | ORDO: ORPHA:268479 | MATCH: global developmental delay, nonprogressive cerebellar ataxia | CONFIDENCE: high\nDISEASE: Niemann-Pick Type C Disease | ORDO: ORPHA:211310 | MATCH: global developmental delay, anemia | CONFIDence: Medium\nDISEASE: Vitamin B12 Deficiency | ORDO: ORPHA:211310 | MATCH: Developmental delay, anemia | Confidence: Medium",
+            "clinical_explanation": "Verdict: Weak Match | Our patient exhibits more extensive phenotypic manifestations than what would normally be expected based on typical Vitamin B12 Deficiency cases.",
             "verdict": "Weak Match",
-            "verdict_reason": "Although the patient shows signs consistent with Vitamin B12 Deficiency, their presentation includes extra features like anemia and global developmental delay, making the diagnosis less definitive based on current information provided.",
+            "verdict_reason": "Our patient exhibits more extensive phenotypic manifestations than what would normally be expected based on typical Vitamin B12 Deficiency cases.",
             "explainer_model": "mistralai/Mistral-7B-Instruct-v0.2"
           },
           "diagnostics": {
             "raw_score": 0.6,
             "validated_against_profiles": true
-          }
-        }
-      },
-      {
-        "rank": 3,
-        "disease_id": "ORPHA:259200",
-        "label": "Menkes Syndrome",
-        "profile_type": null,
-        "category_source_id": null,
-        "category_path": [],
-        "matched_aliases": [],
-        "score": 0.6,
-        "method_name": "llm_retrieval",
-        "explanation": {
-          "summary": "LLM semantic ranking (mistralai/Mistral-7B-Instruct-v0.2) assigned score 0.6000. The score is based on prompt-based semantic comparison, not IC-based HPO scoring.",
-          "coverage": {
-            "patient_hpo_coverage": 0.0,
-            "disease_hpo_coverage": 0.0,
-            "direction_asymmetry": 0.0,
-            "n_patient_terms": 3,
-            "n_disease_terms": 0,
-            "n_matched_terms": 0,
-            "n_unmatched_patient_terms": 3
-          },
-          "matched_terms": [],
-          "unmatched_patient_terms": [
-            {
-              "id": "HP:0002470",
-              "label": "Nonprogressive cerebellar ataxia",
-              "ic": 7.5901
-            },
-            {
-              "id": "HP:0001903",
-              "label": "Anemia",
-              "ic": 3.0759
-            },
-            {
-              "id": "HP:0001263",
-              "label": "Global developmental delay",
-              "ic": 1.9041
-            }
-          ],
-          "method_specific": {
-            "llm_method": "prompt_based_ranking",
-            "model_name": "mistralai/Mistral-7B-Instruct-v0.2",
-            "prompt_name": "llm_direct_retrieval",
-            "method": "llm_retrieval",
-            "confidence": "medium",
-            "uses_ic_values": false,
-            "uses_dense_embeddings": false,
-            "deduplicated_to_canonical": true,
-            "matched_phenotypes": "global developmental delay, anemia",
-            "score_note": "LLM-based ranking score or confidence score. The model compares the patient profile with disease profile information using prompt-based semantic reasoning by the confidence scoring.",
-            "interpretation_note": "Coverage and matched-term fields are descriptive HPO overlap on raw terms, shown for readability. They do NOT drive the LLM score and are not comparable to the propagated-term coverage of semantic methods.",
-            "patient_text_preview": "Clinical description: Patient with developmental delay, cerebellar ataxia, and anemia.\nPatient phenotypes: Global developmental delay, Anemia, Nonprogressive cerebellar ataxia",
-            "disease_text_preview": "Disease: Menkes Syndrome",
-            "llm_response_preview": "DISEASE: Pelizaeus-Merzbacher Disease (Leukodystrophies) | ORDO: ORPHA:268474 | MATCH: global developmental delay, cerebellar ataxia | CONFIDENCE: high\nDISEASE: Vitamin B12 Deficiency | ORDO: ORPHA:219001 | MATCH: anemia, developmental delay | CONFIDANCE: medium\nDISEASE: Menkes Syndrome | ORDO: ORPHA:259200 | MATCH: global developmental delay, anemia | CONFIDENCE: medium\nDISEASE: Fanconi Anemia Ty",
-            "clinical_explanation": "Disease profile not found."
-          },
-          "diagnostics": {
-            "raw_score": 0.6,
-            "validated_against_profiles": false
           }
         }
       },
       {
         "rank": 4,
-        "disease_id": "MONDO:0002280",
-        "label": "anemia",
-        "profile_type": null,
-        "category_source_id": null,
-        "category_path": [],
-        "matched_aliases": [],
-        "score": 0.6,
-        "method_name": "llm_retrieval",
-        "explanation": {
-          "summary": "LLM semantic ranking (mistralai/Mistral-7B-Instruct-v0.2) assigned score 0.6000. The score is based on prompt-based semantic comparison, not IC-based HPO scoring.",
-          "coverage": {
-            "patient_hpo_coverage": 0.0,
-            "disease_hpo_coverage": 0.0,
-            "direction_asymmetry": 0.0,
-            "n_patient_terms": 3,
-            "n_disease_terms": 0,
-            "n_matched_terms": 0,
-            "n_unmatched_patient_terms": 3
-          },
-          "matched_terms": [],
-          "unmatched_patient_terms": [
-            {
-              "id": "HP:0002470",
-              "label": "Nonprogressive cerebellar ataxia",
-              "ic": 7.5901
-            },
-            {
-              "id": "HP:0001903",
-              "label": "Anemia",
-              "ic": 3.0759
-            },
-            {
-              "id": "HP:0001263",
-              "label": "Global developmental delay",
-              "ic": 1.9041
-            }
-          ],
-          "method_specific": {
-            "llm_method": "prompt_based_ranking",
-            "model_name": "mistralai/Mistral-7B-Instruct-v0.2",
-            "prompt_name": "llm_direct_retrieval",
-            "method": "llm_retrieval",
-            "confidence": "medium",
-            "uses_ic_values": false,
-            "uses_dense_embeddings": false,
-            "deduplicated_to_canonical": true,
-            "matched_phenotypes": "anemia, developmental delay",
-            "score_note": "LLM-based ranking score or confidence score. The model compares the patient profile with disease profile information using prompt-based semantic reasoning by the confidence scoring.",
-            "interpretation_note": "Coverage and matched-term fields are descriptive HPO overlap on raw terms, shown for readability. They do NOT drive the LLM score and are not comparable to the propagated-term coverage of semantic methods.",
-            "patient_text_preview": "Clinical description: Patient with developmental delay, cerebellar ataxia, and anemia.\nPatient phenotypes: Global developmental delay, Anemia, Nonprogressive cerebellar ataxia",
-            "disease_text_preview": "Disease: anemia\nDescription: A reduction in the number of red blood cells, the amount of hemoglobin, and/or the volume of packed red blood cells. Clinically, anemia represents a reduction in the oxygen-transporting capacity of a designated volume of blood, resulting from an imbalance between blood loss (through hemorrhage or hemolysis) and blood production. Signs and symptoms of anemia may include",
-            "llm_response_preview": "DISEASE: Pelizaeus-Merzbacher Disease (Leukodystrophies) | ORDO: ORPHA:268474 | MATCH: global developmental delay, cerebellar ataxia | CONFIDENCE: high\nDISEASE: Vitamin B12 Deficiency | ORDO: ORPHA:219001 | MATCH: anemia, developmental delay | CONFIDANCE: medium\nDISEASE: Menkes Syndrome | ORDO: ORPHA:259200 | MATCH: global developmental delay, anemia | CONFIDENCE: medium\nDISEASE: Fanconi Anemia Ty",
-            "clinical_explanation": "Verdict: Weak Match | While there might be a potential link between the reported symptoms and anemia, more evidence is required before making a definitive diagnosis based on the provided information alone.",
-            "verdict": "Weak Match",
-            "verdict_reason": "While there might be a potential link between the reported symptoms and anemia, more evidence is required before making a definitive diagnosis based on the provided information alone.",
-            "explainer_model": "mistralai/Mistral-7B-Instruct-v0.2"
-          },
-          "diagnostics": {
-            "raw_score": 0.6,
-            "validated_against_profiles": true
-          }
-        }
-      },
-      {
-        "rank": 5,
-        "disease_id": "MONDO:0008243",
-        "label": "Pick disease",
+        "disease_id": "ORPHA:259700",
+        "label": "Menkes Syndrome",
         "profile_type": null,
         "category_source_id": null,
         "category_path": [],
@@ -292,7 +239,7 @@
             "disease_hpo_coverage": 0.0,
             "direction_asymmetry": 0.0,
             "n_patient_terms": 3,
-            "n_disease_terms": 17,
+            "n_disease_terms": 0,
             "n_matched_terms": 0,
             "n_unmatched_patient_terms": 3
           },
@@ -322,30 +269,89 @@
             "confidence": "low",
             "uses_ic_values": false,
             "uses_dense_embeddings": false,
-            "deduplicated_to_canonical": true,
-            "matched_phenotypes": "global developmental delay, anemia",
+            "uses_direct_hpo_overlap_for_score": false,
+            "matched_phenotypes": "Global developmental delay, anemia",
             "score_note": "LLM-based ranking score or confidence score. The model compares the patient profile with disease profile information using prompt-based semantic reasoning by the confidence scoring.",
             "interpretation_note": "Coverage and matched-term fields are descriptive HPO overlap on raw terms, shown for readability. They do NOT drive the LLM score and are not comparable to the propagated-term coverage of semantic methods.",
             "patient_text_preview": "Clinical description: Patient with developmental delay, cerebellar ataxia, and anemia.\nPatient phenotypes: Global developmental delay, Anemia, Nonprogressive cerebellar ataxia",
-            "disease_text_preview": "Disease: Pick disease\nDescription: A rare neurodegenerative disorder leading to dementia. It is characterized by frontotemporal lobar degeneration with accumulation of tau proteins which form Pick bodies.\nPhenotypes: Hyperorality, Motor stereotypy, Disinhibition, Irritability, Apathy, Abnormal diminished volition, Inappropriate laughter, Personality changes, Frontotemporal dementia, Gliosis, Langu",
-            "llm_response_preview": "DISEASE: Pelizaeus-Merzbacher Disease (Leukodystrophies) | ORDO: ORPHA:268474 | MATCH: global developmental delay, cerebellar ataxia | CONFIDENCE: high\nDISEASE: Vitamin B12 Deficiency | ORDO: ORPHA:219001 | MATCH: anemia, developmental delay | CONFIDANCE: medium\nDISEASE: Menkes Syndrome | ORDO: ORPHA:259200 | MATCH: global developmental delay, anemia | CONFIDENCE: medium\nDISEASE: Fanconi Anemia Ty",
-            "clinical_explanation": "Verdict: Weak Match | While some neurological manifestations such as cognitive decline can be present in both conditions, the presence of significant differences like anemia and nonprogressive cerebellar ataxia make a strong diagnosis unlikely based on current information provided.",
-            "verdict": "Weak Match",
-            "verdict_reason": "While some neurological manifestations such as cognitive decline can be present in both conditions, the presence of significant differences like anemia and nonprogressive cerebellar ataxia make a strong diagnosis unlikely based on current information provided.",
-            "explainer_model": "mistralai/Mistral-7B-Instruct-v0.2"
+            "disease_text_preview": "Disease: Menkes Syndrome",
+            "llm_response_preview": "DISEASE: Pelizaeus-Merzbacher Disease (Leukodystrophies) | ORDO: ORPHA:268479 | MATCH: global developmental delay, nonprogressive cerebellar ataxia | CONFIDENCE: high\nDISEASE: Niemann-Pick Type C Disease | ORDO: ORPHA:211310 | MATCH: global developmental delay, anemia | CONFIDence: Medium\nDISEASE: Vitamin B12 Deficiency | ORDO: ORPHA:211310 | MATCH: Developmental delay, anemia | Confidence: Medium",
+            "clinical_explanation": "Disease profile not found."
           },
           "diagnostics": {
             "raw_score": 0.3,
-            "validated_against_profiles": true
+            "validated_against_profiles": false
+          }
+        }
+      },
+      {
+        "rank": 5,
+        "disease_id": "ORPHA:236900",
+        "label": "Fanconi's Anaemia Combinations Types I & II",
+        "profile_type": null,
+        "category_source_id": null,
+        "category_path": [],
+        "matched_aliases": [],
+        "score": 0.3,
+        "method_name": "llm_retrieval",
+        "explanation": {
+          "summary": "LLM semantic ranking (mistralai/Mistral-7B-Instruct-v0.2) assigned score 0.3000. The score is based on prompt-based semantic comparison, not IC-based HPO scoring.",
+          "coverage": {
+            "patient_hpo_coverage": 0.0,
+            "disease_hpo_coverage": 0.0,
+            "direction_asymmetry": 0.0,
+            "n_patient_terms": 3,
+            "n_disease_terms": 0,
+            "n_matched_terms": 0,
+            "n_unmatched_patient_terms": 3
+          },
+          "matched_terms": [],
+          "unmatched_patient_terms": [
+            {
+              "id": "HP:0002470",
+              "label": "Nonprogressive cerebellar ataxia",
+              "ic": 7.5901
+            },
+            {
+              "id": "HP:0001903",
+              "label": "Anemia",
+              "ic": 3.0759
+            },
+            {
+              "id": "HP:0001263",
+              "label": "Global developmental delay",
+              "ic": 1.9041
+            }
+          ],
+          "method_specific": {
+            "llm_method": "prompt_based_ranking",
+            "model_name": "mistralai/Mistral-7B-Instruct-v0.2",
+            "prompt_name": "llm_direct_retrieval",
+            "method": "llm_retrieval",
+            "confidence": "low",
+            "uses_ic_values": false,
+            "uses_dense_embeddings": false,
+            "uses_direct_hpo_overlap_for_score": false,
+            "matched_phenotypes": "Developmental delay, anaemia",
+            "score_note": "LLM-based ranking score or confidence score. The model compares the patient profile with disease profile information using prompt-based semantic reasoning by the confidence scoring.",
+            "interpretation_note": "Coverage and matched-term fields are descriptive HPO overlap on raw terms, shown for readability. They do NOT drive the LLM score and are not comparable to the propagated-term coverage of semantic methods.",
+            "patient_text_preview": "Clinical description: Patient with developmental delay, cerebellar ataxia, and anemia.\nPatient phenotypes: Global developmental delay, Anemia, Nonprogressive cerebellar ataxia",
+            "disease_text_preview": "Disease: Fanconi's Anaemia Combinations Types I & II",
+            "llm_response_preview": "DISEASE: Pelizaeus-Merzbacher Disease (Leukodystrophies) | ORDO: ORPHA:268479 | MATCH: global developmental delay, nonprogressive cerebellar ataxia | CONFIDENCE: high\nDISEASE: Niemann-Pick Type C Disease | ORDO: ORPHA:211310 | MATCH: global developmental delay, anemia | CONFIDence: Medium\nDISEASE: Vitamin B12 Deficiency | ORDO: ORPHA:211310 | MATCH: Developmental delay, anemia | Confidence: Medium",
+            "clinical_explanation": "Disease profile not found."
+          },
+          "diagnostics": {
+            "raw_score": 0.3,
+            "validated_against_profiles": false
           }
         }
       },
       {
         "rank": 6,
-        "disease_id": "ORPHA:377788",
-        "label": "Disease",
+        "disease_id": "ORPHA:1775",
+        "label": "Dyskeratosis congenita, autosomal dominant, 1",
         "profile_type": null,
-        "category_source_id": "ORPHA:377788",
+        "category_source_id": "ORPHA:1775",
         "category_path": [
           {
             "disease_id": "ORPHA:557493",
@@ -355,37 +361,43 @@
           }
         ],
         "matched_aliases": [
-          "MONDO:0000001"
+          "HP:0040282",
+          "MONDO:0015780"
         ],
         "score": 0.3,
         "method_name": "llm_retrieval",
         "explanation": {
           "summary": "LLM semantic ranking (mistralai/Mistral-7B-Instruct-v0.2) assigned score 0.3000. The score is based on prompt-based semantic comparison, not IC-based HPO scoring.",
           "coverage": {
-            "patient_hpo_coverage": 0.0,
-            "disease_hpo_coverage": 0.0,
-            "direction_asymmetry": 0.0,
+            "patient_hpo_coverage": 0.6667,
+            "disease_hpo_coverage": 0.015,
+            "direction_asymmetry": 0.6516,
             "n_patient_terms": 3,
-            "n_disease_terms": 0,
-            "n_matched_terms": 0,
-            "n_unmatched_patient_terms": 3
+            "n_disease_terms": 133,
+            "n_matched_terms": 2,
+            "n_unmatched_patient_terms": 1
           },
-          "matched_terms": [],
+          "matched_terms": [
+            {
+              "id": "HP:0001903",
+              "label": "Anemia",
+              "ic": 3.0759,
+              "match_type": "direct",
+              "match_score": 1.0
+            },
+            {
+              "id": "HP:0001263",
+              "label": "Global developmental delay",
+              "ic": 1.9041,
+              "match_type": "direct",
+              "match_score": 1.0
+            }
+          ],
           "unmatched_patient_terms": [
             {
               "id": "HP:0002470",
               "label": "Nonprogressive cerebellar ataxia",
               "ic": 7.5901
-            },
-            {
-              "id": "HP:0001903",
-              "label": "Anemia",
-              "ic": 3.0759
-            },
-            {
-              "id": "HP:0001263",
-              "label": "Global developmental delay",
-              "ic": 1.9041
             }
           ],
           "method_specific": {
@@ -396,16 +408,16 @@
             "confidence": "low",
             "uses_ic_values": false,
             "uses_dense_embeddings": false,
-            "deduplicated_to_canonical": true,
-            "matched_phenotypes": "developmental delay, anemia",
+            "uses_direct_hpo_overlap_for_score": false,
+            "matched_phenotypes": "Developmental delay, anemia",
             "score_note": "LLM-based ranking score or confidence score. The model compares the patient profile with disease profile information using prompt-based semantic reasoning by the confidence scoring.",
             "interpretation_note": "Coverage and matched-term fields are descriptive HPO overlap on raw terms, shown for readability. They do NOT drive the LLM score and are not comparable to the propagated-term coverage of semantic methods.",
             "patient_text_preview": "Clinical description: Patient with developmental delay, cerebellar ataxia, and anemia.\nPatient phenotypes: Global developmental delay, Anemia, Nonprogressive cerebellar ataxia",
-            "disease_text_preview": "Disease: Disease\nDescription: A disease is a disposition to undergo pathological processes that exists in an organism because of one or more disorders in that organism.",
-            "llm_response_preview": "DISEASE: Pelizaeus-Merzbacher Disease (Leukodystrophies) | ORDO: ORPHA:268474 | MATCH: global developmental delay, cerebellar ataxia | CONFIDENCE: high\nDISEASE: Vitamin B12 Deficiency | ORDO: ORPHA:219001 | MATCH: anemia, developmental delay | CONFIDANCE: medium\nDISEASE: Menkes Syndrome | ORDO: ORPHA:259200 | MATCH: global developmental delay, anemia | CONFIDENCE: medium\nDISEASE: Fanconi Anemia Ty",
-            "clinical_explanation": "Verdict: Unlikely Match | The combination of global developmental delay, nonprogressive cerebellar ataxia, and anemia from birth presents inconsistencies with currently understood rare diseases. Further investigation through genetic testing may provide additional insights into the underlying cause.",
-            "verdict": "Unlikely Match",
-            "verdict_reason": "The combination of global developmental delay, nonprogressive cerebellar ataxia, and anemia from birth presents inconsistencies with currently understood rare diseases. Further investigation through genetic testing may provide additional insights into the underlying cause.",
+            "disease_text_preview": "Disease: Dyskeratosis congenita, autosomal dominant, 1\nDescription: Dyskeratosis congenita (DC) is a rare ectodermal dysplasia that often presents with the classic triad of nail dysplasia, skin pigmentary changes, and oral leukoplakia associated with a high risk of bone marrow failure (BMF) and cancer.\nPhenotypes: Autosomal dominant inheritance, Autosomal recessive inheritance, Abnormal morphology",
+            "llm_response_preview": "DISEASE: Pelizaeus-Merzbacher Disease (Leukodystrophies) | ORDO: ORPHA:268479 | MATCH: global developmental delay, nonprogressive cerebellar ataxia | CONFIDENCE: high\nDISEASE: Niemann-Pick Type C Disease | ORDO: ORPHA:211310 | MATCH: global developmental delay, anemia | CONFIDence: Medium\nDISEASE: Vitamin B12 Deficiency | ORDO: ORPHA:211310 | MATCH: Developmental delay, anemia | Confidence: Medium",
+            "clinical_explanation": "Verdict: Weak Match | While the presence of global developmental delay and anemia aligns partially with DC, these symptoms alone do not definitively support a diagnosis due to their absence of several key diagnostic markers typically found in patients with confirmed cases of DC.",
+            "verdict": "Weak Match",
+            "verdict_reason": "While the presence of global developmental delay and anemia aligns partially with DC, these symptoms alone do not definitively support a diagnosis due to their absence of several key diagnostic markers typically found in patients with confirmed cases of DC.",
             "explainer_model": "mistralai/Mistral-7B-Instruct-v0.2"
           },
           "diagnostics": {
@@ -416,6 +428,241 @@
       },
       {
         "rank": 7,
+        "disease_id": "ORPHA:773",
+        "label": "Refsum disease",
+        "profile_type": null,
+        "category_source_id": "ORPHA:773",
+        "category_path": [
+          {
+            "disease_id": "ORPHA:557493",
+            "label": "Disorder",
+            "profile_type": null,
+            "profile_type_label": null
+          }
+        ],
+        "matched_aliases": [
+          "HP:0040283",
+          "MONDO:0009958"
+        ],
+        "score": 0.3,
+        "method_name": "llm_retrieval",
+        "explanation": {
+          "summary": "LLM semantic ranking (mistralai/Mistral-7B-Instruct-v0.2) assigned score 0.3000. The score is based on prompt-based semantic comparison, not IC-based HPO scoring.",
+          "coverage": {
+            "patient_hpo_coverage": 0.0,
+            "disease_hpo_coverage": 0.0,
+            "direction_asymmetry": 0.0,
+            "n_patient_terms": 3,
+            "n_disease_terms": 55,
+            "n_matched_terms": 0,
+            "n_unmatched_patient_terms": 3
+          },
+          "matched_terms": [],
+          "unmatched_patient_terms": [
+            {
+              "id": "HP:0002470",
+              "label": "Nonprogressive cerebellar ataxia",
+              "ic": 7.5901
+            },
+            {
+              "id": "HP:0001903",
+              "label": "Anemia",
+              "ic": 3.0759
+            },
+            {
+              "id": "HP:0001263",
+              "label": "Global developmental delay",
+              "ic": 1.9041
+            }
+          ],
+          "method_specific": {
+            "llm_method": "prompt_based_ranking",
+            "model_name": "mistralai/Mistral-7B-Instruct-v0.2",
+            "prompt_name": "llm_direct_retrieval",
+            "method": "llm_retrieval",
+            "confidence": "low",
+            "uses_ic_values": false,
+            "uses_dense_embeddings": false,
+            "uses_direct_hpo_overlap_for_score": false,
+            "matched_phenotypes": "Developmental delay, anemia",
+            "score_note": "LLM-based ranking score or confidence score. The model compares the patient profile with disease profile information using prompt-based semantic reasoning by the confidence scoring.",
+            "interpretation_note": "Coverage and matched-term fields are descriptive HPO overlap on raw terms, shown for readability. They do NOT drive the LLM score and are not comparable to the propagated-term coverage of semantic methods.",
+            "patient_text_preview": "Clinical description: Patient with developmental delay, cerebellar ataxia, and anemia.\nPatient phenotypes: Global developmental delay, Anemia, Nonprogressive cerebellar ataxia",
+            "disease_text_preview": "Disease: Refsum disease\nDescription: A very rare, clinically variable, multisystemic metabolic disease, characterized by anosmia, early-onset retinitis pigmentosa and possible neurological manifestations, including neuropathy, and cerebellar ataxia, deafness, ichthyosis, skeletal abnormalities, and cardiac arrhythmia. It is characterized biochemically by accumulation of phytanic acid in plasma and",
+            "llm_response_preview": "DISEASE: Pelizaeus-Merzbacher Disease (Leukodystrophies) | ORDO: ORPHA:268479 | MATCH: global developmental delay, nonprogressive cerebellar ataxia | CONFIDENCE: high\nDISEASE: Niemann-Pick Type C Disease | ORDO: ORPHA:211310 | MATCH: global developmental delay, anemia | CONFIDence: Medium\nDISEASE: Vitamin B12 Deficiency | ORDO: ORPHA:211310 | MATCH: Developmental delay, anemia | Confidence: Medium",
+            "clinical_explanation": "Verdict: Unlikely Match | The presence of global developmental delay, anemia, and nonprogressive cerebellar ataxia does not fit well with the known phenotypic characteristics of Refsum Disease.",
+            "verdict": "Unlikely Match",
+            "verdict_reason": "The presence of global developmental delay, anemia, and nonprogressive cerebellar ataxia does not fit well with the known phenotypic characteristics of Refsum Disease.",
+            "explainer_model": "mistralai/Mistral-7B-Instruct-v0.2"
+          },
+          "diagnostics": {
+            "raw_score": 0.3,
+            "validated_against_profiles": true
+          }
+        }
+      },
+      {
+        "rank": 8,
+        "disease_id": "ORPHA:506",
+        "label": "Leigh syndrome",
+        "profile_type": null,
+        "category_source_id": "ORPHA:506",
+        "category_path": [
+          {
+            "disease_id": "ORPHA:557493",
+            "label": "Disorder",
+            "profile_type": null,
+            "profile_type_label": null
+          }
+        ],
+        "matched_aliases": [
+          "HP:0040284",
+          "MONDO:0009723"
+        ],
+        "score": 0.3,
+        "method_name": "llm_retrieval",
+        "explanation": {
+          "summary": "LLM semantic ranking (mistralai/Mistral-7B-Instruct-v0.2) assigned score 0.3000. The score is based on prompt-based semantic comparison, not IC-based HPO scoring.",
+          "coverage": {
+            "patient_hpo_coverage": 0.6667,
+            "disease_hpo_coverage": 0.0174,
+            "direction_asymmetry": 0.6493,
+            "n_patient_terms": 3,
+            "n_disease_terms": 115,
+            "n_matched_terms": 2,
+            "n_unmatched_patient_terms": 1
+          },
+          "matched_terms": [
+            {
+              "id": "HP:0001903",
+              "label": "Anemia",
+              "ic": 3.0759,
+              "match_type": "direct",
+              "match_score": 1.0
+            },
+            {
+              "id": "HP:0001263",
+              "label": "Global developmental delay",
+              "ic": 1.9041,
+              "match_type": "direct",
+              "match_score": 1.0
+            }
+          ],
+          "unmatched_patient_terms": [
+            {
+              "id": "HP:0002470",
+              "label": "Nonprogressive cerebellar ataxia",
+              "ic": 7.5901
+            }
+          ],
+          "method_specific": {
+            "llm_method": "prompt_based_ranking",
+            "model_name": "mistralai/Mistral-7B-Instruct-v0.2",
+            "prompt_name": "llm_direct_retrieval",
+            "method": "llm_retrieval",
+            "confidence": "low",
+            "uses_ic_values": false,
+            "uses_dense_embeddings": false,
+            "uses_direct_hpo_overlap_for_score": false,
+            "matched_phenotypes": "Global developmental delay, nonprogressive cerebellar ataxia",
+            "score_note": "LLM-based ranking score or confidence score. The model compares the patient profile with disease profile information using prompt-based semantic reasoning by the confidence scoring.",
+            "interpretation_note": "Coverage and matched-term fields are descriptive HPO overlap on raw terms, shown for readability. They do NOT drive the LLM score and are not comparable to the propagated-term coverage of semantic methods.",
+            "patient_text_preview": "Clinical description: Patient with developmental delay, cerebellar ataxia, and anemia.\nPatient phenotypes: Global developmental delay, Anemia, Nonprogressive cerebellar ataxia",
+            "disease_text_preview": "Disease: Leigh syndrome\nDescription: A progressive neurological disease defined by specific neuropathological features associating brainstem and basal ganglia lesions.\nPhenotypes: Autosomal recessive inheritance, Nephrotic syndrome, Renal tubular dysfunction, High forehead, Macrotia, Sensorineural hearing impairment, Strabismus, Ptosis, Cataract, Pigmentary retinopathy, Abnormal optic nerve morpho",
+            "llm_response_preview": "DISEASE: Pelizaeus-Merzbacher Disease (Leukodystrophies) | ORDO: ORPHA:268479 | MATCH: global developmental delay, nonprogressive cerebellar ataxia | CONFIDENCE: high\nDISEASE: Niemann-Pick Type C Disease | ORDO: ORPHA:211310 | MATCH: global developmental delay, anemia | CONFIDence: Medium\nDISEASE: Vitamin B12 Deficiency | ORDO: ORPHA:211310 | MATCH: Developmental delay, anemia | Confidence: Medium",
+            "clinical_explanation": "Verdict: Weak Match | Although the patient shares two out of three reported phenotypes with Leigh Syndrome, several critical disparities exist, particularly concerning the lack of expected symptomatic associations and the differing course of cerebellar ataxia.",
+            "verdict": "Weak Match",
+            "verdict_reason": "Although the patient shares two out of three reported phenotypes with Leigh Syndrome, several critical disparities exist, particularly concerning the lack of expected symptomatic associations and the differing course of cerebellar ataxia.",
+            "explainer_model": "mistralai/Mistral-7B-Instruct-v0.2"
+          },
+          "diagnostics": {
+            "raw_score": 0.3,
+            "validated_against_profiles": true
+          }
+        }
+      },
+      {
+        "rank": 9,
+        "disease_id": "ORPHA:487",
+        "label": "Krabbe disease, atypical, due to saposin A deficiency",
+        "profile_type": null,
+        "category_source_id": "ORPHA:487",
+        "category_path": [
+          {
+            "disease_id": "ORPHA:557493",
+            "label": "Disorder",
+            "profile_type": null,
+            "profile_type_label": null
+          }
+        ],
+        "matched_aliases": [
+          "30/30",
+          "MONDO:0009499",
+          "OMIM:245200",
+          "VERY_FREQUENT"
+        ],
+        "score": 0.3,
+        "method_name": "llm_retrieval",
+        "explanation": {
+          "summary": "LLM semantic ranking (mistralai/Mistral-7B-Instruct-v0.2) assigned score 0.3000. The score is based on prompt-based semantic comparison, not IC-based HPO scoring.",
+          "coverage": {
+            "patient_hpo_coverage": 0.3333,
+            "disease_hpo_coverage": 0.012,
+            "direction_asymmetry": 0.3213,
+            "n_patient_terms": 3,
+            "n_disease_terms": 83,
+            "n_matched_terms": 1,
+            "n_unmatched_patient_terms": 2
+          },
+          "matched_terms": [
+            {
+              "id": "HP:0001263",
+              "label": "Global developmental delay",
+              "ic": 1.9041,
+              "match_type": "direct",
+              "match_score": 1.0
+            }
+          ],
+          "unmatched_patient_terms": [
+            {
+              "id": "HP:0002470",
+              "label": "Nonprogressive cerebellar ataxia",
+              "ic": 7.5901
+            },
+            {
+              "id": "HP:0001903",
+              "label": "Anemia",
+              "ic": 3.0759
+            }
+          ],
+          "method_specific": {
+            "llm_method": "prompt_based_ranking",
+            "model_name": "mistralai/Mistral-7B-Instruct-v0.2",
+            "prompt_name": "llm_direct_retrieval",
+            "method": "llm_retrieval",
+            "confidence": "low",
+            "uses_ic_values": false,
+            "uses_dense_embeddings": false,
+            "uses_direct_hpo_overlap_for_score": false,
+            "matched_phenotypes": "Global developmental delay, nonprogressive cerebellar ataxia",
+            "score_note": "LLM-based ranking score or confidence score. The model compares the patient profile with disease profile information using prompt-based semantic reasoning by the confidence scoring.",
+            "interpretation_note": "Coverage and matched-term fields are descriptive HPO overlap on raw terms, shown for readability. They do NOT drive the LLM score and are not comparable to the propagated-term coverage of semantic methods.",
+            "patient_text_preview": "Clinical description: Patient with developmental delay, cerebellar ataxia, and anemia.\nPatient phenotypes: Global developmental delay, Anemia, Nonprogressive cerebellar ataxia",
+            "disease_text_preview": "Disease: Krabbe disease, atypical, due to saposin A deficiency\nDescription: A lysosomal disorder that affects the white matter of the central and peripheral nervous systems. It includes infantile, late-infantile/juvenile and adult forms.\nPhenotypes: Autosomal recessive inheritance, Urinary incontinence, Hydrocephalus, Hearing impairment, Sensorineural hearing impairment, Visual impairment, Blindne",
+            "llm_response_preview": "DISEASE: Pelizaeus-Merzbacher Disease (Leukodystrophies) | ORDO: ORPHA:268479 | MATCH: global developmental delay, nonprogressive cerebellar ataxia | CONFIDENCE: high\nDISEASE: Niemann-Pick Type C Disease | ORDO: ORPHA:211310 | MATCH: global developmental delay, anemia | CONFIDence: Medium\nDISEASE: Vitamin B12 Deficiency | ORDO: ORPHA:211310 | MATCH: Developmental delay, anemia | Confidence: Medium",
+            "clinical_explanation": "Verdict: Weak Match | Although there is some degree of phenotypic overlap between the patient's symptoms and those associated with Krabbe disease, the presence of anemia and nonprogressive cerebellar ataxia raises questions about the accuracy of the initial diagnostic hypothesis.",
+            "verdict": "Weak Match",
+            "verdict_reason": "Although there is some degree of phenotypic overlap between the patient's symptoms and those associated with Krabbe disease, the presence of anemia and nonprogressive cerebellar ataxia raises questions about the accuracy of the initial diagnostic hypothesis.",
+            "explainer_model": "mistralai/Mistral-7B-Instruct-v0.2"
+          },
+          "diagnostics": {
+            "raw_score": 0.3,
+            "validated_against_profiles": true
+          }
+        }
+      },
+      {
+        "rank": 10,
         "disease_id": "ORPHA:68356",
         "label": "leukodystrophy",
         "profile_type": "category",
@@ -470,161 +717,21 @@
             "confidence": "low",
             "uses_ic_values": false,
             "uses_dense_embeddings": false,
-            "deduplicated_to_canonical": true,
-            "matched_phenotypes": "global developmental delay, cerebellar ataxia",
+            "uses_direct_hpo_overlap_for_score": false,
+            "matched_phenotypes": "Global developmental delay, nonprogressive cerebellar ataxia",
             "score_note": "LLM-based ranking score or confidence score. The model compares the patient profile with disease profile information using prompt-based semantic reasoning by the confidence scoring.",
             "interpretation_note": "Coverage and matched-term fields are descriptive HPO overlap on raw terms, shown for readability. They do NOT drive the LLM score and are not comparable to the propagated-term coverage of semantic methods.",
             "patient_text_preview": "Clinical description: Patient with developmental delay, cerebellar ataxia, and anemia.\nPatient phenotypes: Global developmental delay, Anemia, Nonprogressive cerebellar ataxia",
             "disease_text_preview": "Disease: leukodystrophy\nDescription: Leukodystrophies are a group of rare, progressive, metabolic, genetic diseases that affect the brain, spinal cord and often the peripheral nerves. Each type of leukodystrophy is caused by a specific gene abnormality that leads to abnormal development or destruction of the white matter (myelin sheath) of the brain. The myelin sheath is the protective covering of",
-            "llm_response_preview": "DISEASE: Pelizaeus-Merzbacher Disease (Leukodystrophies) | ORDO: ORPHA:268474 | MATCH: global developmental delay, cerebellar ataxia | CONFIDENCE: high\nDISEASE: Vitamin B12 Deficiency | ORDO: ORPHA:219001 | MATCH: anemia, developmental delay | CONFIDANCE: medium\nDISEASE: Menkes Syndrome | ORDO: ORPHA:259200 | MATCH: global developmental delay, anemia | CONFIDENCE: medium\nDISEASE: Fanconi Anemia Ty",
-            "clinical_explanation": "Verdict: Weak Match | Given the limited matching phenotypic evidence between the presented case and leukodystrophy, a weak match conclusion seems appropriate.",
+            "llm_response_preview": "DISEASE: Pelizaeus-Merzbacher Disease (Leukodystrophies) | ORDO: ORPHA:268479 | MATCH: global developmental delay, nonprogressive cerebellar ataxia | CONFIDENCE: high\nDISEASE: Niemann-Pick Type C Disease | ORDO: ORPHA:211310 | MATCH: global developmental delay, anemia | CONFIDence: Medium\nDISEASE: Vitamin B12 Deficiency | ORDO: ORPHA:211310 | MATCH: Developmental delay, anemia | Confidence: Medium",
+            "clinical_explanation": "Verdict: Weak Match | Our patient exhibits several phenotypic traits consistent with leukodystrophies; however, additional evidence is required before making a definitive diagnosis given the potential for confounders and alternative explanations.",
             "verdict": "Weak Match",
-            "verdict_reason": "Given the limited matching phenotypic evidence between the presented case and leukodystrophy, a weak match conclusion seems appropriate.",
+            "verdict_reason": "Our patient exhibits several phenotypic traits consistent with leukodystrophies; however, additional evidence is required before making a definitive diagnosis given the potential for confounders and alternative explanations.",
             "explainer_model": "mistralai/Mistral-7B-Instruct-v0.2"
           },
           "diagnostics": {
             "raw_score": 0.3,
             "validated_against_profiles": true
-          }
-        }
-      },
-      {
-        "rank": 8,
-        "disease_id": "ORPHA:93473",
-        "label": "Hurler syndrome",
-        "profile_type": "clinical_subtype",
-        "category_source_id": "ORPHA:93473",
-        "category_path": [
-          {
-            "disease_id": "ORPHA:557494",
-            "label": "Subtype of a disorder",
-            "profile_type": null,
-            "profile_type_label": null
-          }
-        ],
-        "matched_aliases": [
-          "HP:0040281",
-          "MONDO:0011758"
-        ],
-        "score": 0.5,
-        "method_name": "llm_retrieval",
-        "explanation": {
-          "summary": "LLM semantic ranking (mistralai/Mistral-7B-Instruct-v0.2) assigned score 0.5000. The score is based on prompt-based semantic comparison, not IC-based HPO scoring.",
-          "coverage": {
-            "patient_hpo_coverage": 0.3333,
-            "disease_hpo_coverage": 0.0099,
-            "direction_asymmetry": 0.3234,
-            "n_patient_terms": 3,
-            "n_disease_terms": 101,
-            "n_matched_terms": 1,
-            "n_unmatched_patient_terms": 2
-          },
-          "matched_terms": [
-            {
-              "id": "HP:0001263",
-              "label": "Global developmental delay",
-              "ic": 1.9041,
-              "match_type": "direct",
-              "match_score": 1.0
-            }
-          ],
-          "unmatched_patient_terms": [
-            {
-              "id": "HP:0002470",
-              "label": "Nonprogressive cerebellar ataxia",
-              "ic": 7.5901
-            },
-            {
-              "id": "HP:0001903",
-              "label": "Anemia",
-              "ic": 3.0759
-            }
-          ],
-          "method_specific": {
-            "llm_method": "prompt_based_ranking",
-            "model_name": "mistralai/Mistral-7B-Instruct-v0.2",
-            "prompt_name": "llm_direct_retrieval",
-            "method": "llm_retrieval",
-            "confidence": "very low",
-            "uses_ic_values": false,
-            "uses_dense_embeddings": false,
-            "deduplicated_to_canonical": true,
-            "matched_phenotypes": "global developmental delay",
-            "score_note": "LLM-based ranking score or confidence score. The model compares the patient profile with disease profile information using prompt-based semantic reasoning by the confidence scoring.",
-            "interpretation_note": "Coverage and matched-term fields are descriptive HPO overlap on raw terms, shown for readability. They do NOT drive the LLM score and are not comparable to the propagated-term coverage of semantic methods.",
-            "patient_text_preview": "Clinical description: Patient with developmental delay, cerebellar ataxia, and anemia.\nPatient phenotypes: Global developmental delay, Anemia, Nonprogressive cerebellar ataxia",
-            "disease_text_preview": "Disease: Hurler syndrome\nDescription: Hurler syndrome is the most severe form of mucopolysaccharidosis type 1 (MPS1), a rare lysosomal storage disease, characterized by skeletal abnormalities, cognitive impairment, heart disease, respiratory problems, enlarged liver and spleen, characteristic facies and reduced life expectancy.\nPhenotypes: Autosomal recessive inheritance, Inguinal hernia, Macroglo",
-            "llm_response_preview": "DISEASE: Pelizaeus-Merzbacher Disease (Leukodystrophies) | ORDO: ORPHA:268474 | MATCH: global developmental delay, cerebellar ataxia | CONFIDENCE: high\nDISEASE: Vitamin B12 Deficiency | ORDO: ORPHA:219001 | MATCH: anemia, developmental delay | CONFIDANCE: medium\nDISEASE: Menkes Syndrome | ORDO: ORPHA:259200 | MATCH: global developmental delay, anemia | CONFIDENCE: medium\nDISEASE: Fanconi Anemia Ty",
-            "clinical_explanation": "Verdict: Weak Match | Despite sharing some overlapping phenotypic traits, the presence of nonprogressive cerebellar ataxia and anemia that aren't typically found in Hurler Syndrome results in a weak match.",
-            "verdict": "Weak Match",
-            "verdict_reason": "Despite sharing some overlapping phenotypic traits, the presence of nonprogressive cerebellar ataxia and anemia that aren't typically found in Hurler Syndrome results in a weak match.",
-            "explainer_model": "mistralai/Mistral-7B-Instruct-v0.2"
-          },
-          "diagnostics": {
-            "raw_score": 0.5,
-            "validated_against_profiles": true
-          }
-        }
-      },
-      {
-        "rank": 9,
-        "disease_id": "ORPHA:248350",
-        "label": "Marfanoid Progeria Syndrome",
-        "profile_type": null,
-        "category_source_id": null,
-        "category_path": [],
-        "matched_aliases": [],
-        "score": 0.5,
-        "method_name": "llm_retrieval",
-        "explanation": {
-          "summary": "LLM semantic ranking (mistralai/Mistral-7B-Instruct-v0.2) assigned score 0.5000. The score is based on prompt-based semantic comparison, not IC-based HPO scoring.",
-          "coverage": {
-            "patient_hpo_coverage": 0.0,
-            "disease_hpo_coverage": 0.0,
-            "direction_asymmetry": 0.0,
-            "n_patient_terms": 3,
-            "n_disease_terms": 0,
-            "n_matched_terms": 0,
-            "n_unmatched_patient_terms": 3
-          },
-          "matched_terms": [],
-          "unmatched_patient_terms": [
-            {
-              "id": "HP:0002470",
-              "label": "Nonprogressive cerebellar ataxia",
-              "ic": 7.5901
-            },
-            {
-              "id": "HP:0001903",
-              "label": "Anemia",
-              "ic": 3.0759
-            },
-            {
-              "id": "HP:0001263",
-              "label": "Global developmental delay",
-              "ic": 1.9041
-            }
-          ],
-          "method_specific": {
-            "llm_method": "prompt_based_ranking",
-            "model_name": "mistralai/Mistral-7B-Instruct-v0.2",
-            "prompt_name": "llm_direct_retrieval",
-            "method": "llm_retrieval",
-            "confidence": "extremely low",
-            "uses_ic_values": false,
-            "uses_dense_embeddings": false,
-            "deduplicated_to_canonical": true,
-            "matched_phenotypes": "cerebellar ataxia, anemia",
-            "score_note": "LLM-based ranking score or confidence score. The model compares the patient profile with disease profile information using prompt-based semantic reasoning by the confidence scoring.",
-            "interpretation_note": "Coverage and matched-term fields are descriptive HPO overlap on raw terms, shown for readability. They do NOT drive the LLM score and are not comparable to the propagated-term coverage of semantic methods.",
-            "patient_text_preview": "Clinical description: Patient with developmental delay, cerebellar ataxia, and anemia.\nPatient phenotypes: Global developmental delay, Anemia, Nonprogressive cerebellar ataxia",
-            "disease_text_preview": "Disease: Marfanoid Progeria Syndrome",
-            "llm_response_preview": "DISEASE: Pelizaeus-Merzbacher Disease (Leukodystrophies) | ORDO: ORPHA:268474 | MATCH: global developmental delay, cerebellar ataxia | CONFIDENCE: high\nDISEASE: Vitamin B12 Deficiency | ORDO: ORPHA:219001 | MATCH: anemia, developmental delay | CONFIDANCE: medium\nDISEASE: Menkes Syndrome | ORDO: ORPHA:259200 | MATCH: global developmental delay, anemia | CONFIDENCE: medium\nDISEASE: Fanconi Anemia Ty",
-            "clinical_explanation": "Disease profile not found."
-          },
-          "diagnostics": {
-            "raw_score": 0.5,
-            "validated_against_profiles": false
           }
         }
       }

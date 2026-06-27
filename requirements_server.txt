@@ -50,8 +50,9 @@
 # After first run, cache is reused — ranking is near-instant.
 #
 # For example if GPU 4 is available:
-#   CUDA_VISIBLE_DEVICES=4 nohup python src/similarity_methods/transformer/pipeline.py \
-#     > outputs/transformer/transformer_log.txt 2>&1 &
+#   mkdir -p outputs/similarity_methods/transformer
+#   CUDA_VISIBLE_DEVICES=4 nohup python packages/raresim-core/src/raresim/similarity_methods/transformer/pipeline.py \
+#     >| outputs/similarity_methods/transformer/transformer_log.txt 2>&1 &
 #
 # Monitor:
 #   tail -f outputs/transformer/transformer_log.txt
@@ -69,10 +70,19 @@
 #
 # For example if GPU 4 and 5 are available:
 #   CUDA_VISIBLE_DEVICES=4,5 nohup python packages/raresim-core/src/raresim/similarity_methods/llm/pipeline.py  \
-#     > outputs/similarity_methods/llm/llm_log.txt 2>&1 &
+#     >| outputs/similarity_methods/llm/llm_log.txt 2>&1 &
 #
 # Monitor:
 #   tail -f outputs/similarity_methods/llm/llm_log.txt 
+#
+# ============================================================
+# HOW TO RUN — AUTOENCODER PIPELINE
+# ============================================================
+#
+# For example if GPU 4 and 5 are available:
+#   mkdir -p outputs/similarity_methods/autoencoder
+#   nohup python packages/raresim-core/src/raresim/similarity_methods/autoencoder/pipeline.py \
+#   >| outputs/similarity_methods/autoencoder/autoencoder_log.txt 2>&1 &
 #
 # ============================================================
 # VERSION NOTES
