@@ -10,26 +10,29 @@ they are easy to test in isolation.
 """
 
 from raresim.core.explanation.schema import (
-    CoverageBlock,
+    HpoCoverageBlock,
+    TokenCoverageBlock,
     ExplanationBlock,
     TermEntry,
     TermMatch,
+    TokenMatch,
+    TokenEntry,
 )
 
 
 def build_coverage_block(
     patient_terms: set[str],
     disease_terms: set[str],
-) -> CoverageBlock:
+) -> HpoCoverageBlock:
     """
-    Compute standardized coverage metrics for one (patient, disease) pair.
+    Compute HPO-term coverage metrics for one (patient, disease) pair.
 
     Args:
         patient_terms: HPO terms used for the patient (may be propagated).
         disease_terms: HPO terms used for the disease (may be propagated).
 
     Returns:
-        Populated CoverageBlock.
+        Returns an HpoCoverageBlock, unit in HPO Ids.
     """
     shared = patient_terms & disease_terms
     n_shared = len(shared)
@@ -39,7 +42,7 @@ def build_coverage_block(
     patient_cov = n_shared / n_patient if n_patient else 0.0
     disease_cov = n_shared / n_disease if n_disease else 0.0
 
-    return CoverageBlock(
+    return HpoCoverageBlock(
         patient_coverage=patient_cov,
         disease_coverage=disease_cov,
         n_patient_terms=n_patient,
@@ -47,6 +50,44 @@ def build_coverage_block(
         n_matched_terms=n_shared,
         n_unmatched_patient_terms=len(patient_terms - disease_terms),
         direction_asymmetry=abs(patient_cov - disease_cov),
+    )
+
+
+def build_token_coverage_block(
+    patient_vec: dict[str, float],
+    disease_vec: dict[str, float],
+    sparse_threshold: int = 5,
+) -> TokenCoverageBlock:
+    """
+    Compute token-level coverage metrics for text and hybrid TF-IDF modes.
+
+    Args:
+        patient_vec:      Patient TF-IDF token vector.
+        disease_vec:      Disease TF-IDF token vector.
+        sparse_threshold: Disease descriptions with fewer tokens than this
+                          are flagged as sparse — scores may be unreliable.
+
+    Returns:
+        TokenCoverageBlock with correctly named token-specific fields.
+    """
+
+    pat_keys = set(patient_vec.keys())
+    dis_keys = set(disease_vec.keys())
+    shared = pat_keys & dis_keys
+
+    pat_cov = len(shared) / len(pat_keys) if pat_keys else 0.0
+    dis_cov = len(shared) / len(dis_keys) if dis_keys else 0.0
+    is_sparse = len(dis_keys) < sparse_threshold
+
+    return TokenCoverageBlock(
+        patient_token_coverage=pat_cov,
+        disease_token_coverage=dis_cov,
+        n_patient_tokens=len(pat_keys),
+        n_disease_tokens=len(dis_keys),
+        n_matched_tokens=len(shared),
+        n_unmatched_patient_tokens=len(pat_keys - dis_keys),
+        direction_asymmetry=abs(pat_cov - dis_cov),
+        is_sparse_disease=is_sparse,
     )
 
 
@@ -128,6 +169,56 @@ def build_unmatched_terms(
     ]
 
     return sorted(entries, key=lambda x: x.ic, reverse=True)[:top_n]
+
+
+def build_matched_tokens(
+    patient_vec: dict[str, float],
+    disease_vec: dict[str, float],
+    idf: dict[str, float],
+    top_n: int = 10,
+) -> list[TokenMatch]:
+    """
+    Build the matched token list for text and hybrid TF-IDF modes.
+
+    Args:
+        patient_vec: Patient TF-IDF token vector.
+        disease_vec: Disease TF-IDF token vector.
+        idf:         Global IDF dict for the text corpus.
+        top_n:       Maximum tokens to return, sorted by IDF weight desc.
+    """
+    shared = set(patient_vec.keys()) & set(disease_vec.keys())
+    matched = [
+        TokenMatch(
+            token=t,
+            idf_weight=idf.get(t, 0.0),
+        )
+        for t in shared
+    ]
+    return sorted(matched, key=lambda x: x.idf_weight, reverse=True)[:top_n]
+
+
+def build_unmatched_tokens(
+    patient_vec: dict[str, float],
+    disease_vec: dict[str, float],
+    idf: dict[str, float],
+    top_n: int = 10,
+) -> list[TokenEntry]:
+    """
+    Build the list of patient tokens not found in the disease token vector.
+
+    High-IDF unmatched tokens are clinically notable — they are rare words
+    that the patient's phenotype description contains but the disease
+    description does not.
+    """
+    unmatched = set(patient_vec.keys()) - set(disease_vec.keys())
+    entries = [
+        TokenEntry(
+            token=t,
+            idf_weight=idf.get(t, 0.0),
+        )
+        for t in unmatched
+    ]
+    return sorted(entries, key=lambda x: x.idf_weight, reverse=True)[:top_n]
 
 
 def build_ic_filter_block(
@@ -221,6 +312,53 @@ def build_base_explanation(
     unmatched = build_unmatched_terms(
         patient_terms, disease_terms, hpo_labels, ic_values
     )
+
+    return ExplanationBlock(
+        summary=summary,
+        coverage=coverage,
+        matched_terms=matched,
+        unmatched_patient_terms=unmatched,
+        method_specific=method_specific or {},
+        diagnostics=diagnostics or {},
+    )
+
+
+def build_base_token_explanation(
+    patient_vec: dict[str, float],
+    disease_vec: dict[str, float],
+    idf: dict[str, float],
+    summary: str,
+    method_specific: dict | None = None,
+    diagnostics: dict | None = None,
+    sparse_threshold: int = 10,
+) -> ExplanationBlock:
+    """
+    Assemble a complete ExplanationBlock for token-based methods.
+
+    Mirrors build_base_explanation for HPO methods — callers pass in the
+    vectors and summary, and get back a fully populated ExplanationBlock
+    without needing to call each builder individually.
+
+    Args:
+        patient_vec:      Patient TF-IDF token vector {token: weight}.
+        disease_vec:      Disease TF-IDF token vector {token: weight}.
+        idf:              Global IDF dict for the text corpus.
+        summary:          Human-readable one-liner (caller-generated).
+                          Used as-is — this function never appends to it.
+        method_specific:  Method-owned extension dict.
+        diagnostics:      Debug/QA data, not surfaced to end users.
+        sparse_threshold: Passed to build_token_coverage_block — disease
+                          descriptions with fewer tokens are flagged as sparse.
+
+    Returns:
+        Fully populated ExplanationBlock with TokenCoverageBlock coverage
+        and TokenMatch / TokenEntry term lists.
+    """
+    coverage = build_token_coverage_block(
+        patient_vec, disease_vec, sparse_threshold=sparse_threshold
+    )
+    matched = build_matched_tokens(patient_vec, disease_vec, idf)
+    unmatched = build_unmatched_tokens(patient_vec, disease_vec, idf)
 
     return ExplanationBlock(
         summary=summary,

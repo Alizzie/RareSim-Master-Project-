@@ -1,48 +1,54 @@
 """
 Set-based similarity pipeline.
 
-Uses: Jaccard, Dice, Overlap Coefficient, Cosine (binary).
-Explanation: delegated to similarity_methods/set_based/explanation.py.
+Uses:
+- Jaccard
+- Dice
+- Overlap Coefficient
+- Cosine similarity over binary HPO term sets
+
+Explanation:
+- delegated to similarity_methods/set_based/explanation.py
 """
 
-from raresim.utils._pipeline_runner import run_pipeline_main
-from raresim.utils.timer import Timer
-from raresim.types.result import SimilarityResult
-from raresim.types.schemas import PatientProfile
 from raresim.core.context import AppContext
 from raresim.core.pipeline import (
     PipelineConfig,
     build_run_stats,
     sort_and_rank,
 )
+from raresim.ontology.disease_category import build_category_metadata
 from raresim.similarity_methods.set_based.config import (
     METHOD_MAP,
     PIPELINE_NAME,
     SETBASED_DIR,
 )
 from raresim.similarity_methods.set_based.explanation import build_explanation
+from raresim.types.result import MethodResults, SimilarityResult
+from raresim.types.schemas import PatientProfile
+from raresim.utils._pipeline_runner import run_pipeline_main
+from raresim.utils.timer import Timer
 
 
-def run(
+def run(  # pylint: disable=too-many-locals
     patient: PatientProfile,
     selected: list[str],
     config: PipelineConfig,
     ctx: AppContext,
-) -> dict[str, list[SimilarityResult]]:
-    """Run the set-based similarity pipeline for the given patient and selected methods."""
-
-    patient_terms = set(patient.get_terms(config.use_propagated_terms))
+) -> dict[str, MethodResults]:
+    """Run the set-based similarity pipeline for the given patient."""
     patient_raw_terms = set(patient.hpo_terms)
+    patient_terms = set(patient.get_terms(config.use_propagated_terms))
 
-    all_results = {}
+    all_results: dict[str, MethodResults] = {}
 
-    for method_name, fn in METHOD_MAP.items():
+    for method_name, similarity_fn in METHOD_MAP.items():
         if method_name not in selected:
             continue
 
         results = []
         n_skipped = 0
-        timer = Timer(method_name).start()
+        method_timer = Timer(method_name).start()
 
         for disease_id, profile in ctx.disease_profiles.items():
             disease_terms = set(profile.get(config.terms_key, []))
@@ -51,9 +57,9 @@ def run(
                 n_skipped += 1
                 continue
 
-            score = fn(patient_terms, disease_terms)
+            score = similarity_fn(patient_terms, disease_terms)
 
-            explaination = build_explanation(
+            explanation = build_explanation(
                 method_name=method_name,
                 patient_terms=patient_terms,
                 disease_terms=disease_terms,
@@ -63,34 +69,51 @@ def run(
                 patient_raw_terms=patient_raw_terms,
             )
 
+            category_metadata = build_category_metadata(
+                disease_id=disease_id,
+                profile=profile,
+                disease_ancestors=ctx.disease_ancestors,
+                disease_metadata_index=ctx.disease_metadata_index,
+            )
+
             results.append(
                 SimilarityResult(
                     disease_id=disease_id,
                     label=profile.get("label", ""),
+                    profile_type=category_metadata["profile_type"],
+                    category_source_id=category_metadata["category_source_id"],
+                    category_path=category_metadata["category_path"],
+                    matched_aliases=category_metadata["matched_aliases"],
                     score=score,
                     method_name=method_name,
-                    explanation=explaination.to_dict(),
+                    explanation=explanation.to_dict(),
                 )
             )
 
         stats = build_run_stats(
             n_patient_terms_raw=len(patient_raw_terms),
-            n_patient_terms_propagated=len(patient.propagated_hpo_terms),
+            n_patient_terms_propagated=len(
+                patient.get_terms(use_propagated=True)
+            ),
             n_patient_terms_used=len(patient_terms),
             n_diseases_scored=len(results),
             n_diseases_skipped=n_skipped,
-            computation_time=timer.stop(),
+            computation_time=method_timer.stop(),
         )
 
         all_results[method_name] = sort_and_rank(
-            results, config, stats, method_name, PIPELINE_NAME
+            results,
+            config,
+            stats,
+            method_name,
+            PIPELINE_NAME,
         )
 
     return all_results
 
 
 def main() -> None:
-    """Example main function to run the set-based similarity pipeline."""
+    """Run the set-based similarity pipeline."""
     run_pipeline_main(
         pipeline_name=PIPELINE_NAME,
         method_names=list(METHOD_MAP.keys()),

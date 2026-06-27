@@ -72,7 +72,7 @@ def build_timing_summary(
             {
                 "method_name": method_name,
                 "computation_time_s": round(
-                    method_results.metadata.computation_time, 3
+                    method_results.stats.computation_time_seconds, 3
                 ),
             }
         )

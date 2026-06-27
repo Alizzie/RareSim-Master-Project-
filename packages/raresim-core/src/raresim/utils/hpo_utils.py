@@ -6,6 +6,40 @@ Used by:
 """
 
 
+def get_hpo_label(term: str, hpo_labels: dict[str, str]) -> str:
+    """Return the label for one HPO term, falling back to the term ID."""
+    return hpo_labels.get(term) or term
+
+
+def convert_hpo_ids_to_labels(
+    hpo_terms: set[str],
+    hpo_labels: dict[str, str],
+    *,
+    skip_unlabeled: bool = True,
+) -> list[str]:
+    """
+    Resolve a list of HPO IDs to label strings, deduplicated, order-preserved.
+
+    skip_unlabeled=True drops terms with no label (transformer embedding text —
+    you don't want raw HP:IDs in the embedded string). skip_unlabeled=False
+    keeps the ID as fallback via get_hpo_label (prompt display, where showing
+    the ID is fine).
+    """
+    seen: set[str] = set()
+    out: list[str] = []
+    for term in hpo_terms:
+        label = hpo_labels.get(term)
+        if not label:
+            if skip_unlabeled:
+                continue
+            label = term
+        label = label.strip()
+        if label and label not in seen:
+            seen.add(label)
+            out.append(label)
+    return out
+
+
 def filter_terms_by_ic(
     terms: set[str],
     ic_values: dict[str, float],

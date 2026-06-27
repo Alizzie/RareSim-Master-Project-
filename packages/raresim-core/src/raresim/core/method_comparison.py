@@ -2,14 +2,12 @@
 RareSim method-comparison core logic.
 
 This module computes single-case method agreement data from per-method ranked
-disease lists. It contains no plotting code and no UI-specific logic.
+disease lists.
 
 The output describes agreement, consensus, and confidence across methods.
 It does not claim correctness, because ground truth is unavailable at inference
 time.
 """
-
-from __future__ import annotations
 
 from collections import defaultdict
 from typing import Any
@@ -135,7 +133,8 @@ def _score(item: dict[str, Any]) -> float:
 def _sort_key(item: dict[str, Any]) -> tuple[int, float]:
     """Sort by explicit rank when available, otherwise by descending score."""
     rank = item.get("rank")
-
+    if rank is None:
+        return 1, -_score(item)
     try:
         return 0, float(int(rank))
     except (TypeError, ValueError):
@@ -159,6 +158,8 @@ def _ranked_topk(items: list[dict[str, Any]], k: int) -> list[dict[str, Any]]:
             {
                 "disease_id": disease_id,
                 "label": label,
+                "profile_type": item.get("profile_type"),
+                "category_path": item.get("category_path", []),
                 "score": round(_score(item), 6),
                 "rank": index + 1,
             }
@@ -411,4 +412,3 @@ def build_comparison(
         "agreement": agreement_jaccard(norm),
         "top_candidate": consensus[0] if consensus else None,
     }
-    

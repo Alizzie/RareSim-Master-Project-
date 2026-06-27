@@ -12,13 +12,15 @@ All models are encoder-only (not generative) and produce fixed-size
 embeddings used for cosine similarity ranking.
 """
 
-from raresim.utils.paths import OUTPUTS_DIR
+from raresim.utils.paths import SIMILARITY_DIR
 
-TRANSFORMER_DIR = OUTPUTS_DIR / "transformer"
-CACHE_ROOT = TRANSFORMER_DIR / "cache"
+PIPELINE_NAME = "transformer"
 
-TRANSFORMER_DIR.mkdir(parents=True, exist_ok=True)
-CACHE_ROOT.mkdir(parents=True, exist_ok=True)
+METHOD_NAME = "transformer_cosine"
+ALL_METHODS = [METHOD_NAME]
+
+CACHE_ROOT = SIMILARITY_DIR / PIPELINE_NAME / "cache"
+TRANSFORMER_DIR = SIMILARITY_DIR / PIPELINE_NAME
 
 MODEL_LIST = [
     "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
@@ -28,17 +30,19 @@ MODEL_LIST = [
     "dmis-lab/biobert-v1.1",
 ]
 
+# Use this when the frontend should run only one transformer model.
+DEFAULT_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
+DEFAULT_MODEL_LIST = [DEFAULT_MODEL]
+
 # Sentence transformer models — use SentenceTransformer library
 SENTENCE_TRANSFORMER_MODELS = {
     "sentence-transformers/all-MiniLM-L6-v2",
-}
-
-# Models that need AutoTokenizer instead of BertTokenizer
-AUTO_TOKENIZER_MODELS = {
-    "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
 }
 
 MAX_LENGTH = 128
 BATCH_SIZE = 16
 CANDIDATE_POOL_SIZE = 200
 TOP_K = 10
+
+TEXT_PREVIEW_LENGTH = 300
+CANDIDATE_POOL_SIZE = 200

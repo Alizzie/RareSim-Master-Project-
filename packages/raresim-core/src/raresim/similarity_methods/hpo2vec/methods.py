@@ -6,14 +6,17 @@ from typing import Dict, List, Optional, Set
 import numpy as np
 from gensim.models import Word2Vec
 
-# Parameters
-# Controls the random walk and Word2Vec training behaviour
-# My defaults
-
 from raresim.similarity_methods.hpo2vec.config import (
-    WALK_LENGTH, WALKS_PER_NODE, P, Q, EMBEDDING_DIM, WINDOW_SIZE, MIN_COUNT, WORKERS, EPOCHS
+    EMBEDDING_DIM,
+    EPOCHS,
+    MIN_COUNT,
+    P,
+    Q,
+    WALKS_PER_NODE,
+    WALK_LENGTH,
+    WINDOW_SIZE,
+    WORKERS,
 )
-
 
 # Step 1L Build the graph
 

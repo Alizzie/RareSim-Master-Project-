@@ -23,7 +23,7 @@ def save_results(results: dict[str, MethodResults], path: Path) -> None:
     Save similarity results to a JSON file, organized by method name as a whole.
     """
     save_json(
-        {method: mr.to_dict() for method, mr in results.items()},
+        {method.replace("/", "_"): mr.to_dict() for method, mr in results.items()},
         path,
     )
 
@@ -34,6 +34,10 @@ def save_individual_results(
     """Save for each method separately, with method name in the filename."""
     for method_name, method_results in results.items():
         top_k = method_results.config.top_k
-        save_json(
-            method_results.to_dict(), output_dir / f"{method_name}_top{top_k}.json"
-        )
+        safe_name = method_name.replace("/", "_")
+        save_json(method_results.to_dict(), output_dir / f"{safe_name}_top{top_k}.json")
+
+
+def make_safe_model_name(model_name: str) -> str:
+    """Convert a model/method name into a filesystem-safe string."""
+    return model_name.replace("/", "_")

@@ -5,7 +5,7 @@ Semantic similarity (BMA) explanation builder.
 - Delegate all shared spine fields to core.explanation.base_explainer.
 
 Covered fields in the explanation:
-    bma_directions      — p→d avg, d→p avg, asymmetry + interpretation.
+    bma_directions      — p->d avg, d->p avg, asymmetry + interpretation.
     semantic_clusters   — group matched terms by their MICA.
     weak_patient_matches — patient terms that found poor BMA partners.
     ic_filter_impact    — terms removed by IC threshold filtering.
@@ -20,10 +20,48 @@ from raresim.core.explanation import (
     build_base_explanation,
     build_coverage_block,
     build_ic_filter_block,
-    semantic_summary,
     ExplanationBlock,
 )
 from raresim.similarity_methods.semantic.config import WEAK_MATCH_THRESHOLD
+
+
+def _build_semantic_summary(
+    patient_terms: set[str],
+    disease_terms: set[str],
+    p2d_avg: float,
+    d2p_avg: float,
+    top_cluster_label: str | None,
+    n_weak_matches: int,
+    method_name: str,
+) -> str:
+    """
+    Example output:
+        "
+        3 of 5 patient terms matched (60% patient / 43% disease coverage).
+        Bidirectional BMA (resnik): p->d 0.72, d->p 0.64.
+        Key shared concept: Cerebellar ataxia.
+        1 patient term is atypical for this disease."
+    """
+    coverage = build_coverage_block(patient_terms, disease_terms)
+    pct_patient = round(coverage.patient_coverage * 100)
+    pct_disease = round(coverage.disease_coverage * 100)
+    short_name = method_name.replace("semantic_", "").replace("_bma", "")
+    parts = [
+        f"{coverage.n_matched_terms} of {coverage.n_patient_terms} patient terms matched "
+        f"({pct_patient}% patient / {pct_disease}% disease coverage). "
+        f"Bidirectional BMA ({short_name}): "
+        f"p->d {p2d_avg:.3f}, d->p {d2p_avg:.3f}."
+    ]
+
+    if top_cluster_label:
+        parts.append(f"Key shared concept: {top_cluster_label}.")
+
+    if n_weak_matches == 1:
+        parts.append("1 patient term is atypical for this disease.")
+    elif n_weak_matches > 1:
+        parts.append(f"{n_weak_matches} patient terms are atypical for this disease.")
+
+    return " ".join(parts)
 
 
 def _interpret_asymmetry(p2d: float, d2p: float, threshold: float = 0.15) -> str:
@@ -154,7 +192,7 @@ def _build_match_score_index(match_details: list[dict]) -> dict[str, float]:
 # ── Main builder ──────────────────────────────────────────────────────────────
 
 
-def build_explanation(
+def build_explanation(  # pylint: disable=too-many-arguments, too-many-positional-arguments, too-many-locals
     method_name: str,
     patient_terms: set[str],
     disease_terms: set[str],
@@ -204,7 +242,6 @@ def build_explanation(
 
     # IC filter impact
     removed_by_filter = all_patient_terms_before_filter - patient_terms
-    coverage_before = build_coverage_block(patient_terms, disease_terms)
     ic_filter_block = build_ic_filter_block(
         removed_terms=removed_by_filter,
         hpo_labels=hpo_labels,
@@ -222,8 +259,9 @@ def build_explanation(
     }
 
     # Summary string
-    summary = semantic_summary(
-        coverage=coverage_before,
+    summary = _build_semantic_summary(
+        patient_terms=patient_terms,
+        disease_terms=disease_terms,
         p2d_avg=p2d_avg,
         d2p_avg=d2p_avg,
         top_cluster_label=top_cluster_label,

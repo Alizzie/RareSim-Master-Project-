@@ -25,40 +25,53 @@ def normalize_hpo_id(hpo_id: str) -> Optional[str]:
     return None
 
 
-def normalize_disease_id(raw_id: str) -> Optional[str]:
-    """Normalize a disease ID to the standard format. Returns None if the ID cannot be normalized."""
-    if not raw_id:
+def normalize_disease_id(raw_id: object) -> str | None:
+    """Normalize a disease ID to a stable display format."""
+    if raw_id is None:
         return None
 
-    raw_id = raw_id.strip()
+    value = str(raw_id).strip()
+    if not value:
+        return None
 
-    if raw_id.startswith("Orphanet:"):
-        return raw_id.replace("Orphanet:", "ORPHA:")
+    if value.startswith("http"):
+        value = value.rstrip("/").split("/")[-1]
 
-    if raw_id.startswith("ORPHA:"):
-        return raw_id
+    if value.startswith("Orphanet_"):
+        return f"ORPHA:{value.split('_', maxsplit=1)[1]}"
 
-    if raw_id.startswith("OMIM:"):
-        return raw_id
+    if value.startswith("ORPHA_"):
+        return f"ORPHA:{value.split('_', maxsplit=1)[1]}"
 
-    if raw_id.startswith("MONDO:"):
-        return raw_id
+    if value.startswith("ORPHANET_"):
+        return f"ORPHA:{value.split('_', maxsplit=1)[1]}"
 
-    if raw_id.startswith("DECIPHER:"):
-        return raw_id
+    if value.startswith("MONDO_"):
+        return f"MONDO:{value.split('_', maxsplit=1)[1]}"
 
-    if raw_id.isdigit():
-        return f"ORPHA:{raw_id}"
+    if value.startswith("OMIM_"):
+        return f"OMIM:{value.split('_', maxsplit=1)[1]}"
 
-    return raw_id
+    if value.startswith("Orphanet:"):
+        return f"ORPHA:{value.split(':', maxsplit=1)[1]}"
+
+    if value.startswith("ORPHANET:"):
+        return f"ORPHA:{value.split(':', maxsplit=1)[1]}"
+
+    if value.startswith("MIM:"):
+        return f"OMIM:{value.split(':', maxsplit=1)[1]}"
+
+    if value.startswith(("ORPHA:", "OMIM:", "MONDO:", "DECIPHER:", "DOID:")):
+        return value
+
+    if value.isdigit():
+        return f"ORPHA:{value}"
+
+    return value
 
 
 def normalize_owl_local_id(local_id: str) -> str:
     """Normalize an OWL local ID to a standard disease ID format if possible."""
-    if local_id.startswith("Orphanet_"):
-        return "ORPHA:" + local_id.split("_", maxsplit=1)[1]
+    normalized = normalize_disease_id(local_id)
+    return normalized if normalized is not None else local_id
 
-    if local_id.startswith("MONDO_"):
-        return "MONDO:" + local_id.split("_", maxsplit=1)[1]
-
-    return local_id
