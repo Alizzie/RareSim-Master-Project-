@@ -34,19 +34,31 @@
     <!-- ── Results ── -->
     <div v-else-if="state === 'done'" class="results-view">
 
-      <!-- Header -->
-      <div class="results-header">
-        <div class="results-title">Diagnosis Results</div>
-        <div class="results-meta">
-          <span>{{ results.length }} candidates</span>
-          <span class="meta-sep">·</span>
-          <span>{{ meta.methods_run?.length || 0 }} method{{ meta.methods_run?.length !== 1 ? 's' : '' }}</span>
-          <span class="meta-sep">·</span>
-          <span>{{ meta.n_patient_terms }} HPO terms</span>
-          <span v-if="meta.runtime_seconds" class="meta-sep">·</span>
-          <span v-if="meta.runtime_seconds">{{ meta.runtime_seconds.toFixed(1) }}s</span>
-        </div>
-      </div>
+<!-- Header -->
+<div class="results-header">
+  <div class="results-title">Diagnosis Results</div>
+  <div class="results-meta">
+    <span>{{ results.length }} candidates</span>
+    <span class="meta-sep">·</span>
+    <span>{{ meta.methods_run?.length || 0 }} method{{ meta.methods_run?.length !== 1 ? 's' : '' }}</span>
+    <span class="meta-sep">·</span>
+    <span>{{ meta.n_patient_terms }} HPO terms</span>
+    <span v-if="meta.runtime_seconds" class="meta-sep">·</span>
+    <span v-if="meta.runtime_seconds">{{ meta.runtime_seconds.toFixed(1) }}s</span>
+  </div>
+  <div class="save-wrap">
+    <select v-model="saveFormat" class="save-format-select">
+      <option value="json">JSON</option>
+      <option value="phenopacket">Phenopacket</option>
+    </select>
+    <button class="btn-save" :disabled="saving" @click="handleSave">
+      <span v-if="saving">Saving…</span>
+      <span v-else-if="saveStatus === 'saved'">✓ Saved</span>
+      <span v-else-if="saveStatus === 'error'">Failed</span>
+      <span v-else>Save Patient</span>
+    </button>
+  </div>
+</div>
 
       <!-- Status chips -->
       <div class="status-bar">
@@ -63,10 +75,28 @@
         </div>
       </div>
 
+
+          <div v-if="methodsInResults.length > 1" class="method-filter-bar">
+      <button
+        :class="['method-filter-btn', { active: activeMethod === 'all' }]"
+        @click="activeMethod = 'all'"
+      >
+        All
+      </button>
+      <button
+        v-for="m in methodsInResults"
+        :key="m"
+        :class="['method-filter-btn', { active: activeMethod === m }]"
+        @click="activeMethod = m"
+      >
+        {{ methodLabel(m) }}
+      </button>
+    </div>
+
       <!-- Result list -->
       <div class="results-list">
         <div
-          v-for="(r, i) in results"
+          v-for="(r, i) in filteredResults"
           :key="r.disease_id + r.method_name"
           :class="['result-card', { expanded: expandedIdx === i }]"
           @click="toggleExpand(i)"
@@ -132,18 +162,37 @@
           </div>
         </div>
       </div>
+      <!-- Method comparison (collapsible) -->
+      <div v-if="comparison" class="comparison-section">
+        <button class="comparison-toggle" @click="showComparison = !showComparison">
+          <span class="chevron" :class="{ open: showComparison }">▸</span>
+          Method comparison
+          <span class="count">{{ comparison.methods.length }} methods</span>
+        </button>
+
+        <MethodComparison
+          v-if="showComparison"
+          :comparison="comparison"
+          :case-id="meta?.case_id || ''"
+          :input-hpo="inputHpo"
+        />
+      </div>
     </div>
 
   </main>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
+import MethodComparison from './MethodComparison.vue'
+import { savePatient } from '../api/index.js'
 
 const props = defineProps({
   state:          { type: String,  default: 'idle' },  // idle | loading | done | error
   results:        { type: Array,   default: () => [] },
   meta:           { type: Object,  default: () => ({}) },
+  comparison: { type: Object, default: null },
+  inputHpo: { type: Array, default: () => [] },
   errorMessage:   { type: String,  default: '' },
   runningMethods: { type: Array,   default: () => [] },
   nDiseases:      { type: Number,  default: 0 },
@@ -151,7 +200,27 @@ const props = defineProps({
 
 defineEmits(['retry'])
 
+watch(() => props.results, () => {
+  activeMethod.value = 'all'
+})
+
 const expandedIdx = ref(null)
+const showComparison = ref(false)
+const activeMethod = ref('all')
+const saving = ref(false)
+const saveStatus = ref('')
+const saveFormat = ref('json')
+
+const methodsInResults = computed(() => {
+  const seen = new Set()
+  props.results.forEach(r => seen.add(r.method_name))
+  return [...seen]
+})
+
+const filteredResults = computed(() => {
+  if (activeMethod.value === 'all') return props.results
+  return props.results.filter(r => r.method_name === activeMethod.value)
+})
 
 const topScore = computed(() => {
   if (!props.results.length) return '—'
@@ -164,6 +233,27 @@ const maxScore = computed(() =>
 
 function toggleExpand(i) {
   expandedIdx.value = expandedIdx.value === i ? null : i
+}
+
+async function handleSave() {
+    saving.value = true
+    saveStatus.value = ''
+    try {
+        await savePatient({
+            patient_id: 'patient_' + Date.now(),
+            hpo_terms: props.inputHpo,
+            raw_text: '',
+            results: props.results,
+            methods: props.meta.methods_run || [],
+            format: saveFormat.value,
+        })
+        saveStatus.value = 'saved'
+        setTimeout(() => saveStatus.value = '', 3000)
+    } catch (e) {
+        saveStatus.value = 'error'
+    } finally {
+        saving.value = false
+    }
 }
 
 function rankClass(rank) {
@@ -195,6 +285,8 @@ const METHOD_LABELS = {
   tfidf:                      'TF-IDF',
   transformer:                'Transformer',
   llm:                        'LLM',
+  hpo2vec_plus:               'HPO2Vec+',
+  denoising_autoencoder:      'Autoencoder',
 }
 function methodLabel(id) {
   return METHOD_LABELS[id] || id
@@ -208,6 +300,26 @@ function methodLabel(id) {
   padding: 28px 32px;
   background: var(--bg);
 }
+
+.btn-save {
+  padding: 6px 14px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all .15s;
+  white-space: nowrap;
+}
+.btn-save:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-light);
+}
+.btn-save:disabled { opacity: .5; cursor: not-allowed; }
 
 /* ── Empty ── */
 .empty-state {
@@ -467,4 +579,59 @@ function methodLabel(id) {
   color: var(--text-secondary);
   margin-left: auto;
 }
+.comparison-section { margin-top: 20px; }
+.comparison-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+}
+.comparison-toggle:hover { border-color: var(--border-strong); }
+.comparison-toggle .chevron {
+  display: inline-block;
+  color: var(--text-secondary);
+  transition: transform .15s;
+}
+.comparison-toggle .chevron.open { transform: rotate(90deg); }
+.comparison-toggle .count { margin-left: auto; color: var(--text-tertiary); font-size: 11px; }
+.comparison-section .mc { margin-top: 12px; }
+
+.method-filter-bar {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.method-filter-btn {
+  font-size: 12px;
+  font-weight: 500;
+  padding: 5px 12px;
+  border-radius: 99px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all .15s;
+  font-family: var(--sans);
+}
+.method-filter-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.method-filter-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+
 </style>

@@ -35,7 +35,7 @@ pip install fastapi uvicorn
 
 Run the backend from your RareSim project root:
 ```bash
-uvicorn src.api.main:app --reload --port 8000
+uvicorn raresim_api.main:app --reload --port 8000
 ```
 
 Check it works:

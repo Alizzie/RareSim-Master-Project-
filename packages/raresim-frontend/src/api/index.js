@@ -51,3 +51,12 @@ export function extractTerms(text, method) {
 export function diagnose(payload) {
   return post('/diagnose', payload)
 }
+
+export function savePatient(payload) {
+  return post('/patients/save', payload)
+}
+
+export function searchHpo(q) {
+  return fetch(`${BASE}/hpo/search?q=${encodeURIComponent(q)}`)
+    .then(res => res.json())
+}

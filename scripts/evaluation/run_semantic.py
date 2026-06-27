@@ -37,7 +37,7 @@ from _batch_utils import (
 )
 
 from raresim.core.context import AppContext
-from raresim.utils.math import preprocess_ancestor_sets
+from raresim.utils.hpo_utils import preprocess_ancestor_sets
 from raresim.core.pipeline import PipelineConfig
 from raresim.types.schemas import PatientProfile
 from raresim.similarity_methods.semantic.pipeline import run as run_semantic

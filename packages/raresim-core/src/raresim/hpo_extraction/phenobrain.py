@@ -112,7 +112,7 @@ def extract_phenobrain_api(
         seen.add(hpo_id)
 
         info = hpo_to_info.get(hpo_id, {})
-        label = info.get("ENG_NAME") or hpo_labels.get(hpo_id, hpo_id)
+        label = info.get("ENG_NAME") or hpo_labels.get(hpo_id, hpo_id) or hpo_id
 
         results.append(
             ExtractionResult(

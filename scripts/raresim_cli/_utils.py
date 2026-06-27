@@ -3,6 +3,7 @@ Utility functions for the GUI application, including artifact checks,
 result display, and user prompts.
 """
 
+from raresim.types.schemas import PatientProfile
 from raresim.utils.paths import (
     DISEASE_PROFILES_PATH,
     HPO_LABELS_PATH,
@@ -13,6 +14,7 @@ from raresim.utils.paths import (
 )
 from raresim.types.result import AppMetadata, MethodResults
 import raresim.utils.io as io
+from raresim.utils.patient_loader import load_patient_with_extraction
 from pathlib import Path
 
 
@@ -48,9 +50,9 @@ def print_app_metadata(app_metadata: AppMetadata) -> None:
 
 def print_results_table(method_results: MethodResults) -> None:
     """Print ranked results for a single method."""
-    meta = method_results.metadata
+    meta = method_results.stats
     print(f"\n{'─' * 64}")
-    print(f"  {meta.method_name}  ({meta.computation_time:.3f}s)")
+    print(f"  {method_results.method_name}  ({meta.computation_time_seconds:.3f}s)")
     print(f"{'─' * 64}")
     if not method_results.rankings:
         print("  No results.")
@@ -103,7 +105,7 @@ def save_results(
 
 
 # -- Prompts ----------------------------------
-def prompt_patient(defaults: dict, hpo_labels: dict) -> dict:
+def prompt_patient(defaults: dict, hpo_labels: dict) -> PatientProfile:
     """Prompt the user to select a patient profile, either from a JSON file or using the default example."""
     print("\nNo patient file provided.")
     print("  [1] Load from JSON file path")
@@ -112,10 +114,10 @@ def prompt_patient(defaults: dict, hpo_labels: dict) -> dict:
 
     if choice == "1":
         path = input("Path to patient JSON file: ").strip()
-        return io.load_patient_with_extraction(Path(path), hpo_labels)
+        return load_patient_with_extraction(Path(path), hpo_labels)
 
     print(f"Using default: {defaults['patient_path'].name}")
-    return io.load_patient_with_extraction(defaults["patient_path"], hpo_labels)
+    return load_patient_with_extraction(defaults["patient_path"], hpo_labels)
 
 
 def prompt_methods(all_methods: list[str]) -> list[str]:

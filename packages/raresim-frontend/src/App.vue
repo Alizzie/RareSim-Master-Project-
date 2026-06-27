@@ -22,6 +22,8 @@
         :state="diagState"
         :results="results"
         :meta="meta"
+        :comparison="comparison"
+        :input-hpo="lastPayload?.hpo_terms || []"
         :error-message="errorMessage"
         :running-methods="lastPayload?.methods || []"
         :n-diseases="meta.n_diseases || 0"
@@ -43,17 +45,20 @@ const results      = ref([])
 const meta         = ref({})
 const errorMessage = ref('')
 const lastPayload  = ref(null)
+const comparison   = ref(null)
 
 async function handleRun(payload) {
   lastPayload.value = payload
   diagState.value   = 'loading'
   results.value     = []
+  comparison.value   = null
   errorMessage.value = ''
 
   try {
     const data = await diagnose(payload)
     results.value = data.results
     meta.value    = data.meta || {}
+    comparison.value  = data.comparison || null
     diagState.value = 'done'
   } catch (e) {
     errorMessage.value = e.message

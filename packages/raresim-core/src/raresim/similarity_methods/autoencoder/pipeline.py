@@ -15,70 +15,101 @@ The denoising part:
     the underlying phenotype structure, not just memorize the term presence
 """
 
+import hashlib
+from pathlib import Path
 import numpy as np
-from raresim.utils.io import save_json, load_json
-from raresim.utils.patient_loader import load_patient
-from raresim.utils.paths import OUTPUTS_DIR, PATIENT_DIR
 
-from raresim.types.schemas import PatientProfile
 from raresim.core.context import AppContext
-from raresim.types.result import SimilarityResult
-from raresim.core.pipeline import (
-    PipelineConfig,
-    build_metadata,
-    sort_and_rank,
-)
-from raresim.utils.explanation import expand, SET_BASED_EXPLANATION
-from raresim.utils.timer import Timer
-
+from raresim.core.pipeline import PipelineConfig, build_run_stats, sort_and_rank
+from raresim.ontology.disease_category import build_category_metadata
+from raresim.types.result import SimilarityResult, MethodResults
 from raresim.similarity_methods.autoencoder.methods import (
     DenoisingAutoencoder,
     build_vocabulary,
     terms_to_vector,
-    cosine_similarity_np,
+    euclidean_similarity,
+)
+from raresim.similarity_methods.autoencoder.explanation import build_explanation
+from raresim.types.schemas import PatientProfile
+from raresim.utils._pipeline_runner import run_pipeline_main
+from raresim.utils.io import save_json, load_json
+from raresim.utils.timer import Timer
+
+
+from raresim.similarity_methods.autoencoder.config import (
+    ALL_METHOD,
+    METHOD_NAME,
+    PIPELINE_NAME,
+    AUTOENCODER_DIR,
+    MODEL_CACHE_DIR,
+    HIDDEN_DIM,
+    LATENT_DIM,
+    LEARNING_RATE,
+    MOMENTUM,
+    NOISE_RATE,
+    EPOCHS,
+    BATCH_SIZE,
 )
 
-AUTOENCODER_DIR = OUTPUTS_DIR / "autoencoder"
-PIPELINE_NAME = "autoencoder"
-METHOD_NAME = "denoising_autoencoder"
 
-# Model artifacts saved after training
-MODEL_PATH = AUTOENCODER_DIR / "autoencoder_model.npz"
-VOCAB_PATH = AUTOENCODER_DIR / "vocab.json"
-
-HIDDEN_DIM = 512  # encoder/decoder hidden layer size
-LATENT_DIM = 128  # size of the compressed latent representation
-LEARNING_RATE = 0.01  # SGD learning rate
-MOMENTUM = 0.9  # SGD momentum
-NOISE_RATE = 0.2  # fraction of present HPO terms to randomly drop during training
-EPOCHS = 50  # training epochs
-BATCH_SIZE = 64  # minibatch size
-
-
-def train_autoencoder(
-    disease_profiles: dict[str, dict],
-    terms_key: str = "propagated_hpo_terms",
-) -> tuple[DenoisingAutoencoder, list[str], dict[str, int]]:
+def _cache_paths(disease_profiles: dict, terms_key: str) -> tuple[Path, Path]:
     """
-    Build vocabulary, vectorize disease profiles, and train the autoencoder
-    Returns the trained model, vocabulary list, and term -> index mapping
+    Build model + vocab cache paths keyed on the inputs that change the model.
+
+    Includes the vocabulary fingerprint (the model's input dimension depends on
+    it) plus terms_key and the architecture/training hyperparameters, so a
+    different profile set or param sweep never loads a mismatched model.
     """
-    print("  Building vocabulary...")
     vocab = build_vocabulary(disease_profiles, terms_key)
-    term_to_idx = {term: i for i, term in enumerate(vocab)}
-    print(f"  Vocabulary size: {len(vocab)} HPO terms")
+    key_params = {
+        "n_vocab": len(vocab),
+        "vocab_hash": hashlib.sha256("|".join(vocab).encode("utf-8")).hexdigest()[:12],
+        "terms_key": terms_key,
+        "hidden": HIDDEN_DIM,
+        "latent": LATENT_DIM,
+        "lr": LEARNING_RATE,
+        "momentum": MOMENTUM,
+        "noise": NOISE_RATE,
+        "epochs": EPOCHS,
+        "batch": BATCH_SIZE,
+    }
+    key = "_".join(f"{k}={v}" for k, v in sorted(key_params.items()))
+    digest = hashlib.sha256(key.encode("utf-8")).hexdigest()[:12]
+    return (
+        MODEL_CACHE_DIR / f"autoencoder_{digest}.npz",
+        MODEL_CACHE_DIR / f"vocab_{digest}.json",
+    )
+
+
+def _train(
+    disease_profiles: dict[str, dict],
+    vocab: list[str],
+    term_to_idx: dict[str, int],
+    terms_key: str = "propagated_hpo_terms",
+) -> DenoisingAutoencoder:
+    """
+    Build vocabulary, vectorize disease profiles, and train the autoencoder.
+
+    Returns:
+        trained model, vocabulary list, and term-to-index mapping.
+    """
 
     print("  Vectorizing disease profiles...")
     vectors = np.array(
         [
-            terms_to_vector(set(profile.get(terms_key, [])), vocab, term_to_idx)
+            terms_to_vector(
+                set(profile.get(terms_key, [])),
+                vocab,
+                term_to_idx,
+            )
             for profile in disease_profiles.values()
         ],
         dtype=np.float32,
     )
-    print(f"  Training matrix shape: {vectors.shape}")
 
+    print(f"  Training matrix shape: {vectors.shape}")
     print("  Training denoising autoencoder...")
+
     model = DenoisingAutoencoder(
         vocab_size=len(vocab),
         hidden_dim=HIDDEN_DIM,
@@ -89,124 +120,129 @@ def train_autoencoder(
     )
     model.train(vectors, epochs=EPOCHS, batch_size=BATCH_SIZE)
 
-    return model, vocab, term_to_idx
+    return model
 
 
 def load_or_train(
     disease_profiles: dict[str, dict],
     terms_key: str = "propagated_hpo_terms",
 ) -> tuple[DenoisingAutoencoder, list[str], dict[str, int]]:
-    """
-    Load saved model and vocab if they exist, otherwise train from scratch
-    Delete outputs/autoencoder/ to train again
-    """
-    AUTOENCODER_DIR.mkdir(parents=True, exist_ok=True)
+    """Load a cached model for this profile-set + param combination, or train."""
+    MODEL_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    model_path, vocab_path = _cache_paths(disease_profiles, terms_key)
 
-    if MODEL_PATH.exists() and VOCAB_PATH.exists():
-        print("  Loading saved autoencoder model...")
-        model = DenoisingAutoencoder.load(MODEL_PATH)
-        vocab = load_json(VOCAB_PATH)
-        term_to_idx = {term: i for i, term in enumerate(vocab)}
-        print(f"  Vocabulary size: {len(vocab)} HPO terms")
-        return model, vocab, term_to_idx
+    if model_path.exists() and vocab_path.exists():
+        print(f"  Loading cached autoencoder: {model_path.name}")
+        model = DenoisingAutoencoder.load(model_path)
+        vocab = [str(t) for t in load_json(vocab_path)]
+        return model, vocab, {t: i for i, t in enumerate(vocab)}
 
-    print("  No saved model found, training from scratch...")
-    model, vocab, term_to_idx = train_autoencoder(disease_profiles, terms_key)
+    print("  No cached model for these inputs, training from scratch...")
+    vocab = [str(t) for t in build_vocabulary(disease_profiles, terms_key)]
+    term_to_idx = {t: i for i, t in enumerate(vocab)}
+    print(f"  Vocabulary size: {len(vocab)} HPO terms")
+    model = _train(disease_profiles, vocab, term_to_idx, terms_key)
 
-    model.save(MODEL_PATH)
-    save_json(vocab, VOCAB_PATH)
-    print(f"  Model saved to: {MODEL_PATH}")
+    model.save(model_path)
+    save_json(vocab, vocab_path)
+    print(f"  Model saved to: {model_path}")
 
     return model, vocab, term_to_idx
 
 
-def run(
+def run(  # pylint: disable=too-many-locals
     patient: PatientProfile,
     selected: list[str],
     config: PipelineConfig,
     ctx: AppContext,
-) -> dict[str, list[SimilarityResult]]:
-    """Run it"""
-
+) -> dict[str, MethodResults]:
+    """Run the denoising autoencoder similarity pipeline."""
     if METHOD_NAME not in selected:
         return {}
 
-    # Load or train model
     model, vocab, term_to_idx = load_or_train(
-        ctx.disease_profiles, terms_key=config.terms_key
+        ctx.disease_profiles,
+        terms_key=config.terms_key,
     )
 
-    # Embed the patient
-    patient_terms = set(patient.get_terms(config.use_propagated_terms))
+    patient_raw_terms = patient.hpo_terms
+    patient_terms = patient.get_terms(config.use_propagated_terms)
+
+    if not patient_terms:
+        print("[autoencoder] Warning: patient has no HPO terms.")
+        return {}
+
     patient_vec = terms_to_vector(patient_terms, vocab, term_to_idx)
     patient_latent = model.encode(patient_vec.reshape(1, -1))[0]
 
     timer = Timer(METHOD_NAME).start()
     results = []
+    n_skipped = 0
 
     for disease_id, profile in ctx.disease_profiles.items():
         disease_terms = set(profile.get(config.terms_key, []))
+
         if not disease_terms:
+            n_skipped += 1
             continue
 
-        # Encode the disease into latent space
         disease_vec = terms_to_vector(disease_terms, vocab, term_to_idx)
         disease_latent = model.encode(disease_vec.reshape(1, -1))[0]
+        score = euclidean_similarity(patient_latent, disease_latent)
 
-        score = cosine_similarity_np(patient_latent, disease_latent)
+        category_metadata = build_category_metadata(
+            disease_id=disease_id,
+            profile=profile,
+            disease_ancestors=ctx.disease_ancestors,
+            disease_metadata_index=ctx.disease_metadata_index,
+        )
 
         results.append(
             SimilarityResult(
                 disease_id=disease_id,
                 label=profile.get("label", ""),
+                profile_type=category_metadata["profile_type"],
+                category_source_id=category_metadata["category_source_id"],
+                category_path=category_metadata["category_path"],
+                matched_aliases=category_metadata["matched_aliases"],
                 score=score,
                 method_name=METHOD_NAME,
-                explanation=expand(
-                    {"method": METHOD_NAME, "score": score},
-                    patient_terms,
-                    disease_terms,
-                    expanders=SET_BASED_EXPLANATION,
+                explanation=build_explanation(
+                    method_name=METHOD_NAME,
+                    score=score,
+                    patient_terms=patient_terms,
+                    disease_terms=disease_terms,
+                    hpo_labels=ctx.hpo_labels,
+                    ic_values=ctx.ic_values,
+                    patient_raw_terms=patient_raw_terms,
                 ),
             )
         )
 
-    metadata = build_metadata(
-        method_name=METHOD_NAME,
-        pipeline_name=PIPELINE_NAME,
-        config=config,
-        n_patient_terms=len(patient_terms),
-        n_disease_terms=0,
+    metadata = build_run_stats(
+        n_patient_terms_raw=len(patient_raw_terms),
+        n_patient_terms_propagated=len(patient.get_terms(use_propagated=True)),
+        n_patient_terms_used=len(patient_terms),
+        n_diseases_scored=len(results),
+        n_diseases_skipped=n_skipped,
         computation_time=timer.stop(),
     )
 
-    return {METHOD_NAME: sort_and_rank(results, metadata, config.top_k)}
+    return {
+        METHOD_NAME: sort_and_rank(
+            results, config, metadata, METHOD_NAME, PIPELINE_NAME
+        )
+    }
 
 
 def main() -> None:
-    config = PipelineConfig()
-    patient = load_patient(PATIENT_DIR / "example_patient.json")
-    ctx = AppContext.load(
-        patient=patient, use_canonical_profiles=config.use_canonical_profiles
+    """Load shared artifacts and run the autoencoder pipeline."""
+    run_pipeline_main(
+        pipeline_name=PIPELINE_NAME,
+        method_names=ALL_METHOD,
+        run_fn=run,
+        output_dir=AUTOENCODER_DIR,
     )
-
-    results = run(patient, [METHOD_NAME], config, ctx)
-
-    AUTOENCODER_DIR.mkdir(parents=True, exist_ok=True)
-    save_json(
-        {method: mr.to_dict() for method, mr in results.items()},
-        AUTOENCODER_DIR / f"{PIPELINE_NAME}_top{config.top_k}.json",
-    )
-
-    for method_name, method_results in results.items():
-        save_json(
-            method_results.to_dict(),
-            AUTOENCODER_DIR / f"{method_name}_top{config.top_k}.json",
-        )
-        print(f"\nTop results for {method_name}:")
-        for r in method_results.rankings:
-            print(
-                f"  rank={r.rank:>2} | {r.disease_id:<15} | score={r.score:.4f} | {r.label}"
-            )
 
 
 if __name__ == "__main__":

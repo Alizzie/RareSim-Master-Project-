@@ -1,10 +1,17 @@
 """
-RareSim Evaluation Script
+RareSim evaluation script.
 
-Reads cached results written by run_test_files.py and computes rank-based
-metrics for all methods across all pipelines.  Because all pipelines now
-write into the same cache directory, only a single --cache-dir argument
-is needed.
+Reads cached case results and computes rank-based metrics for all methods.
+
+Input:
+    outputs/evaluation/<DATASET>/cache/case_*.json
+
+Output:
+    outputs/evaluation/<DATASET>/
+        ├── <DATASET>_evaluation.json
+        ├── <DATASET>_evaluation_summary.txt
+        ├── <DATASET>_stats.txt
+        └── <DATASET>_summary.tsv
 
 Metrics:
     Recall@1  — fraction of cases where the correct disease was ranked 1st
@@ -22,15 +29,31 @@ Per-case timing:
     method_elapsed_seconds field written by the batch runner.
 
 Usage:
-    python evaluation/evaluator.py \\
-        --cache-dir results/evaluation/MME/cache
+    python scripts/evaluation/evaluator.py --dataset HMS
 
-Output (git-tracked, committed to results/):
-    results/evaluation/MME/cache/case_NNNN.json    ← cached pipeline results
-    results/evaluation/MME/MME_evaluation_summary.txt
-    results/evaluation/MME/MME_stats.txt           ← all methods in one file
-    results/evaluation/MME/MME_summary.tsv         ← all methods in one file
+Adding a new method
+-------------------
+The evaluator automatically detects methods from the per-case cache files.
+
+To add a new method:
+1. Implement the method runner.
+2. Make sure it writes results into:
+       outputs/evaluation/<DATASET>/cache/case_XXXX.json
+3. Inside each case file, the method must appear under:
+       case["results"][METHOD_NAME]
+4. Each result should contain at least:
+       disease_id or canonical_disease_id or ordo_id
+       rank
+       score
+       label
+5. Add timing under:
+       case["method_elapsed_seconds"][METHOD_NAME]
+6. Add the method name to:
+       case["methods_run"]
+
+No evaluator logic needs to change if the result schema follows this format.
 """
+
 
 import argparse
 import json
@@ -663,10 +686,11 @@ def parse_args() -> argparse.Namespace:
         epilog=__doc__,
     )
     parser.add_argument(
+        "--dataset",
         "--datasets",
-        type=Path,
+        dest="dataset",
         required=True,
-        help=("One dataset name "),
+        help="Dataset name, e.g. HMS, MME, RAMEDIS",
     )
     parser.add_argument(
         "--top-k",
@@ -676,11 +700,11 @@ def parse_args() -> argparse.Namespace:
     )
     return parser.parse_args()
 
-
 def main() -> None:
     args = parse_args()
-    test_set_name = args.datasets  # cache_dir = results/evaluation/MME/cache
-    cache_dir = EVALUATION_DIR / test_set_name / "cache"
+    test_set_name = str(args.dataset)
+    dataset_dir = EVALUATION_DIR / test_set_name
+    cache_dir = dataset_dir / "cache"
 
     print(f"\nLoading cached results from {cache_dir} ...")
     cases = load_cache_dir(cache_dir)
@@ -690,11 +714,11 @@ def main() -> None:
         print("No cases found — nothing to evaluate.")
         return
 
-    # Show which methods and how many cases have been cached per method
     method_coverage: dict[str, int] = defaultdict(int)
     for case in cases:
-        for m in case.get("methods_run", []):
-            method_coverage[m] += 1
+        for method in case.get("methods_run", []):
+            method_coverage[method] += 1
+
     print(f"\n  Method coverage ({len(cases)} cases total):")
     for method, count in sorted(method_coverage.items()):
         print(f"    {method:<45} {count}/{len(cases)} cases cached")
@@ -709,35 +733,22 @@ def main() -> None:
     summary = format_summary(results, test_set_name)
     print(summary)
 
-    # ── Save outputs ──────────────────────────────────────────────────────────
-    EVALUATION_DIR.mkdir(parents=True, exist_ok=True)
-    # results/evaluation/MME/  — the dataset folder, parent of cache/
-    RESULTS_DIR = args.cache_dir.parent
-    RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+    dataset_dir.mkdir(parents=True, exist_ok=True)
 
-    # Full evaluation JSON (not git-tracked, stays in outputs/)
-    EVALUATION_DIR.mkdir(parents=True, exist_ok=True)
-    json_path = EVALUATION_DIR / f"{test_set_name}_evaluation.json"
+    json_path = dataset_dir / f"{test_set_name}_evaluation.json"
     with json_path.open("w", encoding="utf-8") as f:
         json.dump(results, f, indent=2, ensure_ascii=False)
     print(f"\nSaved JSON : {json_path}")
 
-    # Full human-readable summary
-    txt_path = EVALUATION_DIR / f"{test_set_name}_evaluation_summary.txt"
-    txt_path.write_text(summary, encoding="utf-8")
-    print(f"Saved TXT  : {txt_path}")
+    summary_path = dataset_dir / f"{test_set_name}_evaluation_summary.txt"
+    summary_path.write_text(summary, encoding="utf-8")
+    print(f"Saved TXT  : {summary_path}")
 
-    results_txt_path = RESULTS_DIR / f"{test_set_name}_evaluation_summary.txt"
-    results_txt_path.write_text(summary, encoding="utf-8")
-    print(f"Saved TXT  : {results_txt_path}  (git-tracked)")
-
-    RESULTS_DIR.mkdir(parents=True, exist_ok=True)
-
-    stats_path = RESULTS_DIR / f"{test_set_name}_stats.txt"
+    stats_path = dataset_dir / f"{test_set_name}_stats.txt"
     write_stats_txt(results, stats_path)
     print(f"Saved TXT  : {stats_path}")
 
-    tsv_path = RESULTS_DIR / f"{test_set_name}_summary.tsv"
+    tsv_path = dataset_dir / f"{test_set_name}_summary.tsv"
     write_summary_tsv(results, cases, tsv_path)
     print(f"Saved TSV  : {tsv_path}")
 

@@ -1,102 +1,156 @@
 """
 Unified result schema for all similarity pipelines.
-Every method returns a list of SimilarityResult, regardless of pipeline type.
+
+Every method returns a MethodResults object containing:
+    - RunConfig: static settings used before the run
+    - RunStats: observed values computed after the run
+    - SimilarityResult list: one entry per ranked disease
+
+AppMetadata is separate because it describes the loaded data, not a pipeline run.
 """
 
 from dataclasses import dataclass, field
-from typing import Any
+
+SCHEMA_VERSION = "1.1"
 
 
 @dataclass
 class AppMetadata:
-    """
-    One-time summary computed when the app loads.
-    Captures the state of the data, not the method configuration.
-    """
+    """Metadata describing the loaded application data."""
 
     n_hpo_labels: int
     n_disease_profiles: int
-    n_patient_terms: int
-    n_patient_propagated_terms: int
     unfound_patient_terms: list[str]
 
     def to_dict(self) -> dict:
+        """Return the metadata as a JSON-serializable dictionary."""
         return {
             "n_hpo_labels": self.n_hpo_labels,
             "n_disease_profiles": self.n_disease_profiles,
-            "n_patient_terms": self.n_patient_terms,
-            "n_patient_propagated_terms": self.n_patient_propagated_terms,
             "unfound_patient_terms": self.unfound_patient_terms,
         }
 
 
 @dataclass
-class Metadata:
-    """
-    Per-method configuration metadata.
-    Pipeline-specific diagnostics belong in SimilarityResult.explanation.
-    """
+class RunConfig:
+    """Static configuration used by a similarity pipeline run."""
 
-    method_name: str
-    pipeline_name: str
     use_propagated_terms: bool
     ic_threshold: float | None
     top_k: int
-    n_patient_terms: int
-    n_disease_terms: int
-    computation_time: float = 0.0
+    use_canonical_profiles: bool = True
 
     def to_dict(self) -> dict:
+        """Return the run configuration as a JSON-serializable dictionary."""
         return {
-            "method_name": self.method_name,
-            "pipeline_name": self.pipeline_name,
             "use_propagated_terms": self.use_propagated_terms,
             "ic_threshold": self.ic_threshold,
             "top_k": self.top_k,
-            "n_used_patient_terms": self.n_patient_terms,
-            "n_used_disease_terms": self.n_disease_terms,
-            "computation_time": self.computation_time,
+            "use_canonical_profiles": self.use_canonical_profiles,
         }
 
 
 @dataclass
-class SimilarityResult:
+class PipelineConfig:
+    """
+    Configuration for running similarity pipelines.
+    Maps to the RunConfig schema for embedding in MethodResults.
+    """
+
+    top_k: int = 10
+    use_propagated_terms: bool = True
+    ic_threshold: float = 1.5
+    use_canonical_profiles: bool = True
+
+    @property
+    def terms_key(self) -> str:
+        """Helper to determine which HPO term set to use based on config."""
+        return "propagated_hpo_terms" if self.use_propagated_terms else "hpo_terms"
+
+    def to_run_config(self) -> RunConfig:
+        """Convert to RunConfig for embedding in MethodResults."""
+        return RunConfig(
+            use_propagated_terms=self.use_propagated_terms,
+            ic_threshold=self.ic_threshold,
+            top_k=self.top_k,
+            use_canonical_profiles=self.use_canonical_profiles,
+        )
+
+
+@dataclass
+class RunStats:
+    """Runtime statistics observed during a similarity pipeline run."""
+
+    n_patient_terms_raw: int
+    n_patient_terms_propagated: int
+    n_patient_terms_used: int
+    n_diseases_scored: int
+    n_diseases_skipped: int
+    computation_time_seconds: float = 0.0
+
+    def to_dict(self) -> dict:
+        """Return the run statistics as a JSON-serializable dictionary."""
+        return {
+            "n_patient_terms_raw": self.n_patient_terms_raw,
+            "n_patient_terms_propagated": self.n_patient_terms_propagated,
+            "n_patient_terms_used": self.n_patient_terms_used,
+            "n_diseases_scored": self.n_diseases_scored,
+            "n_diseases_skipped": self.n_diseases_skipped,
+            "computation_time_seconds": round(self.computation_time_seconds, 4),
+        }
+
+
+@dataclass
+class SimilarityResult:  # pylint: disable=too-many-instance-attributes
+    """One ranked disease returned by a similarity method."""
+
     disease_id: str
     label: str
     score: float
     method_name: str
+    profile_type: str | None = None
+    category_source_id: str | None = None
+    category_path: list[dict[str, object]] = field(default_factory=list)
+    matched_aliases: list[str] = field(default_factory=list)
     rank: int = 0
-    explanation: dict[str, Any] = field(default_factory=dict)
+    explanation: dict[str, object] = field(default_factory=dict)
 
     def to_dict(self) -> dict:
+        """Return the similarity result as a JSON-serializable dictionary."""
         return {
             "rank": self.rank,
             "disease_id": self.disease_id,
             "label": self.label,
+            "profile_type": self.profile_type,
+            "category_source_id": self.category_source_id,
+            "category_path": self.category_path,
+            "matched_aliases": [
+                alias for alias in self.matched_aliases if alias != self.disease_id
+            ],
+            "score": round(self.score, 6),
             "method_name": self.method_name,
-            "score": self.score,
             "explanation": self.explanation,
         }
 
 
 @dataclass
 class MethodResults:
-    """Groups ranked results and shared metadata for one method"""
+    """Complete output produced by one similarity method."""
 
-    metadata: Metadata
+    method_name: str
+    pipeline_name: str
+    config: RunConfig
+    stats: RunStats
     rankings: list[SimilarityResult]
+    schema_version: str = SCHEMA_VERSION
 
     def to_dict(self) -> dict:
+        """Return the full method output as a JSON-serializable dictionary."""
         return {
-            "metadata": self.metadata.to_dict(),
-            "rankings": [
-                {
-                    "rank": r.rank,
-                    "disease_id": r.disease_id,
-                    "label": r.label,
-                    "score": r.score,
-                    "explanation": r.explanation,
-                }
-                for r in self.rankings
-            ],
+            "schema_version": self.schema_version,
+            "method_name": self.method_name,
+            "pipeline_name": self.pipeline_name,
+            "config": self.config.to_dict(),
+            "stats": self.stats.to_dict(),
+            "rankings": [result.to_dict() for result in self.rankings],
         }

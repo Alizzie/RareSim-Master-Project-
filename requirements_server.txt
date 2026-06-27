@@ -50,8 +50,9 @@
 # After first run, cache is reused — ranking is near-instant.
 #
 # For example if GPU 4 is available:
-#   CUDA_VISIBLE_DEVICES=4 nohup python src/similarity_methods/transformer/pipeline.py \
-#     > outputs/transformer/transformer_log.txt 2>&1 &
+#   mkdir -p outputs/similarity_methods/transformer
+#   CUDA_VISIBLE_DEVICES=4 nohup python packages/raresim-core/src/raresim/similarity_methods/transformer/pipeline.py \
+#     >| outputs/similarity_methods/transformer/transformer_log.txt 2>&1 &
 #
 # Monitor:
 #   tail -f outputs/transformer/transformer_log.txt
@@ -68,11 +69,20 @@
 # Takes ~3-5 min per run (retrieval + explanation for 10 results).
 #
 # For example if GPU 4 and 5 are available:
-#   CUDA_VISIBLE_DEVICES=4,5 nohup python src/similarity_methods/llm/pipeline.py \
-#     > outputs/llm/llm_log.txt 2>&1 &
+#   CUDA_VISIBLE_DEVICES=4,5 nohup python packages/raresim-core/src/raresim/similarity_methods/llm/pipeline.py  \
+#     >| outputs/similarity_methods/llm/llm_log.txt 2>&1 &
 #
 # Monitor:
-#   tail -f outputs/llm/llm_log.txt
+#   tail -f outputs/similarity_methods/llm/llm_log.txt 
+#
+# ============================================================
+# HOW TO RUN — AUTOENCODER PIPELINE
+# ============================================================
+#
+# For example if GPU 4 and 5 are available:
+#   mkdir -p outputs/similarity_methods/autoencoder
+#   nohup python packages/raresim-core/src/raresim/similarity_methods/autoencoder/pipeline.py \
+#   >| outputs/similarity_methods/autoencoder/autoencoder_log.txt 2>&1 &
 #
 # ============================================================
 # VERSION NOTES
@@ -89,7 +99,9 @@
 # ============================================================
 
 # Core ML
-torch==2.4.0+cu124 --index-url https://download.pytorch.org/whl/cu124
+--extra-index-url https://download.pytorch.org/whl/cu124
+
+torch==2.4.0+cu124
 numpy==1.26.4
 
 # HuggingFace

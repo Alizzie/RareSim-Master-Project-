@@ -35,7 +35,7 @@ from _cli_parser import parse_args
 import _utils as gu
 import _summary as gsum
 
-from raresim.utils.math import preprocess_ancestor_sets, get_ancestors_inclusive
+from raresim.utils.hpo_utils import preprocess_ancestor_sets, get_ancestors_inclusive
 from raresim.utils.paths import HPO_ANCESTORS_PATH, GUI_DIR
 from raresim.core.cache import save_run_cache
 from raresim.core.context import AppContext

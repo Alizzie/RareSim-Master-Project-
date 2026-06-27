@@ -8,7 +8,7 @@ build_patient_profile: build a full patient dict with HPO terms + propagation.
 from typing import Dict, List, Tuple
 
 from raresim.utils.io import load_json
-from raresim.utils.math import get_ancestors_inclusive, preprocess_ancestor_sets
+from raresim.utils.hpo_utils import get_ancestors_inclusive, preprocess_ancestor_sets
 from raresim.utils.paths import HPO_ANCESTORS_PATH
 
 from ._types import ExtractionResult

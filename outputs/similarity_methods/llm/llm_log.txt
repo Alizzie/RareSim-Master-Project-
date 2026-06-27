@@ -1,0 +1,71 @@
+nohup: ignoring input
+[llm] Loaded patient: patient_001
+[llm] HPO terms: {'HP:0001263', 'HP:0002470', 'HP:0001903'}
+[llm] Propagated HPO Terms: {'HP:0000707', 'HP:0001903', 'HP:0012758', 'HP:0001877', 'HP:0001263', 'HP:0001251', 'HP:0012638', 'HP:0012759', 'HP:0000118', 'HP:0011443', 'HP:0002470', 'HP:0000001', 'HP:0001871', 'HP:0011442'}
+[llm] Method Names: ['mistralai/Mistral-7B-Instruct-v0.2']
+Loading shared data...
+[llm] Running pipeline with methods: ['mistralai/Mistral-7B-Instruct-v0.2']
+
+============================================================
+  Model: mistralai/Mistral-7B-Instruct-v0.2
+============================================================
+
+[llm] Retrieving diseases with: mistralai/Mistral-7B-Instruct-v0.2
+  [llm] Loading: mistralai/Mistral-7B-Instruct-v0.2
+Loading checkpoint shards:   0%|          | 0/3 [00:00<?, ?it/s]Loading checkpoint shards:  33%|███▎      | 1/3 [00:03<00:06,  3.34s/it]Loading checkpoint shards:  67%|██████▋   | 2/3 [00:05<00:02,  2.77s/it]Loading checkpoint shards: 100%|██████████| 3/3 [00:07<00:00,  2.47s/it]Loading checkpoint shards: 100%|██████████| 3/3 [00:07<00:00,  2.61s/it]
+Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+  [llm] Loaded with 4-bit quantization
+  [timer] load mistralai/Mistral-7B-Instruct-v0.2: 12.776s
+  [timer] generate mistralai/Mistral-7B-Instruct-v0.2: 28.056s
+
+--- RAW LLM OUTPUT ---
+DISEASE: Pelizaeus-Merzbacher Disease (Leukodystrophies) | ORDO: ORPHA:268479 | MATCH: global developmental delay, nonprogressive cerebellar ataxia | CONFIDENCE: high
+DISEASE: Niemann-Pick Type C Disease | ORDO: ORPHA:211310 | MATCH: global developmental delay, anemia | CONFIDence: Medium
+DISEASE: Vitamin B12 Deficiency | ORDO: ORPHA:211310 | MATCH: Developmental delay, anemia | Confidence: Medium
+DISEASE: Menkes Syndrome | ORDO: ORPHA:259700 | MATCH: Global developmental delay, anemia | Confidence: Low
+DISEASE: Fanconi's Anaemia Combinations Types I & II | ORDO: ORPHA:236900 | MATCH: Developmental delay, anaemia | Confidence: Low
+DISEASE: Dyskeratosis Congenita | ORDO: ORPHA:223070 | MATCH: Developmental delay, anemia | Confidence: Low
+DISEASE: Refsum Disease | ORDO: ORPHA:266500 | MATCH: Developmental delay, anemia | Confidence: Low
+DISEASE: Leigh Syndrome | ORDO: ORPHA:256000 | MATCH: Global developmental delay, nonprogressive cerebellar ataxia | Confidence: Low
+DISEASE: Krabbe Disease | ORDO: ORPHA:256500 | MATCH: Global developmental delay, nonprogressive cerebellar ataxia | Confidence: Low
+DISEASE: Adrenoleukodystrophy X-linked form | ORDO: ORPHA:300600 | MATCH: Global developmental delay, nonprogressive cerebellar ataxia | Confidence: Low
+--- END OUTPUT ---
+
+[llm] Found 10 diseases (8 validated against profiles)
+  [timer] total mistralai/Mistral-7B-Instruct-v0.2: 40.890s
+  [llm] GPU memory released
+
+[llm] Explaining top results for: mistralai/Mistral-7B-Instruct-v0.2
+
+[llm] Loading explainer: mistralai/Mistral-7B-Instruct-v0.2
+  [llm] Loading: mistralai/Mistral-7B-Instruct-v0.2
+Loading checkpoint shards:   0%|          | 0/3 [00:00<?, ?it/s]Loading checkpoint shards:  33%|███▎      | 1/3 [00:02<00:04,  2.22s/it]Loading checkpoint shards:  67%|██████▋   | 2/3 [00:04<00:02,  2.21s/it]Loading checkpoint shards: 100%|██████████| 3/3 [00:06<00:00,  2.15s/it]Loading checkpoint shards: 100%|██████████| 3/3 [00:06<00:00,  2.17s/it]
+Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+  [llm] Loaded with 4-bit quantization
+  [timer] load explainer: 7.249s
+  [llm] 1/10: Pelizaeus-Merzbacher disease
+  [timer] explain Pelizaeus-Merzbacher disease: 18.466s
+  [llm] 2/10: Disease
+  [timer] explain Disease: 10.222s
+  [llm] 3/10: vitamin B12 deficiency
+  [timer] explain vitamin B12 deficiency: 11.355s
+  [llm] 6/10: Dyskeratosis congenita, autosomal dominant, 1
+  [timer] explain Dyskeratosis congenita, autosomal domina: 9.017s
+  [llm] 7/10: Refsum disease
+  [timer] explain Refsum disease: 8.740s
+  [llm] 8/10: Leigh syndrome
+  [timer] explain Leigh syndrome: 14.431s
+  [llm] 9/10: Krabbe disease, atypical, due to saposin A deficiency
+  [timer] explain Krabbe disease, atypical, due to saposin: 9.036s
+  [llm] 10/10: leukodystrophy
+  [timer] explain leukodystrophy: 16.024s
+  [llm] GPU memory released
+  [timer] full llm pipeline: 146.581s
+[llm] Pipeline finished. Saving results to /home/user/peilindu/RareSim-Master-Project-/outputs/similarity_methods/llm...

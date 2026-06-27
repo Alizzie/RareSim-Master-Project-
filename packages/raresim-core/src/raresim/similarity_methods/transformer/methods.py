@@ -3,54 +3,28 @@ Transformer methods — text construction and embedding backends.
 DiseaseRetriever (retriever.py) uses these to build and query embeddings.
 
 Supports:
-- HuggingFace encoder models (BERT-family) with mean pooling
+- HuggingFace encoder models with mean pooling
 - SentenceTransformer models
-- AutoTokenizer for non-BERT models (SapBERT)
+- AutoTokenizer for HuggingFace encoder models
 """
 
 import hashlib
-from typing import Dict, List, Tuple
 
 import numpy as np
 import torch
 from sentence_transformers import SentenceTransformer
-from transformers import AutoModel, AutoTokenizer, BertTokenizer, BertTokenizerFast
+from transformers import AutoModel, AutoTokenizer
 
+from raresim.types.schemas import PatientProfile
 from raresim.similarity_methods.transformer.config import (
-    AUTO_TOKENIZER_MODELS,
     BATCH_SIZE,
     MAX_LENGTH,
     SENTENCE_TRANSFORMER_MODELS,
 )
-
-# ── Text construction ─────────────────────────────────────────────────────────
-
-
-def unique_preserve_order(items: List[str]) -> List[str]:
-    """Remove duplicates while preserving first occurrence order."""
-    seen = set()
-    out = []
-    for item in items:
-        if item and item not in seen:
-            seen.add(item)
-            out.append(item)
-    return out
+from raresim.utils.hpo_utils import get_hpo_label
 
 
-def hpo_terms_to_labels(
-    hpo_terms: List[str],
-    hpo_labels: Dict[str, str],
-) -> List[str]:
-    """Convert HPO IDs into readable phenotype labels, removing duplicates."""
-    labels = []
-    for term in hpo_terms:
-        label = hpo_labels.get(term)
-        if label:
-            labels.append(label.strip())
-    return unique_preserve_order(labels)
-
-
-def build_patient_text(patient: dict, hpo_labels: Dict[str, str]) -> str:
+def build_patient_text(patient: PatientProfile, hpo_labels: dict[str, str]) -> str:
     """
     Build the patient text used for embedding.
 
@@ -58,9 +32,8 @@ def build_patient_text(patient: dict, hpo_labels: Dict[str, str]) -> str:
     - raw clinical description (if available)
     - HPO phenotype labels
     """
-    raw_text = (patient.get("raw_text") or "").strip()
-    hpo_terms = patient.get("hpo_terms", [])
-    phenotype_labels = hpo_terms_to_labels(hpo_terms, hpo_labels)
+    raw_text = (patient.raw_text or "").strip()
+    phenotype_labels = [get_hpo_label(term, hpo_labels) for term in patient.hpo_terms]
 
     parts = []
     if raw_text:
@@ -71,7 +44,7 @@ def build_patient_text(patient: dict, hpo_labels: Dict[str, str]) -> str:
     return " ".join(parts).strip()
 
 
-def build_disease_text(profile: dict, hpo_labels: Dict[str, str]) -> str:
+def build_disease_text(profile: dict, hpo_labels: dict[str, str]) -> str:
     """
     Build the disease text used for embedding.
 
@@ -83,7 +56,7 @@ def build_disease_text(profile: dict, hpo_labels: Dict[str, str]) -> str:
     label = (profile.get("label") or "").strip()
     desc = (profile.get("merged_description") or "").strip()
     hpo_terms = profile.get("hpo_terms", [])
-    phenotype_labels = hpo_terms_to_labels(hpo_terms, hpo_labels)
+    phenotype_labels = [get_hpo_label(term, hpo_labels) for term in hpo_terms]
 
     parts = []
     if label:
@@ -97,9 +70,9 @@ def build_disease_text(profile: dict, hpo_labels: Dict[str, str]) -> str:
 
 
 def build_disease_texts(
-    disease_profiles: Dict[str, dict],
-    hpo_labels: Dict[str, str],
-) -> Tuple[List[str], List[str], List[str]]:
+    disease_profiles: dict[str, dict],
+    hpo_labels: dict[str, str],
+) -> tuple[list[str], list[str], list[str]]:
     """Build aligned lists of disease IDs, labels, and embedding texts."""
     disease_ids = []
     disease_labels = []
@@ -131,11 +104,6 @@ def l2_normalize(matrix: np.ndarray) -> np.ndarray:
     return matrix / norms
 
 
-def make_safe_model_name(model_name: str) -> str:
-    """Convert model name into a filesystem-safe string."""
-    return model_name.replace("/", "_")
-
-
 def get_model_type(model_name: str) -> str:
     """
     Route model names to the correct embedding backend.
@@ -161,18 +129,15 @@ def load_hf_model_and_tokenizer(model_name: str):
     use the standard BERT tokenizer. Falls back to BertTokenizerFast
     for standard BERT-family models.
     """
-    # Use AutoTokenizer for models that need it
-    if model_name in AUTO_TOKENIZER_MODELS:
-        tokenizer = AutoTokenizer.from_pretrained(model_name)
-    else:
-        try:
-            tokenizer = BertTokenizerFast.from_pretrained(model_name)
-        except Exception:
-            tokenizer = BertTokenizer.from_pretrained(model_name)
+    tokenizer = AutoTokenizer.from_pretrained(
+        model_name,
+        use_fast=True,
+    )
 
     model = AutoModel.from_pretrained(model_name)
     model.to(get_device())
     model.eval()
+
     return tokenizer, model
 
 
@@ -190,7 +155,7 @@ def mean_pool(
 def embed_texts_hf(
     tokenizer,
     model,
-    texts: List[str],
+    texts: list[str],
     batch_size: int = BATCH_SIZE,
     max_length: int = MAX_LENGTH,
 ) -> np.ndarray:
@@ -227,7 +192,7 @@ def load_sentence_transformer_model(model_name: str):
 
 def embed_texts_sentence_transformer(
     model,
-    texts: List[str],
+    texts: list[str],
     batch_size: int = BATCH_SIZE,
 ) -> np.ndarray:
     """Embed texts with a SentenceTransformer model."""
@@ -261,7 +226,7 @@ def load_embedding_backend(model_name: str) -> dict:
     raise ValueError(f"Unsupported model type: {model_name}")
 
 
-def embed_texts(backend: dict, texts: List[str]) -> np.ndarray:
+def embed_texts(backend: dict, texts: list[str]) -> np.ndarray:
     """Dispatch embedding calls to the appropriate backend."""
     model_type = backend["model_type"]
 
