@@ -75,10 +75,28 @@
         </div>
       </div>
 
+
+          <div v-if="methodsInResults.length > 1" class="method-filter-bar">
+      <button
+        :class="['method-filter-btn', { active: activeMethod === 'all' }]"
+        @click="activeMethod = 'all'"
+      >
+        All
+      </button>
+      <button
+        v-for="m in methodsInResults"
+        :key="m"
+        :class="['method-filter-btn', { active: activeMethod === m }]"
+        @click="activeMethod = m"
+      >
+        {{ methodLabel(m) }}
+      </button>
+    </div>
+
       <!-- Result list -->
       <div class="results-list">
         <div
-          v-for="(r, i) in results"
+          v-for="(r, i) in filteredResults"
           :key="r.disease_id + r.method_name"
           :class="['result-card', { expanded: expandedIdx === i }]"
           @click="toggleExpand(i)"
@@ -165,7 +183,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import MethodComparison from './MethodComparison.vue'
 import { savePatient } from '../api/index.js'
 
@@ -182,11 +200,27 @@ const props = defineProps({
 
 defineEmits(['retry'])
 
+watch(() => props.results, () => {
+  activeMethod.value = 'all'
+})
+
 const expandedIdx = ref(null)
 const showComparison = ref(false)
+const activeMethod = ref('all')
 const saving = ref(false)
 const saveStatus = ref('')
 const saveFormat = ref('json')
+
+const methodsInResults = computed(() => {
+  const seen = new Set()
+  props.results.forEach(r => seen.add(r.method_name))
+  return [...seen]
+})
+
+const filteredResults = computed(() => {
+  if (activeMethod.value === 'all') return props.results
+  return props.results.filter(r => r.method_name === activeMethod.value)
+})
 
 const topScore = computed(() => {
   if (!props.results.length) return '—'
@@ -571,4 +605,33 @@ function methodLabel(id) {
 .comparison-toggle .chevron.open { transform: rotate(90deg); }
 .comparison-toggle .count { margin-left: auto; color: var(--text-tertiary); font-size: 11px; }
 .comparison-section .mc { margin-top: 12px; }
+
+.method-filter-bar {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.method-filter-btn {
+  font-size: 12px;
+  font-weight: 500;
+  padding: 5px 12px;
+  border-radius: 99px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all .15s;
+  font-family: var(--sans);
+}
+.method-filter-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.method-filter-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+
 </style>

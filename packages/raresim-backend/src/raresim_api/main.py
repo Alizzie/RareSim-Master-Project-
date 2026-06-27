@@ -322,14 +322,26 @@ def diagnose(req: DiagnoseRequest):
 
         # Sort by score descending, re-rank
         flat_results.sort(key=lambda x: x["score"], reverse=True)
-        for i, r in enumerate(flat_results):
-            r["rank"] = i + 1
+
+        per_method = {}
+        for r in flat_results:
+            method = r["method_name"]
+            if method not in per_method:
+                per_method[method] = []
+            if len(per_method[method]) < req.top_k:
+                per_method[method].append(r)
+
+        all_method_results = []
+        for method_results_list in per_method.values():
+            for rank, r in enumerate(method_results_list, start=1):
+                r["rank"] = rank
+            all_method_results.extend(method_results_list)
 
         by_method = _collect_by_method(all_results, all_raw_results)
         comparison = build_comparison(by_method, k=req.top_k, top_n=12)
- 
+
         return {
-            "results": flat_results[: req.top_k],
+            "results": all_method_results,
             "comparison": comparison,
             "meta": {
                 "n_patient_terms": len(hpo_terms),
