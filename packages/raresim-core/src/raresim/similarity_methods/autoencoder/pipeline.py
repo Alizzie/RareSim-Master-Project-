@@ -121,7 +121,7 @@ def run(
     selected: list[str],
     config: PipelineConfig,
     ctx: AppContext,
-) -> dict[str, list[SimilarityResult]]:
+) -> dict[str, list[MethodResults]]:
     if METHOD_NAME not in selected:
         return {}
 
