@@ -1,4 +1,5 @@
 """Batch runner for RareSim transformer retrieval methods.
+
 Usage:
     python -m scripts.evaluation.run_transformer \
         --test-set <path_to_test_set.json> \
@@ -19,6 +20,7 @@ from raresim.similarity_methods.transformer.config import CANDIDATE_POOL_SIZE
 from raresim.similarity_methods.transformer.config import MODEL_LIST
 from raresim.similarity_methods.transformer.retriever import DiseaseRetriever
 from raresim.types.schemas import PatientProfile
+from raresim.utils.hpo_utils import preprocess_ancestor_sets
 from raresim.utils.io import load_json
 from raresim.utils.paths import ALIAS_TO_CANONICAL_PATH
 from raresim.utils.paths import HPO_LABELS_PATH
@@ -27,6 +29,7 @@ from raresim.utils.timer import Timer
 from scripts.evaluation._batch_utils import (
     EVALUATION_DIR,
     add_common_args,
+    build_patient,
     cache_path_for,
     load_test_cases,
     methods_already_cached,
@@ -44,6 +47,7 @@ class TransformerResources:
     """Shared transformer retriever resources."""
 
     retriever: DiseaseRetriever
+    ancestor_sets: dict[str, Any]
 
 
 @dataclass(frozen=True)
@@ -83,13 +87,15 @@ class RunnerState:
     batch: BatchConfig
 
 
-def _build_patient(case: CaseInput) -> PatientProfile:
-    """Build the PatientProfile expected by the transformer retriever."""
-    return PatientProfile(
-        patient_id=f"eval_case_{case.index:04d}",
-        raw_text="",
-        hpo_terms=set(case.hpo_terms),
-        propagated_hpo_terms=set(case.hpo_terms),
+def _build_patient(
+    case: CaseInput,
+    ancestor_sets: dict[str, Any],
+) -> PatientProfile:
+    """Build a propagated PatientProfile for one evaluation case."""
+    return build_patient(
+        case.index,
+        case.hpo_terms,
+        ancestor_sets,
     )
 
 
@@ -128,6 +134,7 @@ def _load_resources() -> TransformerResources:
 
     dummy_patient = PatientProfile("batch_init", "", set(), set())
     ctx = AppContext.load(dummy_patient, use_canonical_profiles=True)
+    ancestor_sets = preprocess_ancestor_sets(ctx.ancestors)
 
     print(f"Models: {MODEL_LIST}")
     print("Preparing transformer embedding cache...")
@@ -142,7 +149,10 @@ def _load_resources() -> TransformerResources:
     retriever.warmup(preload_models=False)
 
     print("  Ready.\n")
-    return TransformerResources(retriever=retriever)
+    return TransformerResources(
+        retriever=retriever,
+        ancestor_sets=ancestor_sets,
+    )
 
 
 def _run_case(
@@ -152,7 +162,7 @@ def _run_case(
     """Run all transformer models on one case."""
     all_results: dict[str, list[dict[str, Any]]] = {}
     method_elapsed: dict[str, float] = {}
-    patient = _build_patient(case)
+    patient = _build_patient(case, state.resources.ancestor_sets)
 
     case_timer = Timer("transformer").start()
 
@@ -298,3 +308,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+    

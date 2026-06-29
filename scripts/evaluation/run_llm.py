@@ -1,4 +1,5 @@
 """Batch runner for RareSim direct LLM disease retrieval.
+
 Usage:
     python -m scripts.evaluation.run_llm \
         --test-set <path_to_test_set.json> \
@@ -25,6 +26,7 @@ from raresim.similarity_methods.llm.methods import (
     unload_pipeline,
 )
 from raresim.types.schemas import PatientProfile
+from raresim.utils.hpo_utils import preprocess_ancestor_sets
 from raresim.utils.io import load_json
 from raresim.utils.paths import HPO_LABELS_PATH
 from raresim.utils.timer import Timer
@@ -32,6 +34,7 @@ from raresim.utils.timer import Timer
 from scripts.evaluation._batch_utils import (
     EVALUATION_DIR,
     add_common_args,
+    build_patient,
     cache_path_for,
     load_test_cases,
     methods_already_cached,
@@ -50,6 +53,7 @@ class LlmResources:
 
     ctx: AppContext
     hpo_labels: Any
+    ancestor_sets: dict[str, Any]
 
 
 @dataclass
@@ -93,21 +97,28 @@ class CaseExecution:
 
 
 def _load_resources() -> LlmResources:
-    """Load shared labels and application context."""
+    """Load shared labels, context, and HPO ancestor sets."""
     hpo_labels = load_json(HPO_LABELS_PATH)
     dummy = PatientProfile("batch_init", "", set(), set())
     ctx = AppContext.load(dummy, use_canonical_profiles=True)
-    return LlmResources(ctx=ctx, hpo_labels=hpo_labels)
+    ancestor_sets = preprocess_ancestor_sets(ctx.ancestors)
+
+    return LlmResources(
+        ctx=ctx,
+        hpo_labels=hpo_labels,
+        ancestor_sets=ancestor_sets,
+    )
 
 
-def _build_patient(case: CaseInput) -> PatientProfile:
-    """Build a PatientProfile for one evaluation case."""
-    terms = set(case.hpo_terms)
-    return PatientProfile(
-        patient_id=f"eval_case_{case.index:04d}",
-        raw_text="",
-        hpo_terms=terms,
-        propagated_hpo_terms=terms,
+def _build_patient(
+    case: CaseInput,
+    ancestor_sets: dict[str, Any],
+) -> PatientProfile:
+    """Build a propagated PatientProfile for one evaluation case."""
+    return build_patient(
+        case.index,
+        case.hpo_terms,
+        ancestor_sets,
     )
 
 
@@ -141,7 +152,10 @@ def _serialize_results(results: Sequence[Any]) -> list[dict[str, Any]]:
 
 def _run_single_case(execution: CaseExecution) -> tuple[list[dict[str, Any]], float]:
     """Run one LLM model on one test case."""
-    patient = _build_patient(execution.case)
+    patient = _build_patient(
+        execution.case,
+        execution.resources.ancestor_sets,
+    )
     case_timer = Timer(execution.model_name).start()
 
     prompt = build_retrieval_prompt(
@@ -162,14 +176,24 @@ def _run_single_case(execution: CaseExecution) -> tuple[list[dict[str, Any]], fl
         hpo_labels=execution.resources.hpo_labels,
         disease_profiles=execution.resources.ctx.disease_profiles,
         model_name=execution.model_name,
+        top_k=execution.batch.top_k,
+        ic_values=execution.resources.ctx.ic_values,
         disease_ancestors=execution.resources.ctx.disease_ancestors,
         disease_metadata_index=execution.resources.ctx.disease_metadata_index,
-        ic_values=execution.resources.ctx.ic_values,
-        top_k=execution.batch.top_k,
     )
 
     elapsed = round(case_timer.stop(), 3)
     return _serialize_results(model_results), elapsed
+
+
+def _write_error(cache_dir: Path, case_index: int, error: Exception) -> None:
+    """Write one case error file."""
+    error_path = cache_dir / f"case_{case_index:04d}.error"
+    error_path.write_text(
+        f"{type(error).__name__}: {error}",
+        encoding="utf-8",
+    )
+
 
 def _handle_case(
     execution: CaseExecution,
@@ -213,9 +237,10 @@ def _handle_case(
     except Exception as error:
         stats.failed += 1
         print_case_err(error)
-        (execution.batch.cache_dir / f"case_{execution.case.index:04d}.error").write_text(
-            f"{type(error).__name__}: {error}",
-            encoding="utf-8",
+        _write_error(
+            execution.batch.cache_dir,
+            execution.case.index,
+            error,
         )
 
 
@@ -228,8 +253,8 @@ def _run_model_cases(
 ) -> None:
     """Load one model, run it over all cases, then unload it."""
     print(f"\n[llm] Loading model: {model_name}")
-    pipe = None
 
+    pipe = None
     try:
         pipe = load_hf_pipeline(model_name, MAX_NEW_TOKENS_RETRIEVAL)
 
