@@ -284,13 +284,53 @@
                 </div>
               </template>
 
-                            <!-- HPO2Vec+ shape -->
-              <template v-else-if="r.explanation.method_specific.embedding_method">
+             <!-- HPO2Vec+ shape -->
+              <template v-else-if="r.explanation.method_specific.embedding_method === 'hpo2vec_random_walk'">
                 <div class="ms-block">
                   <div class="ms-row">
                     <span class="ms-key">Embedding method</span>
                     <span class="ms-val">{{ r.explanation.method_specific.embedding_method }}</span>
                   </div>
+                  <div class="ms-row">
+                    <span class="ms-key">Aggregation</span>
+                    <span class="ms-val">{{ r.explanation.method_specific.aggregation }}</span>
+                  </div>
+                </div>
+                <div v-if="r.explanation.method_specific.score_note" class="ms-subsection">
+                  <div class="ms-subtitle">Score note</div>
+                  <div class="detail-value small">{{ r.explanation.method_specific.score_note }}</div>
+                </div>
+                <div v-if="r.explanation.method_specific.interpretation_note" class="ms-subsection">
+                  <div class="ms-subtitle">Interpretation</div>
+                  <div class="detail-value small">{{ r.explanation.method_specific.interpretation_note }}</div>
+                </div>
+              </template>
+
+              <!-- Transformer shape -->
+              <template v-else-if="r.explanation.method_specific.embedding_method && r.explanation.method_specific.model_name">
+                <div class="ms-block">
+                  <div class="ms-row">
+                    <span class="ms-key">Model</span>
+                    <span class="ms-val">{{ r.explanation.method_specific.model_name }}</span>
+                  </div>
+                  <div class="ms-row">
+                    <span class="ms-key">Pooling</span>
+                    <span class="ms-val">{{ r.explanation.method_specific.pooling || 'n/a' }}</span>
+                  </div>
+                </div>
+                <div v-if="r.explanation.method_specific.score_note" class="ms-subsection">
+                  <div class="ms-subtitle">Score note</div>
+                  <div class="detail-value small">{{ r.explanation.method_specific.score_note }}</div>
+                </div>
+                <div v-if="r.explanation.method_specific.interpretation_note" class="ms-subsection">
+                  <div class="ms-subtitle">Interpretation</div>
+                  <div class="detail-value small">{{ r.explanation.method_specific.interpretation_note }}</div>
+                </div>
+              </template>
+
+              <!-- Autoencoder shape -->
+              <template v-else-if="r.explanation.method_specific.embedding_method === 'denoising_autoencoder_latent'">
+                <div class="ms-block">
                   <div class="ms-row">
                     <span class="ms-key">Aggregation</span>
                     <span class="ms-val">{{ r.explanation.method_specific.aggregation }}</span>
@@ -368,6 +408,28 @@
                   </div>
                 </div>
               </template>
+
+              <!-- LLM shape -->
+            <template v-else-if="r.explanation.method_specific.llm_method">
+              <div class="ms-block">
+                <div class="ms-row">
+                  <span class="ms-key">Model</span>
+                  <span class="ms-val">{{ r.explanation.method_specific.model_name }}</span>
+                </div>
+                <div v-if="r.explanation.method_specific.confidence" class="ms-row">
+                  <span class="ms-key">Confidence</span>
+                  <span class="ms-val">{{ r.explanation.method_specific.confidence }}</span>
+                </div>
+              </div>
+              <div v-if="r.explanation.method_specific.score_note" class="ms-subsection">
+                <div class="ms-subtitle">Score note</div>
+                <div class="detail-value small">{{ r.explanation.method_specific.score_note }}</div>
+              </div>
+              <div v-if="r.explanation.method_specific.llm_response_preview" class="ms-subsection">
+                <div class="ms-subtitle">LLM response</div>
+                <div class="detail-value small">{{ r.explanation.method_specific.llm_response_preview }}</div>
+              </div>
+            </template>
 
               <!-- Fallback: unrecognized shape -->
               <div v-else class="detail-value small mono-block">{{ JSON.stringify(r.explanation.method_specific, null, 2) }}</div>
