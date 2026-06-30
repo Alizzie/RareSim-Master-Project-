@@ -15,8 +15,7 @@
       <div class="loading-ring" />
       <div class="loading-title">Running diagnosis…</div>
       <div class="loading-sub">
-        Running {{ runningMethods.length }} method{{ runningMethods.length !== 1 ? 's' : '' }}
-        across {{ nDiseases }} diseases
+        Running {{ runningMethods.length }} method{{ runningMethods.length !== 1 ? 's' : '' }}<span v-if="nDiseases > 0"> across {{ nDiseases }} diseases</span>
       </div>
       <div class="loading-methods">
         <span v-for="m in runningMethods" :key="m" class="loading-method">{{ m }}</span>
@@ -130,6 +129,188 @@
               <div class="detail-label">Disease ID</div>
               <div class="detail-value mono">{{ r.disease_id }}</div>
             </div>
+
+            <!-- Plain-language summary -->
+            <div v-if="r.explanation?.summary" class="detail-section">
+              <div class="detail-label">Summary</div>
+              <div class="detail-value">{{ r.explanation.summary }}</div>
+            </div>
+
+            <!-- Coverage stats -->
+            <div v-if="r.explanation?.coverage" class="detail-section">
+              <div class="detail-label">Coverage</div>
+              <div class="coverage-grid">
+                <div class="coverage-item">
+                  <span class="coverage-value">{{ pct(r.explanation.coverage.patient_hpo_coverage) }}</span>
+                  <span class="coverage-key">patient terms matched</span>
+                </div>
+                <div class="coverage-item">
+                  <span class="coverage-value">{{ pct(r.explanation.coverage.disease_hpo_coverage) }}</span>
+                  <span class="coverage-key">disease terms matched</span>
+                </div>
+                <div class="coverage-item">
+                  <span class="coverage-value">{{ r.explanation.coverage.n_matched_terms }}</span>
+                  <span class="coverage-key">terms matched</span>
+                </div>
+                <div class="coverage-item">
+                  <span class="coverage-value">{{ r.explanation.coverage.n_unmatched_patient_terms }}</span>
+                  <span class="coverage-key">unmatched (patient)</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Matched terms -->
+            <div v-if="r.explanation?.matched_terms?.length" class="detail-section">
+              <div class="detail-label">Matched phenotypes ({{ r.explanation.matched_terms.length }})</div>
+              <div class="term-list">
+                <div
+                  v-for="t in r.explanation.matched_terms.slice(0, 8)"
+                  :key="t.id"
+                  class="term-row term-row-match"
+                >
+                  <span class="term-label">{{ t.label }}</span>
+                  <span class="term-id">{{ t.id }}</span>
+                  <span v-if="t.ic !== undefined" class="term-ic">IC {{ t.ic.toFixed(2) }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Unmatched patient terms -->
+            <div v-if="r.explanation?.unmatched_patient_terms?.length" class="detail-section">
+              <div class="detail-label">Unmatched patient phenotypes ({{ r.explanation.unmatched_patient_terms.length }})</div>
+              <div class="term-list">
+                <div
+                  v-for="t in r.explanation.unmatched_patient_terms.slice(0, 8)"
+                  :key="t.id"
+                  class="term-row term-row-unmatch"
+                >
+                  <span class="term-label">{{ t.label }}</span>
+                  <span class="term-id">{{ t.id }}</span>
+                  <span v-if="t.ic !== undefined" class="term-ic">IC {{ t.ic.toFixed(2) }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Method-specific details (structured where recognized, JSON fallback otherwise) -->
+            <div v-if="r.explanation?.method_specific" class="detail-section">
+              <div class="detail-label">Method details</div>
+
+              <!-- Semantic BMA shape -->
+              <template v-if="r.explanation.method_specific.bma_directions">
+                <div class="ms-block">
+                  <div class="ms-row">
+                    <span class="ms-key">Variant</span>
+                    <span class="ms-val">{{ r.explanation.method_specific.bma_variant }}</span>
+                  </div>
+                  <div class="ms-row">
+                    <span class="ms-key">Patient → disease avg</span>
+                    <span class="ms-val mono">{{ r.explanation.method_specific.bma_directions.patient_to_disease_avg?.toFixed(3) }}</span>
+                  </div>
+                  <div class="ms-row">
+                    <span class="ms-key">Disease → patient avg</span>
+                    <span class="ms-val mono">{{ r.explanation.method_specific.bma_directions.disease_to_patient_avg?.toFixed(3) }}</span>
+                  </div>
+                  <div class="ms-row">
+                    <span class="ms-key">Asymmetry</span>
+                    <span class="ms-val mono">{{ r.explanation.method_specific.bma_directions.asymmetry?.toFixed(3) }} ({{ formatAsymmetry(r.explanation.method_specific.bma_directions.asymmetry_interpretation) }})</span>
+                  </div>
+                </div>
+
+                <div v-if="r.explanation.method_specific.semantic_clusters?.length" class="ms-subsection">
+                  <div class="ms-subtitle">Semantic clusters</div>
+                  <div
+                    v-for="(c, ci) in r.explanation.method_specific.semantic_clusters"
+                    :key="ci"
+                    class="cluster-row"
+                  >
+                    <span class="cluster-mica">{{ c.mica_label }}</span>
+                    <span class="cluster-meta">{{ c.n_patient_terms }} patient term{{ c.n_patient_terms !== 1 ? 's' : '' }} · avg {{ c.cluster_avg_score?.toFixed(3) }}</span>
+                  </div>
+                </div>
+
+                <div v-if="r.explanation.method_specific.weak_patient_matches?.length" class="ms-subsection">
+                  <div class="ms-subtitle">Weakest patient matches</div>
+                  <div
+                    v-for="w in r.explanation.method_specific.weak_patient_matches.slice(0, 5)"
+                    :key="w.id"
+                    class="term-row term-row-weak"
+                  >
+                    <span class="term-label">{{ w.label }} → {{ w.best_match_label }}</span>
+                    <span class="term-ic">{{ w.best_score?.toFixed(3) }}</span>
+                  </div>
+                </div>
+
+                <div v-if="r.explanation.method_specific.ic_filter_impact" class="ms-subsection">
+                  <div class="ms-subtitle">
+                    IC filter — removed {{ r.explanation.method_specific.ic_filter_impact.n_removed }} of
+                    {{ r.explanation.method_specific.ic_filter_impact.terms_before_filter }} terms
+                  </div>
+                  <div class="tags-wrap-sm">
+                    <span
+                      v-for="t in r.explanation.method_specific.ic_filter_impact.removed_terms"
+                      :key="t.id"
+                      class="ic-removed-tag"
+                    >{{ t.label }}</span>
+                  </div>
+                </div>
+              </template>
+
+              <!-- Set-based / formula shape -->
+              <template v-else-if="r.explanation.method_specific.formula_components">
+                <div class="ms-block">
+                  <div class="ms-row">
+                    <span class="ms-key">Formula</span>
+                    <span class="ms-val">{{ r.explanation.method_specific.formula_components.formula }}</span>
+                  </div>
+                  <div class="ms-row">
+                    <span class="ms-key">Intersection / union</span>
+                    <span class="ms-val mono">{{ r.explanation.method_specific.formula_components.intersection_size }} / {{ r.explanation.method_specific.formula_components.union_size }}</span>
+                  </div>
+                  <div v-if="r.explanation.method_specific.ic_weighted_match_score !== undefined" class="ms-row">
+                    <span class="ms-key">IC-weighted match score</span>
+                    <span class="ms-val mono">{{ r.explanation.method_specific.ic_weighted_match_score?.toFixed(3) }}</span>
+                  </div>
+                </div>
+                <div v-if="r.explanation.method_specific.top_ic_matched_terms?.length" class="ms-subsection">
+                  <div class="ms-subtitle">Top IC-weighted matches</div>
+                  <div
+                    v-for="t in r.explanation.method_specific.top_ic_matched_terms"
+                    :key="t.id"
+                    class="term-row term-row-match"
+                  >
+                    <span class="term-id">{{ t.id }}</span>
+                    <span class="term-ic">IC {{ t.ic?.toFixed(2) }}</span>
+                  </div>
+                </div>
+              </template>
+
+                            <!-- HPO2Vec+ shape -->
+              <template v-else-if="r.explanation.method_specific.embedding_method">
+                <div class="ms-block">
+                  <div class="ms-row">
+                    <span class="ms-key">Embedding method</span>
+                    <span class="ms-val">{{ r.explanation.method_specific.embedding_method }}</span>
+                  </div>
+                  <div class="ms-row">
+                    <span class="ms-key">Aggregation</span>
+                    <span class="ms-val">{{ r.explanation.method_specific.aggregation }}</span>
+                  </div>
+                </div>
+                <div v-if="r.explanation.method_specific.score_note" class="ms-subsection">
+                  <div class="ms-subtitle">Score note</div>
+                  <div class="detail-value small">{{ r.explanation.method_specific.score_note }}</div>
+                </div>
+                <div v-if="r.explanation.method_specific.interpretation_note" class="ms-subsection">
+                  <div class="ms-subtitle">Interpretation</div>
+                  <div class="detail-value small">{{ r.explanation.method_specific.interpretation_note }}</div>
+                </div>
+              </template>
+
+              <!-- Fallback: unrecognized shape -->
+              <div v-else class="detail-value small mono-block">{{ JSON.stringify(r.explanation.method_specific, null, 2) }}</div>
+            </div>
+
+            <!-- Fallback for older / simpler explanation shapes -->
             <div v-if="r.shared_phenotype_labels?.length" class="detail-section">
               <div class="detail-label">Shared phenotypes</div>
               <div class="shared-terms">
@@ -254,6 +435,20 @@ async function handleSave() {
     } finally {
         saving.value = false
     }
+}
+
+function formatAsymmetry(value) {
+  const map = {
+    disease_better_covered: 'disease better covered',
+    patient_better_covered: 'patient better covered',
+    balanced: 'balanced',
+  }
+  return map[value] || (value || '').replace(/_/g, ' ')
+}
+
+function pct(value) {
+  if (value === undefined || value === null) return '—'
+  return Math.round(value * 100) + '%'
 }
 
 function rankClass(rank) {
@@ -578,6 +773,135 @@ function methodLabel(id) {
   font-size: 11px;
   color: var(--text-secondary);
   margin-left: auto;
+}
+
+/* ── Coverage grid ── */
+.coverage-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.coverage-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 10px;
+  background: var(--tag-bg);
+  border-radius: var(--radius);
+}
+.coverage-value {
+  font-family: var(--mono);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+}
+.coverage-key {
+  font-size: 10px;
+  color: var(--text-tertiary);
+  line-height: 1.3;
+}
+
+/* ── Term lists (matched / unmatched) ── */
+.term-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.term-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  padding: 5px 9px;
+  border-radius: 6px;
+}
+.term-row-match { background: var(--green-light); }
+.term-row-unmatch { background: var(--red-light); }
+.term-label {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--text);
+}
+.term-id {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+}
+.term-ic {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+.mono-block {
+  font-family: var(--mono);
+  font-size: 11px;
+  background: var(--tag-bg);
+  padding: 8px 10px;
+  border-radius: 6px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* ── Method-specific structured blocks ── */
+.ms-block {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: var(--tag-bg);
+  border-radius: 6px;
+  padding: 8px 10px;
+}
+.ms-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 12px;
+}
+.ms-key { color: var(--text-tertiary); }
+.ms-val { color: var(--text); text-align: right; }
+.ms-val.mono { font-family: var(--mono); font-size: 11px; }
+
+.ms-subsection { margin-top: 10px; }
+.ms-subtitle {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  margin-bottom: 6px;
+}
+.cluster-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12px;
+  padding: 5px 9px;
+  border-radius: 6px;
+  background: var(--accent-light);
+  margin-bottom: 4px;
+}
+.cluster-mica { color: var(--text); font-weight: 500; }
+.cluster-meta { color: var(--text-tertiary); font-size: 11px; flex-shrink: 0; }
+
+.term-row-weak {
+  background: var(--tag-bg);
+  display: flex;
+  justify-content: space-between;
+}
+
+.tags-wrap-sm { display: flex; flex-wrap: wrap; gap: 4px; }
+.ic-removed-tag {
+  font-size: 11px;
+  padding: 2px 8px;
+  background: var(--tag-bg);
+  color: var(--text-tertiary);
+  border-radius: 99px;
 }
 .comparison-section { margin-top: 20px; }
 .comparison-toggle {
