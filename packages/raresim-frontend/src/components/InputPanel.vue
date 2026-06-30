@@ -375,7 +375,11 @@ function buildPayload() {
     hpo_terms: hpoTerms,
     excluded_hpo_terms: excludedTerms.value.map(t => t.hpo_id),
     raw_text: mode.value === 'text' ? rawText.value : null,
-    methods: [...selectedMethods],
+    methods: [...selectedMethods].flatMap(m =>
+      m === 'tfidf'
+        ? ['tfidf_hpo', 'tfidf_text', 'tfidf_hybrid', 'tfidf_hpo_labels']
+        : [m]
+    ),
     top_k: topK.value,
   }
 }

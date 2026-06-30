@@ -306,6 +306,69 @@
                 </div>
               </template>
 
+                            <!-- TF-IDF shape -->
+              <template v-else-if="r.explanation.method_specific.tfidf_mode">
+                <div class="ms-block">
+                  <div class="ms-row">
+                    <span class="ms-key">Mode</span>
+                    <span class="ms-val">{{ methodLabel(r.explanation.method_specific.tfidf_mode) }}</span>
+                  </div>
+                  <div v-if="r.explanation.method_specific.ic_weighted_match_score !== undefined" class="ms-row">
+                    <span class="ms-key">IC-weighted match score</span>
+                    <span class="ms-val mono">{{ r.explanation.method_specific.ic_weighted_match_score?.toFixed(3) }}</span>
+                  </div>
+                  <div v-if="r.explanation.method_specific.idf_weighted_score !== undefined" class="ms-row">
+                    <span class="ms-key">IDF-weighted score</span>
+                    <span class="ms-val mono">{{ r.explanation.method_specific.idf_weighted_score?.toFixed(3) }}</span>
+                  </div>
+                  <div v-if="r.explanation.method_specific.vector_norms" class="ms-row">
+                    <span class="ms-key">Cosine (check)</span>
+                    <span class="ms-val mono">{{ r.explanation.method_specific.vector_norms.score_check?.toFixed(4) }}</span>
+                  </div>
+                </div>
+
+                <!-- Contributing HPO terms -->
+                <div v-if="r.explanation.method_specific.contributing_hpo_terms?.length" class="ms-subsection">
+                  <div class="ms-subtitle">Contributing terms</div>
+                  <div
+                    v-for="t in r.explanation.method_specific.contributing_hpo_terms"
+                    :key="t.hpo_id"
+                    class="term-row term-row-match"
+                  >
+                    <span class="term-label">{{ t.hpo_label }}</span>
+                    <span class="term-id">{{ t.hpo_id }}</span>
+                    <span class="term-ic">IC {{ t.ic?.toFixed(2) }}</span>
+                  </div>
+                </div>
+
+                <!-- Low IDF matches -->
+                <div v-if="r.explanation.method_specific.low_idf_matches?.length" class="ms-subsection">
+                  <div class="ms-subtitle">Low-IDF matches (noisy)</div>
+                  <div class="tags-wrap-sm">
+                    <span
+                      v-for="t in r.explanation.method_specific.low_idf_matches"
+                      :key="t.id"
+                      class="ic-removed-tag"
+                    >{{ t.label }}</span>
+                  </div>
+                </div>
+
+                <!-- IC filter impact -->
+                <div v-if="r.explanation.method_specific.ic_filter_impact" class="ms-subsection">
+                  <div class="ms-subtitle">
+                    IC filter — removed {{ r.explanation.method_specific.ic_filter_impact.n_removed }} of
+                    {{ r.explanation.method_specific.ic_filter_impact.terms_before_filter }} terms
+                  </div>
+                  <div class="tags-wrap-sm">
+                    <span
+                      v-for="t in r.explanation.method_specific.ic_filter_impact.removed_terms"
+                      :key="t.id"
+                      class="ic-removed-tag"
+                    >{{ t.label }}</span>
+                  </div>
+                </div>
+              </template>
+
               <!-- Fallback: unrecognized shape -->
               <div v-else class="detail-value small mono-block">{{ JSON.stringify(r.explanation.method_specific, null, 2) }}</div>
             </div>
@@ -477,7 +540,10 @@ const METHOD_LABELS = {
   set_dice:                   'Dice',
   set_cosine:                 'Cosine',
   set_overlap:                'Overlap',
-  tfidf:                      'TF-IDF',
+  tfidf_hpo:        'TF-IDF (HPO)',
+  tfidf_text:       'TF-IDF (Text)',
+  tfidf_hybrid:     'TF-IDF (Hybrid)',
+  tfidf_hpo_labels: 'TF-IDF (Labels)',
   transformer:                'Transformer',
   llm:                        'LLM',
   hpo2vec_plus:               'HPO2Vec+',

@@ -60,7 +60,7 @@ SEMANTIC_METHODS = {
     "semantic_jiang_conrath_bma",
 }
 SET_BASED_METHODS = {"set_cosine", "set_jaccard", "set_dice", "set_overlap"}
-TFIDF_METHODS = {"tfidf"}
+TFIDF_METHODS = {"tfidf_hpo", "tfidf_text", "tfidf_hybrid", "tfidf_hpo_labels"}
 TRANSFORMER_METHODS = {"transformer"}
 LLM_METHODS = {"llm"}
 HPO2VEC_METHODS = {"hpo2vec", "hpo2vec_plus"}
@@ -178,7 +178,7 @@ def _run_selected_methods(
         all_results.update(run_set_based(patient, methods, config, ctx))
 
     if selected & TFIDF_METHODS:
-        all_results.update(run_tfidf(patient, list(TFIDF_METHODS), config, ctx))
+        all_results.update(run_tfidf(patient, list(selected & TFIDF_METHODS), config, ctx))
 
     if selected & TRANSFORMER_METHODS:
         all_results.update(run_transformer(patient, config, ctx))
