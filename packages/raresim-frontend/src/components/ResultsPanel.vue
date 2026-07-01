@@ -57,6 +57,7 @@
       <span v-else>Save Patient</span>
     </button>
   </div>
+  <p v-if="saveFileName" class="save-filename">Saved as {{ saveFileName }}</p>
 </div>
 
       <!-- Status chips -->
@@ -516,6 +517,7 @@ const activeMethod = ref('all')
 const saving = ref(false)
 const saveStatus = ref('')
 const saveFormat = ref('json')
+const saveFileName = ref('')
 
 const methodsInResults = computed(() => {
   const seen = new Set()
@@ -545,16 +547,19 @@ async function handleSave() {
     saving.value = true
     saveStatus.value = ''
     try {
-        await savePatient({
+        const res = await savePatient({
             patient_id: 'patient_' + Date.now(),
             hpo_terms: props.inputHpo,
             raw_text: '',
-            results: props.results,
-            methods: props.meta.methods_run || [],
+            results: filteredResults.value,
+            methods: activeMethod.value === 'all'
+                ? (props.meta.methods_run || [])
+                : [activeMethod.value],
             format: saveFormat.value,
         })
         saveStatus.value = 'saved'
-        setTimeout(() => saveStatus.value = '', 3000)
+        saveFileName.value = res.filename || ''
+        setTimeout(() => { saveStatus.value = ''; saveFileName.value = '' }, 5000)
     } catch (e) {
         saveStatus.value = 'error'
     } finally {
@@ -1084,6 +1089,13 @@ function methodLabel(id) {
   background: var(--accent);
   border-color: var(--accent);
   color: white;
+}
+.save-filename {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  font-family: var(--mono);
+  margin-top: 4px;
+  text-align: right;
 }
 
 </style>
