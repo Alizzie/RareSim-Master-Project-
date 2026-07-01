@@ -77,21 +77,27 @@
 
 
           <div v-if="methodsInResults.length > 1" class="method-filter-bar">
-      <button
-        :class="['method-filter-btn', { active: activeMethod === 'all' }]"
-        @click="activeMethod = 'all'"
-      >
-        All
-      </button>
-      <button
-        v-for="m in methodsInResults"
-        :key="m"
-        :class="['method-filter-btn', { active: activeMethod === m }]"
-        @click="activeMethod = m"
-      >
-        {{ methodLabel(m) }}
-      </button>
-    </div>
+        <button
+          :class="['method-filter-btn', { active: activeMethod === 'all' }]"
+          @click="activeMethod = 'all'"
+        >
+          All
+        </button>
+        <button
+          :class="['method-filter-btn', { active: activeMethod === 'top10' }]"
+          @click="activeMethod = 'top10'"
+        >
+          Top 10
+        </button>
+        <button
+          v-for="m in methodsInResults"
+          :key="m"
+          :class="['method-filter-btn', { active: activeMethod === m }]"
+          @click="activeMethod = m"
+        >
+          {{ methodLabel(m) }}
+        </button>
+      </div>
 
       <!-- Result list -->
       <div class="results-list">
@@ -527,6 +533,11 @@ const methodsInResults = computed(() => {
 
 const filteredResults = computed(() => {
   if (activeMethod.value === 'all') return props.results
+  if (activeMethod.value === 'top10') {
+    return [...props.results]
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 10)
+  }
   return props.results.filter(r => r.method_name === activeMethod.value)
 })
 
