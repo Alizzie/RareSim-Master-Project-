@@ -15,56 +15,91 @@ import torch
 from sentence_transformers import SentenceTransformer
 from transformers import AutoModel, AutoTokenizer
 
-from raresim.types.schemas import PatientProfile
 from raresim.similarity_methods.transformer.config import (
     BATCH_SIZE,
+    DESCRIPTION_CHAR_BUDGET,
     MAX_LENGTH,
     SENTENCE_TRANSFORMER_MODELS,
 )
+from raresim.types.schemas import PatientProfile
 from raresim.utils.hpo_utils import get_hpo_label
 
 
-def build_patient_text(patient: PatientProfile, hpo_labels: dict[str, str]) -> str:
+# ── Text construction ────────────────────────────────────────────────────────
+
+
+def select_phenotype_labels(
+    terms: list[str],
+    hpo_labels: dict[str, str],
+) -> list[str]:
+    """
+    Return direct phenotype labels in stable order.
+
+    Sorting matters because terms can come from sets, and Python's set
+    iteration order is not stable across process runs.
+    """
+    return [get_hpo_label(term, hpo_labels) for term in sorted(terms)]
+
+
+def build_patient_text(
+    patient: PatientProfile,
+    hpo_labels: dict[str, str],
+    *,
+    description_char_budget: int = DESCRIPTION_CHAR_BUDGET,
+) -> str:
     """
     Build the patient text used for embedding.
 
     Combines:
-    - raw clinical description (if available)
-    - HPO phenotype labels
+    - direct HPO phenotype labels
+    - raw clinical description, if available
+
+    Phenotype labels are placed first so any tokenizer truncation is more
+    likely to affect prose than the primary HPO signal.
     """
     raw_text = (patient.raw_text or "").strip()
-    phenotype_labels = [get_hpo_label(term, hpo_labels) for term in patient.hpo_terms]
+    terms = list(patient.get_terms(use_propagated=False))
+    phenotype_labels = select_phenotype_labels(terms, hpo_labels)
 
     parts = []
-    if raw_text:
-        parts.append(f"Patient description: {raw_text}")
     if phenotype_labels:
         parts.append(f"Patient phenotypes: {'; '.join(phenotype_labels)}")
+    if raw_text:
+        parts.append(f"Patient description: {raw_text[:description_char_budget]}")
 
     return " ".join(parts).strip()
 
 
-def build_disease_text(profile: dict, hpo_labels: dict[str, str]) -> str:
+def get_disease_terms(profile: dict) -> list[str]:
+    """Return direct disease HPO terms."""
+    return profile.get("hpo_terms", [])
+
+
+def build_disease_text(
+    profile: dict,
+    hpo_labels: dict[str, str],
+    *,
+    description_char_budget: int = DESCRIPTION_CHAR_BUDGET,
+) -> str:
     """
     Build the disease text used for embedding.
 
     Combines:
     - disease label
-    - merged description
-    - HPO phenotype labels
+    - direct HPO phenotype labels
+    - merged disease description, if available
     """
     label = (profile.get("label") or "").strip()
     desc = (profile.get("merged_description") or "").strip()
-    hpo_terms = profile.get("hpo_terms", [])
-    phenotype_labels = [get_hpo_label(term, hpo_labels) for term in hpo_terms]
+    phenotype_labels = select_phenotype_labels(get_disease_terms(profile), hpo_labels)
 
     parts = []
     if label:
         parts.append(f"Disease: {label}")
-    if desc:
-        parts.append(f"Description: {desc}")
     if phenotype_labels:
         parts.append(f"Phenotypes: {'; '.join(phenotype_labels)}")
+    if desc:
+        parts.append(f"Description: {desc[:description_char_budget]}")
 
     return " ".join(parts).strip()
 
@@ -122,18 +157,8 @@ def hash_text(text: str) -> str:
 
 
 def load_hf_model_and_tokenizer(model_name: str):
-    """
-    Load a HuggingFace encoder model with the appropriate tokenizer.
-
-    Uses AutoTokenizer for SapBERT and PhenoBERT since they don't
-    use the standard BERT tokenizer. Falls back to BertTokenizerFast
-    for standard BERT-family models.
-    """
-    tokenizer = AutoTokenizer.from_pretrained(
-        model_name,
-        use_fast=True,
-    )
-
+    """Load a HuggingFace encoder model and tokenizer."""
+    tokenizer = AutoTokenizer.from_pretrained(model_name, use_fast=True)
     model = AutoModel.from_pretrained(model_name)
     model.to(get_device())
     model.eval()
@@ -176,7 +201,7 @@ def embed_texts_hf(
                 max_length=max_length,
                 return_tensors="pt",
             )
-            encoded = {k: v.to(device) for k, v in encoded.items()}
+            encoded = {key: value.to(device) for key, value in encoded.items()}
             outputs = model(**encoded)
             pooled = mean_pool(outputs.last_hidden_state, encoded["attention_mask"])
             embeddings.append(pooled.cpu().numpy())
@@ -187,7 +212,9 @@ def embed_texts_hf(
 
 def load_sentence_transformer_model(model_name: str):
     """Load a SentenceTransformer model."""
-    return SentenceTransformer(model_name, device=get_device())
+    model = SentenceTransformer(model_name, device=get_device())
+    model.max_seq_length = MAX_LENGTH
+    return model
 
 
 def embed_texts_sentence_transformer(

@@ -14,18 +14,18 @@ Models (encoder-only, produce embeddings):
 
 from raresim.core.context import AppContext
 from raresim.core.pipeline import PipelineConfig, sort_and_rank
-from raresim.types.result import MethodResults
-from raresim.types.schemas import PatientProfile
-from raresim.utils.timer import timer, Timer
-from raresim.utils._pipeline_runner import run_pipeline_main
 from raresim.similarity_methods.transformer.config import (
     CANDIDATE_POOL_SIZE,
     DEFAULT_MODEL_LIST,
     MODEL_LIST,
-    TRANSFORMER_DIR,
     PIPELINE_NAME,
+    TRANSFORMER_DIR,
 )
 from raresim.similarity_methods.transformer.retriever import DiseaseRetriever
+from raresim.types.result import MethodResults
+from raresim.types.schemas import PatientProfile
+from raresim.utils._pipeline_runner import run_pipeline_main
+from raresim.utils.timer import Timer, timer
 
 
 def run(
@@ -34,17 +34,14 @@ def run(
     config: PipelineConfig,
     ctx: AppContext,
 ) -> dict[str, MethodResults]:
-    """
-    Run transformer retrieval for all models.
-    """
-
+    """Run transformer retrieval for selected models using direct HPO terms."""
     retriever = DiseaseRetriever.from_context(
         ctx=ctx,
         model_list=selected,
         patient=patient,
     )
 
-    print(f"\nPreparing cache for {len(selected)} model(s)...")
+    print(f"\nPreparing cache for {len(selected)} transformer model(s)...")
     with timer("prepare transformer caches"):
         retriever.warmup(preload_models=False)
 
@@ -56,14 +53,12 @@ def run(
         with timer(f"rank {model_name}"):
             rankings = retriever.rank(
                 model_name=model_name,
-                patient=patient,
                 top_k=config.top_k,
                 candidate_pool_size=CANDIDATE_POOL_SIZE,
             )
 
         elapsed = model_timer.stop()
-
-        stats = retriever.run_stats(rankings, elapsed)
+        stats = retriever.run_stats(model_name, rankings, elapsed)
 
         all_results[model_name] = sort_and_rank(
             rankings,
@@ -73,6 +68,7 @@ def run(
             PIPELINE_NAME,
         )
 
+        retriever.unload_backend(model_name)
     return all_results
 
 
@@ -92,7 +88,6 @@ def run_default_model(
 
 def main() -> None:
     """Load shared artifacts and run the transformer retrieval pipeline."""
-
     run_pipeline_main(
         pipeline_name=PIPELINE_NAME,
         method_names=MODEL_LIST,

@@ -83,6 +83,8 @@ def load_hf_pipeline(model_name: str, max_new_tokens: int = MAX_NEW_TOKENS_RETRI
     """
     print(f"  [llm] Loading: {model_name}")
     tokenizer = AutoTokenizer.from_pretrained(model_name)
+    if tokenizer.pad_token is None:
+        tokenizer.pad_token = tokenizer.eos_token
 
     try:
         quant_config = BitsAndBytesConfig(load_in_4bit=True)
@@ -274,7 +276,7 @@ def find_disease_in_profiles(
     return ordo_id, disease_name, False
 
 
-def parse_retrieval_output(  # pylint: disable=too-many-arguments,too-many-locals
+def parse_retrieval_output(  # pylint: disable=too-many-arguments,too-many-locals, too-many-positional-arguments
     generated_text: str,
     patient: PatientProfile,
     hpo_labels: dict[str, str],
@@ -445,10 +447,10 @@ def build_explanation_prompt(  # pylint: disable=too-many-locals
     ]
 
     if disease_desc:
-        prompt_parts.append(f"DISEASE DESCRIPTION: {disease_desc[:400]}")
+        prompt_parts.append(f"DISEASE DESCRIPTION: {disease_desc[:TEXT_PREVIEW_MAX_LENGTH]}")
 
     if disease_labels:
-        prompt_parts.append(f"DISEASE PHENOTYPES: {', '.join(disease_labels[:20])}")
+        prompt_parts.append(f"DISEASE PHENOTYPES: {', '.join(disease_labels[:DISEASE_HPO_TERMS_PREVIEW_MAX_COUNT])}")
 
     if candidate_score is not None:
         prompt_parts += [

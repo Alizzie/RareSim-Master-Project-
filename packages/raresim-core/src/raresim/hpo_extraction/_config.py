@@ -1,5 +1,6 @@
-# ── Phenotype extraction settings ─────────────────────────────────────────────
-
+"""
+HPO Extraction Configuration
+"""
 # Words that indicate negation in clinical text
 NEGATION_WORDS = {
     "no",

@@ -11,6 +11,7 @@ from typing import Optional
 
 
 class ExtractionMethod(str, Enum):
+    """Enum of all supported extraction backends."""
     DICTIONARY     = "hpo_label_dictionary_match"
     BIOMEDICAL_NER = "biomedical_ner_d4data"
     FAST_HPO_CR    = "fast_hpo_cr"
@@ -19,7 +20,8 @@ class ExtractionMethod(str, Enum):
 
 
 @dataclass
-class ExtractionResult:
+class ExtractionResult:  # pylint: disable=too-many-instance-attributes
+    """Single extracted HPO term with full provenance."""
     hpo_id: str
     label: str
     matched_text: str
@@ -30,6 +32,7 @@ class ExtractionResult:
     negated: bool = False
 
     def to_dict(self) -> dict:
+        """Convert to a dictionary for JSON serialization."""
         return {
             "hpo_id":       self.hpo_id,
             "label":        self.label,
@@ -40,4 +43,3 @@ class ExtractionResult:
             "end":          self.end,
             "negated":      self.negated,
         }
-        

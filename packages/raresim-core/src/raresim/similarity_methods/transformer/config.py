@@ -6,10 +6,10 @@ Models:
 - ClinicalBERT  : trained on clinical notes
 - MiniLM        : lightweight general sentence transformer
 - SapBERT       : trained for biomedical entity normalization
-- BioBERT        : trained on PubMed abstracts and PMC full-text articles
+- BioBERT       : trained on PubMed abstracts and PMC full-text articles
 
-All models are encoder-only (not generative) and produce fixed-size
-embeddings used for cosine similarity ranking.
+All models are encoder-only and produce fixed-size embeddings used for
+cosine-similarity disease ranking.
 """
 
 from raresim.utils.paths import SIMILARITY_DIR
@@ -39,10 +39,10 @@ SENTENCE_TRANSFORMER_MODELS = {
     "sentence-transformers/all-MiniLM-L6-v2",
 }
 
-MAX_LENGTH = 128
+MAX_LENGTH = 256
 BATCH_SIZE = 16
-CANDIDATE_POOL_SIZE = 200
-TOP_K = 10
+
+DESCRIPTION_CHAR_BUDGET = 400
 
 TEXT_PREVIEW_LENGTH = 300
 CANDIDATE_POOL_SIZE = 200
