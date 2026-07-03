@@ -28,17 +28,18 @@ def _clone(repo: str, target: Path) -> bool:
     """Clone a git repo. Returns True on success"""
     print(f"Cloning {repo} into {target} ...")
 
-    result = subprocess.run(
-        ["git", "clone", repo, str(target)],
-        check=True,
-        text=True,
-    )
+    try:
+        subprocess.run(
+            ["git", "clone", repo, str(target)],
+            check=True,
+            text=True,
+        )
 
-    if result.returncode != 0:
-        print(f"Failed to clone {repo}: {result.stderr}")
+    except subprocess.CalledProcessError as e:
+        print(f"Error cloning {repo}: {e}")
         return False
 
-    print(f"Successfully cloned {repo}")
+    print(f"Successfully cloned {repo} into {target}.")
     return True
 
 
@@ -48,7 +49,7 @@ def _is_setup(tool: dict) -> bool:
 
 
 # Main
-def setup_all() -> None:
+def main() -> None:
     """Set up all third-party tools."""
 
     THIRD_PARTY_DIR.mkdir(parents=True, exist_ok=True)
@@ -80,4 +81,4 @@ def setup_all() -> None:
 
 
 if __name__ == "__main__":
-    setup_all()
+    main()
