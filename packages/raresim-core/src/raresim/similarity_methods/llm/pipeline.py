@@ -38,7 +38,7 @@ def run(  # pylint: disable=too-many-arguments
     retriever = LlmDiseaseRetriever.from_context(patient, ctx)
     all_results: dict[str, MethodResults] = {}
 
-    for model_name in selected:
+    for model_name in [m for m in selected if m in LLM_MODEL_LIST]:
         print(f"\n{'=' * 60}")
         print(f"  Model: {model_name}")
         print(f"{'=' * 60}")

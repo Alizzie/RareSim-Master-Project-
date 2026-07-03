@@ -3,6 +3,7 @@ Utility functions for the GUI application, including artifact checks,
 result display, and user prompts.
 """
 
+import shutil
 from pathlib import Path
 from raresim.types import PatientProfile, AppMetadata, MethodResults
 from raresim.utils.paths import (
@@ -19,6 +20,13 @@ from raresim.utils.patient_loader import load_patient_with_extraction
 
 # ── CLI application output ────────────────────────────────────────────────────
 RARESIM_CLI_DIR = OUTPUTS_DIR / "raresim_cli"
+
+
+def reset_output_dir() -> None:
+    """Empty the CLI output folder so each run starts clean."""
+    if RARESIM_CLI_DIR.exists():
+        shutil.rmtree(RARESIM_CLI_DIR)
+    RARESIM_CLI_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def check_artifacts_exist() -> None:

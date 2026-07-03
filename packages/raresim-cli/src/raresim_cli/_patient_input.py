@@ -15,7 +15,7 @@ from raresim.utils.paths import (
     HPO_ANCESTORS_PATH,
 )
 from raresim.similarity_methods.registry import DEFAULTS
-from _utils import RARESIM_CLI_DIR
+from raresim_cli._utils import RARESIM_CLI_DIR
 
 
 def _from_text(

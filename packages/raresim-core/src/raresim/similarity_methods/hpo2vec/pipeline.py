@@ -122,7 +122,7 @@ def run(  # pylint: disable=too-many-locals
 
     all_results: dict[str, MethodResults] = {}
 
-    for method_name in selected:
+    for method_name in [m for m in selected if m in ALL_METHODS]:
         if method_name not in ALL_METHODS:
             continue
 

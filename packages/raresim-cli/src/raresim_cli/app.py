@@ -8,12 +8,13 @@ Two input modes:
 All output is written to outputs/raresim_cli/.
 
 Usage:
-    python -m raresim_cli.app --text "Patient with cerebellar ataxia."
-    python -m raresim_cli.app --hpo HP:0001251,HP:0000256
-    python -m raresim_cli.app --patient path/to/patient.json
-    python -m raresim_cli.app --defaults
-    python -m raresim_cli.app --text "..." --methods semantic_resnik_bma tfidf_hpo
-    python -m raresim_cli.app --defaults --top-k 5
+    pip install -e packages/raresim-cli
+    raresim --text "Patient with cerebellar ataxia."
+    raresim --hpo HP:0001251,HP:0000256
+    raresim --patient path/to/patient.json
+    raresim --defaults
+    raresim --text "..." --methods semantic_resnik_bma tfidf_hpo
+    raresim --defaults --top-k 5
 """
 
 from raresim.core.cache import save_run_cache
@@ -30,11 +31,11 @@ from raresim.utils.paths import (
     HPO_LABELS_PATH,
 )
 
-from _cli_parser import parse_args
-import _utils as gu
-import _summary as gsum
-from _patient_input import resolve_patient
-from _utils import RARESIM_CLI_DIR
+from raresim_cli._cli_parser import parse_args
+from raresim_cli._patient_input import resolve_patient
+from raresim_cli._utils import RARESIM_CLI_DIR
+import raresim_cli._utils as gu
+import raresim_cli._summary as gsum
 
 
 def _resolve_selected_methods(args, prompt_fn) -> list[str]:
@@ -76,7 +77,7 @@ def main() -> None:
     gu.check_artifacts_exist()
     args = parse_args()
 
-    RARESIM_CLI_DIR.mkdir(parents=True, exist_ok=True)
+    gu.reset_output_dir()
     hpo_labels = load_json(HPO_LABELS_PATH)
 
     print("=" * 64)

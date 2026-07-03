@@ -35,9 +35,11 @@ def run(
     Run transformer retrieval for all models.
     """
 
+    mine = [m for m in selected if m in MODEL_LIST]
+
     retriever = DiseaseRetriever.from_context(
         ctx=ctx,
-        model_list=selected,
+        model_list=mine,
         patient=patient,
     )
 
@@ -46,7 +48,7 @@ def run(
         retriever.warmup(preload_models=False)
 
     all_results: dict[str, MethodResults] = {}
-    for model_name in selected:
+    for model_name in mine:
         print(f"\nRunning model: {model_name}")
         model_timer = Timer(model_name).start()
 
