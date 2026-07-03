@@ -15,11 +15,13 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Sequence, cast
 
-from raresim.core.context import AppContext
-from raresim.similarity_methods.transformer.config import CANDIDATE_POOL_SIZE
-from raresim.similarity_methods.transformer.config import MODEL_LIST
+from raresim.core import AppContext
+from raresim.similarity_methods.transformer.config import (
+    CANDIDATE_POOL_SIZE,
+    MODEL_LIST,
+)
 from raresim.similarity_methods.transformer.retriever import DiseaseRetriever
-from raresim.types.schemas import PatientProfile
+from raresim.types import PatientProfile
 from raresim.utils.hpo_utils import preprocess_ancestor_sets
 from raresim.utils.io import load_json
 from raresim.utils.paths import ALIAS_TO_CANONICAL_PATH
@@ -308,4 +310,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-    

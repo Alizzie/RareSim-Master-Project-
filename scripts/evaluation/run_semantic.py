@@ -13,10 +13,8 @@ import argparse
 from pathlib import Path
 from typing import Any
 
-from raresim.core.context import AppContext
-from raresim.core.pipeline import PipelineConfig
-from raresim.similarity_methods.semantic.pipeline import ALL_METHODS
-from raresim.similarity_methods.semantic.pipeline import run as run_semantic
+from raresim.core import AppContext, PipelineConfig
+from raresim.similarity_methods.semantic import run as run_semantic, METHOD_NAMES
 from raresim.types.schemas import PatientProfile
 from raresim.utils.hpo_utils import preprocess_ancestor_sets
 from raresim.utils.timer import Timer
@@ -49,7 +47,7 @@ def _run_methods_for_case(
 
     case_timer = Timer("semantic").start()
 
-    for method in ALL_METHODS:
+    for method in METHOD_NAMES:
         method_timer = Timer(method).start()
 
         method_results = run_semantic(
@@ -104,7 +102,7 @@ def run(  # pylint: disable=too-many-locals
     for index, (hpo_terms, ground_truth) in enumerate(cases):
         cache_file = cache_path_for(cache_dir, index)
 
-        if resume and methods_already_cached(cache_file, ALL_METHODS):
+        if resume and methods_already_cached(cache_file, METHOD_NAMES):
             skipped += 1
             continue
 

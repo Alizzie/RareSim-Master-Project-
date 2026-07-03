@@ -14,10 +14,9 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from raresim.core.context import AppContext
-from raresim.core.pipeline import PipelineConfig
-from raresim.similarity_methods.set_based.pipeline import run as run_set_based
-from raresim.types.schemas import PatientProfile
+from raresim.core import AppContext, PipelineConfig
+from raresim.similarity_methods.set_based import run as run_set_based, METHOD_NAMES
+from raresim.types import PatientProfile
 from raresim.utils.hpo_utils import preprocess_ancestor_sets
 from raresim.utils.timer import Timer
 
@@ -36,13 +35,6 @@ from scripts.evaluation._batch_utils import (
     save_cache,
     serialize_results,
 )
-
-SET_BASED_METHODS = [
-    "set_cosine",
-    "set_jaccard",
-    "set_dice",
-    "set_overlap",
-]
 
 
 @dataclass(frozen=True)
@@ -133,7 +125,7 @@ def _run_case(
 
     case_timer = Timer("set-based").start()
 
-    for method in SET_BASED_METHODS:
+    for method in METHOD_NAMES:
         method_timer = Timer(method).start()
 
         method_results = run_set_based(
@@ -158,7 +150,7 @@ def _handle_case(
     """Run, cache, and log one evaluation case."""
     cache_file = cache_path_for(state.batch.cache_dir, case.index)
 
-    if state.batch.resume and methods_already_cached(cache_file, SET_BASED_METHODS):
+    if state.batch.resume and methods_already_cached(cache_file, METHOD_NAMES):
         stats.skipped += 1
         return
 

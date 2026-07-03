@@ -12,16 +12,14 @@ Usage:
 import argparse
 from pathlib import Path
 
-from raresim.core.context import AppContext
-from raresim.core.pipeline import PipelineConfig
-from raresim.similarity_methods.tfidf.pipeline import run as run_tfidf
-from raresim.types.schemas import PatientProfile
+from raresim.core import AppContext, PipelineConfig
+from raresim.similarity_methods.tfidf import run as run_tfidf, METHOD_NAMES
+from raresim.types import PatientProfile
 from raresim.utils.hpo_utils import preprocess_ancestor_sets
 from raresim.utils.timer import Timer
 
 from scripts.evaluation._batch_utils import (
     EVALUATION_DIR,
-    TFIDF_METHODS,
     add_common_args,
     build_patient,
     cache_path_for,
@@ -75,7 +73,7 @@ def run(  # pylint: disable=too-many-locals
     for index, (hpo_terms, ground_truth) in enumerate(cases):
         cache_file = cache_path_for(cache_dir, index)
 
-        if resume and methods_already_cached(cache_file, TFIDF_METHODS):
+        if resume and methods_already_cached(cache_file, METHOD_NAMES):
             skipped += 1
             continue
 
@@ -85,7 +83,7 @@ def run(  # pylint: disable=too-many-locals
         try:
             case_timer = Timer("tfidf").start()
 
-            results = run_tfidf(patient, TFIDF_METHODS, config, ctx)
+            results = run_tfidf(patient, METHOD_NAMES, config, ctx)
 
             elapsed = round(case_timer.stop(), 3)
             total_time += elapsed
