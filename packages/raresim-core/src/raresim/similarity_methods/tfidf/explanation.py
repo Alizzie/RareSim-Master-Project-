@@ -18,6 +18,7 @@ from raresim.core.explanation import (
     build_base_token_explanation,
     build_coverage_block,
     build_token_coverage_block,
+    build_ic_filter_block,
     ExplanationBlock,
 )
 from raresim.similarity_methods.tfidf.config import (
@@ -28,7 +29,6 @@ from raresim.similarity_methods.tfidf.config import (
     SPARSE_DISEASE_THRESHOLD,
 )
 from raresim.utils.text_utils import tokenize
-from raresim.core.explanation import build_ic_filter_block
 
 
 def _build_hpo_summary(

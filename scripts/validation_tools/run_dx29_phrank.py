@@ -1,9 +1,9 @@
 """Run Dx29 Phrank on benchmark datasets and evaluate results."""
 
-import requests
 import argparse
 import time
 from pathlib import Path
+import requests
 from _utils import (
     resolve_datasets,
     load_all_datasets,

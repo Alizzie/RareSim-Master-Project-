@@ -4,12 +4,11 @@ ensuring consistency across different data sources.
 """
 
 import re
-from typing import Optional
 
 HPO_PATTERN = re.compile(r"^HP:\d{7}$")
 
 
-def normalize_hpo_id(hpo_id: str) -> Optional[str]:
+def normalize_hpo_id(hpo_id: str) -> str | None:
     """Normalize an HPO ID to the standard format (e.g. HP:0004322). Returns None if the ID cannot be normalized."""
     if not hpo_id:
         return None
@@ -74,4 +73,3 @@ def normalize_owl_local_id(local_id: str) -> str:
     """Normalize an OWL local ID to a standard disease ID format if possible."""
     normalized = normalize_disease_id(local_id)
     return normalized if normalized is not None else local_id
-

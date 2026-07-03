@@ -5,8 +5,7 @@ extract_hpo_terms    : run selected methods, deduplicate, return results.
 build_patient_profile: build a full patient dict with HPO terms + propagation.
 """
 
-# pylint: disable=broad-exception-caught
-
+from raresim.utils.io import load_json
 from raresim.utils.hpo_utils import get_ancestors_inclusive, preprocess_ancestor_sets
 from raresim.utils.io import load_json
 from raresim.utils.paths import HPO_ANCESTORS_PATH

@@ -1,6 +1,6 @@
 """Configuration file for the hpo2vec similarity method."""
 
-from raresim.utils.paths import SIMILARITY_DIR, MODELS_DIR
+from raresim.utils.paths import SIMILARITY_DIR
 
 # --- Random Walk Parameters ---
 
@@ -21,6 +21,6 @@ EPOCHS = 5  # training epochs
 PIPELINE_NAME = "hpo2vec"
 HPO2VEC_DIR = SIMILARITY_DIR / PIPELINE_NAME
 HPO2VECPLUS = "hpo2vec_plus"
-ALL_METHOD = [HPO2VECPLUS]
+ALL_METHODS = [HPO2VECPLUS]
 
 MODEL_CACHE_DIR = HPO2VEC_DIR / "model_cache"

@@ -17,7 +17,7 @@ import re
 import numpy as np
 import pandas as pd
 
-from scripts.visualizations.benchmark_evaluation.config import (
+from scripts.evaluation.benchmark_visualization.config import (
     DATASET_NAME_MAP,
     METHOD_LABELS,
     VALIDATION_TOOL_LABELS,
@@ -343,7 +343,9 @@ def _filter_datasets(
 
     dropped = present - allowed
     if dropped:
-        print(f"[load_results] ignoring datasets outside the report set: {sorted(dropped)}")
+        print(
+            f"[load_results] ignoring datasets outside the report set: {sorted(dropped)}"
+        )
 
     return metrics[metrics["dataset"].isin(allowed)].copy()
 
@@ -402,7 +404,11 @@ def compute_case_agreement_from_rank_rows(path: Path, dataset: str) -> pd.DataFr
     """Compute hard/easy/unique/consensus cases from a RareSim rank TSV."""
     df = read_tsv(path)
 
-    if "rank" not in df.columns or "case_id" not in df.columns or "method" not in df.columns:
+    if (
+        "rank" not in df.columns
+        or "case_id" not in df.columns
+        or "method" not in df.columns
+    ):
         return pd.DataFrame()
 
     df["rank"] = pd.to_numeric(df["rank"], errors="coerce")

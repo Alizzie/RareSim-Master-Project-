@@ -1,0 +1,20 @@
+# packages/raresim-cli/pyproject.toml
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "raresim-cli"
+dependencies = ["raresim"]
+version = "0.1.0"
+
+[project.scripts]
+raresim = "raresim_cli.app:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/raresim_cli"]
+
+[tool.pyright]
+venvPath = "."
+venv = ".venv"
+extraPaths = ["packages/raresim-cli/src"]

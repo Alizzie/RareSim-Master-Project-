@@ -1,7 +1,5 @@
 """Configuration for set-based similarity methods."""
 
-from typing import Callable
-from raresim.utils.similarity_math import TermInput
 from raresim.utils.paths import SIMILARITY_DIR
 from raresim.similarity_methods.set_based.methods import (
     jaccard_similarity,

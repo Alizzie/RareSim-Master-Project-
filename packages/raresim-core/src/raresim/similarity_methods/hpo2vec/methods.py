@@ -1,7 +1,6 @@
 """HPO2Vec similarity methods"""
 
 import random
-from typing import Dict, List, Optional, Set
 
 import numpy as np
 from gensim.models import Word2Vec
@@ -29,17 +28,17 @@ from raresim.similarity_methods.hpo2vec.config import (
 
 
 def build_graph(
-    hpo_parents: Dict[str, List[str]],
-    disease_profiles: Dict[str, dict],
+    hpo_parents: dict[str, list[str]],
+    disease_profiles: dict[str, dict],
     terms_key: str = "hpo_terms",
-) -> Dict[str, List[str]]:
+) -> dict[str, list[str]]:
     """
     Builds {node_id: [neighbour_id, ...]} from HPO parents and disease profiles
     All edges are bidirectional so walks can go up/down the hierarchy
     Use raw hpo_terms (not propagated) since IS_A edges already capture
     the hierarchy, otherwise redundant
     """
-    graph: Dict[str, List[str]] = {}
+    graph: dict[str, list[str]] = {}
 
     def add_edge(a: str, b: str):
         graph.setdefault(a, []).append(b)
@@ -68,13 +67,13 @@ def build_graph(
 
 def _transition_probs(
     current: str,
-    previous: Optional[str],
-    neighbours: List[str],
-    graph: Dict[str, List[str]],
-    ic_values: Dict[str, float],
+    previous: str | None,
+    neighbours: list[str],
+    graph: dict[str, list[str]],
+    ic_values: dict[str, float],
     p: float,
     q: float,
-) -> List[float]:
+) -> list[float]:
     """
     How likely we are to move to each neighbour on the next step.
     IC weights push toward specific terms.
@@ -105,12 +104,12 @@ def _transition_probs(
 
 def random_walk(
     start: str,
-    graph: Dict[str, List[str]],
-    ic_values: Dict[str, float],
+    graph: dict[str, list[str]],
+    ic_values: dict[str, float],
     walk_length: int,
     p: float,
     q: float,
-) -> List[str]:
+) -> list[str]:
     """
     Simulate one IC weighted random walk of length walk_length from start node
     Returns a sequence of node IDs
@@ -135,13 +134,13 @@ def random_walk(
 
 
 def generate_walks(
-    graph: Dict[str, List[str]],
-    ic_values: Dict[str, float],
+    graph: dict[str, list[str]],
+    ic_values: dict[str, float],
     walk_length: int = WALK_LENGTH,
     walks_per_node: int = WALKS_PER_NODE,
     p: float = P,
     q: float = Q,
-) -> List[List[str]]:
+) -> list[list[str]]:
     """
     Generate all random walks from all nodes in the graph
     Each node gets walks_per_node walks of length walk_length
@@ -166,7 +165,7 @@ def generate_walks(
 
 
 def train_word2vec(
-    walks: List[List[str]],
+    walks: list[list[str]],
     embedding_dim: int = EMBEDDING_DIM,
     window_size: int = WINDOW_SIZE,
     min_count: int = MIN_COUNT,
@@ -201,10 +200,10 @@ def train_word2vec(
 
 
 def embed_term_set(
-    terms: Set[str],
+    terms: set[str],
     model: Word2Vec,
-    ic_values: Dict[str, float],
-) -> Optional[np.ndarray]:
+    ic_values: dict[str, float],
+) -> np.ndarray | None:
     """
     Compute IC weighted average embedding for a set of HPO terms
     Terms not in the Word2Vec vocabulary are skipped

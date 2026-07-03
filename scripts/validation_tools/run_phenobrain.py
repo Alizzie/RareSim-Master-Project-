@@ -1,9 +1,9 @@
 """Run Phenobrain on benchmark datasets and evaluate results."""
 
-import requests
 import time
 import argparse
 from pathlib import Path
+import requests
 from _utils import (
     resolve_datasets,
     load_all_datasets,
@@ -44,7 +44,10 @@ def parse_args():
     )
     return p.parse_args()
 
-def predict_case(hpo_list: list, topk: int, max_retries : int =3, retry_delay : int =5)  -> tuple[bool, str | None]:
+
+def predict_case(
+    hpo_list: list, topk: int, max_retries: int = 3, retry_delay: int = 5
+) -> tuple[bool, str | None]:
     """Predict diseases for a case with given HPO terms using Phenobrain API. Max 3 retries on failure."""
     for attempt in range(1, max_retries + 1):
         try:
@@ -54,16 +57,22 @@ def predict_case(hpo_list: list, topk: int, max_retries : int =3, retry_delay : 
             response = requests.get(url, params=params, timeout=30)
 
             if not response.ok:
-                print(f"[Attempt {attempt}/{max_retries}] Request failed: {response.status_code} {response.text}")
+                print(
+                    f"[Attempt {attempt}/{max_retries}] Request failed: {response.status_code} {response.text}"
+                )
             elif not response.text.strip():
-                print(f"[Attempt {attempt}/{max_retries}] Empty response body (status {response.status_code})")
+                print(
+                    f"[Attempt {attempt}/{max_retries}] Empty response body (status {response.status_code})"
+                )
             else:
                 task_id = response.json().get("TASK_ID", None)
                 return True, task_id
 
-        except (requests.exceptions.JSONDecodeError,
-                requests.exceptions.ConnectionError,
-                requests.exceptions.Timeout) as e:
+        except (
+            requests.exceptions.JSONDecodeError,
+            requests.exceptions.ConnectionError,
+            requests.exceptions.Timeout,
+        ) as e:
             print(f"[Attempt {attempt}/{max_retries}] Exception: {e}")
 
         if attempt < max_retries:
@@ -88,18 +97,22 @@ def retrieve_query_results(task_id: str, max_retries: int = 3, retry_delay: int 
                 else:
                     return response.json()
             else:
-                print(f"[Attempt {attempt}/{max_retries}] Bad status: {response.status_code}")
+                print(
+                    f"[Attempt {attempt}/{max_retries}] Bad status: {response.status_code}"
+                )
 
-        except (requests.exceptions.JSONDecodeError,
-                requests.exceptions.ConnectionError,
-                requests.exceptions.Timeout) as e:
+        except (
+            requests.exceptions.JSONDecodeError,
+            requests.exceptions.ConnectionError,
+            requests.exceptions.Timeout,
+        ) as e:
             print(f"[Attempt {attempt}/{max_retries}] Exception: {e}")
 
         if attempt < max_retries:
             print(f"Retrying in {retry_delay}s...")
             time.sleep(retry_delay)
 
-    return None 
+    return None
 
 
 def wait_for_results(task_id: str, poll_interval: float = 3.0, timeout: float = 300.0):
@@ -127,7 +140,9 @@ def wait_for_results(task_id: str, poll_interval: float = 3.0, timeout: float = 
         time.sleep(poll_interval)
 
 
-def create_RD_code_mapper(rd_codes: list, max_retries: int = 3, retry_delay: int = 5) -> dict:
+def create_RD_code_mapper(
+    rd_codes: list, max_retries: int = 3, retry_delay: int = 5
+) -> dict:
     """Create a mapping from RD codes to OMIM IDs. If not exist, ORPHA."""
     url = "https://www.phenobrain.cs.tsinghua.edu.cn/disease-list-detail"
 
@@ -144,18 +159,24 @@ def create_RD_code_mapper(rd_codes: list, max_retries: int = 3, retry_delay: int
                         for rd_code, details in response.json().items()
                     }
             else:
-                print(f"[Attempt {attempt}/{max_retries}] Bad status: {response.status_code} {response.text}")
+                print(
+                    f"[Attempt {attempt}/{max_retries}] Bad status: {response.status_code} {response.text}"
+                )
 
-        except (requests.exceptions.JSONDecodeError,
-                requests.exceptions.ConnectionError,
-                requests.exceptions.Timeout) as e:
+        except (
+            requests.exceptions.JSONDecodeError,
+            requests.exceptions.ConnectionError,
+            requests.exceptions.Timeout,
+        ) as e:
             print(f"[Attempt {attempt}/{max_retries}] Exception: {e}")
 
         if attempt < max_retries:
             print(f"Retrying in {retry_delay}s...")
             time.sleep(retry_delay)
 
-    raise RuntimeError(f"Failed to retrieve disease details for RD codes after {max_retries} attempts: {rd_codes}")
+    raise RuntimeError(
+        f"Failed to retrieve disease details for RD codes after {max_retries} attempts: {rd_codes}"
+    )
 
 
 def get_disease_ranking(results: list[dict], code_mapper: dict) -> dict:

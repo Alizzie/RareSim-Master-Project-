@@ -12,7 +12,6 @@ each method's own module.
 
 import re
 from collections import Counter
-from typing import Any
 
 # ── Stopwords ─────────────────────────────────────────────────────────────────
 

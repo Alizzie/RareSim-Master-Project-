@@ -16,7 +16,7 @@ from transformers import (
     pipeline,
 )
 
-from raresim.ontology.disease_category import build_category_metadata
+from raresim.ontology import build_category_metadata
 from raresim.similarity_methods.llm.config import (
     DO_SAMPLE,
     MAX_NEW_TOKENS_RETRIEVAL,
@@ -32,8 +32,7 @@ from raresim.similarity_methods.llm.explanation import (
     build_explanation,
     build_method_specific_explanation_block,
 )
-from raresim.types.result import SimilarityResult
-from raresim.types.schemas import PatientProfile
+from raresim.types import SimilarityResult, PatientProfile
 
 
 def as_string_list(value: object) -> list[str]:

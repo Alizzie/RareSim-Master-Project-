@@ -12,8 +12,9 @@ Models (encoder-only, produce embeddings):
 - BioBERT     : trained on PubMed abstracts and PMC full-text articles
 """
 
-from raresim.core.context import AppContext
-from raresim.core.pipeline import PipelineConfig, sort_and_rank
+from raresim.core import AppContext, run_similarity_method, sort_and_rank
+from raresim.types import MethodResults, PipelineConfig, PatientProfile
+from raresim.utils.timer import timer, Timer
 from raresim.similarity_methods.transformer.config import (
     CANDIDATE_POOL_SIZE,
     DEFAULT_MODEL_LIST,
@@ -35,9 +36,12 @@ def run(
     ctx: AppContext,
 ) -> dict[str, MethodResults]:
     """Run transformer retrieval for selected models using direct HPO terms."""
+
+    mine = [m for m in selected if m in MODEL_LIST]
+
     retriever = DiseaseRetriever.from_context(
         ctx=ctx,
-        model_list=selected,
+        model_list=mine,
         patient=patient,
     )
 
@@ -46,7 +50,7 @@ def run(
         retriever.warmup(preload_models=False)
 
     all_results: dict[str, MethodResults] = {}
-    for model_name in selected:
+    for model_name in mine:
         print(f"\nRunning model: {model_name}")
         model_timer = Timer(model_name).start()
 
@@ -88,7 +92,8 @@ def run_default_model(
 
 def main() -> None:
     """Load shared artifacts and run the transformer retrieval pipeline."""
-    run_pipeline_main(
+
+    run_similarity_method(
         pipeline_name=PIPELINE_NAME,
         method_names=MODEL_LIST,
         run_fn=run,

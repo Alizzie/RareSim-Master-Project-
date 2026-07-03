@@ -16,22 +16,6 @@ from raresim.utils.paths import OUTPUTS_DIR
 
 EVALUATION_DIR = OUTPUTS_DIR / "evaluation"
 
-SEMANTIC_METHODS = [
-    "semantic_resnik_bma",
-    "semantic_lin_bma",
-    "semantic_jiang_conrath_bma",
-]
-
-SET_BASED_METHODS = [
-    "set_cosine",
-    "set_jaccard",
-    "set_dice",
-    "set_overlap",
-]
-
-TFIDF_METHODS = ["tfidf"]
-CPU_METHODS = SEMANTIC_METHODS + SET_BASED_METHODS + TFIDF_METHODS
-
 
 def load_test_cases(path: Path) -> list[tuple[list[str], list[str]]]:
     """Load test cases from JSON as ``(hpo_terms, ground_truth)`` tuples."""
@@ -105,8 +89,7 @@ def save_cache(  # pylint: disable=too-many-positional-arguments, too-many-argum
         "ground_truth": ground_truth,
         "total_elapsed_seconds": accumulated_total,
         "method_elapsed_seconds": {
-            method: round(seconds, 3)
-            for method, seconds in merged_elapsed.items()
+            method: round(seconds, 3) for method, seconds in merged_elapsed.items()
         },
         "methods_run": sorted(merged_results.keys()),
         "results": merged_results,
@@ -135,8 +118,7 @@ def serialize_results(results: dict[str, Any]) -> dict[str, list[dict[str, Any]]
             serialized[method] = [row.to_dict() for row in rows.rankings]
         elif isinstance(rows, list):
             serialized[method] = [
-                row.to_dict() if hasattr(row, "to_dict") else row
-                for row in rows
+                row.to_dict() if hasattr(row, "to_dict") else row for row in rows
             ]
         else:
             serialized[method] = []
@@ -163,7 +145,9 @@ def print_header(
     print(f"{separator}\n")
 
 
-def print_case(index: int, total: int, hpo_terms: list[str], ground_truth: list[str]) -> None:
+def print_case(
+    index: int, total: int, hpo_terms: list[str], ground_truth: list[str]
+) -> None:
     """Print one case progress line."""
     print(
         f"[{index + 1:>4}/{total}] case_{index:04d} | "

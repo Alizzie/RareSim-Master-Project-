@@ -18,8 +18,7 @@ from raresim.similarity_methods.llm.config import (
     TOP_K_RERANK,
     TEXT_PREVIEW_MAX_LENGTH,
 )
-from raresim.core.pipeline import build_run_stats
-from raresim.core.context import AppContext
+from raresim.core import build_run_stats, AppContext
 from raresim.similarity_methods.llm.methods import (
     build_explanation_prompt,
     build_patient_context_text,
@@ -28,8 +27,7 @@ from raresim.similarity_methods.llm.methods import (
     parse_retrieval_output,
     query_hf,
 )
-from raresim.types.result import RunStats, SimilarityResult
-from raresim.types.schemas import PatientProfile
+from raresim.types import RunStats, SimilarityResult, PatientProfile
 from raresim.utils.timer import timer
 
 

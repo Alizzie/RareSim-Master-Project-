@@ -11,22 +11,25 @@ Explanation:
 - delegated to similarity_methods/set_based/explanation.py
 """
 
-from raresim.core.context import AppContext
-from raresim.core.pipeline import (
-    PipelineConfig,
+from raresim.core import (
+    AppContext,
+    run_similarity_method,
     build_run_stats,
     sort_and_rank,
 )
-from raresim.ontology.disease_category import build_category_metadata
+from raresim.ontology import build_category_metadata
 from raresim.similarity_methods.set_based.config import (
     METHOD_MAP,
     PIPELINE_NAME,
     SETBASED_DIR,
 )
 from raresim.similarity_methods.set_based.explanation import build_explanation
-from raresim.types.result import MethodResults, SimilarityResult
-from raresim.types.schemas import PatientProfile
-from raresim.utils._pipeline_runner import run_pipeline_main
+from raresim.types import (
+    MethodResults,
+    SimilarityResult,
+    PipelineConfig,
+    PatientProfile,
+)
 from raresim.utils.timer import Timer
 
 
@@ -92,9 +95,7 @@ def run(  # pylint: disable=too-many-locals
 
         stats = build_run_stats(
             n_patient_terms_raw=len(patient_raw_terms),
-            n_patient_terms_propagated=len(
-                patient.get_terms(use_propagated=True)
-            ),
+            n_patient_terms_propagated=len(patient.get_terms(use_propagated=True)),
             n_patient_terms_used=len(patient_terms),
             n_diseases_scored=len(results),
             n_diseases_skipped=n_skipped,
@@ -114,7 +115,7 @@ def run(  # pylint: disable=too-many-locals
 
 def main() -> None:
     """Run the set-based similarity pipeline."""
-    run_pipeline_main(
+    run_similarity_method(
         pipeline_name=PIPELINE_NAME,
         method_names=list(METHOD_MAP.keys()),
         run_fn=run,
