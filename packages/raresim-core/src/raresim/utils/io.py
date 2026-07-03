@@ -2,7 +2,7 @@
 
 import json
 from pathlib import Path
-from raresim.types.result import MethodResults
+from raresim.types import MethodResults
 
 
 def load_json(input_path: Path) -> dict:

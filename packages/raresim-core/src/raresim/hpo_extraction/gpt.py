@@ -15,7 +15,6 @@ Paper: https://ieeexplore.ieee.org/document/10340611
 import json
 import os
 import re
-from typing import Dict, List
 
 from raresim.hpo_extraction._config import HPO_BLOCKLIST
 
@@ -50,10 +49,10 @@ If no phenotype is found, return:
 
 def extract_chatgpt(
     raw_text: str,
-    hpo_labels: Dict[str, str],
+    hpo_labels: dict[str, str],
     skip_negated: bool = True,
     model: str = _CHATGPT_MODEL,
-) -> List[ExtractionResult]:
+) -> list[ExtractionResult]:
     """
     HPO extraction using GPT-4o-mini.
 

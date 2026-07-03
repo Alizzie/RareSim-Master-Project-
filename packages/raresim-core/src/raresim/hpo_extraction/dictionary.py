@@ -6,7 +6,6 @@ Matches normalized HPO labels directly against normalized patient text.
 """
 
 import re
-from typing import Dict, List
 
 from ._types import ExtractionMethod, ExtractionResult
 from ._utils import build_label_lookup, is_negated, normalize_text
@@ -14,9 +13,9 @@ from ._utils import build_label_lookup, is_negated, normalize_text
 
 def extract_dictionary(
     raw_text: str,
-    hpo_labels: Dict[str, str],
+    hpo_labels: dict[str, str],
     skip_negated: bool = True,
-) -> List[ExtractionResult]:
+) -> list[ExtractionResult]:
     """
     Exact HPO label matching using regex.
 
@@ -38,16 +37,17 @@ def extract_dictionary(
             negated = is_negated(normalized, match.start())
             if skip_negated and negated:
                 continue
-            results.append(ExtractionResult(
-                hpo_id=hpo_id,
-                label=hpo_labels[hpo_id],
-                matched_text=label_text,
-                method=ExtractionMethod.DICTIONARY,
-                confidence=1.0,
-                start=match.start(),
-                end=match.end(),
-                negated=negated,
-            ))
+            results.append(
+                ExtractionResult(
+                    hpo_id=hpo_id,
+                    label=hpo_labels[hpo_id],
+                    matched_text=label_text,
+                    method=ExtractionMethod.DICTIONARY,
+                    confidence=1.0,
+                    start=match.start(),
+                    end=match.end(),
+                    negated=negated,
+                )
+            )
 
     return results
-    

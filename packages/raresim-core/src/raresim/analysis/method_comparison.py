@@ -11,12 +11,7 @@ time.
 
 from collections import defaultdict
 from typing import Any
-
-try:
-    import numpy as np
-except ImportError:  # pragma: no cover
-    np = None  # pylint: disable=invalid-name
-
+import numpy as np
 
 RRF_K = 60
 
@@ -57,7 +52,7 @@ CATEGORY_LABELS = {
 }
 
 
-def short_name(method: str) -> str:
+def _short_name(method: str) -> str:
     """Return a compact display name for a method identifier."""
     if method in SHORT_NAMES:
         return SHORT_NAMES[method]
@@ -73,7 +68,7 @@ def short_name(method: str) -> str:
     return tail
 
 
-def method_category(method: str) -> str:
+def _method_category(method: str) -> str:
     """Return the high-level method category."""
     method_lower = method.lower()
 
@@ -168,15 +163,13 @@ def _ranked_topk(items: list[dict[str, Any]], k: int) -> list[dict[str, Any]]:
     return output
 
 
-def normalize_by_method(
+def _normalize_by_method(
     by_method: dict[str, list[dict[str, Any]]],
     k: int,
 ) -> dict[str, list[dict[str, Any]]]:
     """Normalize raw per-method results into clean top-k ranked lists."""
     return {
-        method: _ranked_topk(items, k)
-        for method, items in by_method.items()
-        if items
+        method: _ranked_topk(items, k) for method, items in by_method.items() if items
     }
 
 
@@ -217,7 +210,7 @@ def _build_fused_row(
     """Build one consensus row for a disease candidate."""
     ranks = list(method_ranks[disease_id].values())
     categories = sorted(
-        {method_category(method) for method in support[disease_id]},
+        {_method_category(method) for method in support[disease_id]},
         key=_category_sort_key,
     )
 
@@ -236,7 +229,7 @@ def _build_fused_row(
     }
 
 
-def fuse_rrf(
+def _fuse_rrf(
     norm: dict[str, list[dict[str, Any]]],
     top_n: int,
 ) -> list[dict[str, Any]]:
@@ -289,12 +282,11 @@ def _jaccard_similarity(first: set[str], second: set[str], same_item: bool) -> f
     return 0.0
 
 
-def agreement_jaccard(norm: dict[str, list[dict[str, Any]]]) -> dict[str, Any]:
+def _agreement_jaccard(norm: dict[str, list[dict[str, Any]]]) -> dict[str, Any]:
     """Compute pairwise top-k Jaccard agreement between methods."""
     methods = list(norm)
     disease_sets = {
-        method: {item["disease_id"] for item in norm[method]}
-        for method in methods
+        method: {item["disease_id"] for item in norm[method]} for method in methods
     }
 
     matrix = []
@@ -315,30 +307,22 @@ def agreement_jaccard(norm: dict[str, list[dict[str, Any]]]) -> dict[str, Any]:
     order = _seriate(matrix)
     ordered_methods = [methods[index] for index in order]
     ordered_matrix = [
-        [round(matrix[first][second], 4) for second in order]
-        for first in order
+        [round(matrix[first][second], 4) for second in order] for first in order
     ]
 
     return {
         "metric": "jaccard",
         "methods_ordered": ordered_methods,
-        "categories": {
-            method: method_category(method)
-            for method in ordered_methods
-        },
+        "categories": {method: _method_category(method) for method in ordered_methods},
         "matrix": ordered_matrix,
     }
 
 
 def _available_categories(norm: dict[str, list[dict[str, Any]]]) -> list[str]:
     """Return method categories present in the normalized result set."""
-    present_categories = {method_category(method) for method in norm}
+    present_categories = {_method_category(method) for method in norm}
 
-    return [
-        category
-        for category in CATEGORY_ORDER
-        if category in present_categories
-    ]
+    return [category for category in CATEGORY_ORDER if category in present_categories]
 
 
 def _best_rank_by_category(
@@ -348,7 +332,7 @@ def _best_rank_by_category(
     best = defaultdict(dict)
 
     for method, items in norm.items():
-        category = method_category(method)
+        category = _method_category(method)
 
         for item in items:
             disease_id = item["disease_id"]
@@ -360,7 +344,7 @@ def _best_rank_by_category(
     return best
 
 
-def grid_by_category(
+def _grid_by_category(
     norm: dict[str, list[dict[str, Any]]],
     consensus: list[dict[str, Any]],
 ) -> dict[str, Any]:
@@ -393,22 +377,16 @@ def build_comparison(
     top_n: int = 12,
 ) -> dict[str, Any]:
     """Build the complete method-comparison payload for one case."""
-    norm = normalize_by_method(by_method, k)
-    consensus = fuse_rrf(norm, top_n)
+    norm = _normalize_by_method(by_method, k)
+    consensus = _fuse_rrf(norm, top_n)
 
     return {
         "k": k,
         "methods": list(norm),
-        "short_names": {
-            method: short_name(method)
-            for method in norm
-        },
-        "categories": {
-            method: method_category(method)
-            for method in norm
-        },
+        "short_names": {method: _short_name(method) for method in norm},
+        "categories": {method: _method_category(method) for method in norm},
         "by_method": norm,
         "consensus": consensus,
-        "agreement": agreement_jaccard(norm),
+        "agreement": _agreement_jaccard(norm),
         "top_candidate": consensus[0] if consensus else None,
     }

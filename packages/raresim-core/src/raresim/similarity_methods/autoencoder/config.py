@@ -4,7 +4,7 @@ from raresim.utils.paths import SIMILARITY_DIR
 
 PIPELINE_NAME = "autoencoder"
 METHOD_NAME = "denoising_autoencoder"
-ALL_METHOD = [METHOD_NAME]
+ALL_METHODS = [METHOD_NAME]
 
 AUTOENCODER_DIR = SIMILARITY_DIR / PIPELINE_NAME
 MODEL_CACHE_DIR = AUTOENCODER_DIR / "model_cache"

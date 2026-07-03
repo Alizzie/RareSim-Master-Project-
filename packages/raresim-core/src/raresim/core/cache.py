@@ -28,13 +28,16 @@ Usage:
 import json
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
 
-from raresim.utils.paths import OUTPUTS_DIR
-from raresim.core.pipeline import PipelineConfig
-from raresim.types.result import AppMetadata, MethodResults
+from raresim.utils.paths import SIMILARITY_DIR
+from raresim.types.result import (
+    AppMetadata,
+    MethodResults,
+    SCHEMA_VERSION,
+    PipelineConfig,
+)
 
-CACHE_DIR = OUTPUTS_DIR / "cache"
+CACHE_DIR = SIMILARITY_DIR / "cache"
 
 
 # ── Save ──────────────────────────────────────────────────────────────────────
@@ -82,14 +85,10 @@ def save_run_cache(
     all_results = {**serialized_similarity, **(raw_results or {})}
 
     cache = {
+        "schema_version": SCHEMA_VERSION,
         "patient_id": patient_id,
         "run_timestamp": timestamp,
-        "config": {
-            "top_k": config.top_k,
-            "use_propagated_terms": config.use_propagated_terms,
-            "ic_threshold": config.ic_threshold,
-            "use_canonical_profiles": config.use_canonical_profiles,
-        },
+        "config": config.to_dict(),
         "app_metadata": app_metadata.to_dict() if app_metadata else {},
         "methods_run": sorted(all_results.keys()),
         "results": all_results,
@@ -120,7 +119,7 @@ def load_run_cache(cache_path: Path) -> dict:
 # ── List ──────────────────────────────────────────────────────────────────────
 
 
-def list_cached_runs(patient_id: Optional[str] = None) -> list[Path]:
+def list_cached_runs(patient_id: str | None = None) -> list[Path]:
     """
     List all cached run files, optionally filtered by patient ID.
 
@@ -137,7 +136,7 @@ def list_cached_runs(patient_id: Optional[str] = None) -> list[Path]:
     return files
 
 
-def print_cached_runs(patient_id: Optional[str] = None) -> None:
+def print_cached_runs(patient_id: str | None = None) -> None:
     """Print available cached runs in a readable format."""
     runs = list_cached_runs(patient_id)
 

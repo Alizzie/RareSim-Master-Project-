@@ -5,11 +5,6 @@ HPO parent relations, information content values, and an example patient profile
 from collections.abc import Callable
 from dataclasses import asdict, dataclass
 from raresim.utils.io import save_json
-
-from raresim.core.config import (
-    APPLY_TRUE_PATH_RULE,
-    EXAMPLE_PATIENT,
-)
 from raresim.utils.paths import (
     HPO_PATH,
     HPOA_PATH,
@@ -20,6 +15,14 @@ from raresim.utils.paths import (
     ORPHADATA_PRODUCT4_PATH,
     ARTIFACTS_DIR,
 )
+from raresim.utils.mapping_utils import build_orpha_mapping_index
+from raresim.utils.normalizers import normalize_hpo_id, normalize_owl_local_id
+
+from raresim.core.config import (
+    APPLY_TRUE_PATH_RULE,
+    EXAMPLE_PATIENT,
+)
+
 from raresim.ontology.disease_profiles import (
     build_canonical_disease_profiles,
     expand_alias_profiles,
@@ -36,15 +39,13 @@ from raresim.ontology.loaders import (
     load_ordo_metadata,
     load_ordo_parents,
 )
-from raresim.utils.mapping_utils import build_orpha_mapping_index
-from raresim.utils.normalizers import normalize_hpo_id, normalize_owl_local_id
 from raresim.ontology.phenotype_merge import merge_phenotype_annotation_records
 from raresim.ontology.disease_ancestors import build_ordered_ancestor_chains
-from raresim.types.schemas import PatientProfile
+from raresim.types import PatientProfile
 
 
 @dataclass
-class AnnotationArtifacts: # pylint: disable=too-many-instance-attributes
+class AnnotationArtifacts:  # pylint: disable=too-many-instance-attributes
     """Container for loaded and merged phenotype annotation records."""
 
     hpoa_records: list[dict]
@@ -91,10 +92,7 @@ def make_json_safe(value: object) -> object:
         return [make_json_safe(item) for item in value]
 
     if isinstance(value, dict):
-        return {
-            str(key): make_json_safe(item)
-            for key, item in value.items()
-        }
+        return {str(key): make_json_safe(item) for key, item in value.items()}
 
     return value
 
@@ -236,9 +234,7 @@ def load_annotation_artifacts() -> AnnotationArtifacts:
         MONARCH_DISEASE_TO_HPO_PATH,
     )
 
-    raw_records = (
-        hpoa_records + hoom_hpo_records + orphadata_records + monarch_records
-    )
+    raw_records = hpoa_records + hoom_hpo_records + orphadata_records + monarch_records
     print(f"Total raw phenotype annotation records: {len(raw_records)}")
 
     (
@@ -374,9 +370,7 @@ def build_annotation_source_counts(annotations: AnnotationArtifacts) -> dict:
         "MONARCH": len(annotations.monarch_records),
         "TOTAL_RAW": len(annotations.raw_records),
         "TOTAL_DEDUPLICATED_POSITIVE": len(annotations.phenotype_records),
-        "DISEASES_WITH_NEGATIVE_ASSERTIONS": len(
-            annotations.negative_terms_by_disease
-        ),
+        "DISEASES_WITH_NEGATIVE_ASSERTIONS": len(annotations.negative_terms_by_disease),
     }
 
 
@@ -447,6 +441,7 @@ def main() -> None:
     print(f"Canonical profiles saved: {len(profiles.canonical_profiles)}")
     print(f"Expanded alias profiles saved: {len(profiles.expanded_profiles)}")
     print(f"Artifacts saved to: {ARTIFACTS_DIR}")
+
 
 if __name__ == "__main__":
     main()

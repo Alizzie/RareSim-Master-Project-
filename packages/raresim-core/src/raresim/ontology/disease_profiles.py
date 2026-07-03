@@ -9,7 +9,7 @@ from raresim.utils.mapping_utils import (
     resolve_to_orpha,
 )
 from raresim.utils.normalizers import normalize_disease_id, normalize_hpo_id
-from raresim.types.schemas import DiseaseProfile
+from raresim.types import DiseaseProfile
 
 _DESCRIPTION_FIELDS = (
     "ordo_label",
@@ -337,7 +337,9 @@ def _apply_source_metadata(
     if source_name == "ORDO":
         profile.ordo_label = label
         profile.ordo_description = description
-        profile.profile_type = _as_optional_str(meta.get("profile_type")) or profile.profile_type
+        profile.profile_type = (
+            _as_optional_str(meta.get("profile_type")) or profile.profile_type
+        )
     elif source_name == "MONDO":
         profile.mondo_label = label
         profile.mondo_description = description

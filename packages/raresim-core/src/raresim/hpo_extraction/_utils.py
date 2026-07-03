@@ -3,7 +3,6 @@ Internal utilities shared across all extraction methods.
 """
 
 import re
-from typing import Dict, List
 
 from raresim.hpo_extraction._config import (
     HPO_BLOCKLIST,
@@ -31,7 +30,7 @@ def is_negated(
     return any(neg in before for neg in NEGATION_WORDS)
 
 
-def build_label_lookup(hpo_labels: Dict[str, str]) -> Dict[str, str]:
+def build_label_lookup(hpo_labels: dict[str, str]) -> dict[str, str]:
     """Build a normalized label → HPO ID lookup."""
     return {
         normalize_text(label): hpo_id
@@ -40,12 +39,12 @@ def build_label_lookup(hpo_labels: Dict[str, str]) -> Dict[str, str]:
     }
 
 
-def deduplicate(results: List[ExtractionResult]) -> List[ExtractionResult]:
+def deduplicate(results: list[ExtractionResult]) -> list[ExtractionResult]:
     """
     Keep the highest-confidence result per HPO ID across all methods.
     Skips structural/metadata HPO terms (HPO_BLOCKLIST).
     """
-    best: Dict[str, ExtractionResult] = {}
+    best: dict[str, ExtractionResult] = {}
     for r in results:
         if r.hpo_id in HPO_BLOCKLIST:
             continue

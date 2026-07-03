@@ -10,7 +10,6 @@ API docs: https://github.com/xiaohaomao/timgroup_disease_diagnosis/tree/main/Phe
 """
 
 import time
-from typing import Dict, List
 
 from raresim.hpo_extraction._config import HPO_BLOCKLIST
 
@@ -28,9 +27,9 @@ _PHENOBRAIN_MAX_POLLS = 30  # give up after 60s
 
 def extract_phenobrain_api(
     raw_text: str,
-    hpo_labels: Dict[str, str],
+    hpo_labels: dict[str, str],
     skip_negated: bool = True,
-) -> List[ExtractionResult]:
+) -> list[ExtractionResult]:
     """
     HPO extraction via PhenoBrain's public web API.
 

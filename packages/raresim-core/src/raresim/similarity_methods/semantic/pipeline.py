@@ -7,13 +7,13 @@ Implements IC-based pairwise HPO similarity using Best Match Average (BMA):
 - Jiang-Conrath BMA
 """
 
-from raresim.core.context import AppContext
-from raresim.core.pipeline import (
-    PipelineConfig,
+from raresim.core import (
+    AppContext,
+    run_similarity_method,
     build_run_stats,
     sort_and_rank,
 )
-from raresim.ontology.disease_category import build_category_metadata
+from raresim.ontology import build_category_metadata
 from raresim.similarity_methods.semantic.config import (
     ALL_METHODS,
     BMA_METHODS,
@@ -22,9 +22,13 @@ from raresim.similarity_methods.semantic.config import (
 )
 from raresim.similarity_methods.semantic.explanation import build_explanation
 from raresim.similarity_methods.semantic.methods import best_match_scores
-from raresim.types.result import MethodResults, RunStats, SimilarityResult
-from raresim.types.schemas import PatientProfile
-from raresim.utils._pipeline_runner import run_pipeline_main
+from raresim.types import (
+    MethodResults,
+    RunStats,
+    SimilarityResult,
+    PipelineConfig,
+    PatientProfile,
+)
 from raresim.utils.hpo_utils import (
     filter_terms_by_ic,
     preprocess_ancestor_sets,
@@ -187,7 +191,7 @@ def run(
 
 def main() -> None:
     """Main entry point for running the semantic similarity pipeline."""
-    run_pipeline_main(
+    run_similarity_method(
         pipeline_name=PIPELINE_NAME,
         method_names=ALL_METHODS,
         run_fn=run,

@@ -1,32 +1,32 @@
 """
-Standardized main() runner for all similarity pipelines.
-Used by individual pipeline scripts, not part of the installable package.
+Starting point for running a similarity method pipeline.
 """
 
 from pathlib import Path
 
-from raresim.core.pipeline import PipelineConfig
 from raresim.core.context import AppContext
+from raresim.types import PatientProfile, PipelineConfig
 from raresim.utils.io import save_results, save_individual_results
 from raresim.utils.patient_loader import load_patient
 from raresim.utils.paths import PATIENT_DIR
 from raresim.utils.timer import timer
 
 
-def run_pipeline_main(
+def run_similarity_method(
     pipeline_name: str,
     method_names: list[str],
     run_fn,
     output_dir: Path,
     config: PipelineConfig | None = None,
+    patient: PatientProfile | None = None,
 ) -> None:
     """
-    Standardized main() for all pipelines.
+    Run a single similarity method within a pipeline.
     Handles loading, running, saving, and printing results.
 
-    Usage in each pipeline:
+    Usage to call similarity method in each method separately:
         def main() -> None:
-            run_pipeline_main(
+            run_similarity_method(
                 pipeline_name="tfidf",
                 method_names=[METHOD_NAME],
                 run_fn=run,
@@ -36,7 +36,9 @@ def run_pipeline_main(
     if config is None:
         config = PipelineConfig()
 
-    patient = load_patient(PATIENT_DIR / "example_patient.json")
+    if patient is None:
+        patient = load_patient(PATIENT_DIR / "example_patient.json")
+
     print(f"[{pipeline_name}] Loaded patient: {patient.patient_id}")
     print(f"[{pipeline_name}] HPO terms: {patient.hpo_terms}")
     print(f"[{pipeline_name}] Propagated HPO Terms: {patient.propagated_hpo_terms}")

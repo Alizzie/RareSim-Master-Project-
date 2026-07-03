@@ -8,19 +8,16 @@ Models (generative/decoder — not embedding models):
 - Mistral/Mistral-7B-Instruct-v0.2
 """
 
-from raresim.core.context import AppContext
-from raresim.core.pipeline import PipelineConfig, sort_and_rank
+from raresim.core import AppContext, run_similarity_method, sort_and_rank
 from raresim.similarity_methods.llm.config import (
     LLM_DIR,
     LLM_MODEL_LIST,
     PIPELINE_NAME,
 )
-from raresim.types.result import MethodResults
+from raresim.types import MethodResults, PatientProfile, PipelineConfig
 from raresim.similarity_methods.llm.methods import unload_pipeline
 from raresim.similarity_methods.llm.retriever import LlmDiseaseRetriever
 from raresim.utils.timer import timer, Timer
-from raresim.utils._pipeline_runner import run_pipeline_main
-from raresim.types.schemas import PatientProfile
 
 
 def run(  # pylint: disable=too-many-arguments
@@ -78,7 +75,7 @@ def run(  # pylint: disable=too-many-arguments
 def main() -> None:
     """Load shared artifacts and run the LLM retrieval/explanation pipeline."""
 
-    run_pipeline_main(
+    run_similarity_method(
         pipeline_name=PIPELINE_NAME,
         method_names=LLM_MODEL_LIST,
         run_fn=run,

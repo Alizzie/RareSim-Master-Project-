@@ -1,7 +1,6 @@
 """Module to merge and deduplicate disease -> HPO phenotype annotations from multiple sources."""
 
 from collections import defaultdict
-from typing import Dict, List, Optional, Set, Tuple
 
 # higher level higher priority
 SOURCE_PRIORITY = {
@@ -22,7 +21,7 @@ FREQUENCY_RANK = {
 }
 
 
-def normalize_frequency(freq: Optional[str]) -> Optional[str]:
+def normalize_frequency(freq: str | None) -> str | None:
     if freq is None:
         return None
 
@@ -83,8 +82,8 @@ def is_negative_record(record: dict) -> bool:
     return freq == "EXCLUDED"
 
 
-def choose_best_record(records: List[dict]) -> dict:
-    def sort_key(record: dict) -> Tuple[int, int]:
+def choose_best_record(records: list[dict]) -> dict:
+    def sort_key(record: dict) -> tuple[int, int]:
         source = (record.get("source") or "").upper()
         freq = normalize_frequency(record.get("frequency_code"))
         return (
@@ -96,8 +95,8 @@ def choose_best_record(records: List[dict]) -> dict:
 
 
 def merge_phenotype_annotation_records(
-    phenotype_annotation_records: List[dict],
-) -> Tuple[List[dict], Dict[str, dict], Dict[str, Set[str]]]:
+    phenotype_annotation_records: list[dict],
+) -> tuple[list[dict], dict[str, dict], dict[str, set[str]]]:
     grouped = defaultdict(list)
 
     for record in phenotype_annotation_records:
@@ -107,9 +106,9 @@ def merge_phenotype_annotation_records(
             continue
         grouped[(disease_id, hpo_id)].append(record)
 
-    merged_records: List[dict] = []
-    provenance_by_disease: Dict[str, dict] = defaultdict(dict)
-    negative_terms_by_disease: Dict[str, Set[str]] = defaultdict(set)
+    merged_records: list[dict] = []
+    provenance_by_disease: dict[str, dict] = defaultdict(dict)
+    negative_terms_by_disease: dict[str, set[str]] = defaultdict(set)
 
     for (disease_id, hpo_id), records in grouped.items():
         positive_records = []

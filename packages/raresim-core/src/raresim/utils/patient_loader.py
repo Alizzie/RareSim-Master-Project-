@@ -20,7 +20,7 @@ def load_patient(path: Path) -> PatientProfile:
 def load_patient_with_extraction(
     patient_path: Path,
     hpo_labels: dict,
-    methods: list = ("dictionary",),
+    methods: list[str] | None = None,
 ) -> PatientProfile:
     """
     Load a patient profile from a JSON file, extracting HPO terms from raw text if necessary.
@@ -28,6 +28,9 @@ def load_patient_with_extraction(
     If the patient JSON already has hpo_terms, loads directly.
     Otherwise runs build_patient_profile to extract HPO terms from raw_text, then constructs a PatientProfile.
     """
+
+    if methods is None:
+        methods = ["dictionary"]
 
     data = load_json(patient_path)
 

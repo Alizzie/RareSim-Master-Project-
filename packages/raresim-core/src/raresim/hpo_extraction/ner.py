@@ -7,8 +7,6 @@ entity spans to HPO IDs via the label lookup.
 Requires: pip install transformers
 """
 
-from typing import Dict, List
-
 from raresim.hpo_extraction._config import (
     BIOMEDICAL_NER_MIN_CONFIDENCE,
     BIOMEDICAL_NER_MODEL,
@@ -20,10 +18,10 @@ from ._utils import build_label_lookup, is_negated, normalize_text
 
 def extract_biomedical_ner(
     raw_text: str,
-    hpo_labels: Dict[str, str],
+    hpo_labels: dict[str, str],
     skip_negated: bool = True,
     model_name: str = BIOMEDICAL_NER_MODEL,
-) -> List[ExtractionResult]:
+) -> list[ExtractionResult]:
     """
     General biomedical NER using d4data/biomedical-ner-all.
 

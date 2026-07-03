@@ -12,7 +12,6 @@ Paper: https://doi.org/10.1093/bioinformatics/btae406
 
 import os
 import sys
-from typing import Dict, List, Optional
 
 from raresim.utils.paths import OUTPUTS_DIR, FAST_HPO_CR_DIR, ONTOLOGY_DIR
 from ._types import ExtractionMethod, ExtractionResult
@@ -30,7 +29,7 @@ _FAST_HPO_CR_IDX_DIR = OUTPUTS_DIR / "fast_hpo_cr_index"
 _fast_hpo_cr_instance = None
 
 
-def _get_fast_hpo_cr() -> Optional[object]:
+def _get_fast_hpo_cr() -> object | None:
     """Load (or return cached) FastHPOCR annotator instance."""
     global _fast_hpo_cr_instance
     if _fast_hpo_cr_instance is not None:
@@ -80,9 +79,9 @@ def _get_fast_hpo_cr() -> Optional[object]:
 
 def extract_fast_hpo_cr(
     raw_text: str,
-    hpo_labels: Dict[str, str],
+    hpo_labels: dict[str, str],
     skip_negated: bool = True,
-) -> List[ExtractionResult]:
+) -> list[ExtractionResult]:
     """
     HPO concept recognition using FastHPOCR.
 
@@ -123,7 +122,7 @@ def extract_fast_hpo_cr(
         results.append(
             ExtractionResult(
                 hpo_id=hpo_id,
-                label=hpo_labels.get(hpo_id, hpo_id),
+                label=str(hpo_labels.get(hpo_id, hpo_id)),
                 matched_text=matched,
                 method=ExtractionMethod.FAST_HPO_CR,
                 confidence=0.90,

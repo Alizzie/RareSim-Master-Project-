@@ -20,7 +20,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
 from raresim.core.context import AppContext
-from raresim.core.method_comparison import build_comparison
+from raresim.analysis.method_comparison import build_comparison
 from raresim.core.pipeline import PipelineConfig
 from raresim.hpo_extraction import build_patient_profile
 from raresim.similarity_methods.autoencoder.pipeline import run as run_autoencoder

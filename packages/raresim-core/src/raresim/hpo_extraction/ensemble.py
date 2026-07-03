@@ -5,8 +5,6 @@ extract_hpo_terms    : run selected methods, deduplicate, return results.
 build_patient_profile: build a full patient dict with HPO terms + propagation.
 """
 
-from typing import Dict, List, Tuple
-
 from raresim.utils.io import load_json
 from raresim.utils.hpo_utils import get_ancestors_inclusive, preprocess_ancestor_sets
 from raresim.utils.paths import HPO_ANCESTORS_PATH
@@ -22,10 +20,10 @@ from .phenobrain import extract_phenobrain_api
 
 def extract_hpo_terms(
     raw_text: str,
-    hpo_labels: Dict[str, str],
-    methods: List[str] | None = None,
+    hpo_labels: dict[str, str],
+    methods: list[str] | None = None,
     skip_negated: bool = True,
-) -> List[ExtractionResult]:
+) -> list[ExtractionResult]:
     """
     Run one or more extraction methods and merge results.
 
@@ -43,7 +41,7 @@ def extract_hpo_terms(
     Returns:
         Deduplicated list of ExtractionResult, sorted by position.
     """
-    all_results: List[ExtractionResult] = []
+    all_results: list[ExtractionResult] = []
     if methods is None:
         methods = ["dictionary"]
 
@@ -68,9 +66,9 @@ def extract_hpo_terms(
 def build_patient_profile(
     patient_id: str,
     raw_text: str,
-    hpo_labels: Dict[str, str],
-    methods: List[str] | None = None,
-) -> Tuple[dict, List[dict]]:
+    hpo_labels: dict[str, str],
+    methods: list[str] | None = None,
+) -> tuple[dict, list[dict]]:
     """
     Build a patient profile dict from raw clinical text.
 
