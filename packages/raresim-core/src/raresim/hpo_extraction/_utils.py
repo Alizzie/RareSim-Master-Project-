@@ -10,7 +10,7 @@ from raresim.hpo_extraction._config import (
     NEGATION_WORDS,
 )
 
-from ._types import ExtractionResult
+from raresim.hpo_extraction._types import ExtractionResult
 
 
 def normalize_text(text: str) -> str:

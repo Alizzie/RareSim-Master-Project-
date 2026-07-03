@@ -7,8 +7,8 @@ Matches normalized HPO labels directly against normalized patient text.
 
 import re
 
-from ._types import ExtractionMethod, ExtractionResult
-from ._utils import build_label_lookup, is_negated, normalize_text
+from raresim.hpo_extraction._types import ExtractionMethod, ExtractionResult
+from raresim.hpo_extraction._utils import build_label_lookup, is_negated, normalize_text
 
 
 def extract_dictionary(

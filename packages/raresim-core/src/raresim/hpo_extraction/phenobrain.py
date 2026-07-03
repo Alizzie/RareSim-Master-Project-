@@ -15,8 +15,7 @@ import time
 from typing import Any
 
 from raresim.hpo_extraction._config import HPO_BLOCKLIST
-
-from ._types import ExtractionMethod, ExtractionResult
+from raresim.hpo_extraction._types import ExtractionMethod, ExtractionResult
 
 # ── Optional requests dependency ───────────────────────────────────────────────
 
@@ -51,7 +50,9 @@ _PHENOBRAIN_PENDING_STATES = {"PROCESS_TEXT", "EXTRACT_HPO"}
 def _get_requests_module() -> Any | None:
     """Return the optional requests module if installed."""
     if _requests_module is None:
-        print("[phenobrain] requests not installed -- skipping.\n  pip install requests")
+        print(
+            "[phenobrain] requests not installed -- skipping.\n  pip install requests"
+        )
         return None
 
     return _requests_module

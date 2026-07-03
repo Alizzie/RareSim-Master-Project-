@@ -7,16 +7,15 @@ build_patient_profile: build a full patient dict with HPO terms + propagation.
 
 from raresim.utils.io import load_json
 from raresim.utils.hpo_utils import get_ancestors_inclusive, preprocess_ancestor_sets
-from raresim.utils.io import load_json
 from raresim.utils.paths import HPO_ANCESTORS_PATH
 
-from ._types import ExtractionResult
-from ._utils import deduplicate
-from .dictionary import extract_dictionary
-from .fast_hpo_cr import extract_fast_hpo_cr
-from .gpt import extract_chatgpt
-from .ner import extract_biomedical_ner
-from .phenobrain import extract_phenobrain_api
+from raresim.hpo_extraction._types import ExtractionResult
+from raresim.hpo_extraction._utils import deduplicate
+from raresim.hpo_extraction.dictionary import extract_dictionary
+from raresim.hpo_extraction.fast_hpo_cr import extract_fast_hpo_cr
+from raresim.hpo_extraction.gpt import extract_chatgpt
+from raresim.hpo_extraction.ner import extract_biomedical_ner
+from raresim.hpo_extraction.phenobrain import extract_phenobrain_api
 
 
 def extract_hpo_terms(

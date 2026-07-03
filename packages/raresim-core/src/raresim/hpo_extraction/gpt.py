@@ -19,9 +19,8 @@ import re
 from typing import Any
 
 from raresim.hpo_extraction._config import HPO_BLOCKLIST
-
-from ._types import ExtractionMethod, ExtractionResult
-from ._utils import build_label_lookup, normalize_text
+from raresim.hpo_extraction._types import ExtractionMethod, ExtractionResult
+from raresim.hpo_extraction._utils import build_label_lookup, normalize_text
 
 # ── Optional OpenAI dependency ─────────────────────────────────────────────────
 
@@ -154,7 +153,13 @@ def _request_phenotypes(
         if not isinstance(content, str):
             return []
         return _parse_phenotypes(content.strip())
-    except (AttributeError, IndexError, KeyError, TypeError, json.JSONDecodeError) as exc:
+    except (
+        AttributeError,
+        IndexError,
+        KeyError,
+        TypeError,
+        json.JSONDecodeError,
+    ) as exc:
         print(f"[gpt] Could not parse model response: {exc}")
         return []
 

@@ -16,9 +16,8 @@ from raresim.hpo_extraction._config import (
     BIOMEDICAL_NER_MIN_CONFIDENCE,
     BIOMEDICAL_NER_MODEL,
 )
-
-from ._types import ExtractionMethod, ExtractionResult
-from ._utils import build_label_lookup, is_negated, normalize_text
+from raresim.hpo_extraction._types import ExtractionMethod, ExtractionResult
+from raresim.hpo_extraction._utils import build_label_lookup, is_negated, normalize_text
 
 # ── Optional HuggingFace dependency ────────────────────────────────────────────
 

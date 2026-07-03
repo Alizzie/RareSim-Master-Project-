@@ -23,10 +23,6 @@ from raresim.similarity_methods.transformer.config import (
     TRANSFORMER_DIR,
 )
 from raresim.similarity_methods.transformer.retriever import DiseaseRetriever
-from raresim.types.result import MethodResults
-from raresim.types.schemas import PatientProfile
-from raresim.utils._pipeline_runner import run_pipeline_main
-from raresim.utils.timer import Timer, timer
 
 
 def run(

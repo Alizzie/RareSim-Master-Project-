@@ -18,8 +18,8 @@ from typing import Any, Protocol, cast
 
 from raresim.utils.paths import FAST_HPO_CR_DIR, ONTOLOGY_DIR, OUTPUTS_DIR
 
-from ._types import ExtractionMethod, ExtractionResult
-from ._utils import is_negated, normalize_text
+from raresim.hpo_extraction._types import ExtractionMethod, ExtractionResult
+from raresim.hpo_extraction._utils import is_negated, normalize_text
 
 
 class FastHPOCRAnnotator(Protocol):  # pylint: disable=too-few-public-methods
