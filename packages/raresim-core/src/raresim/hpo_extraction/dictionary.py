@@ -20,27 +20,29 @@ def extract_dictionary(
     Exact HPO label matching using regex.
 
     Args:
-        raw_text:      Raw clinical patient text.
-        hpo_labels:    Dict mapping HPO ID → label string.
-        skip_negated:  If True, skip negated mentions (e.g. "no ataxia").
+        raw_text: Raw clinical patient text.
+        hpo_labels: Dict mapping HPO ID to label string.
+        skip_negated: If True, skip negated mentions.
 
     Returns:
-        List of ExtractionResult, one per match found.
+        Extraction results, one per matched HPO label.
     """
     normalized = normalize_text(raw_text)
     lookup = build_label_lookup(hpo_labels)
-    results = []
+    results: list[ExtractionResult] = []
 
     for label_text, hpo_id in lookup.items():
         pattern = rf"\b{re.escape(label_text)}\b"
+
         for match in re.finditer(pattern, normalized):
             negated = is_negated(normalized, match.start())
             if skip_negated and negated:
                 continue
+
             results.append(
                 ExtractionResult(
                     hpo_id=hpo_id,
-                    label=hpo_labels[hpo_id],
+                    label=hpo_labels.get(hpo_id) or hpo_id,
                     matched_text=label_text,
                     method=ExtractionMethod.DICTIONARY,
                     confidence=1.0,

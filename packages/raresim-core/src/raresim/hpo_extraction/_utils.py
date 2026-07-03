@@ -9,6 +9,7 @@ from raresim.hpo_extraction._config import (
     NEGATION_WINDOW_SIZE,
     NEGATION_WORDS,
 )
+
 from ._types import ExtractionResult
 
 
@@ -31,24 +32,31 @@ def is_negated(
 
 
 def build_label_lookup(hpo_labels: dict[str, str]) -> dict[str, str]:
-    """Build a normalized label → HPO ID lookup."""
-    return {
-        normalize_text(label): hpo_id
-        for hpo_id, label in hpo_labels.items()
-        if normalize_text(label)
-    }
+    """Build a normalized label to HPO ID lookup."""
+    lookup: dict[str, str] = {}
+
+    for hpo_id, label in hpo_labels.items():
+        normalized_label = normalize_text(label)
+        if normalized_label:
+            lookup[normalized_label] = hpo_id
+
+    return lookup
 
 
 def deduplicate(results: list[ExtractionResult]) -> list[ExtractionResult]:
     """
     Keep the highest-confidence result per HPO ID across all methods.
-    Skips structural/metadata HPO terms (HPO_BLOCKLIST).
+
+    Skips structural/metadata HPO terms from HPO_BLOCKLIST.
     """
     best: dict[str, ExtractionResult] = {}
-    for r in results:
-        if r.hpo_id in HPO_BLOCKLIST:
+
+    for result in results:
+        if result.hpo_id in HPO_BLOCKLIST:
             continue
-        existing = best.get(r.hpo_id)
-        if existing is None or r.confidence > existing.confidence:
-            best[r.hpo_id] = r
-    return sorted(best.values(), key=lambda x: (x.start or 0, x.hpo_id))
+
+        existing = best.get(result.hpo_id)
+        if existing is None or result.confidence > existing.confidence:
+            best[result.hpo_id] = result
+
+    return sorted(best.values(), key=lambda result: (result.start or 0, result.hpo_id))
