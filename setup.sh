@@ -24,7 +24,7 @@ python -m raresim.build.setup_third_party
 
 echo ""
 echo "[2/3] Downloading ontology sources..."
-python -m raresim.build.download_ontologies
+python -m raresim.build.load_ontologies_to_local
 
 echo ""
 echo "[3/3] Building shared artifacts..."

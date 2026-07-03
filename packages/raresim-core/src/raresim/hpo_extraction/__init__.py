@@ -47,12 +47,14 @@ Example
     )
 """
 
-from ._types import ExtractionMethod, ExtractionResult
-from .ensemble import build_patient_profile, extract_hpo_terms
+from raresim.hpo_extraction._types import ExtractionMethod, ExtractionResult
+from raresim.hpo_extraction.ensemble import build_patient_profile, extract_hpo_terms
+from raresim.hpo_extraction.registry import EXTRACTION_METHODS
 
 __all__ = [
     "extract_hpo_terms",
     "build_patient_profile",
     "ExtractionMethod",
     "ExtractionResult",
+    "EXTRACTION_METHODS",
 ]
