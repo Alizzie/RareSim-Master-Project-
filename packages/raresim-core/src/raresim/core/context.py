@@ -17,8 +17,7 @@ from raresim.utils.paths import (
     CAN_DISEASE_PROFILES_PATH,
     ALIAS_TO_CANONICAL_PATH,
 )
-from raresim.types.schemas import PatientProfile
-from raresim.types.result import AppMetadata
+from raresim.types import PatientProfile, AppMetadata
 
 
 @dataclass

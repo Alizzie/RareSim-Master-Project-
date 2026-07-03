@@ -12,7 +12,7 @@ from raresim.similarity_methods.llm.config import (
 )
 
 
-def build_method_specific_explanation_block(
+def build_method_specific_explanation_block(  # pylint: disable=too-many-arguments, too-many-positional-arguments
     model_name: str,
     patient_text: str,
     disease_text_preview: str,

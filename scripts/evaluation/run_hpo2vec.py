@@ -14,10 +14,14 @@ from pathlib import Path
 
 from raresim.core.context import AppContext
 from raresim.core.pipeline import PipelineConfig
-from raresim.similarity_methods.hpo2vec.pipeline import run as run_hpo2vec
+from raresim.similarity_methods.hpo2vec import (
+    run as run_hpo2vec,
+    METHOD_NAMES,
+    MODEL_CACHE_DIR,
+    PIPELINE_NAME,
+)
 from raresim.types.schemas import PatientProfile
 from raresim.utils.hpo_utils import preprocess_ancestor_sets
-from raresim.utils.paths import MODELS_DIR
 from raresim.utils.timer import Timer
 
 from scripts.evaluation._batch_utils import (
@@ -36,16 +40,12 @@ from scripts.evaluation._batch_utils import (
     serialize_results,
 )
 
-MODEL_PATH = MODELS_DIR / "hpo2vec_model"
-METHOD_NAME = "hpo2vec"
-METHOD_NAMES = [METHOD_NAME]
-
 
 def _warn_if_model_missing() -> None:
     """Print a warning if the expected HPO2Vec model artifact is missing."""
-    if not MODEL_PATH.exists():
+    if not MODEL_CACHE_DIR.exists():
         print(
-            f"[warning] HPO2Vec model not found at {MODEL_PATH}. "
+            f"[warning] HPO2Vec model not found at {MODEL_CACHE_DIR}. "
             "Train the model before running the batch evaluator."
         )
 
@@ -66,7 +66,7 @@ def run(  # pylint: disable=too-many-locals
     cache_dir = EVALUATION_DIR / test_set_path.stem / "cache"
     cache_dir.mkdir(parents=True, exist_ok=True)
 
-    print_header(METHOD_NAME, test_set_path, cache_dir, resume, limit)
+    print_header(PIPELINE_NAME, test_set_path, cache_dir, resume, limit)
     _warn_if_model_missing()
 
     cases = load_test_cases(test_set_path)
@@ -100,7 +100,7 @@ def run(  # pylint: disable=too-many-locals
         print_case(index, total, hpo_terms, ground_truth)
 
         try:
-            case_timer = Timer(METHOD_NAME).start()
+            case_timer = Timer(PIPELINE_NAME).start()
 
             results = run_hpo2vec(
                 patient,
@@ -118,7 +118,7 @@ def run(  # pylint: disable=too-many-locals
                 hpo_terms,
                 ground_truth,
                 serialize_results(results),
-                {METHOD_NAME: elapsed},
+                {PIPELINE_NAME: elapsed},
                 elapsed,
             )
 
@@ -168,4 +168,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-    

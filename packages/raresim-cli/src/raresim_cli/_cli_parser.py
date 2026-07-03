@@ -2,7 +2,8 @@
 
 import argparse
 from pathlib import Path
-from ._constants import ALL_METHODS, EXTRACTION_METHODS, DEFAULTS
+from raresim.similarity_methods import ALL_METHODS, DEFAULTS
+from raresim.hpo_extraction import EXTRACTION_METHODS
 
 
 def parse_args():

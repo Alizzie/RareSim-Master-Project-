@@ -2,7 +2,7 @@
 Pipeline configuration and shared result-building utilities.
 """
 
-from raresim.types.result import (
+from raresim.types import (
     RunStats,
     SimilarityResult,
     MethodResults,
@@ -63,7 +63,7 @@ def sort_and_rank(
     return MethodResults(
         method_name=method_name,
         pipeline_name=pipeline_name,
-        config=config.to_run_config(),
+        config=config,
         stats=stats,
         rankings=sorted_results[: config.top_k],
     )

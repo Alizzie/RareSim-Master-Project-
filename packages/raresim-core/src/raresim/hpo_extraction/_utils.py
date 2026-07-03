@@ -3,14 +3,14 @@ Internal utilities shared across all extraction methods.
 """
 
 import re
-from typing import Dict, List
 
 from raresim.hpo_extraction._config import (
     HPO_BLOCKLIST,
     NEGATION_WINDOW_SIZE,
     NEGATION_WORDS,
 )
-from ._types import ExtractionResult
+
+from raresim.hpo_extraction._types import ExtractionResult
 
 
 def normalize_text(text: str) -> str:
@@ -31,25 +31,32 @@ def is_negated(
     return any(neg in before for neg in NEGATION_WORDS)
 
 
-def build_label_lookup(hpo_labels: Dict[str, str]) -> Dict[str, str]:
-    """Build a normalized label → HPO ID lookup."""
-    return {
-        normalize_text(label): hpo_id
-        for hpo_id, label in hpo_labels.items()
-        if normalize_text(label)
-    }
+def build_label_lookup(hpo_labels: dict[str, str]) -> dict[str, str]:
+    """Build a normalized label to HPO ID lookup."""
+    lookup: dict[str, str] = {}
+
+    for hpo_id, label in hpo_labels.items():
+        normalized_label = normalize_text(label)
+        if normalized_label:
+            lookup[normalized_label] = hpo_id
+
+    return lookup
 
 
-def deduplicate(results: List[ExtractionResult]) -> List[ExtractionResult]:
+def deduplicate(results: list[ExtractionResult]) -> list[ExtractionResult]:
     """
     Keep the highest-confidence result per HPO ID across all methods.
-    Skips structural/metadata HPO terms (HPO_BLOCKLIST).
+
+    Skips structural/metadata HPO terms from HPO_BLOCKLIST.
     """
-    best: Dict[str, ExtractionResult] = {}
-    for r in results:
-        if r.hpo_id in HPO_BLOCKLIST:
+    best: dict[str, ExtractionResult] = {}
+
+    for result in results:
+        if result.hpo_id in HPO_BLOCKLIST:
             continue
-        existing = best.get(r.hpo_id)
-        if existing is None or r.confidence > existing.confidence:
-            best[r.hpo_id] = r
-    return sorted(best.values(), key=lambda x: (x.start or 0, x.hpo_id))
+
+        existing = best.get(result.hpo_id)
+        if existing is None or result.confidence > existing.confidence:
+            best[result.hpo_id] = result
+
+    return sorted(best.values(), key=lambda result: (result.start or 0, result.hpo_id))

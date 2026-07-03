@@ -57,6 +57,7 @@
       <span v-else>Save Patient</span>
     </button>
   </div>
+  <p v-if="saveFileName" class="save-filename">Saved as {{ saveFileName }}</p>
 </div>
 
       <!-- Status chips -->
@@ -76,21 +77,27 @@
 
 
           <div v-if="methodsInResults.length > 1" class="method-filter-bar">
-      <button
-        :class="['method-filter-btn', { active: activeMethod === 'all' }]"
-        @click="activeMethod = 'all'"
-      >
-        All
-      </button>
-      <button
-        v-for="m in methodsInResults"
-        :key="m"
-        :class="['method-filter-btn', { active: activeMethod === m }]"
-        @click="activeMethod = m"
-      >
-        {{ methodLabel(m) }}
-      </button>
-    </div>
+        <button
+          :class="['method-filter-btn', { active: activeMethod === 'all' }]"
+          @click="activeMethod = 'all'"
+        >
+          All
+        </button>
+        <button
+          :class="['method-filter-btn', { active: activeMethod === 'top10' }]"
+          @click="activeMethod = 'top10'"
+        >
+          Top 10
+        </button>
+        <button
+          v-for="m in methodsInResults"
+          :key="m"
+          :class="['method-filter-btn', { active: activeMethod === m }]"
+          @click="activeMethod = m"
+        >
+          {{ methodLabel(m) }}
+        </button>
+      </div>
 
       <!-- Result list -->
       <div class="results-list">
@@ -284,8 +291,8 @@
                 </div>
               </template>
 
-                            <!-- HPO2Vec+ shape -->
-              <template v-else-if="r.explanation.method_specific.embedding_method">
+             <!-- HPO2Vec+ shape -->
+              <template v-else-if="r.explanation.method_specific.embedding_method === 'hpo2vec_random_walk'">
                 <div class="ms-block">
                   <div class="ms-row">
                     <span class="ms-key">Embedding method</span>
@@ -305,6 +312,131 @@
                   <div class="detail-value small">{{ r.explanation.method_specific.interpretation_note }}</div>
                 </div>
               </template>
+
+              <!-- Transformer shape -->
+              <template v-else-if="r.explanation.method_specific.embedding_method && r.explanation.method_specific.model_name">
+                <div class="ms-block">
+                  <div class="ms-row">
+                    <span class="ms-key">Model</span>
+                    <span class="ms-val">{{ r.explanation.method_specific.model_name }}</span>
+                  </div>
+                  <div class="ms-row">
+                    <span class="ms-key">Pooling</span>
+                    <span class="ms-val">{{ r.explanation.method_specific.pooling || 'n/a' }}</span>
+                  </div>
+                </div>
+                <div v-if="r.explanation.method_specific.score_note" class="ms-subsection">
+                  <div class="ms-subtitle">Score note</div>
+                  <div class="detail-value small">{{ r.explanation.method_specific.score_note }}</div>
+                </div>
+                <div v-if="r.explanation.method_specific.interpretation_note" class="ms-subsection">
+                  <div class="ms-subtitle">Interpretation</div>
+                  <div class="detail-value small">{{ r.explanation.method_specific.interpretation_note }}</div>
+                </div>
+              </template>
+
+              <!-- Autoencoder shape -->
+              <template v-else-if="r.explanation.method_specific.embedding_method === 'denoising_autoencoder_latent'">
+                <div class="ms-block">
+                  <div class="ms-row">
+                    <span class="ms-key">Aggregation</span>
+                    <span class="ms-val">{{ r.explanation.method_specific.aggregation }}</span>
+                  </div>
+                </div>
+                <div v-if="r.explanation.method_specific.score_note" class="ms-subsection">
+                  <div class="ms-subtitle">Score note</div>
+                  <div class="detail-value small">{{ r.explanation.method_specific.score_note }}</div>
+                </div>
+                <div v-if="r.explanation.method_specific.interpretation_note" class="ms-subsection">
+                  <div class="ms-subtitle">Interpretation</div>
+                  <div class="detail-value small">{{ r.explanation.method_specific.interpretation_note }}</div>
+                </div>
+              </template>
+
+                            <!-- TF-IDF shape -->
+              <template v-else-if="r.explanation.method_specific.tfidf_mode">
+                <div class="ms-block">
+                  <div class="ms-row">
+                    <span class="ms-key">Mode</span>
+                    <span class="ms-val">{{ methodLabel(r.explanation.method_specific.tfidf_mode) }}</span>
+                  </div>
+                  <div v-if="r.explanation.method_specific.ic_weighted_match_score !== undefined" class="ms-row">
+                    <span class="ms-key">IC-weighted match score</span>
+                    <span class="ms-val mono">{{ r.explanation.method_specific.ic_weighted_match_score?.toFixed(3) }}</span>
+                  </div>
+                  <div v-if="r.explanation.method_specific.idf_weighted_score !== undefined" class="ms-row">
+                    <span class="ms-key">IDF-weighted score</span>
+                    <span class="ms-val mono">{{ r.explanation.method_specific.idf_weighted_score?.toFixed(3) }}</span>
+                  </div>
+                  <div v-if="r.explanation.method_specific.vector_norms" class="ms-row">
+                    <span class="ms-key">Cosine (check)</span>
+                    <span class="ms-val mono">{{ r.explanation.method_specific.vector_norms.score_check?.toFixed(4) }}</span>
+                  </div>
+                </div>
+
+                <!-- Contributing HPO terms -->
+                <div v-if="r.explanation.method_specific.contributing_hpo_terms?.length" class="ms-subsection">
+                  <div class="ms-subtitle">Contributing terms</div>
+                  <div
+                    v-for="t in r.explanation.method_specific.contributing_hpo_terms"
+                    :key="t.hpo_id"
+                    class="term-row term-row-match"
+                  >
+                    <span class="term-label">{{ t.hpo_label }}</span>
+                    <span class="term-id">{{ t.hpo_id }}</span>
+                    <span class="term-ic">IC {{ t.ic?.toFixed(2) }}</span>
+                  </div>
+                </div>
+
+                <!-- Low IDF matches -->
+                <div v-if="r.explanation.method_specific.low_idf_matches?.length" class="ms-subsection">
+                  <div class="ms-subtitle">Low-IDF matches (noisy)</div>
+                  <div class="tags-wrap-sm">
+                    <span
+                      v-for="t in r.explanation.method_specific.low_idf_matches"
+                      :key="t.id"
+                      class="ic-removed-tag"
+                    >{{ t.label }}</span>
+                  </div>
+                </div>
+
+                <!-- IC filter impact -->
+                <div v-if="r.explanation.method_specific.ic_filter_impact" class="ms-subsection">
+                  <div class="ms-subtitle">
+                    IC filter — removed {{ r.explanation.method_specific.ic_filter_impact.n_removed }} of
+                    {{ r.explanation.method_specific.ic_filter_impact.terms_before_filter }} terms
+                  </div>
+                  <div class="tags-wrap-sm">
+                    <span
+                      v-for="t in r.explanation.method_specific.ic_filter_impact.removed_terms"
+                      :key="t.id"
+                      class="ic-removed-tag"
+                    >{{ t.label }}</span>
+                  </div>
+                </div>
+              </template>
+
+              <!-- LLM shape -->
+            <template v-else-if="r.explanation.method_specific.llm_method">
+              <div class="ms-block">
+                <div class="ms-row">
+                  <span class="ms-key">Model</span>
+                  <span class="ms-val">{{ r.explanation.method_specific.model_name }}</span>
+                </div>
+                <div v-if="r.explanation.method_specific.confidence" class="ms-row">
+                  <span class="ms-key">Confidence</span>
+                  <span class="ms-val">{{ r.explanation.method_specific.confidence }}</span>
+                </div>
+              </div>
+              <div v-if="r.explanation.method_specific.score_note" class="ms-subsection">
+                <div class="ms-subtitle">Score note</div>
+                <div class="detail-value small">{{ r.explanation.method_specific.score_note }}</div>
+              </div>
+              <div v-if="r.explanation.method_specific.llm_response_preview" class="ms-subsection">
+                <div class="ms-subtitle">LLM response</div>
+                <div class="detail-value small">{{ r.explanation.method_specific.llm_response_preview }}</div>
+              </div>
+            </template>
 
               <!-- Fallback: unrecognized shape -->
               <div v-else class="detail-value small mono-block">{{ JSON.stringify(r.explanation.method_specific, null, 2) }}</div>
@@ -391,6 +523,7 @@ const activeMethod = ref('all')
 const saving = ref(false)
 const saveStatus = ref('')
 const saveFormat = ref('json')
+const saveFileName = ref('')
 
 const methodsInResults = computed(() => {
   const seen = new Set()
@@ -400,6 +533,11 @@ const methodsInResults = computed(() => {
 
 const filteredResults = computed(() => {
   if (activeMethod.value === 'all') return props.results
+  if (activeMethod.value === 'top10') {
+    return [...props.results]
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 10)
+  }
   return props.results.filter(r => r.method_name === activeMethod.value)
 })
 
@@ -420,16 +558,19 @@ async function handleSave() {
     saving.value = true
     saveStatus.value = ''
     try {
-        await savePatient({
+        const res = await savePatient({
             patient_id: 'patient_' + Date.now(),
             hpo_terms: props.inputHpo,
             raw_text: '',
-            results: props.results,
-            methods: props.meta.methods_run || [],
+            results: filteredResults.value,
+            methods: activeMethod.value === 'all'
+                ? (props.meta.methods_run || [])
+                : [activeMethod.value],
             format: saveFormat.value,
         })
         saveStatus.value = 'saved'
-        setTimeout(() => saveStatus.value = '', 3000)
+        saveFileName.value = res.filename || ''
+        setTimeout(() => { saveStatus.value = ''; saveFileName.value = '' }, 5000)
     } catch (e) {
         saveStatus.value = 'error'
     } finally {
@@ -477,7 +618,10 @@ const METHOD_LABELS = {
   set_dice:                   'Dice',
   set_cosine:                 'Cosine',
   set_overlap:                'Overlap',
-  tfidf:                      'TF-IDF',
+  tfidf_hpo:        'TF-IDF (HPO)',
+  tfidf_text:       'TF-IDF (Text)',
+  tfidf_hybrid:     'TF-IDF (Hybrid)',
+  tfidf_hpo_labels: 'TF-IDF (Labels)',
   transformer:                'Transformer',
   llm:                        'LLM',
   hpo2vec_plus:               'HPO2Vec+',
@@ -956,6 +1100,13 @@ function methodLabel(id) {
   background: var(--accent);
   border-color: var(--accent);
   color: white;
+}
+.save-filename {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  font-family: var(--mono);
+  margin-top: 4px;
+  text-align: right;
 }
 
 </style>

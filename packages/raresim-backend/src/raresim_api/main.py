@@ -20,7 +20,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
 from raresim.core.context import AppContext
-from raresim.core.method_comparison import build_comparison
+from raresim.analysis.method_comparison import build_comparison
 from raresim.core.pipeline import PipelineConfig
 from raresim.hpo_extraction import build_patient_profile
 from raresim.similarity_methods.autoencoder.pipeline import run as run_autoencoder
@@ -30,9 +30,8 @@ from raresim.similarity_methods.llm.pipeline import run as run_llm
 from raresim.similarity_methods.semantic.pipeline import run as run_semantic
 from raresim.similarity_methods.set_based.pipeline import run as run_set_based
 from raresim.similarity_methods.tfidf.pipeline import run as run_tfidf
-from raresim.similarity_methods.transformer.pipeline import (
-    run_default_model as run_transformer,
-)
+from raresim.similarity_methods.transformer.config import MODEL_LIST as TRANSFORMER_MODEL_LIST
+from raresim.similarity_methods.transformer.pipeline import run as run_transformer
 from raresim.utils.hpo_utils import get_ancestors_inclusive, preprocess_ancestor_sets
 from raresim.utils.io import load_json, save_json
 from raresim.utils.paths import HPO_ANCESTORS_PATH, HPO_LABELS_PATH, WEBAPP_DIR
@@ -60,8 +59,51 @@ SEMANTIC_METHODS = {
     "semantic_jiang_conrath_bma",
 }
 SET_BASED_METHODS = {"set_cosine", "set_jaccard", "set_dice", "set_overlap"}
-TFIDF_METHODS = {"tfidf"}
-TRANSFORMER_METHODS = {"transformer"}
+TFIDF_METHODS = {"tfidf_hpo", "tfidf_text", "tfidf_hybrid", "tfidf_hpo_labels"}
+TRANSFORMER_MODEL_KEY_TO_METHOD: dict[str, str] = {
+    "PubMedBERT": "transformer_PubMedBERT",
+    "ClinicalBERT": "transformer_ClinicalBERT",
+    "MiniLM": "transformer_MiniLM",
+    "SapBERT": "transformer_SapBERT",
+    "BioBERT": "transformer_BioBERT",
+}
+
+
+def _detect_transformer_model_key(model_name: str) -> str | None:
+    """Return the canonical short key for one transformer model name."""
+    normalized = model_name.lower().replace("-", "").replace("_", "")
+
+    if "clinicalbert" in normalized:
+        return "ClinicalBERT"
+    if "pubmedbert" in normalized and "sapbert" not in normalized:
+        return "PubMedBERT"
+    if "minilm" in normalized:
+        return "MiniLM"
+    if "sapbert" in normalized:
+        return "SapBERT"
+    if "biobert" in normalized:
+        return "BioBERT"
+    return None
+
+
+def _build_transformer_method_to_model() -> dict[str, str]:
+    """Map accepted frontend method IDs to exact config.MODEL_LIST values."""
+    method_to_model: dict[str, str] = {}
+
+    for model_name in TRANSFORMER_MODEL_LIST:
+        model_key = _detect_transformer_model_key(str(model_name))
+        if model_key is None:
+            continue
+
+        method_key = TRANSFORMER_MODEL_KEY_TO_METHOD[model_key]
+        method_to_model[method_key] = str(model_name)
+
+    return method_to_model
+
+
+TRANSFORMER_METHOD_TO_MODEL = _build_transformer_method_to_model()
+TRANSFORMER_METHODS = set(TRANSFORMER_METHOD_TO_MODEL)
+TRANSFORMER_GROUP_METHODS = {"transformer"}
 LLM_METHODS = {"llm"}
 HPO2VEC_METHODS = {"hpo2vec", "hpo2vec_plus"}
 AUTOENCODER_METHODS = {"denoising_autoencoder"}
@@ -110,10 +152,42 @@ class SavePatientRequest(BaseModel):
 # ── Helper functions ──────────────────────────────────────────────────────────
 
 
+def _all_supported_methods() -> set[str]:
+    """Return all method keys accepted by the diagnose endpoint."""
+    return (
+        SEMANTIC_METHODS
+        | SET_BASED_METHODS
+        | TFIDF_METHODS
+        | TRANSFORMER_METHODS
+        | TRANSFORMER_GROUP_METHODS
+        | LLM_METHODS
+        | HPO2VEC_METHODS
+        | AUTOENCODER_METHODS
+    )
+
+
+def _expand_selected_methods(selected: set[str]) -> set[str]:
+    """Expand the frontend transformer button into transformer model methods."""
+    expanded = set(selected)
+
+    if "transformer" in expanded:
+        expanded.remove("transformer")
+        expanded.update(TRANSFORMER_METHODS)
+
+    return expanded
+
+
 def _validate_diagnose_request(req: DiagnoseRequest) -> None:
     """Validate one diagnosis request before expensive computation starts."""
     if not req.methods:
         raise HTTPException(status_code=400, detail="At least one method is required")
+
+    unknown_methods = sorted(set(req.methods) - _all_supported_methods())
+    if unknown_methods:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Unknown method(s): {', '.join(unknown_methods)}",
+        )
 
     if req.mode == "hpo" and not req.hpo_terms:
         raise HTTPException(status_code=400, detail="hpo_terms required for HPO mode")
@@ -178,10 +252,25 @@ def _run_selected_methods(
         all_results.update(run_set_based(patient, methods, config, ctx))
 
     if selected & TFIDF_METHODS:
-        all_results.update(run_tfidf(patient, list(TFIDF_METHODS), config, ctx))
+        all_results.update(run_tfidf(patient, list(selected & TFIDF_METHODS), config, ctx))
 
     if selected & TRANSFORMER_METHODS:
-        all_results.update(run_transformer(patient, config, ctx))
+        method_keys = selected & TRANSFORMER_METHODS
+        model_names = [
+            TRANSFORMER_METHOD_TO_MODEL[key]
+            for key in sorted(method_keys)
+        ]
+        try:
+            transformer_results = run_transformer(patient, model_names, config, ctx)
+        except Exception as error:
+            raise RuntimeError(
+                "Transformer run failed for "
+                f"method_keys={sorted(method_keys)} and model_names={model_names}: "
+                f"{error}"
+            ) from error
+
+        rekeyed_results = _rekey_and_relabel_transformers(transformer_results)
+        all_results.update(rekeyed_results)
 
     if selected & LLM_METHODS:
         all_results.update(run_llm(patient, LLM_MODEL_LIST, config, ctx))
@@ -205,6 +294,42 @@ def _iter_ranked_results(method_results: Any):
         or method_results
     )
     yield from ranked
+
+
+def _transformer_result_key_to_method(raw_key: str) -> str:
+    """Normalize transformer result keys into frontend method IDs."""
+    if raw_key in TRANSFORMER_METHODS:
+        return raw_key
+
+    model_key = _detect_transformer_model_key(raw_key)
+    if model_key is not None:
+        return TRANSFORMER_MODEL_KEY_TO_METHOD[model_key]
+
+    if raw_key.startswith("transformer_"):
+        model_key = _detect_transformer_model_key(raw_key.removeprefix("transformer_"))
+        if model_key is not None:
+            return TRANSFORMER_MODEL_KEY_TO_METHOD[model_key]
+
+    return raw_key
+
+
+def _rekey_and_relabel_transformers(method_results: dict[str, Any]) -> dict[str, Any]:
+    """
+    Rename transformer MethodResults keys to frontend method IDs and relabel
+    each SimilarityResult.method_name to match.
+    """
+    renamed: dict[str, Any] = {}
+
+    for raw_key, results in method_results.items():
+        clean_key = _transformer_result_key_to_method(str(raw_key))
+        rows = list(_iter_ranked_results(results))
+
+        for result in rows:
+            result.method_name = clean_key
+
+        renamed[clean_key] = results
+
+    return renamed
 
 
 def _result_to_dict(result: Any) -> dict[str, Any]:
@@ -290,7 +415,7 @@ def _build_diagnose_response(  # pylint: disable=too-many-arguments, too-many-po
         "meta": {
             "n_patient_terms": len(hpo_terms),
             "n_diseases": len(ctx.disease_profiles),
-            "methods_run": list(selected),
+            "methods_run": sorted(selected),
             "runtime_seconds": round(runtime_seconds, 2),
         },
     }
@@ -375,9 +500,8 @@ def diagnose(req: DiagnoseRequest):
         patient, hpo_terms = _build_patient(req)
         config = _build_config(req.top_k)
         ctx = AppContext.load(patient, config.use_canonical_profiles)
-        selected = set(req.methods)
-
-        print(f"DEBUG: disease profiles loaded: {len(ctx.disease_profiles)}")
+        requested = set(req.methods)
+        selected = _expand_selected_methods(requested)
 
         all_results = _run_selected_methods(patient, selected, config, ctx)
         runtime_seconds = time.time() - start
@@ -390,6 +514,8 @@ def diagnose(req: DiagnoseRequest):
             runtime_seconds=runtime_seconds,
             top_k=req.top_k,
         )
+    except HTTPException:
+        raise
     except Exception as error:
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(error)) from error

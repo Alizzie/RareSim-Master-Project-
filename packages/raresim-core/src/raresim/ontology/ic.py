@@ -1,19 +1,18 @@
 """Functions to compute information content (IC) values for HPO terms based on their frequencies across disease profiles."""
 
 import math
-from typing import Dict
 
-from raresim.types.schemas import DiseaseProfile
+from raresim.types import DiseaseProfile
 
 
 def compute_term_frequencies(
-    disease_profiles: Dict[str, DiseaseProfile],
+    disease_profiles: dict[str, DiseaseProfile],
     use_propagated_terms: bool = True,
-) -> Dict[str, int]:
+) -> dict[str, int]:
     """
     Count in how many disease profiles each HPO term appears.
     """
-    frequencies: Dict[str, int] = {}
+    frequencies: dict[str, int] = {}
 
     for profile in disease_profiles.values():
         terms = (
@@ -26,13 +25,13 @@ def compute_term_frequencies(
 
 
 def compute_information_content(
-    term_frequencies: Dict[str, int],
+    term_frequencies: dict[str, int],
     total_diseases: int,
-) -> Dict[str, float]:
+) -> dict[str, float]:
     """
     IC(term) = -log(freq(term) / total_diseases)
     """
-    ic_values: Dict[str, float] = {}
+    ic_values: dict[str, float] = {}
 
     for term, freq in term_frequencies.items():
         probability = freq / total_diseases

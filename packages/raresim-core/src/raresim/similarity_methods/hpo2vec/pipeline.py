@@ -14,13 +14,13 @@ import hashlib
 from pathlib import Path
 from gensim.models import Word2Vec
 
-from raresim.core.context import AppContext
-from raresim.core.pipeline import (
-    PipelineConfig,
+from raresim.core import (
+    AppContext,
     build_run_stats,
     sort_and_rank,
+    run_similarity_method,
 )
-from raresim.ontology.disease_category import build_category_metadata
+from raresim.ontology import build_category_metadata
 from raresim.similarity_methods.hpo2vec.methods import (
     build_graph,
     embed_term_set,
@@ -30,7 +30,7 @@ from raresim.similarity_methods.hpo2vec.methods import (
 from raresim.similarity_methods.hpo2vec.config import (
     HPO2VEC_DIR,
     MODEL_CACHE_DIR,
-    ALL_METHOD,
+    ALL_METHODS,
     PIPELINE_NAME,
     WALK_LENGTH,
     WALKS_PER_NODE,
@@ -42,9 +42,12 @@ from raresim.similarity_methods.hpo2vec.config import (
     EPOCHS,
 )
 from raresim.similarity_methods.hpo2vec.explanation import build_explanation
-from raresim.types.result import MethodResults, SimilarityResult
-from raresim.types.schemas import PatientProfile
-from raresim.utils._pipeline_runner import run_pipeline_main
+from raresim.types import (
+    MethodResults,
+    SimilarityResult,
+    PatientProfile,
+    PipelineConfig,
+)
 from raresim.utils.timer import Timer
 from raresim.utils.similarity_math import cosine_similarity_dense
 
@@ -119,8 +122,8 @@ def run(  # pylint: disable=too-many-locals
 
     all_results: dict[str, MethodResults] = {}
 
-    for method_name in selected:
-        if method_name not in ALL_METHOD:
+    for method_name in [m for m in selected if m in ALL_METHODS]:
+        if method_name not in ALL_METHODS:
             continue
 
         model = load_or_train(
@@ -212,9 +215,9 @@ def run(  # pylint: disable=too-many-locals
 
 def main() -> None:
     """Load shared artifacts and run the HPO2Vec+ pipeline."""
-    run_pipeline_main(
+    run_similarity_method(
         pipeline_name=PIPELINE_NAME,
-        method_names=ALL_METHOD,
+        method_names=ALL_METHODS,
         run_fn=run,
         output_dir=HPO2VEC_DIR,
     )

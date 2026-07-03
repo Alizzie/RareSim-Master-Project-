@@ -2,7 +2,6 @@
 
 import argparse
 import time
-import sys
 from pathlib import Path
 from _utils import (
     resolve_datasets,

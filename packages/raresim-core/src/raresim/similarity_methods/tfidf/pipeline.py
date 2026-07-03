@@ -16,13 +16,14 @@ All three modes use the same cosine similarity scorer and produce
 MethodResults with the same explanation schema.
 """
 
-from raresim.core.context import AppContext
-from raresim.core.pipeline import (
-    PipelineConfig,
+from raresim.core import (
+    AppContext,
+    run_similarity_method,
     build_run_stats,
     sort_and_rank,
 )
-from raresim.ontology.disease_category import build_category_metadata
+
+from raresim.ontology import build_category_metadata
 from raresim.similarity_methods.tfidf.config import (
     ALL_METHODS,
     DISEASE_TEXT_FIELD,
@@ -42,9 +43,13 @@ from raresim.similarity_methods.tfidf.methods import (
     compute_idf,
     compute_text_idf,
 )
-from raresim.types.result import MethodResults, RunStats, SimilarityResult
-from raresim.types.schemas import PatientProfile
-from raresim.utils._pipeline_runner import run_pipeline_main
+from raresim.types import (
+    MethodResults,
+    RunStats,
+    SimilarityResult,
+    PipelineConfig,
+    PatientProfile,
+)
 from raresim.utils.hpo_utils import filter_terms_by_ic
 from raresim.utils.similarity_math import cosine_similarity
 from raresim.utils.timer import Timer
@@ -440,7 +445,7 @@ def run(
 
 def main() -> None:
     """Run the TF-IDF similarity pipeline."""
-    run_pipeline_main(
+    run_similarity_method(
         pipeline_name=PIPELINE_NAME,
         method_names=ALL_METHODS,
         run_fn=run,

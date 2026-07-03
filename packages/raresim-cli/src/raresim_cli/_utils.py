@@ -3,23 +3,34 @@ Utility functions for the GUI application, including artifact checks,
 result display, and user prompts.
 """
 
-from raresim.types.schemas import PatientProfile
+import shutil
+from pathlib import Path
+from raresim.types import PatientProfile, AppMetadata, MethodResults
 from raresim.utils.paths import (
     DISEASE_PROFILES_PATH,
     HPO_LABELS_PATH,
     INFORMATION_CONTENT_PATH,
     HPO_ANCESTORS_PATH,
     EXAMPLE_PATIENT_PATH,
-    GUI_DIR,
+    OUTPUTS_DIR,
 )
-from raresim.types.result import AppMetadata, MethodResults
+
 import raresim.utils.io as io
 from raresim.utils.patient_loader import load_patient_with_extraction
-from pathlib import Path
+
+# ── CLI application output ────────────────────────────────────────────────────
+RARESIM_CLI_DIR = OUTPUTS_DIR / "raresim_cli"
+
+
+def reset_output_dir() -> None:
+    """Empty the CLI output folder so each run starts clean."""
+    if RARESIM_CLI_DIR.exists():
+        shutil.rmtree(RARESIM_CLI_DIR)
+    RARESIM_CLI_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def check_artifacts_exist() -> None:
-    """Fail fast with a clear message if build step hasn't been run."""
+    """Fail fast with a clear message if the build step hasn't been run."""
     required = [
         DISEASE_PROFILES_PATH,
         HPO_LABELS_PATH,
@@ -27,12 +38,12 @@ def check_artifacts_exist() -> None:
         HPO_ANCESTORS_PATH,
         EXAMPLE_PATIENT_PATH,
     ]
-
     missing = [f.name for f in required if not f.exists()]
     if missing:
         raise FileNotFoundError(
             f"Missing shared artifacts: {', '.join(missing)}\n"
-            "Run 'python -m build_shared_artifacts' first."
+            # CHANGED: correct module path after the build/ reorganization
+            "Run 'python -m raresim.build.build_shared_artifacts' first."
         )
 
 
@@ -88,20 +99,19 @@ def print_raw_results(method_name: str, results: list[dict]) -> None:
 def save_results(
     all_results: dict[str, MethodResults], app_metadata: AppMetadata
 ) -> None:
-    """Save all results to a JSON file in the outputs directory inside gui."""
-    GUI_DIR.mkdir(parents=True, exist_ok=True)
+    """Save all results to outputs/raresim_cli/."""
+    RARESIM_CLI_DIR.mkdir(parents=True, exist_ok=True)
 
-    meta_path = GUI_DIR / "app_metadata.json"
+    meta_path = RARESIM_CLI_DIR / "app_metadata.json"
     io.save_json(app_metadata.to_dict(), meta_path)
     print(f"App metadata saved to: {meta_path}")
 
-    combined_path = GUI_DIR / "all_results.json"
+    combined_path = RARESIM_CLI_DIR / "all_results.json"
     io.save_results(all_results, combined_path)
     print(f"\nResults saved to: {combined_path}")
 
-    # one file per method
-    io.save_individual_results(all_results, GUI_DIR)
-    print(f"Individual method results saved to: {GUI_DIR}")
+    io.save_individual_results(all_results, RARESIM_CLI_DIR)
+    print(f"Individual method results saved to: {RARESIM_CLI_DIR}")
 
 
 # -- Prompts ----------------------------------

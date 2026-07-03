@@ -19,10 +19,19 @@ import hashlib
 from pathlib import Path
 import numpy as np
 
-from raresim.core.context import AppContext
-from raresim.core.pipeline import PipelineConfig, build_run_stats, sort_and_rank
-from raresim.ontology.disease_category import build_category_metadata
-from raresim.types.result import SimilarityResult, MethodResults
+from raresim.core import (
+    AppContext,
+    build_run_stats,
+    sort_and_rank,
+    run_similarity_method,
+)
+from raresim.types import (
+    SimilarityResult,
+    MethodResults,
+    PipelineConfig,
+    PatientProfile,
+)
+from raresim.ontology import build_category_metadata
 from raresim.similarity_methods.autoencoder.methods import (
     DenoisingAutoencoder,
     build_vocabulary,
@@ -30,14 +39,12 @@ from raresim.similarity_methods.autoencoder.methods import (
     euclidean_similarity,
 )
 from raresim.similarity_methods.autoencoder.explanation import build_explanation
-from raresim.types.schemas import PatientProfile
-from raresim.utils._pipeline_runner import run_pipeline_main
 from raresim.utils.io import save_json, load_json
 from raresim.utils.timer import Timer
 
 
 from raresim.similarity_methods.autoencoder.config import (
-    ALL_METHOD,
+    ALL_METHODS,
     METHOD_NAME,
     PIPELINE_NAME,
     AUTOENCODER_DIR,
@@ -237,9 +244,9 @@ def run(  # pylint: disable=too-many-locals
 
 def main() -> None:
     """Load shared artifacts and run the autoencoder pipeline."""
-    run_pipeline_main(
+    run_similarity_method(
         pipeline_name=PIPELINE_NAME,
-        method_names=ALL_METHOD,
+        method_names=ALL_METHODS,
         run_fn=run,
         output_dir=AUTOENCODER_DIR,
     )

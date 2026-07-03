@@ -11,7 +11,7 @@ AppMetadata is separate because it describes the loaded data, not a pipeline run
 
 from dataclasses import dataclass, field
 
-SCHEMA_VERSION = "1.1"
+SCHEMA_VERSION = "1.2"
 
 
 @dataclass
@@ -32,25 +32,6 @@ class AppMetadata:
 
 
 @dataclass
-class RunConfig:
-    """Static configuration used by a similarity pipeline run."""
-
-    use_propagated_terms: bool
-    ic_threshold: float | None
-    top_k: int
-    use_canonical_profiles: bool = True
-
-    def to_dict(self) -> dict:
-        """Return the run configuration as a JSON-serializable dictionary."""
-        return {
-            "use_propagated_terms": self.use_propagated_terms,
-            "ic_threshold": self.ic_threshold,
-            "top_k": self.top_k,
-            "use_canonical_profiles": self.use_canonical_profiles,
-        }
-
-
-@dataclass
 class PipelineConfig:
     """
     Configuration for running similarity pipelines.
@@ -67,14 +48,14 @@ class PipelineConfig:
         """Helper to determine which HPO term set to use based on config."""
         return "propagated_hpo_terms" if self.use_propagated_terms else "hpo_terms"
 
-    def to_run_config(self) -> RunConfig:
+    def to_dict(self) -> dict:
         """Convert to RunConfig for embedding in MethodResults."""
-        return RunConfig(
-            use_propagated_terms=self.use_propagated_terms,
-            ic_threshold=self.ic_threshold,
-            top_k=self.top_k,
-            use_canonical_profiles=self.use_canonical_profiles,
-        )
+        return {
+            "use_propagated_terms": self.use_propagated_terms,
+            "ic_threshold": self.ic_threshold,
+            "top_k": self.top_k,
+            "use_canonical_profiles": self.use_canonical_profiles,
+        }
 
 
 @dataclass
@@ -139,7 +120,7 @@ class MethodResults:
 
     method_name: str
     pipeline_name: str
-    config: RunConfig
+    config: PipelineConfig
     stats: RunStats
     rankings: list[SimilarityResult]
     schema_version: str = SCHEMA_VERSION
