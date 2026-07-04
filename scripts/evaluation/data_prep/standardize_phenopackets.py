@@ -1,108 +1,174 @@
 """
-This script standardizes phenopacket JSON files into a consistent format of [[HP terms], [disease codes]].
-Make sure to upload the phenopacket files to the "phenopackets/" directory before running.
-This version is using 0.1.26 folder from all_phenopackets.zip available at
-https://github.com/monarch-initiative/phenopacket-store/releases
+Standardize phenopacket JSON files into RareSim format:
 
-Usage: python evaluation/standardize_phenopackets.py
+[
+  [[HP terms], [disease codes]],
+  [[HP terms], [disease codes]]
+]
+
+Works for any folder containing GA4GH/Monarch phenopacket JSON files.
+
+Examples:
+
+    python scripts/evaluation/data_prep/standardize_phenopackets.py \
+        --input data/datasets/phenopackets/raw \
+        --output data/datasets/phenopackets/standardized_to_json/0.1.27.json
+
+    python scripts/evaluation/data_prep/standardize_phenopackets.py \
+        --input data/datasets/GA4GH_phenopackets/raw \
+        --output data/datasets/GA4GH_phenopackets/standardized_to_json/ga4gh_phenopackets.json
 """
 
+import argparse
 import json
 from pathlib import Path
-from raresim.utils.paths import (
-    PHENOPACKETS_DIR,
-    STANDARDIZED_PHENOPACKETS_DIR,
-    ORPHA_MAPPING_INDEX,
-)
+from typing import Any
+
+from raresim.utils.paths import ORPHA_MAPPING_INDEX
 
 
-def phenopacket_to_standard(phenopacket: dict, orpha_mapping: dict) -> list:
-    """Convert a single phenopacket to [[HP terms], [disease codes]]"""
+def load_orpha_mapping() -> dict[str, str]:
+    """Load disease-code to ORPHA mapping if available."""
+    if not ORPHA_MAPPING_INDEX.exists():
+        print(f"Warning: ORPHA mapping not found: {ORPHA_MAPPING_INDEX}")
+        return {}
 
-    # Extract HPO terms (exclude negated ones)
+    data = json.loads(ORPHA_MAPPING_INDEX.read_text(encoding="utf-8"))
+
+    return {str(key): str(value) for key, value in data.items()}
+
+
+def extract_hpo_terms(phenopacket: dict[str, Any]) -> list[str]:
+    """Extract non-excluded HPO terms from phenotypicFeatures."""
     hpo_terms = []
-    for feature in phenopacket.get("phenotypicFeatures", []):
-        if not feature.get("excluded", False):
-            hpo_id = feature["type"]["id"]
-            if hpo_id.startswith("HP:"):
-                hpo_terms.append(hpo_id)
 
-    # Extract disease codes from interpretations
+    for feature in phenopacket.get("phenotypicFeatures", []):
+        if feature.get("excluded", False):
+            continue
+
+        hpo_id = feature.get("type", {}).get("id")
+
+        if isinstance(hpo_id, str) and hpo_id.startswith("HP:"):
+            hpo_terms.append(hpo_id)
+
+    return sorted(set(hpo_terms))
+
+
+def extract_disease_codes(phenopacket: dict[str, Any]) -> list[str]:
+    """Extract disease codes from interpretations or diseases fallback."""
     disease_codes = []
-    for interp in phenopacket.get("interpretations", []):
-        disease_id = interp.get("diagnosis", {}).get("disease", {}).get("id")
-        if disease_id:
+
+    for interpretation in phenopacket.get("interpretations", []):
+        disease_id = (
+            interpretation
+            .get("diagnosis", {})
+            .get("disease", {})
+            .get("id")
+        )
+
+        if isinstance(disease_id, str) and disease_id:
             disease_codes.append(disease_id)
 
-    # Also check diseases field as fallback
     if not disease_codes:
         for disease in phenopacket.get("diseases", []):
             disease_id = disease.get("term", {}).get("id")
-            if disease_id:
+
+            if isinstance(disease_id, str) and disease_id:
                 disease_codes.append(disease_id)
 
-    # Also append ORPHA code if a mapping exists, keep original too
-    extra_codes = [
-        orpha_mapping[code] for code in disease_codes if code in orpha_mapping
-    ]
-    disease_codes = sorted(set(disease_codes + extra_codes))
+    return sorted(set(disease_codes))
 
-    # Sort and deduplicate
-    hpo_terms = sorted(set(hpo_terms))
-    disease_codes = sorted(set(disease_codes))
+
+def phenopacket_to_standard(
+    phenopacket: dict[str, Any],
+    orpha_mapping: dict[str, str],
+) -> list[list[str]]:
+    """Convert one phenopacket to [[HP terms], [disease codes]]."""
+    hpo_terms = extract_hpo_terms(phenopacket)
+    disease_codes = extract_disease_codes(phenopacket)
+
+    mapped_orpha_codes = [
+        orpha_mapping[code]
+        for code in disease_codes
+        if code in orpha_mapping
+    ]
+
+    disease_codes = sorted(set(disease_codes + mapped_orpha_codes))
 
     return [hpo_terms, disease_codes]
 
 
-def process_phenopackets(input_folder: Path):
-    """
-    input_path: path to a single .json file OR a directory of phenopackets
-    output_path: path to save the standardized output
-    """
+def standardize_phenopackets(input_path: Path, output_path: Path) -> None:
+    """Standardize one phenopacket JSON file or a folder of JSON files."""
+    if input_path.is_file():
+        files = [input_path]
+    else:
+        files = sorted(input_path.rglob("*.json"))
 
-    files = list(input_folder.rglob("*.json"))
     if not files:
-        print(f"No JSON files found in {input_folder}")
+        print(f"No JSON files found in {input_path}")
         return
 
-    print(f"Found {len(files)} phenopacket(s)")
+    print(f"Found {len(files)} JSON file(s)")
+
+    orpha_mapping = load_orpha_mapping()
 
     results = []
     skipped = 0
 
-    orpha_mapping = json.loads(ORPHA_MAPPING_INDEX.read_text())
+    for file_path in files:
+        data = json.loads(file_path.read_text(encoding="utf-8"))
 
-    for f in sorted(files):
-        data = json.loads(f.read_text())
-        cases = (
-            data if isinstance(data, list) else [data]
-        )  # Handle both single and list of phenopackets
+        cases = data if isinstance(data, list) else [data]
 
         for case in cases:
-            hpo_terms, disease_codes = phenopacket_to_standard(case, orpha_mapping)
+            if not isinstance(case, dict):
+                print(f"Skipping non-phenopacket object in {file_path}: {type(case)}")
+                skipped += 1
+                continue
+
+            hpo_terms, disease_codes = phenopacket_to_standard(
+                case,
+                orpha_mapping,
+            )
 
             if not hpo_terms or not disease_codes:
                 print(
-                    f"  Skipping {case.get('id', '?')} — missing HPO terms or disease codes"
+                    f"Skipping {case.get('id', file_path.name)} "
+                    f"— missing HPO terms or disease codes"
                 )
                 skipped += 1
                 continue
 
             results.append([hpo_terms, disease_codes])
 
-    # Save output
-    output_path = STANDARDIZED_PHENOPACKETS_DIR / f"{input_folder.name}.json"
-    output_path.write_text(json.dumps(results, indent=2))
-    print(f"Done: {len(results)} cases saved, {skipped} skipped → {output_path}")
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(json.dumps(results, indent=2), encoding="utf-8")
+
+    print(f"Done: {len(results)} cases saved, {skipped} skipped -> {output_path}")
+
+
+def parse_args() -> argparse.Namespace:
+    """Parse command-line arguments."""
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument(
+        "--input",
+        required=True,
+        type=Path,
+        help="Phenopacket JSON file or folder containing phenopacket JSON files.",
+    )
+
+    parser.add_argument(
+        "--output",
+        required=True,
+        type=Path,
+        help="Output JSON file in [[HP terms], [disease codes]] format.",
+    )
+
+    return parser.parse_args()
 
 
 if __name__ == "__main__":
-
-    subfolders = [f for f in PHENOPACKETS_DIR.iterdir() if f.is_dir()]
-
-    if not subfolders:
-        process_phenopackets(PHENOPACKETS_DIR)
-    else:
-        for folder in sorted(subfolders):
-            print(f"Processing folder: {folder.name}")
-            process_phenopackets(folder)
+    args = parse_args()
+    standardize_phenopackets(args.input, args.output)
