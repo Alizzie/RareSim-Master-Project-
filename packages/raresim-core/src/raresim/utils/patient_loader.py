@@ -14,6 +14,7 @@ def load_patient(path: Path) -> PatientProfile:
         raw_text=data.get("raw_text", ""),
         hpo_terms=set(data.get("hpo_terms", [])),
         propagated_hpo_terms=set(data.get("propagated_hpo_terms", [])),
+        excluded_hpo_terms=set(data.get("excluded_hpo_terms", [])),
     )
 
 
@@ -55,4 +56,5 @@ def load_patient_with_extraction(
         raw_text=enriched["raw_text"],
         hpo_terms=set(enriched["hpo_terms"]),
         propagated_hpo_terms=set(enriched.get("propagated_hpo_terms", [])),
+        excluded_hpo_terms=set(enriched.get("excluded_hpo_terms", [])),
     )

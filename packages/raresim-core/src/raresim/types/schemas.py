@@ -1,12 +1,12 @@
 """Schemas for disease and patient profiles."""
 
-
 from dataclasses import dataclass, field
 
 
 @dataclass
 class DiseaseProfile:  # pylint: disable=too-many-instance-attributes
     """A disease profile, including its HPO terms and metadata."""
+
     disease_id: str
     label: str
     profile_type: str | None = None
@@ -34,11 +34,17 @@ class DiseaseProfile:  # pylint: disable=too-many-instance-attributes
 @dataclass
 class PatientProfile:
     """A patient profile, including their HPO terms and metadata."""
+
     patient_id: str
     raw_text: str
     hpo_terms: set[str] = field(default_factory=set)
     propagated_hpo_terms: set[str] = field(default_factory=set)
+    excluded_hpo_terms: set[str] = field(default_factory=set)
 
     def get_terms(self, use_propagated: bool = True) -> set[str]:
         """Return the set of HPO terms for this patient, either propagated or not."""
         return self.propagated_hpo_terms if use_propagated else self.hpo_terms
+
+    def get_excluded_terms(self) -> set[str]:
+        """Return the set of excluded HPO terms for this patient."""
+        return self.excluded_hpo_terms
