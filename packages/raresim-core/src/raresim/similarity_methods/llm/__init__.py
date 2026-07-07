@@ -1,3 +1,4 @@
+"""This module provides an interface for running LLM-based similarity methods."""
 from raresim.similarity_methods.llm.pipeline import run
 from raresim.similarity_methods.llm.config import LLM_MODEL_LIST
 

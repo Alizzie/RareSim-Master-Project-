@@ -31,7 +31,7 @@ STANDARDIZED_SHEPHERD_DIR = DATASET_DIR / "shepherd/standardized"
 STANDARDIZED_PHENOPACKETS_DIR = DATASET_DIR / "phenopackets/standardized_to_json"
 GA4GH_PHENOPACKETS_DIR = DATASET_DIR / "GA4GH_phenopackets" / "raw"
 STANDARDIZED_GA4GH_PHENOPACKETS_DIR = DATASET_DIR / "GA4GH_phenopackets" / "standardized"
-MEDICAL_CASES_DIR = DATASET_DIR / "free_text" 
+MEDICAL_CASES_DIR = DATASET_DIR / "free_text"
 EXTRACTED_MEDICAL_CASES_DIR = DATASET_DIR / "free_text" / "extracted_medical_cases"
 
 

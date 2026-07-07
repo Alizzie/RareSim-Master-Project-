@@ -1,3 +1,4 @@
+"""This module provides an interface for running set-based similarity methods."""
 from raresim.similarity_methods.set_based.pipeline import run
 from raresim.similarity_methods.set_based.config import ALL_METHODS as METHOD_NAMES
 

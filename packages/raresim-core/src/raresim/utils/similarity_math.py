@@ -26,10 +26,10 @@ def to_binary_vector(terms: TermInput) -> TermVector:
     """
     if isinstance(terms, dict):
         return terms
-    elif isinstance(terms, set):
+    if isinstance(terms, set):
         return {term: 1.0 for term in terms}
-    else:
-        raise ValueError("Input must be a set of terms or a term vector.")
+    raise ValueError("Input must be a set of terms or a term vector.")
+
 
 
 def cosine_similarity(

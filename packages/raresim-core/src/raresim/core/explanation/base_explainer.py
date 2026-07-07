@@ -91,7 +91,7 @@ def build_token_coverage_block(
     )
 
 
-def build_matched_terms(
+def build_matched_terms( # pylint: disable=too-many-arguments, too-many-positional-arguments
     patient_terms: set[str],
     disease_terms: set[str],
     hpo_labels: dict[str, str],
@@ -268,7 +268,7 @@ def build_ic_filter_block(
 # ── Assembly helper ───────────────────────────────────────────────────────────
 
 
-def build_base_explanation(
+def build_base_explanation( # pylint: disable=too-many-arguments, too-many-positional-arguments
     patient_terms: set[str],
     disease_terms: set[str],
     hpo_labels: dict[str, str],
@@ -323,7 +323,7 @@ def build_base_explanation(
     )
 
 
-def build_base_token_explanation(
+def build_base_token_explanation( # pylint: disable=too-many-arguments, too-many-positional-arguments
     patient_vec: dict[str, float],
     disease_vec: dict[str, float],
     idf: dict[str, float],

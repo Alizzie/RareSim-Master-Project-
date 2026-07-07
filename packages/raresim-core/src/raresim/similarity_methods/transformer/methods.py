@@ -15,7 +15,6 @@ import torch
 from sentence_transformers import SentenceTransformer
 from transformers import AutoModel, AutoTokenizer
 
-from raresim.types import PatientProfile
 from raresim.similarity_methods.transformer.config import (
     BATCH_SIZE,
     DESCRIPTION_CHAR_BUDGET,

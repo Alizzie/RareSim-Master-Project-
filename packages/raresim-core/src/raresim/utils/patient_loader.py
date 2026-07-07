@@ -27,7 +27,8 @@ def load_patient_with_extraction(
     Load a patient profile from a JSON file, extracting HPO terms from raw text if necessary.
 
     If the patient JSON already has hpo_terms, loads directly.
-    Otherwise runs build_patient_profile to extract HPO terms from raw_text, then constructs a PatientProfile.
+    Otherwise runs build_patient_profile to extract HPO terms 
+    from raw_text, then constructs a PatientProfile.
     """
 
     if methods is None:

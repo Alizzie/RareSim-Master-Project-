@@ -27,6 +27,7 @@ def terms_to_vector(
     vocab: list[str],
     term_to_idx: dict[str, int],
 ) -> np.ndarray:
+    """Convert a set of HPO terms to a binary vector based on the vocabulary."""
     vec = np.zeros(len(vocab), dtype=np.float32)
     for term in terms:
         if term in term_to_idx:
@@ -64,28 +65,32 @@ def corrupt_vector(
 
 
 def relu(x: np.ndarray) -> np.ndarray:
+    """ReLU activation function."""
     return np.maximum(0, x)
 
 
 def relu_grad(x: np.ndarray) -> np.ndarray:
+    """Gradient of ReLU activation function."""
     return (x > 0).astype(np.float32)
 
 
 def sigmoid(x: np.ndarray) -> np.ndarray:
+    """Sigmoid activation function."""
     return 1.0 / (1.0 + np.exp(-np.clip(x, -500, 500)))
 
 
 def sigmoid_grad(s: np.ndarray) -> np.ndarray:
+    """Gradient of sigmoid activation function."""
     return s * (1.0 - s)
 
 
-class DenoisingAutoencoder:
+class DenoisingAutoencoder: # pylint: disable=too-many-instance-attributes
     """
     Encoder uses ReLU this time
     Decoder output uses sigmoid (probabilities for BCE loss)
     """
 
-    def __init__(
+    def __init__( # pylint: disable=too-many-arguments, too-many-positional-arguments
         self,
         vocab_size: int,
         hidden_dim: int = 512,
@@ -94,6 +99,7 @@ class DenoisingAutoencoder:
         momentum: float = 0.9,
         noise_rate: float = NOISE_RATE,
     ):
+        """Initialize the denoising autoencoder with given architecture and hyperparameters."""
         self.vocab_size = vocab_size
         self.hidden_dim = hidden_dim
         self.latent_dim = latent_dim
@@ -133,6 +139,7 @@ class DenoisingAutoencoder:
         self.vb4 = np.zeros_like(self.b4)
 
     def encode(self, x: np.ndarray) -> np.ndarray:
+        """ReLU encoder, outputs latent representation."""
         h1 = relu(x @ self.W1 + self.b1)
         latent = relu(h1 @ self.W2 + self.b2)
         return latent
@@ -144,6 +151,7 @@ class DenoisingAutoencoder:
         return out
 
     def forward(self, x_corrupted: np.ndarray) -> tuple[np.ndarray, dict]:
+        """Forward pass through the autoencoder, returning output and cache for backprop."""
         h1 = relu(x_corrupted @ self.W1 + self.b1)
         z = relu(h1 @ self.W2 + self.b2)
         h3 = sigmoid(z @ self.W3 + self.b3)
@@ -151,7 +159,8 @@ class DenoisingAutoencoder:
         cache = {"x": x_corrupted, "h1": h1, "z": z, "h3": h3, "out": out}
         return out, cache
 
-    def backward(self, x_clean: np.ndarray, cache: dict) -> float:
+    def backward(self, x_clean: np.ndarray, cache: dict) -> float: # pylint: disable=too-many-locals
+        """Backward pass through the autoencoder, updating weights and returning loss."""
         x, h1, z, h3, out = (
             cache["x"],
             cache["h1"],
@@ -197,13 +206,14 @@ class DenoisingAutoencoder:
 
         return float(loss)
 
-    def train(
+    def train( # pylint: disable=too-many-locals
         self,
         vectors: np.ndarray,
         epochs: int = 50,
         batch_size: int = 64,
         print_every: int = 10,
     ) -> list[float]:
+        """Train the autoencoder on the given binary HPO vectors."""
         n = len(vectors)
         epoch_losses = []
 
@@ -230,6 +240,7 @@ class DenoisingAutoencoder:
         return epoch_losses
 
     def save(self, path: Path) -> None:
+        """Save the autoencoder model parameters to a .npz file."""
         np.savez(
             path,
             W1=self.W1,
@@ -247,6 +258,7 @@ class DenoisingAutoencoder:
 
     @classmethod
     def load(cls, path: Path) -> "DenoisingAutoencoder":
+        """Load the autoencoder model parameters from a .npz file."""
         data = np.load(path)
         model = cls(
             vocab_size=int(data["vocab_size"]),

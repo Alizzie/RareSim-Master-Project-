@@ -110,7 +110,7 @@ def build_patient_profile(
 
         propagated_hpo_terms = sorted(propagated)
 
-    except Exception as error:
+    except Exception as error: #  pylint: disable=broad-exception-caught
         print(f"[ensemble] Warning: could not compute propagated terms: {error}")
         propagated_hpo_terms = hpo_terms
 

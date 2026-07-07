@@ -9,7 +9,10 @@ HPO_PATTERN = re.compile(r"^HP:\d{7}$")
 
 
 def normalize_hpo_id(hpo_id: str) -> str | None:
-    """Normalize an HPO ID to the standard format (e.g. HP:0004322). Returns None if the ID cannot be normalized."""
+    """
+    Normalize an HPO ID to the standard format (e.g. HP:0004322). 
+    Returns None if the ID cannot be normalized.
+    """
     if not hpo_id:
         return None
 
@@ -24,7 +27,7 @@ def normalize_hpo_id(hpo_id: str) -> str | None:
     return None
 
 
-def normalize_disease_id(raw_id: object) -> str | None:
+def normalize_disease_id(raw_id: object) -> str | None:  # pylint: disable=too-many-return-statements, too-many-branches
     """Normalize a disease ID to a stable display format."""
     if raw_id is None:
         return None

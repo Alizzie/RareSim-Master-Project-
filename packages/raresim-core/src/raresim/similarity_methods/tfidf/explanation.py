@@ -153,7 +153,7 @@ def _build_norm_block(
 # ── IDF match analysis ────────────────────────────────────────────────────────
 
 
-def _build_low_idf_matches(
+def _build_low_idf_matches(  # pylint: disable=too-many-arguments, too-many-positional-arguments
     patient_vec: dict[str, float],
     disease_vec: dict[str, float],
     idf: dict[str, float],
@@ -221,7 +221,7 @@ def _contributing_hpo_terms(
 # ── Main builder ──────────────────────────────────────────────────────────────
 
 
-def build_explanation(
+def build_explanation(  # pylint: disable=too-many-arguments, too-many-positional-arguments, too-many-locals
     tfidf_mode: str,
     patient_terms: set[str],
     disease_terms: set[str],

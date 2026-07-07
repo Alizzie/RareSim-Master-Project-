@@ -65,7 +65,7 @@ def build_graph(
 # generic stuff like "Problem with nervous system"
 
 
-def _transition_probs(
+def _transition_probs( # pylint: disable=too-many-arguments, too-many-positional-arguments
     current: str,
     previous: str | None,
     neighbours: list[str],
@@ -102,7 +102,7 @@ def _transition_probs(
     return [p_ / total for p_ in probs]
 
 
-def random_walk(
+def random_walk( # pylint: disable=too-many-arguments, too-many-positional-arguments
     start: str,
     graph: dict[str, list[str]],
     ic_values: dict[str, float],
@@ -133,7 +133,7 @@ def random_walk(
     return walk
 
 
-def generate_walks(
+def generate_walks( # pylint: disable=too-many-arguments, too-many-positional-arguments
     graph: dict[str, list[str]],
     ic_values: dict[str, float],
     walk_length: int = WALK_LENGTH,
@@ -164,7 +164,7 @@ def generate_walks(
 # Step 3: Train Word2Vec on the walks
 
 
-def train_word2vec(
+def train_word2vec( # pylint: disable=too-many-arguments, too-many-positional-arguments
     walks: list[list[str]],
     embedding_dim: int = EMBEDDING_DIM,
     window_size: int = WINDOW_SIZE,

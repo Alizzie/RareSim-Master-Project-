@@ -449,7 +449,7 @@ def build_explanation_prompt(  # pylint: disable=too-many-locals
         prompt_parts.append(f"DISEASE DESCRIPTION: {disease_desc[:TEXT_PREVIEW_MAX_LENGTH]}")
 
     if disease_labels:
-        prompt_parts.append(f"DISEASE PHENOTYPES: {', '.join(disease_labels[:DISEASE_HPO_TERMS_PREVIEW_MAX_COUNT])}")
+        prompt_parts.append(f"DISEASE PHENOTYPES: {', '.join(disease_labels[:DISEASE_HPO_TERMS_PREVIEW_MAX_COUNT])}") # pylint: disable=line-too-long
 
     if candidate_score is not None:
         prompt_parts += [

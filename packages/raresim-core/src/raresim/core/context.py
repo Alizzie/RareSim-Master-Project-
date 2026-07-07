@@ -21,7 +21,7 @@ from raresim.types import PatientProfile, AppMetadata
 
 
 @dataclass
-class AppContext:
+class AppContext: # pylint: disable=too-many-instance-attributes
     """Holds shared data and metadata for the application."""
 
     disease_profiles: dict[str, dict]

@@ -10,7 +10,7 @@ from raresim.types import (
 )
 
 
-def build_run_stats(
+def build_run_stats( # pylint: disable=too-many-arguments, too-many-positional-arguments
     n_patient_terms_raw: int,
     n_patient_terms_propagated: int,
     n_patient_terms_used: int,

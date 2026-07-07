@@ -25,7 +25,7 @@ from raresim.core.explanation import (
 from raresim.similarity_methods.semantic.config import WEAK_MATCH_THRESHOLD
 
 
-def _build_semantic_summary(
+def _build_semantic_summary(  # pylint: disable=too-many-arguments, too-many-positional-arguments
     patient_terms: set[str],
     disease_terms: set[str],
     p2d_avg: float,
