@@ -20,6 +20,7 @@ from raresim.core.explanation import (
     build_coverage_block,
     ExplanationBlock,
 )
+from raresim.similarity_methods.set_based.config import METHODS_REQUIRING_EXCLUSIONS
 
 # ── Summary builder ────────────────────────────────────────────────
 
@@ -92,11 +93,45 @@ def _cosine_components(pat: set[str], disease: set[str]) -> dict:
     }
 
 
+def _jaccard_penalized_components(
+    pat: set[str],
+    disease: set[str],
+    pat_excluded: set[str] | None = None,
+    disease_excluded: set[str] | None = None,
+    penalty_weight: float = 0.5,
+) -> dict:
+    pat_excluded = pat_excluded or set()
+    disease_excluded = disease_excluded or set()
+
+    intersection = len(pat & disease)
+    union = len(pat | disease)
+
+    patient_contradicts_disease = pat_excluded & disease
+    disease_contradicts_patient = disease_excluded & pat
+    contradictions = patient_contradicts_disease | disease_contradicts_patient
+
+    penalty_applied = (
+        penalty_weight * (len(contradictions) / union) if union else 0.0
+    )
+
+    return {
+        "formula": "jaccard_with_negative_penalty",
+        "intersection_size": intersection,
+        "union_size": union,
+        "penalty_weight": penalty_weight,
+        "n_contradictions": len(contradictions),
+        "penalty_applied": round(penalty_applied, 4),
+        "patient_excluded_matched_disease": sorted(patient_contradicts_disease),
+        "disease_excluded_matched_patient": sorted(disease_contradicts_patient),
+    }
+
+
 _COMPONENT_BUILDERS = {
     "set_jaccard": _jaccard_components,
     "set_dice": _dice_components,
     "set_overlap": _overlap_components,
     "set_cosine": _cosine_components,
+    "set_jaccard_penalized": _jaccard_penalized_components,
 }
 
 
@@ -129,7 +164,7 @@ def _ic_quality_block(
 # ── Main builder ──────────────────────────────────────────────────────────────
 
 
-def build_explanation(
+def build_explanation(  # pylint: disable=too-many-arguments, too-many-positional-arguments
     method_name: str,
     patient_terms: set[str],
     disease_terms: set[str],
@@ -137,6 +172,8 @@ def build_explanation(
     hpo_labels: dict[str, str],
     ic_values: dict[str, float],
     patient_raw_terms: set[str] | None = None,
+    patient_excluded_terms: set[str] | None = None,
+    disease_excluded_terms: set[str] | None = None,
 ) -> ExplanationBlock:
     """
     Build the complete ExplanationBlock for one set-based result.
@@ -157,7 +194,12 @@ def build_explanation(
     """
     # Method-specific: formula components
     component_fn = _COMPONENT_BUILDERS.get(method_name, _jaccard_components)
-    formula_components = component_fn(patient_terms, disease_terms)
+    if method_name in METHODS_REQUIRING_EXCLUSIONS:
+        formula_components = component_fn(
+            patient_terms, disease_terms, patient_excluded_terms, disease_excluded_terms
+        )
+    else:
+        formula_components = component_fn(patient_terms, disease_terms)
 
     # Method-specific: IC quality
     ic_weighted_score, top_ic_matched = _ic_quality_block(

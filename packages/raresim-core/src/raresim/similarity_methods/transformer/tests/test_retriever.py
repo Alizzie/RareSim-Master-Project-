@@ -266,22 +266,23 @@ def test_get_patient_embedding_uses_in_memory_cache(
 def test_run_stats_counts_patient_and_disease_terms(
     monkeypatch: MonkeyPatch,
 ) -> None:
-    """Test transformer run statistics from rankings and retriever state."""
+    """Test transformer run statistics from retriever model resources."""
     retriever = _make_retriever(monkeypatch)
+    _install_fake_model_registry(retriever)
 
     rankings = [
         SimilarityResult(
             disease_id="ORPHA:1",
             label="Disease A",
             score=1.0,
-            method_name=f"transformer_{MODEL_NAME}",
+            method_name=MODEL_NAME,
             rank=1,
         ),
         SimilarityResult(
             disease_id="ORPHA:2",
             label="Disease B",
             score=0.5,
-            method_name=f"transformer_{MODEL_NAME}",
+            method_name=MODEL_NAME,
             rank=2,
         ),
     ]
@@ -294,6 +295,7 @@ def test_run_stats_counts_patient_and_disease_terms(
 
     assert stats.n_patient_terms_raw == 1
     assert stats.n_patient_terms_propagated == 0
-    assert stats.n_patient_terms_used >= 1
-    assert stats.n_diseases_scored == 2
+    assert stats.n_patient_terms_used == 1
+    assert stats.n_diseases_scored == 3
+    assert stats.n_diseases_skipped == 0
     assert stats.computation_time_seconds == 1.25

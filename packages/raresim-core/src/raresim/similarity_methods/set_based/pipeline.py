@@ -22,6 +22,8 @@ from raresim.similarity_methods.set_based.config import (
     METHOD_MAP,
     PIPELINE_NAME,
     SETBASED_DIR,
+    METHODS_REQUIRING_EXCLUSIONS,
+    NEGATIVE_PENALTY_WEIGHT
 )
 from raresim.similarity_methods.set_based.explanation import build_explanation
 from raresim.types import (
@@ -42,6 +44,7 @@ def run(  # pylint: disable=too-many-locals
     """Run the set-based similarity pipeline for the given patient."""
     patient_raw_terms = set(patient.hpo_terms)
     patient_terms = set(patient.get_terms(config.use_propagated_terms))
+    patient_excluded_terms = patient.get_excluded_terms()
 
     all_results: dict[str, MethodResults] = {}
 
@@ -52,15 +55,26 @@ def run(  # pylint: disable=too-many-locals
         results = []
         n_skipped = 0
         method_timer = Timer(method_name).start()
+        needs_exclusions = method_name in METHODS_REQUIRING_EXCLUSIONS
 
         for disease_id, profile in ctx.disease_profiles.items():
             disease_terms = set(profile.get(config.terms_key, []))
+            disease_excluded_terms = set(profile.get("negative_hpo_terms", []))
 
             if not disease_terms:
                 n_skipped += 1
                 continue
 
-            score = similarity_fn(patient_terms, disease_terms)
+            if needs_exclusions:
+                score = similarity_fn(
+                    patient_terms,
+                    disease_terms,
+                    patient_excluded_terms,
+                    disease_excluded_terms,
+                    penalty_weight=NEGATIVE_PENALTY_WEIGHT,
+                )
+            else:
+                score = similarity_fn(patient_terms, disease_terms)
 
             explanation = build_explanation(
                 method_name=method_name,
@@ -70,6 +84,8 @@ def run(  # pylint: disable=too-many-locals
                 hpo_labels=ctx.hpo_labels,
                 ic_values=ctx.ic_values,
                 patient_raw_terms=patient_raw_terms,
+                patient_excluded_terms=patient_excluded_terms if needs_exclusions else None,
+                disease_excluded_terms=disease_excluded_terms if needs_exclusions else None,
             )
 
             category_metadata = build_category_metadata(
