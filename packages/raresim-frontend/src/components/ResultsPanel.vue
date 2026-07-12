@@ -144,23 +144,23 @@
             </div>
 
             <!-- Coverage stats -->
-            <div v-if="r.explanation?.coverage" class="detail-section">
+                        <div v-if="r.explanation?.coverage" class="detail-section">
               <div class="detail-label">Coverage</div>
               <div class="coverage-grid">
                 <div class="coverage-item">
-                  <span class="coverage-value">{{ pct(r.explanation.coverage.patient_hpo_coverage) }}</span>
+                  <span class="coverage-value">{{ pct(r.explanation.coverage.patient_hpo_coverage ?? r.explanation.coverage.patient_token_coverage) }}</span>
                   <span class="coverage-key">patient terms matched</span>
                 </div>
                 <div class="coverage-item">
-                  <span class="coverage-value">{{ pct(r.explanation.coverage.disease_hpo_coverage) }}</span>
+                  <span class="coverage-value">{{ pct(r.explanation.coverage.disease_hpo_coverage ?? r.explanation.coverage.disease_token_coverage) }}</span>
                   <span class="coverage-key">disease terms matched</span>
                 </div>
                 <div class="coverage-item">
-                  <span class="coverage-value">{{ r.explanation.coverage.n_matched_terms }}</span>
+                  <span class="coverage-value">{{ r.explanation.coverage.n_matched_terms ?? r.explanation.coverage.n_matched_tokens }}</span>
                   <span class="coverage-key">terms matched</span>
                 </div>
                 <div class="coverage-item">
-                  <span class="coverage-value">{{ r.explanation.coverage.n_unmatched_patient_terms }}</span>
+                  <span class="coverage-value">{{ r.explanation.coverage.n_unmatched_patient_terms ?? r.explanation.coverage.n_unmatched_patient_tokens }}</span>
                   <span class="coverage-key">unmatched (patient)</span>
                 </div>
               </div>
@@ -172,12 +172,13 @@
               <div class="term-list">
                 <div
                   v-for="t in r.explanation.matched_terms.slice(0, 8)"
-                  :key="t.id"
+                  :key="t.id || t.token"
                   class="term-row term-row-match"
                 >
-                  <span class="term-label">{{ t.label }}</span>
-                  <span class="term-id">{{ t.id }}</span>
+                  <span class="term-label">{{ t.label || t.token }}</span>
+                  <span v-if="t.id" class="term-id">{{ t.id }}</span>
                   <span v-if="t.ic !== undefined" class="term-ic">IC {{ t.ic.toFixed(2) }}</span>
+                  <span v-else-if="t.idf_weight !== undefined" class="term-ic">IDF {{ t.idf_weight.toFixed(2) }}</span>
                 </div>
               </div>
             </div>
@@ -188,12 +189,13 @@
               <div class="term-list">
                 <div
                   v-for="t in r.explanation.unmatched_patient_terms.slice(0, 8)"
-                  :key="t.id"
+                  :key="t.id || t.token"
                   class="term-row term-row-unmatch"
                 >
-                  <span class="term-label">{{ t.label }}</span>
-                  <span class="term-id">{{ t.id }}</span>
+                  <span class="term-label">{{ t.label || t.token }}</span>
+                  <span v-if="t.id" class="term-id">{{ t.id }}</span>
                   <span v-if="t.ic !== undefined" class="term-ic">IC {{ t.ic.toFixed(2) }}</span>
+                  <span v-else-if="t.idf_weight !== undefined" class="term-ic">IDF {{ t.idf_weight.toFixed(2) }}</span>
                 </div>
               </div>
             </div>
