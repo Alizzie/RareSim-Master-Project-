@@ -1,8 +1,8 @@
 # DX29 Phrank
 
-DX29 Phrank uses the same local Docker container as [DX29 Search](Validation_DX29_Search) but queries the `/api/v1/Diagnosis/phrank` endpoint, which implements the [Phrank](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6823342/) phenotype ranking algorithm instead of the Dx29 scoring algorithm.
+DX29 Phrank uses the same local Docker container as [DX29 Search](./dx29-search) but queries the `/api/v1/Diagnosis/phrank` endpoint, which implements the [Phrank](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6823342/) phenotype ranking algorithm instead of the Dx29 scoring algorithm.
 
-**Complete the setup steps 1–4 from [DX29 Search](Validation_DX29_Search) first** — the same Docker container serves both endpoints.
+**Complete the setup steps 1–4 from [DX29 Search](./dx29-search) first** — the same Docker container serves both endpoints.
 
 ---
 
@@ -49,7 +49,7 @@ Both runners use the same Docker container and share the same setup.
 
 ## Output Format
 
-Results are written to `dx29_phrank_benchmarks/<dataset>_summary.tsv` with the same columns as [DX29 Search](Validation_DX29_Search#output-format).
+Results are written to `dx29_phrank_benchmarks/<dataset>_summary.tsv` with the same columns as [DX29 Search](./dx29-search#output-format).
 
 ---
 

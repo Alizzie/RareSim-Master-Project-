@@ -7,7 +7,7 @@
 - No clear place for shared behavior
 
 
-![images/current_pipeline.png](images/current_pipeline.png)
+![images/current_pipeline.png](../images/current_pipeline.png)
 
 ```
 RareSim-Master-Project/

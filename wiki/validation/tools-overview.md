@@ -9,11 +9,11 @@ Each tool has its own runner script and produces standardised output, making it 
 
 | Tool | Script |
 |------|--------|
-| [LIRICAL](Validation_LIRICAL) | `run_lirical.py` | 
-| [PhenoBrain](Validation_PhenoBrain) | `run_phenobrain.py` | 
-| [Phenomiser](Validation_Phenomiser) | `run_phenomiser.py` | 
-| [DX29 Search](Validation_DX29_Search) | `run_dx29_search.py` | 
-| [DX29 Phrank](Validation_DX29_Phrank) | `run_dx29_phrank.py` | 
+| [LIRICAL](./lirical) | `run_lirical.py` | 
+| [PhenoBrain](./phenobrain) | `run_phenobrain.py` | 
+| [Phenomiser](./phenomiser) | `run_phenomiser.py` | 
+| [DX29 Search](./dx29-search) | `run_dx29_search.py` | 
+| [DX29 Phrank](./dx29-phrank) | `run_dx29_phrank.py` | 
 
 ---
 
