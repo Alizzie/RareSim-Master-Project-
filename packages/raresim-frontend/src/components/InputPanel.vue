@@ -160,13 +160,14 @@
         <label
           v-for="m in availableMethods"
           :key="m.id"
-          :class="['method-item', { checked: selectedMethods.has(m.id) }]"
+          :class="['method-item', { checked: selectedMethods.has(m.id), disabled: isMethodDisabled(m.id) }]"
+          @click.prevent="!isMethodDisabled(m.id) && toggleMethod(m.id)"
         >
           <input
             type="checkbox"
             :value="m.id"
             :checked="selectedMethods.has(m.id)"
-            @change="toggleMethod(m.id)"
+            :disabled="isMethodDisabled(m.id)"
           />
           <div class="check-box">
             <span v-if="selectedMethods.has(m.id)" class="check-icon">✓</span>
@@ -214,7 +215,7 @@
 </template>
 
 <script setup>
-import { ref, computed, reactive } from 'vue'
+import { ref, computed, reactive, watch } from 'vue'
 import { extractTerms } from '../api/index.js'
 import { searchHpo } from '../api/index.js'
 
@@ -272,6 +273,24 @@ const availableMethods = [
   { id: 'hpo2vec_plus',                label: 'HPO2Vec+',     badge: 'emb' },
   { id: 'denoising_autoencoder', label: 'Autoencoder', badge: 'nn', note: 'Works best with 10+ HPO terms' },
 ]
+
+const TEXT_ONLY_METHODS = new Set([]) 
+const HPO_ONLY_METHODS = new Set([
+  'semantic_resnik_bma', 'semantic_lin_bma', 'semantic_jiang_conrath_bma',
+  'set_jaccard', 'set_dice', 'set_cosine', 'set_overlap',
+  'hpo2vec_plus', 'denoising_autoencoder'
+])
+
+function isMethodDisabled(id) {
+  if (mode.value === 'text' && HPO_ONLY_METHODS.has(id)) return true
+  return false
+}
+
+watch(mode, (newMode) => {
+  if (newMode === 'text') {
+    HPO_ONLY_METHODS.forEach(id => selectedMethods.delete(id))
+  }
+})
 
 // ── computed ───────────────────────────────────────────────────────────────
 const hasHpoInput = computed(() =>
@@ -847,6 +866,12 @@ function buildPayload() {
   color: var(--text-tertiary);
   width: 100%;
   margin-top: 2px;
+}
+
+.method-item.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 </style>
 

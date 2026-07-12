@@ -36,6 +36,7 @@ from raresim.utils.hpo_utils import get_ancestors_inclusive, preprocess_ancestor
 from raresim.utils.io import load_json, save_json
 from raresim.utils.paths import HPO_ANCESTORS_PATH, HPO_LABELS_PATH, WEBAPP_DIR
 from raresim.utils.patient_loader import load_patient_with_extraction
+from raresim.utils.paths import ARTIFACTS_DIR
 
 # ── App setup ─────────────────────────────────────────────────────────────────
 app = FastAPI(title="RareSim API", version="0.1.0")
@@ -344,6 +345,8 @@ def _result_to_dict(result: Any) -> dict[str, Any]:
         "explanation": getattr(result, "explanation", {}),
     }
 
+ic_values = load_json(ARTIFACTS_DIR / "information_content.json")
+MAX_IC = max(ic_values.values()) if ic_values else 1.0
 
 def _flatten_results(all_results: dict[str, Any]) -> list[dict[str, Any]]:
     """Flatten MethodResults objects into one frontend result list."""
@@ -354,6 +357,15 @@ def _flatten_results(all_results: dict[str, Any]) -> list[dict[str, Any]]:
             flat_results.append(_result_to_dict(result))
 
     flat_results.sort(key=lambda row: row["score"], reverse=True)
+
+    resnik_methods = {"semantic_resnik_bma"}
+    method_max: dict[str, float] = {}
+    for r in flat_results:
+        if r["method_name"] in resnik_methods:
+            method_max[r["method_name"]] = max(method_max.get(r["method_name"], 0.0), r["score"])
+    for r in flat_results:
+        if r["method_name"] in resnik_methods and method_max.get(r["method_name"], 0) > 0:
+            r["score"] = r["score"] / method_max[r["method_name"]]
     return flat_results
 
 

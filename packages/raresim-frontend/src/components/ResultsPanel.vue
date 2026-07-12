@@ -532,13 +532,19 @@ const methodsInResults = computed(() => {
 })
 
 const filteredResults = computed(() => {
-  if (activeMethod.value === 'all') return props.results
+  if (activeMethod.value === 'all') {
+    return [...props.results]
+      .sort((a, b) => b.score - a.score)
+      .map((r, i) => ({ ...r, rank: i + 1 }))
+  }
   if (activeMethod.value === 'top10') {
     return [...props.results]
       .sort((a, b) => b.score - a.score)
       .slice(0, 10)
+      .map((r, i) => ({ ...r, rank: i + 1 }))
   }
-  return props.results.filter(r => r.method_name === activeMethod.value)
+  return props.results
+    .filter(r => r.method_name === activeMethod.value)
 })
 
 const topScore = computed(() => {
