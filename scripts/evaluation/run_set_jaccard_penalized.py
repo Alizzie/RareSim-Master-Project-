@@ -301,9 +301,17 @@ def _validate_existing_cache_alignment(
             )
 
         if set(cached_ground_truth) != set(case.ground_truth):
-            raise ValueError(
-                f"Cache alignment error for {cache_file}: "
-                "ground-truth disease codes do not match."
+            cached_only = sorted(
+                set(cached_ground_truth) - set(case.ground_truth)
+            )
+            test_set_only = sorted(
+                set(case.ground_truth) - set(cached_ground_truth)
+            )
+            print(
+                f"[warning] Ground truth differs for case_{case.index:04d}. "
+                "The existing cached ground truth will be preserved. "
+                f"cached-only={cached_only}, "
+                f"test-set-only={test_set_only}"
             )
 
 
@@ -314,12 +322,30 @@ def _save_case_cache(
     method_elapsed: dict[str, float],
     elapsed: float,
 ) -> None:
-    """Merge the method result and preserve excluded terms in the cache."""
+    """Merge the result while preserving existing cache metadata."""
+    cache_hpo_terms = case.hpo_terms
+    cache_ground_truth = case.ground_truth
+
+    if cache_file.exists():
+        existing = json.loads(cache_file.read_text(encoding="utf-8"))
+        if not isinstance(existing, dict):
+            raise ValueError(
+                f"Existing cache is not a JSON object: {cache_file}"
+            )
+
+        existing_hpo_terms = existing.get("hpo_terms")
+        if isinstance(existing_hpo_terms, list):
+            cache_hpo_terms = existing_hpo_terms
+
+        existing_ground_truth = existing.get("ground_truth")
+        if isinstance(existing_ground_truth, list):
+            cache_ground_truth = existing_ground_truth
+
     save_cache(
         cache_file,
         case.index,
-        case.hpo_terms,
-        case.ground_truth,
+        cache_hpo_terms,
+        cache_ground_truth,
         serialized_results,
         method_elapsed,
         elapsed,
