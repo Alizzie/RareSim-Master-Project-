@@ -112,29 +112,32 @@ Create:
 scripts/evaluation/run_<method_name>.py
 ```
 
-Use existing runners as templates.
-
-For CPU-style HPO methods:
+Use an existing runner as a template, matching the closest category:
 
 ```text
-run_set_based.py
-run_semantic.py
-run_tfidf.py
+HPO-term methods (CPU-style, one method run at a time):
+    run_set_based.py
+    run_semantic.py
+    run_tfidf.py
+
+HPO-term embedding / model methods:
+    run_hpo2vec.py
+    run_autoencoder.py
+    run_transformer.py
+
+HPO-term generative model methods:
+    run_llm.py
+
+Raw clinical text methods (no HPO terms, patient built from raw_text):
+    run_tfidf_text.py
+    run_transformer_text.py
+    run_llm_text.py
+
+Negative-aware methods (HPO terms plus explicitly excluded terms):
+    run_set_jaccard_penalized.py
 ```
 
-For embedding/model methods:
-
-```text
-run_hpo2vec.py
-run_autoencoder.py
-run_transformer.py
-```
-
-For generative model methods:
-
-```text
-run_llm.py
-```
+See [batch-runners-and-shared-utilities.md](batch-runners-and-shared-utilities.md) for what each of these actually does. If the new method needs raw clinical text or excluded/negated terms as input, base the runner on the matching category above rather than the plain HPO-term template, since the test-set loading and patient-construction logic differ (see [dataset-format.md](dataset-format.md)).
 
 ---
 
@@ -148,6 +151,7 @@ from scripts.evaluation._batch_utils import (
     add_common_args,
     build_patient,
     cache_path_for,
+    load_cache,
     load_test_cases,
     methods_already_cached,
     print_case,
@@ -159,6 +163,9 @@ from scripts.evaluation._batch_utils import (
     serialize_results,
 )
 ```
+
+Note: `load_test_cases` and `build_patient` are only appropriate for the standard HPO-term format. If the new method consumes raw text or a negative-aware format, write a small local loader instead (see how `run_tfidf_text.py` and `run_set_jaccard_penalized.py` do it) — `load_cache` is useful there for validating that a new run's ground truth/raw text matches whatever is already cached for that case.
+
 ---
 
 ## Step 4: Define a stable method name
@@ -184,7 +191,7 @@ Do not rename it after generating caches unless old caches are regenerated or mi
 
 ## Step 5: Load test cases and shared context
 
-Typical setup:
+Typical setup for the standard HPO-term format:
 
 ```python
 cases = load_test_cases(test_set_path)
@@ -204,11 +211,23 @@ Build the patient profile with the shared helper:
 
 ```python
 patient = build_patient(index, hpo_terms, ancestor_sets)
+```
 
-The evaluation patient ID should follow:
+The evaluation patient ID follows:
 
 ```python
 f"eval_case_{index:04d}"
+```
+
+For a raw-text method, build the `PatientProfile` directly instead, with `raw_text` set and empty `hpo_terms` / `propagated_hpo_terms`:
+
+```python
+patient = PatientProfile(
+    patient_id=case_id,
+    raw_text=raw_text,
+    hpo_terms=set(),
+    propagated_hpo_terms=set(),
+)
 ```
 
 ---
@@ -259,7 +278,7 @@ serialize_results(results)
 
 if the output is grouped by method.
 
-This merges the new method results with existing results in the same case file.
+This merges the new method results with existing results in the same case file (see [cache-format.md](cache-format.md) for the exact merge behavior).
 
 ---
 
@@ -291,7 +310,7 @@ from raresim.types.schemas import PatientProfile
 from raresim.utils.hpo_utils import preprocess_ancestor_sets
 from raresim.utils.timer import Timer
 
-from _batch_utils import (
+from scripts.evaluation._batch_utils import (
     EVALUATION_DIR,
     add_common_args,
     build_patient,
@@ -429,6 +448,8 @@ if __name__ == "__main__":
     main()
 ```
 
+This template matches the import path and structure used by every runner in the codebase (`scripts.evaluation._batch_utils`, not a bare `_batch_utils` import).
+
 ---
 
 ## New method checklist
@@ -501,7 +522,7 @@ ordo_id
 
 ### Missing timing
 
-Metrics still work, but average runtime will be unavailable.
+Metrics still work, but average runtime will be unavailable for that method.
 
 ### Changing result schema
 
@@ -515,3 +536,7 @@ Prefer the standard format:
   "rank": 1
 }
 ```
+
+### Reusing an existing dataset's cache by accident
+
+If the new runner writes into a `--cache-name` that already has cached HPO terms or ground truth for a case (as the raw-text and negative-aware runners do), a mismatch between what's already cached and what the new test set contains should raise an error, not silently overwrite. Follow the alignment-check pattern in `run_tfidf_text.py` / `run_set_jaccard_penalized.py` if the new method also targets an existing dataset's cache.

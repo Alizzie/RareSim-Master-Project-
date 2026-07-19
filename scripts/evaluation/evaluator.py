@@ -226,16 +226,25 @@ def find_all_matched_ranks(
 
 
 def load_cache_dir(cache_dir: Path) -> list[dict]:
-    """Load all case_*.json files from cache_dir, sorted by index."""
+    """Load all case_*.json files from cache_dir, sorted numerically by index."""
     if not cache_dir.exists():
         return []
+
+    def case_file_index(path: Path) -> int:
+        return int(path.stem.removeprefix("case_"))
+
     cases = []
-    for f in sorted(cache_dir.glob("case_*.json")):
+
+    for file_path in sorted(
+        cache_dir.glob("case_*.json"),
+        key=case_file_index,
+    ):
         try:
-            with f.open(encoding="utf-8") as fp:
-                cases.append(json.load(fp))
-        except Exception as e:
-            print(f"[warning] Could not load {f.name}: {e}")
+            with file_path.open(encoding="utf-8") as file:
+                cases.append(json.load(file))
+        except Exception as exc:
+            print(f"[warning] Could not load {file_path.name}: {exc}")
+
     return cases
 
 
