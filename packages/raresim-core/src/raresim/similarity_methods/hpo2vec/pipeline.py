@@ -50,6 +50,7 @@ from raresim.types import (
 )
 from raresim.utils.timer import Timer
 from raresim.utils.similarity_math import cosine_similarity_dense
+from raresim.utils.disease_profile_utils import disease_exclusion_inputs
 
 
 def _model_cache_path(terms_key: str) -> Path:
@@ -149,6 +150,9 @@ def run(  # pylint: disable=too-many-locals
         n_skipped = 0
 
         for disease_id, profile in ctx.disease_profiles.items():
+            disease_raw_terms, excluded_disease_terms = disease_exclusion_inputs(
+                profile
+            )
             disease_terms = set(profile.get(config.terms_key, []))
 
             if not disease_terms:
@@ -185,6 +189,8 @@ def run(  # pylint: disable=too-many-locals
                         score=score,
                         patient_terms=patient_terms,
                         disease_terms=disease_terms,
+                        disease_terms_raw=disease_raw_terms,
+                        excluded_disease_terms=excluded_disease_terms,
                         hpo_labels=ctx.hpo_labels,
                         ic_values=ctx.ic_values,
                         patient=patient,

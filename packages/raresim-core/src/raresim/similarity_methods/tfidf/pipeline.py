@@ -50,6 +50,7 @@ from raresim.types import (
     PipelineConfig,
     PatientProfile,
 )
+from raresim.utils.disease_profile_utils import disease_exclusion_inputs
 from raresim.utils.hpo_utils import filter_terms_by_ic
 from raresim.utils.similarity_math import cosine_similarity
 from raresim.utils.timer import Timer
@@ -132,6 +133,7 @@ def _run_hpo_mode(  # pylint: disable=too-many-locals
 
     for disease_id, profile in ctx.disease_profiles.items():
         disease_terms = set(profile.get(config.terms_key, []))
+        disease_raw_terms, excluded_disease_terms = disease_exclusion_inputs(profile)
 
         if not disease_terms:
             n_skipped += 1
@@ -151,6 +153,8 @@ def _run_hpo_mode(  # pylint: disable=too-many-locals
             hpo_labels=ctx.hpo_labels,
             ic_values=ctx.ic_values,
             patient=patient,
+            disease_terms_raw=disease_raw_terms,
+            excluded_disease_terms=excluded_disease_terms,
         )
 
         results.append(

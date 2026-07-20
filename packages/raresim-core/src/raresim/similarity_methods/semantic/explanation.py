@@ -206,6 +206,8 @@ def build_explanation(  # pylint: disable=too-many-arguments, too-many-positiona
     hpo_labels: dict[str, str],
     ic_values: dict[str, float],
     ic_threshold: float | None,
+    excluded_disease_terms: set[str],
+    disease_terms_raw: set[str],
     patient: PatientProfile,
 ) -> ExplanationBlock:
     """
@@ -280,6 +282,8 @@ def build_explanation(  # pylint: disable=too-many-arguments, too-many-positiona
         summary=summary,
         patient_raw_terms=set(patient.hpo_terms),
         excluded_patient_terms=patient.excluded_hpo_terms,
+        excluded_disease_terms=excluded_disease_terms,
+        disease_raw_terms=disease_terms_raw,
         match_scores=match_scores,
         method_specific=method_specific,
         diagnostics={

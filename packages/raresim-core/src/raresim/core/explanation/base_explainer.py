@@ -53,6 +53,26 @@ def build_coverage_block(
     )
 
 
+def build_exclusion_conflict_block(
+    patient_terms_raw: set[str],
+    patient_excluded: set[str],
+    disease_terms_raw: set[str],
+    disease_excluded: set[str],
+) -> dict:
+    """
+    Descriptive exclusion conflicts between a patient and a disease.
+    """
+
+    patient_excludes = patient_excluded & disease_terms_raw
+    disease_excludes = disease_excluded & patient_terms_raw
+
+    return {
+        "n_conflicts": len(patient_excludes) + len(disease_excludes),
+        "patient_excluded_but_disease_asserts": list(patient_excludes),
+        "disease_excluded_but_patient_has": list(disease_excludes),
+    }
+
+
 def build_token_coverage_block(
     patient_vec: dict[str, float],
     disease_vec: dict[str, float],
@@ -91,7 +111,7 @@ def build_token_coverage_block(
     )
 
 
-def build_matched_terms( # pylint: disable=too-many-arguments, too-many-positional-arguments
+def build_matched_terms(  # pylint: disable=too-many-arguments, too-many-positional-arguments
     patient_terms: set[str],
     disease_terms: set[str],
     hpo_labels: dict[str, str],
@@ -322,14 +342,16 @@ def build_ic_filter_block(
 # ── Assembly helper ───────────────────────────────────────────────────────────
 
 
-def build_base_explanation( # pylint: disable=too-many-arguments, too-many-positional-arguments
+def build_base_explanation(  # pylint: disable=too-many-arguments, too-many-positional-arguments
     patient_terms: set[str],
     disease_terms: set[str],
     hpo_labels: dict[str, str],
     ic_values: dict[str, float],
     summary: str,
     excluded_patient_terms: set[str],
+    excluded_disease_terms: set[str],
     patient_raw_terms: set[str] | None = None,
+    disease_raw_terms: set[str] | None = None,
     match_scores: dict[str, float] | None = None,
     method_specific: dict | None = None,
     diagnostics: dict | None = None,
@@ -370,6 +392,12 @@ def build_base_explanation( # pylint: disable=too-many-arguments, too-many-posi
     excluded = build_excluded_terms(
         excluded_patient_terms or set(), disease_terms, hpo_labels, ic_values
     )
+    exclusion_conflicts = build_exclusion_conflict_block(
+        patient_terms_raw=patient_raw_terms or patient_terms,
+        patient_excluded=excluded_patient_terms,
+        disease_terms_raw=disease_raw_terms or disease_terms,
+        disease_excluded=excluded_disease_terms,
+    )
 
     return ExplanationBlock(
         summary=summary,
@@ -377,17 +405,17 @@ def build_base_explanation( # pylint: disable=too-many-arguments, too-many-posi
         matched_terms=matched,
         unmatched_patient_terms=unmatched,
         excluded_terms=excluded,
+        exclusion_conflicts=exclusion_conflicts,
         method_specific=method_specific or {},
         diagnostics=diagnostics or {},
     )
 
 
-def build_base_token_explanation( # pylint: disable=too-many-arguments, too-many-positional-arguments
+def build_base_token_explanation(  # pylint: disable=too-many-arguments, too-many-positional-arguments
     patient_vec: dict[str, float],
     disease_vec: dict[str, float],
     idf: dict[str, float],
     summary: str,
-    excluded_patient_terms: dict[str, float] | None = None,
     method_specific: dict | None = None,
     diagnostics: dict | None = None,
     sparse_threshold: int = 10,
@@ -419,14 +447,19 @@ def build_base_token_explanation( # pylint: disable=too-many-arguments, too-man
     )
     matched = build_matched_tokens(patient_vec, disease_vec, idf)
     unmatched = build_unmatched_tokens(patient_vec, disease_vec, idf)
-    excluded = build_excluded_tokens(excluded_patient_terms or {}, disease_vec, idf)
+    exclusion_conflicts = {
+        "n_conflicts": 0,
+        "patient_excluded_but_disease_asserts": [],
+        "disease_excluded_but_patient_has": [],
+    }
 
     return ExplanationBlock(
         summary=summary,
         coverage=coverage,
         matched_terms=matched,
         unmatched_patient_terms=unmatched,
-        excluded_terms=excluded,
+        excluded_terms=[],
+        exclusion_conflicts=exclusion_conflicts,
         method_specific=method_specific or {},
         diagnostics=diagnostics or {},
     )

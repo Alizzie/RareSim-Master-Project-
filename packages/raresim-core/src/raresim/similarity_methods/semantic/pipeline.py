@@ -33,6 +33,7 @@ from raresim.utils.hpo_utils import (
     filter_terms_by_ic,
     preprocess_ancestor_sets,
 )
+from raresim.utils.disease_profile_utils import disease_exclusion_inputs
 from raresim.utils.timer import Timer
 
 
@@ -66,6 +67,7 @@ def _run_bma_method(  # pylint: disable=too-many-arguments,too-many-locals,too-m
             ctx.ic_values,
             config.ic_threshold,
         )
+        disease_raw_terms, disease_excluded_terms = disease_exclusion_inputs(profile)
 
         if not disease_terms:
             skipped += 1
@@ -91,6 +93,8 @@ def _run_bma_method(  # pylint: disable=too-many-arguments,too-many-locals,too-m
             method_name=method_name,
             patient_terms=patient_terms,
             disease_terms=disease_terms,
+            disease_terms_raw=disease_raw_terms,
+            excluded_disease_terms=disease_excluded_terms,
             score=score,
             p2d_avg=p2d_avg,
             d2p_avg=d2p_avg,

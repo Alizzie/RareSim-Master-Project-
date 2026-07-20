@@ -41,6 +41,7 @@ from raresim.similarity_methods.autoencoder.methods import (
 from raresim.similarity_methods.autoencoder.explanation import build_explanation
 from raresim.utils.io import save_json, load_json
 from raresim.utils.timer import Timer
+from raresim.utils.disease_profile_utils import disease_exclusion_inputs
 
 
 from raresim.similarity_methods.autoencoder.config import (
@@ -186,6 +187,7 @@ def run(  # pylint: disable=too-many-locals
     n_skipped = 0
 
     for disease_id, profile in ctx.disease_profiles.items():
+        disease_raw_terms, disease_excluded_terms = disease_exclusion_inputs(profile)
         disease_terms = set(profile.get(config.terms_key, []))
 
         if not disease_terms:
@@ -221,6 +223,8 @@ def run(  # pylint: disable=too-many-locals
                     hpo_labels=ctx.hpo_labels,
                     ic_values=ctx.ic_values,
                     patient=patient,
+                    disease_terms_raw=disease_raw_terms,
+                    excluded_disease_terms=disease_excluded_terms,
                 ),
             )
         )

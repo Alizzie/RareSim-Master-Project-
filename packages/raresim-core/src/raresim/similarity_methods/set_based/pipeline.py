@@ -33,6 +33,7 @@ from raresim.types import (
     PatientProfile,
 )
 from raresim.utils.timer import Timer
+from raresim.utils.disease_profile_utils import disease_exclusion_inputs
 
 
 def run(  # pylint: disable=too-many-locals
@@ -58,7 +59,9 @@ def run(  # pylint: disable=too-many-locals
 
         for disease_id, profile in ctx.disease_profiles.items():
             disease_terms = set(profile.get(config.terms_key, []))
-            disease_excluded_terms = set(profile.get("negative_hpo_terms", []))
+            disease_raw_terms, disease_excluded_terms = disease_exclusion_inputs(
+                profile
+            )
 
             if not disease_terms:
                 n_skipped += 1
@@ -79,6 +82,8 @@ def run(  # pylint: disable=too-many-locals
                 method_name=method_name,
                 patient_terms=patient_terms,
                 disease_terms=disease_terms,
+                disease_excluded_terms=disease_excluded_terms,
+                disease_raw_terms=disease_raw_terms,
                 score=score,
                 hpo_labels=ctx.hpo_labels,
                 ic_values=ctx.ic_values,

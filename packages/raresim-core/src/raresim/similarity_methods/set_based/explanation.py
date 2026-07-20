@@ -118,10 +118,7 @@ def _jaccard_penalized_components(
         "intersection_size": intersection,
         "union_size": union,
         "penalty_weight": penalty_weight,
-        "n_contradictions": len(contradictions),
         "penalty_applied": round(penalty_applied, 4),
-        "patient_excluded_matched_disease": sorted(patient_contradicts_disease),
-        "disease_excluded_matched_patient": sorted(disease_contradicts_patient),
     }
 
 
@@ -167,6 +164,8 @@ def build_explanation(  # pylint: disable=too-many-arguments, too-many-positiona
     method_name: str,
     patient_terms: set[str],
     disease_terms: set[str],
+    disease_raw_terms: set[str],
+    disease_excluded_terms: set[str],
     score: float,
     hpo_labels: dict[str, str],
     ic_values: dict[str, float],
@@ -179,6 +178,8 @@ def build_explanation(  # pylint: disable=too-many-arguments, too-many-positiona
         method_name:       One of set_jaccard, set_dice, set_overlap, set_cosine.
         patient_terms:     Active (possibly propagated) patient terms.
         disease_terms:     Active (possibly propagated) disease terms.
+        disease_raw_terms: Raw disease terms before any filtering.
+        disease_excluded_terms: Excluded disease terms.
         score:             The similarity score already computed by the pipeline.
         hpo_labels:        HPO ID → human-readable label.
         ic_values:         HPO ID → IC value.
@@ -194,7 +195,7 @@ def build_explanation(  # pylint: disable=too-many-arguments, too-many-positiona
             patient_terms,
             disease_terms,
             patient.excluded_hpo_terms,
-            patient.get_excluded_terms(),  # disease exclusions
+            disease_excluded_terms,  # disease exclusions
         )
     else:
         formula_components = component_fn(patient_terms, disease_terms)
@@ -225,6 +226,8 @@ def build_explanation(  # pylint: disable=too-many-arguments, too-many-positiona
         summary=summary,
         patient_raw_terms=set(patient.hpo_terms),
         excluded_patient_terms=patient.excluded_hpo_terms,
+        excluded_disease_terms=disease_excluded_terms,
+        disease_raw_terms=disease_raw_terms,
         match_scores=None,  # set-based: binary, no per-term score
         method_specific=method_specific,
         diagnostics={"raw_score": round(score, 6)},

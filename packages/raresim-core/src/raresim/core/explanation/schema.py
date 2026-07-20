@@ -130,7 +130,7 @@ class HpoCoverageBlock:
 
 
 @dataclass
-class TokenCoverageBlock: # pylint: disable=too-many-instance-attributes
+class TokenCoverageBlock:  # pylint: disable=too-many-instance-attributes
     """
     Coverage metrics when patient and disease are compared as token sets.
 
@@ -186,6 +186,7 @@ class ExplanationBlock:
         matched_terms         — enriched list of shared HPO terms.
         unmatched_patient_terms — patient terms not found in disease.
         excluded_terms        — patient terms explicitly excluded but present in disease.
+        exclusion_conflicts    — patient terms that conflict with disease exclusions.
 
     Extension point:
         method_specific       — dict owned entirely by each method's
@@ -198,6 +199,7 @@ class ExplanationBlock:
     matched_terms: list[TokenMatch] | list[TermMatch]
     unmatched_patient_terms: list[TokenEntry] | list[TermEntry]
     excluded_terms: list[TokenEntry] | list[TermEntry]
+    exclusion_conflicts: dict[str, Any] = field(default_factory=dict)
     method_specific: dict[str, Any] = field(default_factory=dict)
     diagnostics: dict[str, Any] = field(default_factory=dict)
 
@@ -211,6 +213,7 @@ class ExplanationBlock:
                 t.to_dict() for t in self.unmatched_patient_terms
             ],
             "excluded_terms": [t.to_dict() for t in self.excluded_terms],
+            "exclusion_conflicts": self.exclusion_conflicts,
             "method_specific": self.method_specific,
             "diagnostics": self.diagnostics,
         }

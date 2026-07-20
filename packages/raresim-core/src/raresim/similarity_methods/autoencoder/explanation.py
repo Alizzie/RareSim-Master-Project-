@@ -47,6 +47,8 @@ def build_explanation(  # pylint: disable=too-many-arguments
     score: float,
     patient_terms: set[str],
     disease_terms: set[str],
+    disease_terms_raw: set[str],
+    excluded_disease_terms: set[str],
     hpo_labels: dict[str, str],
     ic_values: dict[str, float],
     patient: PatientProfile,
@@ -69,6 +71,8 @@ def build_explanation(  # pylint: disable=too-many-arguments
         summary=summary,
         patient_raw_terms=set(patient.hpo_terms),
         excluded_patient_terms=patient.excluded_hpo_terms,
+        disease_raw_terms=disease_terms_raw,
+        excluded_disease_terms=excluded_disease_terms,
         method_specific=build_method_specific_explanation_block(
             method_specific_extra=method_specific_extra
         ),

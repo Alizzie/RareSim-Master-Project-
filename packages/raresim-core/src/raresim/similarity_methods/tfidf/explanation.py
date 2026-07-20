@@ -233,6 +233,8 @@ def build_explanation(  # pylint: disable=too-many-arguments, too-many-positiona
     hpo_labels: dict[str, str],
     ic_values: dict[str, float],
     patient: PatientProfile,
+    disease_terms_raw: set[str] | None = None,
+    excluded_disease_terms: set[str] | None = None,
     all_patient_terms_before_filter: set[str] | None = None,
     low_idf_threshold: float = LOW_IDF_THRESHOLD,
     extra_diagnostics: dict | None = None,
@@ -303,6 +305,12 @@ def build_explanation(  # pylint: disable=too-many-arguments, too-many-positiona
             summary=summary,
             patient_raw_terms=patient.hpo_terms,
             excluded_patient_terms=patient.excluded_hpo_terms,
+            disease_raw_terms=(
+                disease_terms_raw if disease_terms_raw is not None else set()
+            ),
+            excluded_disease_terms=(
+                excluded_disease_terms if excluded_disease_terms is not None else set()
+            ),
             match_scores=match_scores,
             method_specific=method_specific,
             diagnostics=diagnostics,
