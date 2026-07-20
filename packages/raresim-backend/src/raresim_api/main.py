@@ -58,7 +58,7 @@ SEMANTIC_METHODS = {
     "semantic_lin_bma",
     "semantic_jiang_conrath_bma",
 }
-SET_BASED_METHODS = {"set_cosine", "set_jaccard", "set_dice", "set_overlap"}
+SET_BASED_METHODS = {"set_cosine", "set_jaccard", "set_dice", "set_overlap", "set_jaccard_penalized"}
 TFIDF_METHODS = {"tfidf_hpo", "tfidf_text", "tfidf_hybrid", "tfidf_hpo_labels"}
 TRANSFORMER_MODEL_KEY_TO_METHOD: dict[str, str] = {
     "PubMedBERT": "transformer_PubMedBERT",
@@ -216,6 +216,7 @@ def _build_patient(req: DiagnoseRequest):
         "raw_text": req.raw_text or "",
         "hpo_terms": sorted(hpo_terms),
         "propagated_hpo_terms": _propagate_terms(hpo_terms),
+        "excluded_hpo_terms": sorted(req.excluded_hpo_terms),
         "methods_used": ["web_input"],
     }
 

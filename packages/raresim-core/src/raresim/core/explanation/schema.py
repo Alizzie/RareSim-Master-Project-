@@ -24,6 +24,7 @@ class TermEntry:
     ic: float
 
     def to_dict(self) -> dict:
+        """Return a JSON-serializable dict representation of this TermEntry."""
         return {"id": self.id, "label": self.label, "ic": round(self.ic, 4)}
 
 
@@ -49,6 +50,7 @@ class TermMatch:
     match_score: float = 1.0
 
     def to_dict(self) -> dict:
+        """Return a JSON-serializable dict representation of this TermMatch."""
         return {
             "id": self.id,
             "label": self.label,
@@ -68,6 +70,7 @@ class TokenEntry:
     idf_weight: float  # IDF value from the text corpus
 
     def to_dict(self) -> dict:
+        """Return a JSON-serializable dict representation of this TokenEntry."""
         return {
             "token": self.token,
             "idf_weight": round(self.idf_weight, 4),
@@ -85,6 +88,7 @@ class TokenMatch:
     idf_weight: float
 
     def to_dict(self) -> dict:
+        """Return a JSON-serializable dict representation of this TokenMatch."""
         return {
             "token": self.token,
             "idf_weight": round(self.idf_weight, 4),
@@ -113,6 +117,7 @@ class HpoCoverageBlock:
     direction_asymmetry: float = 0.0
 
     def to_dict(self) -> dict:
+        """Return a JSON-serializable dict representation of this HpoCoverageBlock."""
         return {
             "patient_hpo_coverage": round(self.patient_coverage, 4),
             "disease_hpo_coverage": round(self.disease_coverage, 4),
@@ -125,7 +130,7 @@ class HpoCoverageBlock:
 
 
 @dataclass
-class TokenCoverageBlock:
+class TokenCoverageBlock:  # pylint: disable=too-many-instance-attributes
     """
     Coverage metrics when patient and disease are compared as token sets.
 
@@ -152,6 +157,7 @@ class TokenCoverageBlock:
     is_sparse_disease: bool = False
 
     def to_dict(self) -> dict:
+        """Return a JSON-serializable dict representation of this TokenCoverageBlock."""
         return {
             "patient_token_coverage": round(self.patient_token_coverage, 4),
             "disease_token_coverage": round(self.disease_token_coverage, 4),
@@ -179,6 +185,8 @@ class ExplanationBlock:
         coverage              — CoverageBlock instance.
         matched_terms         — enriched list of shared HPO terms.
         unmatched_patient_terms — patient terms not found in disease.
+        excluded_terms        — patient terms explicitly excluded but present in disease.
+        exclusion_conflicts    — patient terms that conflict with disease exclusions.
 
     Extension point:
         method_specific       — dict owned entirely by each method's
@@ -190,10 +198,13 @@ class ExplanationBlock:
     coverage: CoverageBlock
     matched_terms: list[TokenMatch] | list[TermMatch]
     unmatched_patient_terms: list[TokenEntry] | list[TermEntry]
+    excluded_terms: list[TokenEntry] | list[TermEntry]
+    exclusion_conflicts: dict[str, Any] = field(default_factory=dict)
     method_specific: dict[str, Any] = field(default_factory=dict)
     diagnostics: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict:
+        """Return a JSON-serializable dict representation of this ExplanationBlock."""
         return {
             "summary": self.summary,
             "coverage": self.coverage.to_dict(),
@@ -201,6 +212,8 @@ class ExplanationBlock:
             "unmatched_patient_terms": [
                 t.to_dict() for t in self.unmatched_patient_terms
             ],
+            "excluded_terms": [t.to_dict() for t in self.excluded_terms],
+            "exclusion_conflicts": self.exclusion_conflicts,
             "method_specific": self.method_specific,
             "diagnostics": self.diagnostics,
         }

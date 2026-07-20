@@ -38,12 +38,12 @@ RareSim-Master-Project-/
 │       ├── dx29_benchmarks/…
 │       └── phenomizer_benchmarks/…
 │
-└── scripts/visualizations/benchmark_evaluation/
+└── scripts/evaluation/benchmark_vizualization/
     ├── config.py
     ├── load_results.py
     ├── plot_evaluation_questions.py
     ├── make_evaluation_report.py
-    └── requirements.txt
+    └── README.md
 ```
 
 ### Validation-tool path convention (drives Q5)
@@ -72,7 +72,7 @@ From the **project root** (the `-m` form requires it, so the package imports
 resolve):
 
 # 1. generate figures + CSV tables
-python -m scripts.visualizations.benchmark_evaluation.plot_evaluation_questions \
+python -m scripts.evaluation.benchmark_vizualization.plot_evaluation_questions \
   --raresim outputs/evaluation \
   --validation outputs/validation_tools \
   --output outputs/evaluation_visual_questions
@@ -82,14 +82,14 @@ python -m scripts.visualizations.benchmark_evaluation.plot_evaluation_questions 
 RareSim only (skip the tool comparison — Q5/Q6 simply omit the tool bars):
 
 ```bash
-python -m scripts.visualizations.benchmark_evaluation.plot_evaluation_questions \
+python -m scripts.evaluation.benchmark_vizualization.plot_evaluation_questions \
   --raresim outputs/evaluation \
   --output outputs/evaluation_visual_questions
 ```
 `--top-n` controls how many methods appear in the Q2 curves (default 7).
 
 # 2. build the self-contained HTML report from those figures
-python -m scripts.visualizations.benchmark_evaluation.make_evaluation_report \
+python -m scripts.evaluation.benchmark_vizualization.make_evaluation_report \
   --plots outputs/evaluation_visual_questions \
   --output outputs/evaluation_visual_questions/evaluation_report.html
 

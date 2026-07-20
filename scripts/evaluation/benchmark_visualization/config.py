@@ -56,7 +56,7 @@ RECALL_COLUMNS = ["R@1", "R@3", "R@5", "R@10"]
 # ---------------------------------------------------------------------------
 
 # Only these datasets are kept and shown, in this display order.
-DATASETS = ["HMS", "MME", "LIRICAL", "RAMEDIS", "PUMCH_L", "PUMCH-ADM"]
+DATASETS = ["HMS", "MME", "LIRICAL", "RAMEDIS", "PUMCH_L", "PUMCH-ADM", "0.1.27", "GA4GH_PHENOPACKETS", "MYGENE2_5.7.22", "TEST_MEDICAL_CASES"]
 
 # Columns shown (in this order) in the per-dataset metric tables and report.
 SUMMARY_METRIC_COLUMNS = ["R@1", "R@3", "R@5", "R@10", "MRR", "NDCG@10"]
@@ -76,4 +76,8 @@ DATASET_COLORS = {
     "RAMEDIS": "#f4a261",
     "PUMCH_L": "#e76f51",
     "PUMCH-ADM": "#8ab17d",
+    "0.1.27": "#e63946",
+    "GA4GH_PHENOPACKETS": "#457b9d",
+    "MYGENE2_5.7.22": "#1d3557",
+    "TEST_MEDICAL_CASES": "#a8dadc"
 }

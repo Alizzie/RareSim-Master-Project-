@@ -5,6 +5,8 @@ extract_hpo_terms    : run selected methods, deduplicate, return results.
 build_patient_profile: build a full patient dict with HPO terms + propagation.
 """
 
+from typing import Any
+
 from raresim.utils.io import load_json
 from raresim.utils.hpo_utils import get_ancestors_inclusive, preprocess_ancestor_sets
 from raresim.utils.paths import HPO_ANCESTORS_PATH
@@ -69,7 +71,7 @@ def build_patient_profile(
     raw_text: str,
     hpo_labels: dict[str, str],
     methods: list[str] | None = None,
-) -> tuple[dict[str, object], list[dict[str, object]]]:
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     """
     Build a patient profile dict from raw clinical text.
 
@@ -108,11 +110,11 @@ def build_patient_profile(
 
         propagated_hpo_terms = sorted(propagated)
 
-    except Exception as error:
+    except Exception as error: #  pylint: disable=broad-exception-caught
         print(f"[ensemble] Warning: could not compute propagated terms: {error}")
         propagated_hpo_terms = hpo_terms
 
-    patient: dict[str, object] = {
+    patient: dict[str, Any] = {
         "patient_id": patient_id,
         "raw_text": raw_text,
         "hpo_terms": hpo_terms,

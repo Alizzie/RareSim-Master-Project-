@@ -19,9 +19,15 @@ Metrics:
     Recall@5  — fraction of cases where the correct disease was in top 5
     Recall@10 — fraction of cases where the correct disease was in top 10
     Recall@20 — fraction of cases where the correct disease was in top 20
-    MRR       — Mean Reciprocal Rank  (1/rank, averaged across cases)
-    NDCG@10   — Normalized DCG at cutoff 10
-                (uses best rank when multiple ground-truth IDs are present)
+    MRR       — Mean Reciprocal Rank  (1/rank, averaged across cases,
+                using the best-ranked ground-truth match per case)
+    NDCG@10   — Normalized DCG at cutoff 10, computed over ALL matched
+                ground-truth diseases found within the top 10 (not just
+                the best-ranked one), normalized against the ideal DCG
+                for that case's number of distinct ground-truth diseases.
+                Ground-truth IDs that are aliases of the same underlying
+                disease (per alias_to_canonical.json) are counted once,
+                not once per identifier.
     Median rank — median rank of the correct disease across all found cases
 
 Per-case timing:
@@ -113,6 +119,33 @@ def get_all_equivalent_ids(
     return ids
 
 
+def count_distinct_ground_truth(
+    ground_truth_ids: list[str],
+    alias_map: dict[str, str],
+    reverse_map: dict[str, set[str]],
+) -> int:
+    """
+    Count ground-truth diseases as distinct alias-equivalence groups, not a
+    raw ID count. Two ground-truth identifiers that are aliases of the same
+    underlying disease (e.g. an OMIM/ORPHA cross-reference pair) count as one
+    relevant item, not two -- otherwise the ideal-DCG normalization in NDCG
+    would be based on an inflated number of "relevant" diseases and unfairly
+    deflate the score for a case that only has one true diagnosis.
+    """
+    groups: list[set[str]] = []
+    for gt_id in ground_truth_ids:
+        eq = get_all_equivalent_ids(gt_id, alias_map, reverse_map)
+        merged = False
+        for group in groups:
+            if group & eq:
+                group |= eq
+                merged = True
+                break
+        if not merged:
+            groups.append(eq)
+    return len(groups)
+
+
 # ── Result loading ─────────────────────────────────────────────────────────────
 
 
@@ -139,7 +172,8 @@ def find_rank(
 ) -> int | None:
     """
     Return the best rank (1-indexed) of any ground-truth disease in results,
-    or None if not found.
+    or None if not found. Used for Recall@k, MRR, and median rank, which are
+    single-best-hit metrics by definition.
     """
     gt_equivalent: set[str] = set()
     for gt_id in ground_truth_ids:
@@ -154,6 +188,41 @@ def find_rank(
             return result.get("rank")
 
     return None
+
+
+def find_all_matched_ranks(
+    ground_truth_ids: list[str],
+    results: list[dict],
+    alias_map: dict[str, str],
+    reverse_map: dict[str, set[str]],
+) -> list[int]:
+    """
+    Return the ranks (1-indexed) of every distinct candidate in results that
+    matches any ground-truth disease, not just the first/best one. Used for
+    true multi-relevance NDCG, where credit should be given for every
+    correct disease found in the top k, not only the highest-ranked one.
+
+    Because results is a list of distinct candidate diseases (one entry per
+    rank), and matching is done against the union of all ground-truth
+    equivalence sets, a ground-truth pair that are themselves aliases of one
+    disease cannot cause the same candidate to be counted twice here.
+    """
+    gt_equivalent: set[str] = set()
+    for gt_id in ground_truth_ids:
+        gt_equivalent.update(get_all_equivalent_ids(gt_id, alias_map, reverse_map))
+
+    matched_ranks: list[int] = []
+    for result in results:
+        result_id = get_disease_id_from_result(result)
+        if not result_id:
+            continue
+        result_equivalent = get_all_equivalent_ids(result_id, alias_map, reverse_map)
+        if gt_equivalent & result_equivalent:
+            rank = result.get("rank")
+            if rank is not None:
+                matched_ranks.append(rank)
+
+    return sorted(matched_ranks)
 
 
 def load_cache_dir(cache_dir: Path) -> list[dict]:
@@ -173,15 +242,50 @@ def load_cache_dir(cache_dir: Path) -> list[dict]:
 # ── Metrics ────────────────────────────────────────────────────────────────────
 
 
-def compute_ndcg(rank: int | None, top_k: int = 10) -> float:
-    """NDCG@k for a single case. Ideal DCG = 1/log2(2) = 1.0 (rank 1)."""
-    if rank is None or rank > top_k:
+def compute_ndcg_for_case(
+    matched_ranks: list[int],
+    n_relevant: int,
+    top_k: int = 10,
+) -> float:
+    """
+    True NDCG@k for one case, with binary relevance across ALL matched
+    ground-truth diseases found in the top k -- not just the best-ranked one.
+
+        DCG@k  = sum over matched ranks r <= k of  1 / log2(r + 1)
+        IDCG@k = the DCG of the ideal ordering, i.e. all n_relevant ground-
+                 truth diseases placed at ranks 1..min(n_relevant, k)
+        NDCG@k = DCG@k / IDCG@k   (0 if IDCG@k is 0, i.e. no ground truth)
+
+    n_relevant should be the number of DISTINCT ground-truth diseases for
+    this case (see count_distinct_ground_truth), not the raw length of the
+    ground_truth list, since two IDs that are aliases of the same disease
+    are only one relevant item.
+    """
+    dcg = sum(1.0 / math.log2(r + 1) for r in matched_ranks if r <= top_k)
+
+    ideal_hits = min(n_relevant, top_k)
+    idcg = sum(1.0 / math.log2(j + 1) for j in range(1, ideal_hits + 1))
+
+    if idcg == 0:
         return 0.0
-    return 1.0 / math.log2(rank + 1)
+    return dcg / idcg
 
 
-def compute_metrics(ranks: list[int | None], top_k: int = 10) -> dict:
-    """Compute Recall@1/3/5/10/20, MRR, NDCG@10, median rank from per-case ranks."""
+def compute_metrics(
+    ranks: list[int | None],
+    ndcg_values: list[float],
+    top_k: int = 10,
+) -> dict:
+    """
+    Compute Recall@1/3/5/10/20, MRR, NDCG@10, median rank from per-case data.
+
+    ranks       : per-case best rank (or None if not found) -- drives
+                  Recall@k, MRR, and median rank, which are single-best-hit
+                  metrics by definition.
+    ndcg_values : per-case NDCG@top_k value, precomputed by the caller via
+                  compute_ndcg_for_case() using ALL matched ground-truth
+                  diseases for that case, not just the best rank.
+    """
     n = len(ranks)
     if n == 0:
         return {
@@ -206,7 +310,7 @@ def compute_metrics(ranks: list[int | None], top_k: int = 10) -> dict:
         "recall_10": round(sum(1 for r in ranks if r is not None and r <= 10) / n, 4),
         "recall_20": round(sum(1 for r in ranks if r is not None and r <= 20) / n, 4),
         "mrr": round(sum(1 / r for r in ranks if r is not None) / n, 4),
-        "ndcg": round(sum(compute_ndcg(r, top_k) for r in ranks) / n, 4),
+        "ndcg": round(sum(ndcg_values) / n, 4),
         "found": len(found_ranks),
         "median_rank": median_rank,
     }
@@ -299,18 +403,33 @@ def evaluate(
         RRF_TOP_NAME,
     ]
     method_ranks: dict[str, list[int | None]] = {m: [] for m in all_methods}
+    method_ndcg: dict[str, list[float]] = {m: [] for m in all_methods}
 
-    # ── Pass 1: per-method ranks ───────────────────────────────────────────────
+    # Ground-truth cardinality is a case-level property (same for every
+    # method), so it only needs to be computed once per case.
+    n_relevant_per_case: dict[int, int] = {}
+    for case in cases:
+        n_relevant_per_case[case["case_index"]] = count_distinct_ground_truth(
+            case.get("ground_truth", []), alias_map, reverse_map
+        )
+
+    # ── Pass 1: per-method ranks and NDCG ─────────────────────────────────────
     rank_matrix_pass1 = []
     for case in cases:
         ground_truth = case.get("ground_truth", [])
         results = case.get("results", {})
+        n_relevant = n_relevant_per_case[case["case_index"]]
         case_ranks: dict[str, int | None] = {}
         for method in base_methods_sorted:
-            rank = find_rank(
-                ground_truth, results.get(method, []), alias_map, reverse_map
+            method_results = results.get(method, [])
+            rank = find_rank(ground_truth, method_results, alias_map, reverse_map)
+            matched_ranks = find_all_matched_ranks(
+                ground_truth, method_results, alias_map, reverse_map
             )
             method_ranks[method].append(rank)
+            method_ndcg[method].append(
+                compute_ndcg_for_case(matched_ranks, n_relevant, top_k)
+            )
             case_ranks[method] = rank
         rank_matrix_pass1.append((case, case_ranks))
 
@@ -331,6 +450,7 @@ def evaluate(
     for case, case_ranks in rank_matrix_pass1:
         ground_truth = case.get("ground_truth", [])
         results = case.get("results", {})
+        n_relevant = n_relevant_per_case[case["case_index"]]
 
         for ensemble_name, methods, weights in [
             (RRF_METHOD_NAME, base_methods_sorted, None),
@@ -339,7 +459,13 @@ def evaluate(
         ]:
             rrf_results = compute_rrf(results, methods, top_k, weights=weights)
             rank = find_rank(ground_truth, rrf_results, alias_map, reverse_map)
+            matched_ranks = find_all_matched_ranks(
+                ground_truth, rrf_results, alias_map, reverse_map
+            )
             method_ranks[ensemble_name].append(rank)
+            method_ndcg[ensemble_name].append(
+                compute_ndcg_for_case(matched_ranks, n_relevant, top_k)
+            )
             case_ranks[ensemble_name] = rank
 
         rank_matrix.append(
@@ -350,7 +476,9 @@ def evaluate(
             }
         )
 
-    method_metrics = {m: compute_metrics(method_ranks[m], top_k) for m in all_methods}
+    method_metrics = {
+        m: compute_metrics(method_ranks[m], method_ndcg[m], top_k) for m in all_methods
+    }
     avg_timing = aggregate_method_timing(cases)
 
     return {

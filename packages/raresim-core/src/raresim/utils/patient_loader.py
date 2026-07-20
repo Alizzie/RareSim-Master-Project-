@@ -14,6 +14,7 @@ def load_patient(path: Path) -> PatientProfile:
         raw_text=data.get("raw_text", ""),
         hpo_terms=set(data.get("hpo_terms", [])),
         propagated_hpo_terms=set(data.get("propagated_hpo_terms", [])),
+        excluded_hpo_terms=set(data.get("excluded_hpo_terms", [])),
     )
 
 
@@ -26,7 +27,8 @@ def load_patient_with_extraction(
     Load a patient profile from a JSON file, extracting HPO terms from raw text if necessary.
 
     If the patient JSON already has hpo_terms, loads directly.
-    Otherwise runs build_patient_profile to extract HPO terms from raw_text, then constructs a PatientProfile.
+    Otherwise runs build_patient_profile to extract HPO terms 
+    from raw_text, then constructs a PatientProfile.
     """
 
     if methods is None:
@@ -55,4 +57,5 @@ def load_patient_with_extraction(
         raw_text=enriched["raw_text"],
         hpo_terms=set(enriched["hpo_terms"]),
         propagated_hpo_terms=set(enriched.get("propagated_hpo_terms", [])),
+        excluded_hpo_terms=set(enriched.get("excluded_hpo_terms", [])),
     )

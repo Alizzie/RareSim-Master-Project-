@@ -56,11 +56,11 @@ def main():
             "path": ONTOLOGY_DIR / "ordo.owl",
         },
         "hoom": {
-            "url": "https://data.bioontology.org/ontologies/HOOM/submissions/13/download?apikey=8b5b7825-538d-40e0-9e9e-5ab9274a9aeb",
+            "url": "https://data.bioontology.org/ontologies/HOOM/submissions/13/download?apikey=8b5b7825-538d-40e0-9e9e-5ab9274a9aeb", # pylint: disable=line-too-long
             "path": ONTOLOGY_DIR / "hoom.owl",
         },
         "phenotype_hpoa": {
-            "url": "https://github.com/obophenotype/human-phenotype-ontology/releases/download/v2023-10-09/phenotype.hpoa",
+            "url": "https://github.com/obophenotype/human-phenotype-ontology/releases/download/v2023-10-09/phenotype.hpoa", # pylint: disable=line-too-long
             "path": ONTOLOGY_DIR / "phenotype.hpoa",
         },
         "orphadata_product4": {
@@ -68,7 +68,7 @@ def main():
             "path": ONTOLOGY_DIR / "en_product4_HPO.xml",
         },
         "monarch_disease_hpo": {
-            "url": "https://data.monarchinitiative.org/monarch-kg/latest/tsv/all_associations/disease_to_phenotypic_feature_association.all.tsv.gz",
+            "url": "https://data.monarchinitiative.org/monarch-kg/latest/tsv/all_associations/disease_to_phenotypic_feature_association.all.tsv.gz", # pylint: disable=line-too-long
             "path": ONTOLOGY_DIR
             / "disease_to_phenotypic_feature_association.all.tsv.gz",
         },

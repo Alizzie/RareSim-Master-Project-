@@ -10,7 +10,7 @@ Q6: Does combining methods (RRF) beat the best single method?
 Q7: How do the method families compare overall?
 
 Run from project root:
-    python -m scripts.visualizations.benchmark_evaluation.plot_evaluation_questions \
+    python -m scripts.evaluation.benchmark_visualization.plot_evaluation_questions \
     --raresim outputs/evaluation \
     --validation outputs/validation_tools \
     --output outputs/evaluation_visual_questions

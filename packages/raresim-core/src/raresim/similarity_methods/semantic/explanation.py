@@ -23,9 +23,10 @@ from raresim.core.explanation import (
     ExplanationBlock,
 )
 from raresim.similarity_methods.semantic.config import WEAK_MATCH_THRESHOLD
+from raresim.types.schemas import PatientProfile
 
 
-def _build_semantic_summary(
+def _build_semantic_summary(  # pylint: disable=too-many-arguments, too-many-positional-arguments
     patient_terms: set[str],
     disease_terms: set[str],
     p2d_avg: float,
@@ -205,7 +206,9 @@ def build_explanation(  # pylint: disable=too-many-arguments, too-many-positiona
     hpo_labels: dict[str, str],
     ic_values: dict[str, float],
     ic_threshold: float | None,
-    patient_raw_terms: set[str] | None = None,
+    excluded_disease_terms: set[str],
+    disease_terms_raw: set[str],
+    patient: PatientProfile,
 ) -> ExplanationBlock:
     """
     Build the complete ExplanationBlock for one semantic BMA result.
@@ -224,8 +227,7 @@ def build_explanation(  # pylint: disable=too-many-arguments, too-many-positiona
         hpo_labels:                     HPO ID -> label.
         ic_values:                      HPO ID -> IC.
         ic_threshold:                   The threshold that was applied.
-        patient_raw_terms:              Raw (non-propagated) terms for
-                                        direct/propagated classification.
+        patient:                        The patient profile object.
 
     Returns:
         Fully populated ExplanationBlock.
@@ -278,7 +280,10 @@ def build_explanation(  # pylint: disable=too-many-arguments, too-many-positiona
         hpo_labels=hpo_labels,
         ic_values=ic_values,
         summary=summary,
-        patient_raw_terms=patient_raw_terms,
+        patient_raw_terms=set(patient.hpo_terms),
+        excluded_patient_terms=patient.excluded_hpo_terms,
+        excluded_disease_terms=excluded_disease_terms,
+        disease_raw_terms=disease_terms_raw,
         match_scores=match_scores,
         method_specific=method_specific,
         diagnostics={

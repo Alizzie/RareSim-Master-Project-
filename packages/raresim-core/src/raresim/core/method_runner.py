@@ -12,7 +12,7 @@ from raresim.utils.paths import PATIENT_DIR
 from raresim.utils.timer import timer
 
 
-def run_similarity_method(
+def run_similarity_method( # pylint: disable=too-many-arguments, too-many-positional-arguments
     pipeline_name: str,
     method_names: list[str],
     run_fn,

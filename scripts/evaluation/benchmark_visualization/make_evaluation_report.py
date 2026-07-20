@@ -2,7 +2,7 @@
 Build a single self-contained HTML report for the RareSim benchmark evaluation.
 
 Run:
-    python -m scripts.visualizations.benchmark_evaluation.make_evaluation_report \
+    python -m scripts.evaluation.benchmark_visualization.make_evaluation_report \
     --plots outputs/evaluation_visual_questions \
     --output outputs/evaluation_visual_questions/evaluation_report.html
 """
@@ -520,7 +520,7 @@ PAGE = """<!doctype html>
 </head>
 <body>
 <header class="hero"><div class="wrap">
-  <h1>RareSim — Benchmark Evaluation on PhenoBrain Datasets</h1>
+  <h1>RareSim — Benchmark Evaluation on chosen datasets</h1>
   <p>Method performance, ranking quality, runtime trade-offs, dataset difficulty, and comparison with validation tools.</p>
   <div class="meta">Datasets ({n_datasets}): {datasets} · </div>
   <div class="legend">{legend}</div>

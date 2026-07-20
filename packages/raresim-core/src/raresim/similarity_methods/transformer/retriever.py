@@ -138,7 +138,7 @@ def load_persistent_cache(
     )
 
 
-def save_persistent_cache(
+def save_persistent_cache(  # pylint: disable=too-many-arguments, too-many-positional-arguments
     cache_paths: dict[str, Path],
     disease_ids: list[str],
     disease_labels: list[str],
@@ -332,7 +332,7 @@ class DiseaseRetriever:  # pylint: disable=too-many-instance-attributes
     Handles model loading, disease embedding caching, and ranking.
     """
 
-    def __init__(  # pylint: disable=too-many-arguments
+    def __init__(  # pylint: disable=too-many-arguments, too-many-positional-arguments
         self,
         disease_profiles: dict[str, dict],
         hpo_labels: dict[str, str],

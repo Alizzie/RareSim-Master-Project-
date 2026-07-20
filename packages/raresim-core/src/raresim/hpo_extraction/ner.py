@@ -101,7 +101,7 @@ def _find_hpo_id(
     return None
 
 
-def _build_extraction_result(
+def _build_extraction_result( # pylint: disable=too-many-arguments, too-many-positional-arguments
     hpo_id: str,
     span_text: str,
     score: float,
@@ -123,7 +123,7 @@ def _build_extraction_result(
     )
 
 
-def extract_biomedical_ner(
+def extract_biomedical_ner( # pylint: disable=too-many-locals
     raw_text: str,
     hpo_labels: dict[str, str],
     skip_negated: bool = True,

@@ -1,4 +1,7 @@
-"""Functions to compute information content (IC) values for HPO terms based on their frequencies across disease profiles."""
+"""
+Functions to compute information content (IC) values for HPO terms 
+based on their frequencies across disease profiles.
+"""
 
 import math
 

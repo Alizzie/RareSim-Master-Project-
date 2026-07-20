@@ -21,7 +21,8 @@ FREQUENCY_RANK = {
 }
 
 
-def normalize_frequency(freq: str | None) -> str | None:
+def normalize_frequency(freq: str | None) -> str | None: # pylint: disable=too-many-return-statements
+    """Normalize frequency labels from various sources to a standard set of labels."""
     if freq is None:
         return None
 
@@ -74,6 +75,7 @@ def normalize_frequency(freq: str | None) -> str | None:
 
 
 def is_negative_record(record: dict) -> bool:
+    """Determine if a phenotype annotation record is a negative (excluded) assertion."""
     qualifier = (record.get("qualifier") or "").strip().upper()
     if qualifier == "NOT":
         return True
@@ -83,6 +85,10 @@ def is_negative_record(record: dict) -> bool:
 
 
 def choose_best_record(records: list[dict]) -> dict:
+    """
+    Choose the best phenotype annotation record from a list of records 
+    for the same disease and HPO term.
+    """
     def sort_key(record: dict) -> tuple[int, int]:
         source = (record.get("source") or "").upper()
         freq = normalize_frequency(record.get("frequency_code"))
@@ -97,6 +103,7 @@ def choose_best_record(records: list[dict]) -> dict:
 def merge_phenotype_annotation_records(
     phenotype_annotation_records: list[dict],
 ) -> tuple[list[dict], dict[str, dict], dict[str, set[str]]]:
+    """Merge and deduplicate phenotype annotation records from multiple sources."""
     grouped = defaultdict(list)
 
     for record in phenotype_annotation_records:

@@ -20,7 +20,7 @@ OWL_NS = {
 }
 
 
-def _normalize_profile_type(value: str | None) -> str | None:
+def _normalize_profile_type(value: str | None) -> str | None: # pylint: disable=too-many-return-statements
     """Normalize ORDO disease/category type labels."""
     if not value:
         return None
@@ -144,6 +144,7 @@ def _extract_xrefs(class_elem: ET.Element) -> list[str]:
 
 
 def load_hpo_owl(hpo_path: Path) -> tuple[dict[str, str], dict[str, set[str]]]:
+    """Parse the HPO OWL file and extract labels and IS-A (subClassOf) parent relations."""
     tree = ET.parse(hpo_path)
     root = tree.getroot()
 
@@ -214,6 +215,7 @@ def load_disease_ontology_metadata(
     id_prefixes: tuple[str, ...],
     normalize_local_id_func,
 ) -> dict[str, dict]:
+    """Parse the disease ontology file and extract metadata for each disease term."""
     tree = ET.parse(ontology_path)
     root = tree.getroot()
 
@@ -288,6 +290,7 @@ def load_ordo_parents(ordo_path: Path) -> dict[str, set[str]]:
 
 
 def load_ordo_metadata(ordo_path: Path, normalize_local_id_func) -> dict[str, dict]:
+    """ Parse the ORDO OWL file and extract metadata for each disease term."""
     return load_disease_ontology_metadata(
         ontology_path=ordo_path,
         id_prefixes=("Orphanet_", "ORDO_"),
@@ -296,6 +299,7 @@ def load_ordo_metadata(ordo_path: Path, normalize_local_id_func) -> dict[str, di
 
 
 def load_mondo_metadata(mondo_path: Path, normalize_local_id_func) -> dict[str, dict]:
+    """Parse the MONDO OWL file and extract metadata for each disease term."""
     return load_disease_ontology_metadata(
         ontology_path=mondo_path,
         id_prefixes=("MONDO_",),
@@ -304,6 +308,7 @@ def load_mondo_metadata(mondo_path: Path, normalize_local_id_func) -> dict[str, 
 
 
 def load_hoom_metadata(hoom_path: Path, normalize_local_id_func) -> dict[str, dict]:
+    """Parse the HOOM OWL file and extract metadata for each disease term."""
     results = load_disease_ontology_metadata(
         ontology_path=hoom_path,
         id_prefixes=("HOOM_", "Orphanet_", "MONDO_"),
@@ -329,7 +334,7 @@ def load_hoom_metadata(hoom_path: Path, normalize_local_id_func) -> dict[str, di
     return results
 
 
-def load_hoom_hpo_annotations(hoom_path: Path) -> list[dict]:
+def load_hoom_hpo_annotations(hoom_path: Path) -> list[dict]: # pylint: disable=too-many-locals
     """
     Parse HOOM for disease -> HPO annotations.
 
@@ -405,7 +410,8 @@ def load_hoom_hpo_annotations(hoom_path: Path) -> list[dict]:
     return records
 
 
-def load_orphadata_product4_annotations(product4_path: Path) -> list[dict]:
+def load_orphadata_product4_annotations(product4_path: Path) -> list[dict]: # pylint: disable=too-many-locals, too-many-branches
+    """Parse Orphadata Product 4 XML for disease -> HPO annotations."""
     tree = ET.parse(product4_path)
     root = tree.getroot()
 
