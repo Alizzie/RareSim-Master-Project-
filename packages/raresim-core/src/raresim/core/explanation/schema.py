@@ -185,6 +185,7 @@ class ExplanationBlock:
         coverage              — CoverageBlock instance.
         matched_terms         — enriched list of shared HPO terms.
         unmatched_patient_terms — patient terms not found in disease.
+        excluded_terms        — patient terms explicitly excluded but present in disease.
 
     Extension point:
         method_specific       — dict owned entirely by each method's
@@ -196,6 +197,7 @@ class ExplanationBlock:
     coverage: CoverageBlock
     matched_terms: list[TokenMatch] | list[TermMatch]
     unmatched_patient_terms: list[TokenEntry] | list[TermEntry]
+    excluded_terms: list[TokenEntry] | list[TermEntry]
     method_specific: dict[str, Any] = field(default_factory=dict)
     diagnostics: dict[str, Any] = field(default_factory=dict)
 
@@ -208,6 +210,7 @@ class ExplanationBlock:
             "unmatched_patient_terms": [
                 t.to_dict() for t in self.unmatched_patient_terms
             ],
+            "excluded_terms": [t.to_dict() for t in self.excluded_terms],
             "method_specific": self.method_specific,
             "diagnostics": self.diagnostics,
         }

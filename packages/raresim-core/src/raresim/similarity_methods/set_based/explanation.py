@@ -20,6 +20,7 @@ from raresim.core.explanation import (
     build_coverage_block,
     ExplanationBlock,
 )
+from raresim.types.schemas import PatientProfile
 from raresim.similarity_methods.set_based.config import METHODS_REQUIRING_EXCLUSIONS
 
 # ── Summary builder ────────────────────────────────────────────────
@@ -110,9 +111,7 @@ def _jaccard_penalized_components(
     disease_contradicts_patient = disease_excluded & pat
     contradictions = patient_contradicts_disease | disease_contradicts_patient
 
-    penalty_applied = (
-        penalty_weight * (len(contradictions) / union) if union else 0.0
-    )
+    penalty_applied = penalty_weight * (len(contradictions) / union) if union else 0.0
 
     return {
         "formula": "jaccard_with_negative_penalty",
@@ -171,9 +170,7 @@ def build_explanation(  # pylint: disable=too-many-arguments, too-many-positiona
     score: float,
     hpo_labels: dict[str, str],
     ic_values: dict[str, float],
-    patient_raw_terms: set[str] | None = None,
-    patient_excluded_terms: set[str] | None = None,
-    disease_excluded_terms: set[str] | None = None,
+    patient: PatientProfile,
 ) -> ExplanationBlock:
     """
     Build the complete ExplanationBlock for one set-based result.
@@ -185,9 +182,7 @@ def build_explanation(  # pylint: disable=too-many-arguments, too-many-positiona
         score:             The similarity score already computed by the pipeline.
         hpo_labels:        HPO ID → human-readable label.
         ic_values:         HPO ID → IC value.
-        patient_raw_terms: Raw (non-propagated) patient terms for
-                           direct vs propagated match classification.
-                           Pass None to skip this classification.
+        patient:           Patient profile containing raw terms.
 
     Returns:
         Fully populated ExplanationBlock.
@@ -196,7 +191,10 @@ def build_explanation(  # pylint: disable=too-many-arguments, too-many-positiona
     component_fn = _COMPONENT_BUILDERS.get(method_name, _jaccard_components)
     if method_name in METHODS_REQUIRING_EXCLUSIONS:
         formula_components = component_fn(
-            patient_terms, disease_terms, patient_excluded_terms, disease_excluded_terms
+            patient_terms,
+            disease_terms,
+            patient.excluded_hpo_terms,
+            patient.get_excluded_terms(),  # disease exclusions
         )
     else:
         formula_components = component_fn(patient_terms, disease_terms)
@@ -225,7 +223,8 @@ def build_explanation(  # pylint: disable=too-many-arguments, too-many-positiona
         hpo_labels=hpo_labels,
         ic_values=ic_values,
         summary=summary,
-        patient_raw_terms=patient_raw_terms,
+        patient_raw_terms=set(patient.hpo_terms),
+        excluded_patient_terms=patient.excluded_hpo_terms,
         match_scores=None,  # set-based: binary, no per-term score
         method_specific=method_specific,
         diagnostics={"raw_score": round(score, 6)},

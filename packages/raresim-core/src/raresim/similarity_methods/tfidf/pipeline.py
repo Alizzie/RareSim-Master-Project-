@@ -110,7 +110,6 @@ def _run_hpo_mode(  # pylint: disable=too-many-locals
     Patient and disease documents are sets of HPO IDs.
     Binary TF. IDF carries the weighting signal.
     """
-    patient_raw_terms = set(patient.hpo_terms)
     patient_terms = set(patient.get_terms(config.use_propagated_terms))
 
     if not patient_terms:
@@ -151,7 +150,7 @@ def _run_hpo_mode(  # pylint: disable=too-many-locals
             score=score,
             hpo_labels=ctx.hpo_labels,
             ic_values=ctx.ic_values,
-            patient_raw_terms=patient_raw_terms,
+            patient=patient,
         )
 
         results.append(
@@ -166,7 +165,7 @@ def _run_hpo_mode(  # pylint: disable=too-many-locals
         )
 
     stats = build_run_stats(
-        n_patient_terms_raw=len(patient_raw_terms),
+        n_patient_terms_raw=len(patient.hpo_terms),
         n_patient_terms_propagated=len(patient.get_terms(use_propagated=True)),
         n_patient_terms_used=len(patient_terms),
         n_diseases_scored=len(results),
@@ -226,7 +225,7 @@ def _run_text_mode(  # pylint: disable=too-many-locals
             ic_values=ctx.ic_values,
             patient_terms=set(),
             disease_terms=set(),
-            patient_raw_terms=None,
+            patient=patient,
             extra_diagnostics={"disease_used_label_fallback": used_fallback},
         )
 
@@ -263,7 +262,6 @@ def _run_hybrid_mode(  # pylint: disable=too-many-locals
 ) -> tuple[list[SimilarityResult], RunStats]:
     """Run the hybrid HPO-label-to-disease-text TF-IDF method."""
     all_patient_terms = set(patient.get_terms(config.use_propagated_terms))
-    patient_raw_terms = set(patient.hpo_terms)
     patient_terms = filter_terms_by_ic(
         all_patient_terms,
         ctx.ic_values,
@@ -304,7 +302,7 @@ def _run_hybrid_mode(  # pylint: disable=too-many-locals
             ic_values=ctx.ic_values,
             patient_terms=patient_terms,
             disease_terms=set(),
-            patient_raw_terms=patient_raw_terms,
+            patient=patient,
             all_patient_terms_before_filter=all_patient_terms,
             extra_diagnostics={"disease_used_label_fallback": used_fallback},
         )
@@ -321,7 +319,7 @@ def _run_hybrid_mode(  # pylint: disable=too-many-locals
         )
 
     stats = build_run_stats(
-        n_patient_terms_raw=len(patient_raw_terms),
+        n_patient_terms_raw=len(patient.hpo_terms),
         n_patient_terms_propagated=len(all_patient_terms),
         n_patient_terms_used=len(patient_terms),
         n_diseases_scored=len(results),
@@ -340,7 +338,6 @@ def _run_hpo_labels_mode(  # pylint: disable=too-many-locals
 ) -> tuple[list[SimilarityResult], RunStats]:
     """Run the HPO-label-to-HPO-label TF-IDF method."""
     all_patient_terms = set(patient.get_terms(config.use_propagated_terms))
-    patient_raw_terms = set(patient.hpo_terms)
     patient_terms = filter_terms_by_ic(
         all_patient_terms,
         ctx.ic_values,
@@ -380,7 +377,7 @@ def _run_hpo_labels_mode(  # pylint: disable=too-many-locals
             ic_values=ctx.ic_values,
             patient_terms=patient_terms,
             disease_terms=disease_terms,
-            patient_raw_terms=patient_raw_terms,
+            patient=patient,
             all_patient_terms_before_filter=all_patient_terms,
         )
 
@@ -396,7 +393,7 @@ def _run_hpo_labels_mode(  # pylint: disable=too-many-locals
         )
 
     stats = build_run_stats(
-        n_patient_terms_raw=len(patient_raw_terms),
+        n_patient_terms_raw=len(patient.hpo_terms),
         n_patient_terms_propagated=len(all_patient_terms),
         n_patient_terms_used=len(patient_terms),
         n_diseases_scored=len(results),

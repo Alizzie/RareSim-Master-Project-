@@ -171,6 +171,34 @@ def build_unmatched_terms(
     return sorted(entries, key=lambda x: x.ic, reverse=True)[:top_n]
 
 
+def build_excluded_terms(
+    excluded_terms: set[str],
+    disease_terms: set[str],
+    hpo_labels: dict[str, str],
+    ic_values: dict[str, float],
+    top_n: int = 10,
+) -> list[TermEntry]:
+    """
+    Build the list of patient terms that are stated excluded in the patient_terms but present in the disease_terms.
+
+    Returns:
+        List of TermEntry objects sorted by IC descending (most specific
+        unmatched features first).
+    """
+    excluded = excluded_terms & disease_terms
+
+    entries = [
+        TermEntry(
+            id=t,
+            label=hpo_labels.get(t, t),
+            ic=ic_values.get(t, 0.0),
+        )
+        for t in excluded
+    ]
+
+    return sorted(entries, key=lambda x: x.ic, reverse=True)[:top_n]
+
+
 def build_matched_tokens(
     patient_vec: dict[str, float],
     disease_vec: dict[str, float],
@@ -219,6 +247,32 @@ def build_unmatched_tokens(
         for t in unmatched
     ]
     return sorted(entries, key=lambda x: x.idf_weight, reverse=True)[:top_n]
+
+
+def build_excluded_tokens(
+    excluded_vec: dict[str, float],
+    disease_vec: dict[str, float],
+    idf: dict[str, float],
+    top_n: int = 10,
+) -> list[TokenEntry]:
+    """
+    Build the excluded token list for text.
+
+    Args:
+        excluded_vec: Excluded TF-IDF token vector.
+        disease_vec: Disease TF-IDF token vector.
+        idf:         Global IDF dict for the text corpus.
+        top_n:       Maximum tokens to return, sorted by IDF weight desc.
+    """
+    shared = set(excluded_vec.keys()) & set(disease_vec.keys())
+    matched = [
+        TokenEntry(
+            token=t,
+            idf_weight=idf.get(t, 0.0),
+        )
+        for t in shared
+    ]
+    return sorted(matched, key=lambda x: x.idf_weight, reverse=True)[:top_n]
 
 
 def build_ic_filter_block(
@@ -274,6 +328,7 @@ def build_base_explanation( # pylint: disable=too-many-arguments, too-many-posi
     hpo_labels: dict[str, str],
     ic_values: dict[str, float],
     summary: str,
+    excluded_patient_terms: set[str],
     patient_raw_terms: set[str] | None = None,
     match_scores: dict[str, float] | None = None,
     method_specific: dict | None = None,
@@ -312,12 +367,16 @@ def build_base_explanation( # pylint: disable=too-many-arguments, too-many-posi
     unmatched = build_unmatched_terms(
         patient_terms, disease_terms, hpo_labels, ic_values
     )
+    excluded = build_excluded_terms(
+        excluded_patient_terms or set(), disease_terms, hpo_labels, ic_values
+    )
 
     return ExplanationBlock(
         summary=summary,
         coverage=coverage,
         matched_terms=matched,
         unmatched_patient_terms=unmatched,
+        excluded_terms=excluded,
         method_specific=method_specific or {},
         diagnostics=diagnostics or {},
     )
@@ -328,6 +387,7 @@ def build_base_token_explanation( # pylint: disable=too-many-arguments, too-man
     disease_vec: dict[str, float],
     idf: dict[str, float],
     summary: str,
+    excluded_patient_terms: dict[str, float] | None = None,
     method_specific: dict | None = None,
     diagnostics: dict | None = None,
     sparse_threshold: int = 10,
@@ -359,12 +419,14 @@ def build_base_token_explanation( # pylint: disable=too-many-arguments, too-man
     )
     matched = build_matched_tokens(patient_vec, disease_vec, idf)
     unmatched = build_unmatched_tokens(patient_vec, disease_vec, idf)
+    excluded = build_excluded_tokens(excluded_patient_terms or {}, disease_vec, idf)
 
     return ExplanationBlock(
         summary=summary,
         coverage=coverage,
         matched_terms=matched,
         unmatched_patient_terms=unmatched,
+        excluded_terms=excluded,
         method_specific=method_specific or {},
         diagnostics=diagnostics or {},
     )

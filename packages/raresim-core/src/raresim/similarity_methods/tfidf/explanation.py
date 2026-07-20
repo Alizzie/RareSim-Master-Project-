@@ -28,6 +28,7 @@ from raresim.similarity_methods.tfidf.config import (
     METHOD_HPO_LABELS,
     SPARSE_DISEASE_THRESHOLD,
 )
+from raresim.types.schemas import PatientProfile
 from raresim.utils.text_utils import tokenize
 
 
@@ -231,7 +232,7 @@ def build_explanation(  # pylint: disable=too-many-arguments, too-many-positiona
     score: float,
     hpo_labels: dict[str, str],
     ic_values: dict[str, float],
-    patient_raw_terms: set[str] | None = None,
+    patient: PatientProfile,
     all_patient_terms_before_filter: set[str] | None = None,
     low_idf_threshold: float = LOW_IDF_THRESHOLD,
     extra_diagnostics: dict | None = None,
@@ -248,8 +249,7 @@ def build_explanation(  # pylint: disable=too-many-arguments, too-many-positiona
         score:             Cosine similarity score already computed.
         hpo_labels:        HPO ID → human-readable label.
         ic_values:         HPO ID → IC value (for shared spine matched_terms).
-        patient_raw_terms: Raw (non-propagated) patient terms for
-                           direct vs propagated classification.
+        patient:       PatientProfile object for the patient being scored.
         all_patient_terms_before_filter: All patient terms before any filtering.
         low_idf_threshold:  IDF weight below which a term is considered low-signal.
         extra_diagnostics: Additional diagnostic information.
@@ -301,7 +301,8 @@ def build_explanation(  # pylint: disable=too-many-arguments, too-many-positiona
             hpo_labels=hpo_labels,
             ic_values=ic_values,
             summary=summary,
-            patient_raw_terms=patient_raw_terms,
+            patient_raw_terms=patient.hpo_terms,
+            excluded_patient_terms=patient.excluded_hpo_terms,
             match_scores=match_scores,
             method_specific=method_specific,
             diagnostics=diagnostics,

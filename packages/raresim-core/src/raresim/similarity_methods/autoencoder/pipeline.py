@@ -172,7 +172,6 @@ def run(  # pylint: disable=too-many-locals
         terms_key=config.terms_key,
     )
 
-    patient_raw_terms = patient.hpo_terms
     patient_terms = patient.get_terms(config.use_propagated_terms)
 
     if not patient_terms:
@@ -221,13 +220,13 @@ def run(  # pylint: disable=too-many-locals
                     disease_terms=disease_terms,
                     hpo_labels=ctx.hpo_labels,
                     ic_values=ctx.ic_values,
-                    patient_raw_terms=patient_raw_terms,
+                    patient=patient,
                 ),
             )
         )
 
     metadata = build_run_stats(
-        n_patient_terms_raw=len(patient_raw_terms),
+        n_patient_terms_raw=len(patient.hpo_terms),
         n_patient_terms_propagated=len(patient.get_terms(use_propagated=True)),
         n_patient_terms_used=len(patient_terms),
         n_diseases_scored=len(results),

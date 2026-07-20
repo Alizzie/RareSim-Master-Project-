@@ -41,7 +41,7 @@ def _run_bma_method(  # pylint: disable=too-many-arguments,too-many-locals,too-m
     similarity_fn,
     patient_terms: set[str],
     all_patient_terms_before_filter: set[str],
-    patient_raw_terms: set[str],
+    patient: PatientProfile,
     config: PipelineConfig,
     ctx: AppContext,
     ancestor_sets: dict,
@@ -100,7 +100,7 @@ def _run_bma_method(  # pylint: disable=too-many-arguments,too-many-locals,too-m
             hpo_labels=ctx.hpo_labels,
             ic_values=ctx.ic_values,
             ic_threshold=config.ic_threshold,
-            patient_raw_terms=patient_raw_terms,
+            patient=patient,
         )
 
         category_metadata = build_category_metadata(
@@ -125,7 +125,7 @@ def _run_bma_method(  # pylint: disable=too-many-arguments,too-many-locals,too-m
         )
 
     stats = build_run_stats(
-        n_patient_terms_raw=len(patient_raw_terms),
+        n_patient_terms_raw=len(patient.hpo_terms),
         n_patient_terms_propagated=len(all_patient_terms_before_filter),
         n_patient_terms_used=len(patient_terms),
         n_diseases_scored=len(results),
@@ -148,7 +148,6 @@ def run(
     Returns:
         Dictionary mapping method name to MethodResults.
     """
-    patient_raw_terms = set(patient.hpo_terms)
     patient_terms_before_filter = set(patient.get_terms(config.use_propagated_terms))
     patient_terms = filter_terms_by_ic(
         patient_terms_before_filter,
@@ -172,7 +171,7 @@ def run(
             similarity_fn=similarity_fn,
             patient_terms=patient_terms,
             all_patient_terms_before_filter=patient_terms_before_filter,
-            patient_raw_terms=patient_raw_terms,
+            patient=patient,
             config=config,
             ctx=ctx,
             ancestor_sets=ancestor_sets,

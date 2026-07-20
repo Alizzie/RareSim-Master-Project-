@@ -74,6 +74,7 @@ def build_explanation(  # pylint: disable=too-many-arguments
         disease_terms=set(disease_hpo_terms),
         hpo_labels=hpo_labels,
         ic_values=ic_values,
+        excluded_patient_terms=set(),
         summary=summary,
         method_specific=method_specific,
         diagnostics={"raw_score": round(score, 6), **(diagnostics_extras or {})},

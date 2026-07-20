@@ -133,7 +133,6 @@ def run(  # pylint: disable=too-many-locals
             terms_key="hpo_terms",
         )
 
-        patient_raw_terms = patient.hpo_terms
         patient_terms = patient.get_terms(config.use_propagated_terms)
         patient_vec = embed_term_set(patient_terms, model, ctx.ic_values)
         n_terms_in_vocab = sum(1 for term in patient_terms if term in model.wv)
@@ -188,14 +187,14 @@ def run(  # pylint: disable=too-many-locals
                         disease_terms=disease_terms,
                         hpo_labels=ctx.hpo_labels,
                         ic_values=ctx.ic_values,
-                        patient_raw_terms=patient_raw_terms,
+                        patient=patient,
                         n_terms_in_vocab=n_terms_in_vocab,
                     ),
                 )
             )
 
         stats = build_run_stats(
-            n_patient_terms_raw=len(patient_raw_terms),
+            n_patient_terms_raw=len(patient.hpo_terms),
             n_patient_terms_propagated=len(patient.get_terms(use_propagated=True)),
             n_patient_terms_used=len(patient_terms),
             n_diseases_scored=len(results),

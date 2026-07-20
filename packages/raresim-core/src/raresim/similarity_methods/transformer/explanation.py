@@ -8,6 +8,7 @@ only as supporting context.
 
 from typing import Any
 from raresim.core.explanation import build_base_explanation
+from raresim.types.schemas import PatientProfile
 
 
 def build_method_specific_explanation_block(  # pylint: disable=too-many-arguments
@@ -57,6 +58,7 @@ def build_explanation(  # pylint: disable=too-many-arguments
     disease_hpo_terms: list[str],
     ic_values: dict[str, float],
     hpo_labels: dict[str, str],
+    patient: PatientProfile,
     method_specific: dict[str, Any] | None = None,
     diagnostics_extras: dict[str, Any] | None = None,
 ) -> dict:
@@ -77,6 +79,8 @@ def build_explanation(  # pylint: disable=too-many-arguments
         disease_terms=set(disease_hpo_terms),
         hpo_labels=hpo_labels,
         ic_values=ic_values,
+        patient_raw_terms=set(patient.hpo_terms),
+        excluded_patient_terms=patient.excluded_hpo_terms,
         summary=summary,
         method_specific=method_specific,
         diagnostics={"raw_score": round(score, 6), **(diagnostics_extras or {})},

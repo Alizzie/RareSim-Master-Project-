@@ -23,7 +23,7 @@ from raresim.similarity_methods.set_based.config import (
     PIPELINE_NAME,
     SETBASED_DIR,
     METHODS_REQUIRING_EXCLUSIONS,
-    NEGATIVE_PENALTY_WEIGHT
+    NEGATIVE_PENALTY_WEIGHT,
 )
 from raresim.similarity_methods.set_based.explanation import build_explanation
 from raresim.types import (
@@ -42,7 +42,6 @@ def run(  # pylint: disable=too-many-locals
     ctx: AppContext,
 ) -> dict[str, MethodResults]:
     """Run the set-based similarity pipeline for the given patient."""
-    patient_raw_terms = set(patient.hpo_terms)
     patient_terms = set(patient.get_terms(config.use_propagated_terms))
     patient_excluded_terms = patient.get_excluded_terms()
 
@@ -83,9 +82,7 @@ def run(  # pylint: disable=too-many-locals
                 score=score,
                 hpo_labels=ctx.hpo_labels,
                 ic_values=ctx.ic_values,
-                patient_raw_terms=patient_raw_terms,
-                patient_excluded_terms=patient_excluded_terms if needs_exclusions else None,
-                disease_excluded_terms=disease_excluded_terms if needs_exclusions else None,
+                patient=patient,
             )
 
             category_metadata = build_category_metadata(
@@ -110,7 +107,7 @@ def run(  # pylint: disable=too-many-locals
             )
 
         stats = build_run_stats(
-            n_patient_terms_raw=len(patient_raw_terms),
+            n_patient_terms_raw=len(patient.hpo_terms),
             n_patient_terms_propagated=len(patient.get_terms(use_propagated=True)),
             n_patient_terms_used=len(patient_terms),
             n_diseases_scored=len(results),

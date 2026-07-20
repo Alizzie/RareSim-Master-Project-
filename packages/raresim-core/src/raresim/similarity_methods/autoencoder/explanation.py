@@ -15,6 +15,7 @@ Inherited from base_explainer:
 """
 
 from raresim.core.explanation import build_base_explanation, ExplanationBlock
+from raresim.types.schemas import PatientProfile
 
 
 def build_method_specific_explanation_block(
@@ -48,7 +49,7 @@ def build_explanation(  # pylint: disable=too-many-arguments
     disease_terms: set[str],
     hpo_labels: dict[str, str],
     ic_values: dict[str, float],
-    patient_raw_terms: set[str] | None = None,
+    patient: PatientProfile,
     method_specific_extra: dict | None = None,
 ) -> dict:
     """Build a spine-conforming explanation dict for one autoencoder result."""
@@ -66,7 +67,8 @@ def build_explanation(  # pylint: disable=too-many-arguments
         hpo_labels=hpo_labels,
         ic_values=ic_values,
         summary=summary,
-        patient_raw_terms=patient_raw_terms,
+        patient_raw_terms=set(patient.hpo_terms),
+        excluded_patient_terms=patient.excluded_hpo_terms,
         method_specific=build_method_specific_explanation_block(
             method_specific_extra=method_specific_extra
         ),
