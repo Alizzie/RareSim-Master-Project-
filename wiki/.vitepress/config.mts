@@ -44,6 +44,7 @@ export default defineConfig({
         items: [
           { text: 'Embedding Methods', link: '/similarity-methods/embedding' },
           { text: 'LLM', link: '/similarity-methods/llm' },
+          { text: 'Adding a new similarity method', link: '/similarity-methods/adding-new-method' },
         ]
       },
       {
@@ -56,6 +57,7 @@ export default defineConfig({
           { text: 'Batch Runners & Shared Utilities', link: '/evaluation/batch-runners-and-shared-utilities' },
           { text: 'Cache Format', link: '/evaluation/cache-format' },
           { text: 'Evaluator & Metrics', link: '/evaluation/evaluator-and-metrics' },
+          { text: 'Visualizing Results', link: '/evaluation/visualizing-results' },
           { text: 'Adding a New Evaluation Method', link: '/evaluation/adding-method' },
         ]
       },

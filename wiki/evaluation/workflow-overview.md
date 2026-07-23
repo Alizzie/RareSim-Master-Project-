@@ -24,8 +24,8 @@ Each batch runner processes every case, runs one group of similarity methods, an
 Before evaluation, shared artifacts must already exist:
 
 ```bash
-python scripts/setup/load_ontologies_to_local.py
-python scripts/setup/build_shared_artifacts.py
+python raresim/build/load_ontologies_to_local.py
+python raresim/build/build_shared_artifacts.py
 ```
 
 The evaluation runners then load artifacts with:
@@ -120,8 +120,8 @@ For a dataset file named `MME.json`, the standard runners save per-case caches u
 ## Full command order
 
 ```bash
-python scripts/setup/load_ontologies_to_local.py
-python scripts/setup/build_shared_artifacts.py
+python raresim/build/load_ontologies_to_local.py
+python raresim/build/build_shared_artifacts.py
 
 python scripts/evaluation/run_set_based.py --test-set data/datasets/phenobrain_testdata/MME.json
 python scripts/evaluation/run_tfidf.py --test-set data/datasets/phenobrain_testdata/MME.json
