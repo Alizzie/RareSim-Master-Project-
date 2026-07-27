@@ -138,18 +138,18 @@
             {{ copyFeedback || 'Copy all' }}
           </button>
         </div>
-        <div class="tags-wrap">
-          <span
-            v-for="t in extractedTerms"
-            :key="t.hpo_id"
-            class="tag tag-extracted"
-            :title="`${t.hpo_id} · confidence: ${t.confidence}`"
+       <span
+          v-for="t in extractedTerms"
+          :key="t.hpo_id"
+          class="tag tag-extracted"
+          :class="{ 'tag-copied': copiedId === t.hpo_id }"
+          :title="copiedId === t.hpo_id ? 'Copied!' : `${t.hpo_id} · confidence: ${t.confidence} · click to copy`"
+          @click="copyOneTerm(t.hpo_id)"
           >
-            {{ t.label }}
-            <span class="tag-id">{{ t.hpo_id }}</span>
-          </span>
-        </div>
-        <p class="extract-note">
+          {{ t.label }}
+          <span class="tag-id">{{ copiedId === t.hpo_id ? 'Copied!' : t.hpo_id }}</span>
+        </span>
+                <p class="extract-note">
           These terms will be used as HPO input for semantic / set-based methods.
           Raw text will be used directly for transformer / LLM.
         </p>
@@ -381,6 +381,7 @@ async function runExtraction() {
 }
 
 const copyFeedback = ref('')
+const copiedId = ref('')
 
 async function copyAllTerms() {
   const ids = extractedTerms.value.map(t => t.hpo_id).join(', ')
@@ -391,6 +392,19 @@ async function copyAllTerms() {
     copyFeedback.value = 'Copy failed'
   } finally {
     setTimeout(() => { copyFeedback.value = '' }, 1500)
+  }
+}
+
+async function copyOneTerm(hpoId) {
+  try {
+    await navigator.clipboard.writeText(hpoId)
+    copiedId.value = hpoId
+  } catch (e) {
+    // silently ignore — tag just won't show feedback
+  } finally {
+    setTimeout(() => {
+      if (copiedId.value === hpoId) copiedId.value = ''
+    }, 1200)
   }
 }
 
@@ -594,6 +608,20 @@ function buildPayload() {
   gap: 1px;
   padding: 4px 10px;
   border-radius: 8px;
+  cursor: pointer;
+  transition: background .15s, border-color .15s, transform .1s;
+}
+.tag-extracted:hover {
+  border-color: var(--green);
+  background: #DFF3EA;
+}
+.tag-extracted:active {
+  transform: scale(0.97);
+}
+.tag-copied {
+  background: var(--accent-light) !important;
+  border-color: var(--accent) !important;
+  color: var(--accent) !important;
 }
 .tag-id {
   font-family: var(--mono);
