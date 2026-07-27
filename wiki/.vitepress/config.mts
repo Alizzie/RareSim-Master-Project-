@@ -44,6 +44,11 @@ export default defineConfig({
         items: [
           { text: 'Embedding Methods', link: '/similarity-methods/embedding' },
           { text: 'LLM', link: '/similarity-methods/llm' },
+          { text: 'TF-IDF', link: '/similarity-methods/tfidf-methods' },
+          { text: 'Semantic Methods', link: '/similarity-methods/semantic-methods' },
+          { text: 'Set-Based Methods', link: '/similarity-methods/set-based-methods' },
+          { text: 'HPO2Vec', link: '/similarity-methods/hpo2vec' },
+          { text: 'Denoising Autoencoder', link: '/similarity-methods/denoising-autoencoder' },
           { text: 'Adding a new similarity method', link: '/similarity-methods/adding-new-method' },
         ]
       },
