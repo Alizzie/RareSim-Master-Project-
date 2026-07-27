@@ -134,6 +134,9 @@
         <div class="section-label">
           Extracted terms ({{ extractedTerms.length }})
           <span class="method-used">via {{ lastExtractMethod }}</span>
+          <button class="btn-copy-all" @click="copyAllTerms">
+            {{ copyFeedback || 'Copy all' }}
+          </button>
         </div>
         <div class="tags-wrap">
           <span
@@ -377,6 +380,20 @@ async function runExtraction() {
   }
 }
 
+const copyFeedback = ref('')
+
+async function copyAllTerms() {
+  const ids = extractedTerms.value.map(t => t.hpo_id).join(', ')
+  try {
+    await navigator.clipboard.writeText(ids)
+    copyFeedback.value = 'Copied!'
+  } catch (e) {
+    copyFeedback.value = 'Copy failed'
+  } finally {
+    setTimeout(() => { copyFeedback.value = '' }, 1500)
+  }
+}
+
 // ── Methods ────────────────────────────────────────────────────────────────
 function toggleMethod(id) {
   if (selectedMethods.has(id)) selectedMethods.delete(id)
@@ -526,6 +543,26 @@ function buildPayload() {
   letter-spacing: 0;
   font-weight: 400;
   color: var(--text-secondary);
+}
+
+.btn-copy-all {
+  margin-left: auto;
+  font-size: 10px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 99px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-secondary);
+  cursor: pointer;
+  text-transform: none;
+  letter-spacing: 0;
+  transition: all .15s;
+}
+.btn-copy-all:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-light);
 }
 .tags-wrap {
   display: flex;
