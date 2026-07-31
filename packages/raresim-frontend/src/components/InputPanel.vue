@@ -134,19 +134,22 @@
         <div class="section-label">
           Extracted terms ({{ extractedTerms.length }})
           <span class="method-used">via {{ lastExtractMethod }}</span>
+          <button class="btn-copy-all" @click="copyAllTerms">
+            {{ copyFeedback || 'Copy all' }}
+          </button>
         </div>
-        <div class="tags-wrap">
-          <span
-            v-for="t in extractedTerms"
-            :key="t.hpo_id"
-            class="tag tag-extracted"
-            :title="`${t.hpo_id} · confidence: ${t.confidence}`"
+       <span
+          v-for="t in extractedTerms"
+          :key="t.hpo_id"
+          class="tag tag-extracted"
+          :class="{ 'tag-copied': copiedId === t.hpo_id }"
+          :title="copiedId === t.hpo_id ? 'Copied!' : `${t.hpo_id} · confidence: ${t.confidence} · click to copy`"
+          @click="copyOneTerm(t.hpo_id)"
           >
-            {{ t.label }}
-            <span class="tag-id">{{ t.hpo_id }}</span>
-          </span>
-        </div>
-        <p class="extract-note">
+          {{ t.label }}
+          <span class="tag-id">{{ copiedId === t.hpo_id ? 'Copied!' : t.hpo_id }}</span>
+        </span>
+                <p class="extract-note">
           These terms will be used as HPO input for semantic / set-based methods.
           Raw text will be used directly for transformer / LLM.
         </p>
@@ -160,13 +163,14 @@
         <label
           v-for="m in availableMethods"
           :key="m.id"
-          :class="['method-item', { checked: selectedMethods.has(m.id) }]"
+          :class="['method-item', { checked: selectedMethods.has(m.id), disabled: isMethodDisabled(m.id) }]"
+          @click.prevent="!isMethodDisabled(m.id) && toggleMethod(m.id)"
         >
           <input
             type="checkbox"
             :value="m.id"
             :checked="selectedMethods.has(m.id)"
-            @change="toggleMethod(m.id)"
+            :disabled="isMethodDisabled(m.id)"
           />
           <div class="check-box">
             <span v-if="selectedMethods.has(m.id)" class="check-icon">✓</span>
@@ -214,7 +218,7 @@
 </template>
 
 <script setup>
-import { ref, computed, reactive } from 'vue'
+import { ref, computed, reactive, watch } from 'vue'
 import { extractTerms } from '../api/index.js'
 import { searchHpo } from '../api/index.js'
 
@@ -272,6 +276,24 @@ const availableMethods = [
   { id: 'hpo2vec_plus',                label: 'HPO2Vec+',     badge: 'emb' },
   { id: 'denoising_autoencoder', label: 'Autoencoder', badge: 'nn', note: 'Works best with 10+ HPO terms' },
 ]
+
+const TEXT_ONLY_METHODS = new Set([]) 
+const HPO_ONLY_METHODS = new Set([
+  'semantic_resnik_bma', 'semantic_lin_bma', 'semantic_jiang_conrath_bma',
+  'set_jaccard', 'set_dice', 'set_cosine', 'set_overlap',
+  'hpo2vec_plus', 'denoising_autoencoder'
+])
+
+function isMethodDisabled(id) {
+  if (mode.value === 'text' && HPO_ONLY_METHODS.has(id)) return true
+  return false
+}
+
+watch(mode, (newMode) => {
+  if (newMode === 'text') {
+    HPO_ONLY_METHODS.forEach(id => selectedMethods.delete(id))
+  }
+})
 
 // ── computed ───────────────────────────────────────────────────────────────
 const hasHpoInput = computed(() =>
@@ -355,6 +377,34 @@ async function runExtraction() {
     extractError.value = `Extraction failed: ${e.message}`
   } finally {
     extracting.value = false
+  }
+}
+
+const copyFeedback = ref('')
+const copiedId = ref('')
+
+async function copyAllTerms() {
+  const ids = extractedTerms.value.map(t => t.hpo_id).join(', ')
+  try {
+    await navigator.clipboard.writeText(ids)
+    copyFeedback.value = 'Copied!'
+  } catch (e) {
+    copyFeedback.value = 'Copy failed'
+  } finally {
+    setTimeout(() => { copyFeedback.value = '' }, 1500)
+  }
+}
+
+async function copyOneTerm(hpoId) {
+  try {
+    await navigator.clipboard.writeText(hpoId)
+    copiedId.value = hpoId
+  } catch (e) {
+    // silently ignore — tag just won't show feedback
+  } finally {
+    setTimeout(() => {
+      if (copiedId.value === hpoId) copiedId.value = ''
+    }, 1200)
   }
 }
 
@@ -508,6 +558,26 @@ function buildPayload() {
   font-weight: 400;
   color: var(--text-secondary);
 }
+
+.btn-copy-all {
+  margin-left: auto;
+  font-size: 10px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 99px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-secondary);
+  cursor: pointer;
+  text-transform: none;
+  letter-spacing: 0;
+  transition: all .15s;
+}
+.btn-copy-all:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-light);
+}
 .tags-wrap {
   display: flex;
   flex-wrap: wrap;
@@ -538,6 +608,20 @@ function buildPayload() {
   gap: 1px;
   padding: 4px 10px;
   border-radius: 8px;
+  cursor: pointer;
+  transition: background .15s, border-color .15s, transform .1s;
+}
+.tag-extracted:hover {
+  border-color: var(--green);
+  background: #DFF3EA;
+}
+.tag-extracted:active {
+  transform: scale(0.97);
+}
+.tag-copied {
+  background: var(--accent-light) !important;
+  border-color: var(--accent) !important;
+  color: var(--accent) !important;
 }
 .tag-id {
   font-family: var(--mono);
@@ -847,6 +931,12 @@ function buildPayload() {
   color: var(--text-tertiary);
   width: 100%;
   margin-top: 2px;
+}
+
+.method-item.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 </style>
 
