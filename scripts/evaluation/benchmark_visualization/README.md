@@ -38,7 +38,7 @@ RareSim-Master-Project-/
 │       ├── dx29_benchmarks/…
 │       └── phenomizer_benchmarks/…
 │
-└── scripts/evaluation/benchmark_vizualization/
+└── scripts/evaluation/benchmark_visualization/
     ├── config.py
     ├── load_results.py
     ├── plot_evaluation_questions.py

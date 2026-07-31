@@ -5,7 +5,7 @@
 # Steps (all required — the package will not run without them):
 #   1. Clone third-party tools    (raresim.build.setup_third_party)
 #      fast_hpo_cr is a runtime dependency of the extraction methods.
-#   2. Download ontology sources  (raresim.build.download_ontologies)
+#   2. Download ontology sources  (raresim.build.load_ontologies_to_local)
 #   3. Build shared artifacts     (raresim.build.build_shared_artifacts)
 #
 # Usage:
@@ -19,7 +19,7 @@ echo "  RareSim — full setup from clone to runnable"
 echo "=================================================="
 
 echo ""
-echo "[1/3] Setting up third-party tools (required)..."
+echo "[1/3] Setting up third-party tools (required)...)"
 python -m raresim.build.setup_third_party
 
 echo ""
