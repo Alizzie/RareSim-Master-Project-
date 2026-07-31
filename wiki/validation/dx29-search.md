@@ -8,9 +8,7 @@ DX29 BioNET is a .NET-based rare disease prioritisation service developed by Fou
 
 > **Note:** DX29 runs as a local Docker container. The API server must be running before executing the benchmark runner.
 
----
-
-## Requirements
+## 1. Requirements
 
 | Dependency | Notes |
 |------------|-------|
@@ -18,9 +16,7 @@ DX29 BioNET is a .NET-based rare disease prioritisation service developed by Fou
 | Python 3.9+ | For the benchmark runner |
 | ~500 MB disk | For the OrphaNet XML data files |
 
----
-
-## 1. Download Data Files
+## 2. Download Data Files
 
 The repository includes truncated OrphaNet data files due to Git file size limits. Replace them with the full versions before building.
 
@@ -43,9 +39,7 @@ ls -lh ./Dx29.BioNET.WebAPI/_data/
 # orpha-phen.xml should be ~46 MB — if it is only a few MB, the download failed
 ```
 
----
-
-## 2. Apply Code Fix
+## 3. Apply Code Fix
 
 The original code throws runtime exceptions when the ORDO ontology contains duplicate disease IDs or blank cross-reference keys. Apply this patch to `src/Dx29.BioNET/OrphaNET/OrphaNET.Ordo.cs` before building:
 
@@ -69,9 +63,8 @@ if (!Diseases.ContainsKey(id))
 
 This prevents two errors: `ArgumentException: An item with the same key has already been added` caused by duplicate disease IDs, and the same exception caused by blank XRef keys.
 
----
 
-## 3. Build the Docker Image
+## 4. Build the Docker Image
 
 From the `src/` directory:
 
@@ -81,9 +74,7 @@ docker build -t dx29-bionet -f Dx29.BioNET.WebAPI/Dockerfile .
 
 The first build takes a few minutes as it pulls the .NET 5 base images.
 
----
-
-## 4. Run the Container
+## 5. Run the Container
 
 ```bash
 docker run -d -p 8080:80 --name dx29-bionet dx29-bionet:latest
@@ -97,9 +88,7 @@ docker logs dx29-bionet
 
 The API is then available at `http://localhost:8080`, with Swagger UI at `http://localhost:8080/swagger`.
 
----
-
-## 5. Running the Benchmark
+## 6. Running the Benchmark
 
 ```bash
 # Run against all datasets (auto-discovered)
@@ -125,11 +114,12 @@ python3 run_dx29_search.py --host http://localhost:8080
 | `--lang` | Language for API responses. Default: `en`. |
 | `--topk` | Number of top predictions to retrieve. Default: `1000`. |
 
----
+## 7. Implementation
+`run_dx29_search.py` POSTs each case's HPO ID list to `/api/v1/`Search on the running container (`skip=0`, `count=--topk`, `lang`, `source=all`). The returned `diseases` array is already ranked; the runner walks it, and the first entry whose `id` exactly matches a confirmed disease gives the case's rank and score. Wall-clock time per request is recorded as `query_time_sec`. There is no local cache; the container serves results directly.
 
-## Output Format
+## 8.Output Format
 
-Results are written to `dx29_benchmarks/<dataset>_summary.tsv`:
+Results are written to `output/validation_tools/dx29_benchmarks/<dataset>_summary.tsv`:
 
 | Column | Description |
 |--------|-------------|
@@ -146,25 +136,28 @@ Results are written to `dx29_benchmarks/<dataset>_summary.tsv`:
 
 ---
 
-## Results
+## 9. Results
 
 Results across all datasets from the benchmark run (May 2026):
 
-| Dataset | n | Found | Top-1 | Top-3 | Top-5 | Top-10 | Top-20 | Median rank |
-|---------|---|-------|-------|-------|-------|--------|--------|-------------|
-| MME | 40 | 36/40 | 0.425 | 0.600 | 0.650 | 0.700 | 0.725 | 3 |
-| HMS | 88 | 80/88 | 0.205 | 0.341 | 0.364 | 0.500 | 0.568 | 12 |
-| LIRICAL | 370 | 193/370 | 0.173 | 0.216 | 0.257 | 0.305 | 0.362 | 8 |
-| RAMEDIS | 375 | 302/375 | 0.088 | 0.173 | 0.253 | 0.373 | 0.477 | 15 |
-| PUMCH_L | 988 | 891/988 | 0.211 | 0.338 | 0.401 | 0.491 | 0.592 | 5 |
-| PUMCH-ADM | 75 | 70/75 | 0.173 | 0.267 | 0.360 | 0.413 | 0.533 | 17 |
+| Dataset |  Found | Top-1 | Top-3 | Top-5 | Top-10 | MRR | Avg. Query Time (s) |
+|---------|--------|--------|--------|--------|---------|---------|-------------|
+| MME | 36/40 | 0.425 | 0.600 | 0.650 | 0.700 | 0.515 | 0.02 |
+| HMS | 80/88 | 0.205 | 0.341 | 0.364 | 0.500 | 0.297 | 0.02 |
+| LIRICAL | 193/370 | 0.173 | 0.216 | 0.257 | 0.216 | 0.02 | 0.02 |
+| RAMEDIS  | 302/375 | 0.088 | 0.173 | 0.253 | 0.373 | 0.171 | 0.01 |
+| PUMCH_L  | 891/988 | 0.211 | 0.338 | 0.401 | 0.491 | 0.303 | 0.02 |
+| PUMCH-ADM  | 70/75 | 0.173 | 0.267 | 0.360 | 0.413 | 0.255 | 0.02 |
+| GA4GH Phenopackets | 308/384 | 0.240 | 0.310 | 0.359 | 0.435 | 0.305 | 0.02 |
+| MyGene2 (5.7.22) | 111/146 | 0.205 | 0.274 | 0.288 | 0.329 | 0.252 | 0.02
+| 0.1.27 | 5117/10375 | 0.129 | 0.190 | 0.218| 0.276 | 0.177 | 0.02 |
+| test_medical_cases | 199/200 | 0.895 | 0.945 | 0.960 | 0.970 | 0.922 | 0.05 |
+
 
 > These results use `--topk 1000`. Cases where the ground truth was not found in the top 1000 are counted as not found. DX29 returns Orphanet IDs only — cases with OMIM-only ground truth will not be matched.
 
 
----
-
-## Troubleshooting
+## 10. Troubleshooting
 
 | Symptom | Likely cause | Fix |
 |---------|-------------|-----|
@@ -173,8 +166,6 @@ Results across all datasets from the benchmark run (May 2026):
 | Empty logs, container running | App still loading XML | Wait 20–30 s and retry |
 | `Connection reset by peer` | App crashed on startup | Run `docker logs dx29-bionet` |
 
----
-
-## Reference
+## 11. Reference
 
 > Foundation29. *Dx29.BioNET — Dx29 algorithm for the calculation and suggestion of diseases.* GitHub repository. https://github.com/foundation29org/Dx29.BioNET

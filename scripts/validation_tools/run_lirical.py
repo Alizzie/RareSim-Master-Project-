@@ -1,17 +1,14 @@
-#!/usr/bin/env python3
-"""
-run_lirical.py — Run LIRICAL on benchmark datasets and evaluate results.
-Uses utils.py for all file handling and statistics.
+"""Run LIRICAL on benchmark datasets and evaluate results.
 
-Runs LIRICAL via `prioritize` subcommand (no YAML input).
+Runs LIRICAL via the `prioritize` subcommand (no YAML) once per case, caches the
+per-case TSV, then parses it and records the best rank among the confirmed
+disease IDs into a standardized per-dataset summary.
 
 Usage:
-  python3 run_lirical.py \\
-    --lirical-jar path/to/lirical-cli.jar \\
-    --lirical-data ~/lirical-data \\
-    --datasets HMS MME
-    
-My path: "/Users/eli/Documents/Uni/Master Project/Tools/LIRICAL/lirical-cli/target/lirical-cli-2.4.0.jar"
+    python3 run_lirical.py \\
+        --lirical-jar /path/to/lirical-cli-2.4.0.jar \\
+        --lirical-data lirical_data/ \\
+        --datasets MME HMS
 """
 
 import subprocess

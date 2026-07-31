@@ -7,11 +7,10 @@ LIRICAL (LIkelihood Ratio Interpretation of Clinical AbnormaLities) is a phenoty
 - **Version:** `2.4.0`
 - **Tested on:** macOS, May 2026
 
-> **Important:** The YAML input format changed between versions. In v2.4.0, the `yaml` subcommand does not work correctly — the runner uses the `prioritize` subcommand with `-p` flags instead.
+> **Important:** The YAML input format changed between versions. In v2.4.0, the `yaml` subcommand does not work correctly. The runner uses the `prioritize` subcommand with `-p` flags instead.
 
----
 
-## Requirements
+## 1. Requirements
 
 | Dependency | Version | Notes |
 |------------|---------|-------|
@@ -19,9 +18,8 @@ LIRICAL (LIkelihood Ratio Interpretation of Clinical AbnormaLities) is a phenoty
 | RAM | 8 GB+ | Recommended |
 | Disk | ~500 MB | For LIRICAL data directory |
 
----
 
-## 1. Install LIRICAL
+## 2. Install LIRICAL
 
 Clone the repository and build using the Maven wrapper. Prior installation of Maven is not required.
 
@@ -65,9 +63,8 @@ To make the alias permanent, add it to your `~/.zshrc` or `~/.bashrc`.
 
 > Alternatively, a prebuilt executable is available from the [Releases page](https://github.com/TheJacksonLaboratory/LIRICAL/releases). See the [official setup guide](https://thejacksonlaboratory.github.io/LIRICAL/stable/setup.html) for details.
 
----
 
-## 2. Data Files
+## 3. Data Files
 
 LIRICAL requires a data directory containing the HPO ontology and gene/transcript annotation files. Run the built-in download command once:
 
@@ -79,9 +76,8 @@ lirical download
 > This downloads ~500 MB and only needs to be done once. For phenotype-only mode (no VCF), Exomiser variant databases are not needed. See the [official setup guide](https://thejacksonlaboratory.github.io/LIRICAL/stable/setup.html) for details.
 > If you want the data in a different location, you need to pass that path explicitly when running the benchmark via --lirical-data.
 
----
 
-## 3. Verify Installation
+## 4. Verify Installation
 
 Test with a single case using the `prioritize` subcommand:
 
@@ -94,9 +90,7 @@ java -jar /path/to/lirical-cli-2.4.0.jar prioritize \
 
 If it outputs a ranked disease table, the setup is correct.
 
----
-
-## 4. Running the Benchmark
+## 5. Running the Benchmark
 
 ```bash
 # Run against all datasets (auto-discovered)
@@ -135,11 +129,17 @@ python3 run_lirical.py \
 | `--java` | Path to Java executable. Default: `java`. |
 | `--skip-existing` | Skip cases with existing output (resume mode). Default: off. |
 
----
+## 6. Implementation
+`run_lirical.py` runs in two phases per dataset:
 
-## 5. Output Format
+1. **Run:** For each case it invokes LIRICAL's `prioritize` subcommand once (`-p` for the comma-separated HPO terms, `--use-orphanet`, `-f tsv`), writing one `<case_id>.tsv` into `cache/<dataset>/`. Wall-clock time per subprocess call is recorded as `query_time_sec`. With `--skip-existing`, cases whose TSV already exists are skipped (timing is then reported as `skipped`).
+2. **Collect:** Each cached TSV is parsed, `ranks` are read from LIRICAL's rank column, and the best (lowest) rank among the confirmed disease IDs is taken as the case result. Rows are assembled into the summary and dataset statistics.
 
-Results are written to `lirical_benchmarks/<dataset>_summary.tsv`:
+ 
+
+## 7. Output Format
+
+Results are written to `output/validation_tools/lirical_benchmarks/<dataset>_summary.tsv`:
 
 | Column | Description |
 |--------|-------------|
@@ -152,7 +152,7 @@ Results are written to `lirical_benchmarks/<dataset>_summary.tsv`:
 | `status` | Whether LIRICAL ran successfully |
 | `query_time_sec` | Time taken for the query in seconds |
 
-Raw per-case TSV files are cached in `lirical_benchmarks/cache/<dataset>/`.
+Raw per-case TSV files are cached in `output/validation_tools/lirical_benchmarks/cache/<dataset>/`.
 
 ### LIRICAL output columns
 
@@ -165,9 +165,8 @@ Raw per-case TSV files are cached in `lirical_benchmarks/cache/<dataset>/`.
 | `posttestprob` | Posterior probability after phenotype evidence |
 | `compositeLR` | Composite likelihood ratio |
 
----
 
-## Performance
+## 8. Performance
 
 | Dataset | Cases | Approx. runtime |
 |---------|-------|-----------------|
@@ -180,8 +179,22 @@ Raw per-case TSV files are cached in `lirical_benchmarks/cache/<dataset>/`.
 
 Runtimes measured on macOS with Java 17. Use `--skip-existing` to safely resume interrupted runs.
 
----
 
-## References
+## 9. Results
+| Dataset |  Found | Top-1 | Top-3 | Top-5 | Top-10 | MRR | Avg. Query Time (s) |
+|---------|--------|--------|--------|--------|---------|---------|-------------|
+| MME | 40/40 | 0.425 | 0.625 | 0.650 | 0.775 | 0.551 | 9.63 |
+| HMS |  88/88 | 0.193 | 0.273 | 0.341 | 0.409 | 0.271 | 12.2 |
+| LIRICAL  | 370/370 | 0.449 | 0.600 | 0.630 | 0.665 | 0.536 | 10.83 |
+| RAMEDIS  | 375/375 | 0.141 | 0.275 | 0.347 | 0.456 | 0.243 | 11.39 |
+| PUMCH_L |  988/988 | 0.891 | 0.212 | 0.255 | 0.367 | 0.182 | 21.17 |
+| PUMCH-ADM  | 75/75 | 0.160 | 0.347 | 0.400 | 0.453 | 0.277 | 11.91 |
+| GA4GH Phenopackets | 384/384 | 0.451 | 0.591 | 0.625 | 0.680 | 0.537 | 14.53 |
+| MyGene2 (5.7.22) | 146/146 | 0.534 | 0.630 | 0.644 | 0.712 | 0.586 | 11.28
+| 0.1.27 | 9991/10375 | 0.482 | 0.608 | 0.651| 0.709 | 0.562 | 10.64 |
+| test_medical_cases | 200/200 | 0.630 | 0.770 | 0.795 | 0.825 | 0.706 | 35.72 |
+
+
+## 10. References
 
 > Robinson P.N. et al. *Interpretable clinical genomics with a likelihood ratio paradigm.* Am. J. Hum. Genet. 107, 403–417 (2020). https://doi.org/10.1016/j.ajhg.2020.06.021

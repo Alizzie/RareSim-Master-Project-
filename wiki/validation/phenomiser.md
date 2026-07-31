@@ -10,9 +10,7 @@ Phenomiser is a semantic similarity-based tool for rare disease diagnosis priori
 
 > **Runtime:** Precomputation takes ~20 hours and must be completed once before any queries can be run. Each query takes ~10 minutes.
 
----
-
-## Requirements
+## 1. Requirements
 
 | Dependency | Version | Notes |
 |------------|---------|-------|
@@ -21,9 +19,8 @@ Phenomiser is a semantic similarity-based tool for rare disease diagnosis priori
 | RAM | ≥ 32 GB | Required for precompute and queries |
 | Disk | ~10 GB | For precomputed cache |
 
----
 
-## 1. Java Setup
+## 2. Java Setup
 
 Phenomiser requires Java 21. Verify your version:
 
@@ -43,9 +40,7 @@ mvn -version
 # Should show: Java version: 21...
 ```
 
----
-
-## 2. Build Phenomiser
+## 3. Build Phenomiser
 
 Clone the repository and check out the correct commit:
 
@@ -67,9 +62,7 @@ The JAR will be at:
 phenomiser-cli/target/phenomiser-cli-0.0.2.jar
 ```
 
----
-
-## 3. Input Files
+## 4. Input Files
 
 The required input files (`hp.obo` and `phenotype.hpoa`) are already provided in the `phenomiser_data/` folder of this repository. No download or copy step is needed.
 
@@ -81,9 +74,8 @@ phenomiser_data/
 
 > If the files are missing or you need to update them, copy the originals from `ontologies/model/` and re-apply the header fix in step 4. Do not modify the shared files in `ontologies/model/` directly — the `sed` fix in step 4 will break other tools that depend on the original format.
 
----
 
-## 4. Fix the Annotation File Header
+## 5. Fix the Annotation File Header
 
 > **Note:** This step is already done for the file in `phenomiser_data/`. Only follow these instructions if you are setting up a fresh copy.
 
@@ -112,9 +104,8 @@ head -6 phenomiser_data/phenotype.hpoa
 # First data line should start with: DatabaseID  DiseaseName  ...
 ```
 
----
 
-## 5. Precomputation
+## 6. Precomputation
 
 Phenomiser must precompute a statistical background model before queries can be run. This step is slow but only needs to be done once per machine.
 
@@ -156,9 +147,8 @@ java -Xmx32g \
 
 Expected runtime: ~20 hours with 40 threads. The cache is saved to `~/Phenomiser_data/` automatically.
 
----
 
-## 6. Running the Benchmark
+## 7. Running the Benchmark
 
 Once precomputation is complete, run the benchmark against your datasets:
 
@@ -204,11 +194,16 @@ python3 run_phenomiser.py \
 | `--xmx` | Java heap size. Default: `32g`. |
 | `--skip-existing` | Skip cases with existing output (resume mode). Default: off. |
 
----
+## 8. Implementations
+`run_phenomiser.py` runs in two phases per dataset:
 
-## Output Format
+1. **Run:** For each case it invokes the Phenomiser CLI `query` subcommand once (comma-separated HPO terms via `-query`), writing one `<case_id>.txt` into `cache/<dataset>/`. Wall-clock time per subprocess call is recorded as `query_time_sec`; `--skip-existing` skips cases whose output already exists.
+2. **Collect:** Each cached file is parsed in file order (Phenomiser sorts by adjusted p-value ascending, then similarity score descending) and ranks are assigned accordingly. The best (lowest) rank among the confirmed disease IDs is taken as the case result, then rolled into the summary and statistics.
 
-Results are written to `phenomizer_benchmarks/<dataset>_summary.tsv`:
+
+## 9. Output Format
+
+Results are written to `output/validation_tools/phenomizer_benchmarks/<dataset>_summary.tsv`:
 
 | Column | Description |
 |--------|-------------|
@@ -221,7 +216,7 @@ Results are written to `phenomizer_benchmarks/<dataset>_summary.tsv`:
 | `status` | Whether the tool ran successfully |
 | `query_time_sec` | Time taken for the query |
 
-Raw per-case output files (`.txt`) are cached in `phenomizer_benchmarks/cache/<dataset>/`.
+Raw per-case output files (`.txt`) are cached in `output/validation_tools/phenomizer_benchmarks/cache/<dataset>/`.
 
 ### Phenomiser output columns
 
@@ -235,9 +230,7 @@ Raw per-case output files (`.txt`) are cached in `phenomizer_benchmarks/cache/<d
 
 Results are sorted by adjusted p-value ascending — the top rows are the best candidate diagnoses.
 
----
-
-## Performance
+## 10. Performance
 
 | Step | Runtime (40 threads) |
 |------|----------------------|
@@ -246,6 +239,26 @@ Results are sorted by adjusted p-value ascending — the top rows are the best c
 
 Plan accordingly for large datasets — 500 cases will take approximately 3–4 days of query time running sequentially. Use `--skip-existing` to safely resume interrupted runs.
 
-## References
+
+## 11. Results
+
+Results across all datasets from the benchmark run (Juni 2026):
+
+| Dataset |  Found | Top-1 | Top-3 | Top-5 | Top-10 | MRR | Avg. Query Time (s) |
+|---------|--------|--------|--------|--------|---------|---------|-------------|
+| MME  | 40/40 | 0.425 | 0.550 | 0.575 | 0.675 | 0.500 | 1297.75 |
+| HMS |  62/88 | 0.080 | 0.159 | 0.182 | 0.205 | 0.130 | 1107.25 |
+| LIRICAL  | 367/370 | 0.276 | 0.411 | 0.459 | 0.522 | 0.536 | 1488.01 |
+| RAMEDIS | 375/375 | 0.085 | 0.203 | 0.203 | 0.248 | 0.147 | 1325.87 |
+| PUMCH_L  |720/988 | 0.167 | 0.252 | 0.286 | 0.359 | 0.229 | 990.05 | 
+| PUMCH-ADM | 68/75 | 0.133 | 0.240 | 0.333 | 0.400 | 0.224 | 2004.54 | 
+| GA4GH Phenopackets | 384/384 | 0.266 | 0.409 | 0.456 | 0.526 | 0.358 | 1793.54 |
+| MyGene2 (5.7.22) | 146/146 | 0.226 | 0.315 | 0.336 | 0.500 | 0.298 | 2191.66 |
+| 0.1.27 | / | / | / | / | / | / | / |
+| test_medical_cases | 0/200 | 0 | 0 | 0 | 0 | 0 | 2049.25 |
+
+**Note:** Results for the dataset `0.1.27` are unavailable because the dataset is substantially larger than the others. Based on current performance, processing the full dataset is estimated to require more than two months of sequential computation and was therefore not completed.
+
+## 12. References
 
 > Köhler S. et al. *Clinical diagnostics in human genetics with semantic similarity searches in ontologies.* Am. J. Hum. Genet. 85, 457–464 (2009). https://doi.org/10.1016/j.ajhg.2009.09.003
