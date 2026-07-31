@@ -73,6 +73,7 @@ export default defineConfig({
           { text: 'LIRICAL', link: '/validation/lirical' },
           { text: 'Phenomizer', link: '/validation/phenomiser' },
           { text: 'PhenoBrain', link: '/validation/phenobrain' },
+          { text: `PhenoBrain Local`, link: '/validation/phenobrain-local' },
           { text: 'DX29 Search', link: '/validation/dx29-search' },
           { text: 'DX29 Phrank', link: '/validation/dx29-phrank' },
           { text: 'Validation Output', link: '/validation/output' },

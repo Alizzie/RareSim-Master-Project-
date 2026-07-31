@@ -8,7 +8,7 @@ PhenoBrain is an ensemble AI model for rare disease diagnosis prioritisation. It
 - **Tested on:** macOS, May 2026
 
 > **Note:** PhenoBrain runs as a hosted service. It covers the hosted PhenoBrain API, so there is no local setup required. Queries are sent to the Tsinghua University API server. Results depend on the availability of that server.
-For the self-hosted deployment (running their GitHub pipeline locally and standardizing its raw CSV), see the [PhenoBrain (Local)](./phenobrain_local.md) page.
+For the self-hosted deployment (running their GitHub pipeline locally and standardizing its raw CSV), see the [PhenoBrain (Local)](./phenobrain-local.md) page.
 
 ## 1. Requirements
 
