@@ -83,15 +83,35 @@ def load_or_train(
     hpo_parents: dict[str, list[str]],
     terms_key: str = "hpo_terms",
 ) -> Word2Vec:
-    """Load a saved HPO2Vec model or train a new one if not found."""
+    """Load a saved HPO2Vec model, or retrain if missing or incompatible."""
     MODEL_CACHE_DIR.mkdir(parents=True, exist_ok=True)
     model_path = _model_cache_path(terms_key)
 
     if model_path.exists():
         print("  Loading saved HPO2Vec model...")
-        return Word2Vec.load(str(model_path))
 
-    print("  No saved model found, training from scratch...")
+        try:
+            return Word2Vec.load(str(model_path))
+        except (ValueError, AttributeError, ImportError, TypeError) as exc:
+            print(
+                "  Saved HPO2Vec model is incompatible with the current "
+                f"environment: {exc}"
+            )
+            print("  Retraining the model from scratch...")
+
+            # Rename instead of deleting, so the old model is preserved.
+            incompatible_path = model_path.with_suffix(
+                model_path.suffix + ".incompatible"
+            )
+
+            # Avoid failing if an older incompatible backup already exists.
+            if incompatible_path.exists():
+                incompatible_path.unlink()
+
+            model_path.rename(incompatible_path)
+            print(f"  Old model moved to: {incompatible_path}")
+    else:
+        print("  No saved model found, training from scratch...")
 
     print("  Building graph...")
     graph = build_graph(
@@ -111,7 +131,6 @@ def load_or_train(
     print(f"  Model saved to: {model_path}")
 
     return model
-
 
 def run(  # pylint: disable=too-many-locals
     patient: PatientProfile,

@@ -200,6 +200,9 @@ python packages/raresim_core/similarity_methods/semantic/pipeline.py
 # terminal 1 — backend
 uvicorn raresim_api.main:app --reload --port 8000
 
+# With GPU: 
+CUDA_VISIBLE_DEVICES=4,5 uvicorn raresim_api.main:app --reload --port 8000
+
 # terminal 2 — frontend
 cd packages/raresim-frontend
 npm install

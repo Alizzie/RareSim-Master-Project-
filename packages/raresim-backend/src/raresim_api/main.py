@@ -23,20 +23,26 @@ from raresim.core.context import AppContext
 from raresim.analysis.method_comparison import build_comparison
 from raresim.core.pipeline import PipelineConfig
 from raresim.hpo_extraction import build_patient_profile
-from raresim.similarity_methods.autoencoder.pipeline import run as run_autoencoder
-from raresim.similarity_methods.hpo2vec.pipeline import run as run_hpo2vec
 from raresim.similarity_methods.llm.config import LLM_MODEL_LIST
 from raresim.similarity_methods.llm.pipeline import run as run_llm
-from raresim.similarity_methods.semantic.pipeline import run as run_semantic
-from raresim.similarity_methods.set_based.pipeline import run as run_set_based
-from raresim.similarity_methods.tfidf.pipeline import run as run_tfidf
-from raresim.similarity_methods.transformer.config import MODEL_LIST as TRANSFORMER_MODEL_LIST
+from raresim.similarity_methods.registry import ALL_METHODS as REGISTRY_METHODS
+from raresim.similarity_methods.registry import METHOD_MODULES
+from raresim.similarity_methods.transformer.config import (
+    MODEL_LIST as TRANSFORMER_MODEL_LIST,
+)
 from raresim.similarity_methods.transformer.pipeline import run as run_transformer
 from raresim.utils.hpo_utils import get_ancestors_inclusive, preprocess_ancestor_sets
 from raresim.utils.io import load_json, save_json
 from raresim.utils.paths import HPO_ANCESTORS_PATH, HPO_LABELS_PATH, WEBAPP_DIR
 from raresim.utils.patient_loader import load_patient_with_extraction
-from raresim.utils.paths import ARTIFACTS_DIR
+
+# Pipelines dispatched generically through METHOD_MODULES, the same registry
+# the CLI uses. Transformer and LLM are excluded and still run explicitly
+# below: transformer because its run() takes raw Hugging Face model names
+# rather than method IDs and its results need re-keying for the frontend,
+# and LLM because it is always run with the full LLM_MODEL_LIST rather than
+# a filtered method list.
+_SPECIAL_CASED_PIPELINES = {"transformer", "llm"}
 
 # ── App setup ─────────────────────────────────────────────────────────────────
 app = FastAPI(title="RareSim API", version="0.1.0")
@@ -54,13 +60,6 @@ hpo_labels = load_json(HPO_LABELS_PATH)
 print(f"  {len(hpo_labels)} HPO labels loaded")
 
 # ── Method groups ─────────────────────────────────────────────────────────────
-SEMANTIC_METHODS = {
-    "semantic_resnik_bma",
-    "semantic_lin_bma",
-    "semantic_jiang_conrath_bma",
-}
-SET_BASED_METHODS = {"set_cosine", "set_jaccard", "set_dice", "set_overlap", "set_jaccard_penalized"}
-TFIDF_METHODS = {"tfidf_hpo", "tfidf_text", "tfidf_hybrid", "tfidf_hpo_labels"}
 TRANSFORMER_MODEL_KEY_TO_METHOD: dict[str, str] = {
     "PubMedBERT": "transformer_PubMedBERT",
     "ClinicalBERT": "transformer_ClinicalBERT",
@@ -105,9 +104,7 @@ def _build_transformer_method_to_model() -> dict[str, str]:
 TRANSFORMER_METHOD_TO_MODEL = _build_transformer_method_to_model()
 TRANSFORMER_METHODS = set(TRANSFORMER_METHOD_TO_MODEL)
 TRANSFORMER_GROUP_METHODS = {"transformer"}
-LLM_METHODS = {"llm"}
-HPO2VEC_METHODS = {"hpo2vec", "hpo2vec_plus"}
-AUTOENCODER_METHODS = {"denoising_autoencoder"}
+LLM_GROUP_METHODS = {"llm"}
 
 VALID_EXTRACTION_METHODS = {
     "dictionary",
@@ -154,17 +151,15 @@ class SavePatientRequest(BaseModel):
 
 
 def _all_supported_methods() -> set[str]:
-    """Return all method keys accepted by the diagnose endpoint."""
-    return (
-        SEMANTIC_METHODS
-        | SET_BASED_METHODS
-        | TFIDF_METHODS
-        | TRANSFORMER_METHODS
-        | TRANSFORMER_GROUP_METHODS
-        | LLM_METHODS
-        | HPO2VEC_METHODS
-        | AUTOENCODER_METHODS
-    )
+    """
+    Return all method keys accepted by the diagnose endpoint.
+
+    Every method known to the shared registry is valid by construction, plus
+    two frontend-only convenience flags that are not themselves registry
+    methods: "transformer" (all transformer backbones) and "llm" (the
+    configured LLM model group).
+    """
+    return set(REGISTRY_METHODS) | TRANSFORMER_GROUP_METHODS | LLM_GROUP_METHODS
 
 
 def _expand_selected_methods(selected: set[str]) -> set[str]:
@@ -236,32 +231,56 @@ def _build_config(top_k: int) -> PipelineConfig:
     )
 
 
+def _run_generic_pipelines(
+    patient,
+    selected: set[str],
+    config: PipelineConfig,
+    ctx: AppContext,
+) -> dict[str, Any]:
+    """
+    Run every registry pipeline except transformer and LLM.
+
+    Mirrors the CLI's dispatch in app.py: loop over METHOD_MODULES and call
+    each module's run(patient, selected, config, ctx), letting the module
+    filter the full selected set down to the methods it recognizes. This
+    means semantic, set-based, TF-IDF, HPO2Vec, and autoencoder methods no
+    longer need a dedicated if-block or a hardcoded method-name set here;
+    adding a new plain method family to the registry makes it available to
+    the backend automatically, exactly as it already does for the CLI.
+    """
+    all_results: dict[str, Any] = {}
+    selected_list = sorted(selected)
+
+    for pipeline_name, module in METHOD_MODULES.items():
+        if pipeline_name in _SPECIAL_CASED_PIPELINES:
+            continue
+        if not any(m in selected for m in module.METHOD_NAMES):
+            continue
+        all_results.update(module.run(patient, selected_list, config, ctx))
+
+    return all_results
+
+
 def _run_selected_methods(
     patient,
     selected: set[str],
     config: PipelineConfig,
     ctx: AppContext,
 ) -> dict[str, Any]:
-    """Run all selected RareSim methods and return MethodResults by method."""
-    all_results: dict[str, Any] = {}
+    """
+    Run all selected RareSim methods and return MethodResults by method.
 
-    if selected & SEMANTIC_METHODS:
-        methods = list(selected & SEMANTIC_METHODS)
-        all_results.update(run_semantic(patient, methods, config, ctx))
-
-    if selected & SET_BASED_METHODS:
-        methods = list(selected & SET_BASED_METHODS)
-        all_results.update(run_set_based(patient, methods, config, ctx))
-
-    if selected & TFIDF_METHODS:
-        all_results.update(run_tfidf(patient, list(selected & TFIDF_METHODS), config, ctx))
+    Plain method families go through the generic registry loop. Transformer
+    and LLM stay special-cased: transformer needs its method IDs translated
+    into exact Hugging Face model names before dispatch and its results
+    re-keyed back to frontend method IDs afterward, and LLM is always run
+    with the full LLM_MODEL_LIST rather than a filtered method list.
+    """
+    all_results: dict[str, Any] = _run_generic_pipelines(patient, selected, config, ctx)
 
     if selected & TRANSFORMER_METHODS:
         method_keys = selected & TRANSFORMER_METHODS
-        model_names = [
-            TRANSFORMER_METHOD_TO_MODEL[key]
-            for key in sorted(method_keys)
-        ]
+        model_names = [TRANSFORMER_METHOD_TO_MODEL[key] for key in sorted(method_keys)]
         try:
             transformer_results = run_transformer(patient, model_names, config, ctx)
         except Exception as error:
@@ -274,16 +293,8 @@ def _run_selected_methods(
         rekeyed_results = _rekey_and_relabel_transformers(transformer_results)
         all_results.update(rekeyed_results)
 
-    if selected & LLM_METHODS:
+    if selected & LLM_GROUP_METHODS:
         all_results.update(run_llm(patient, LLM_MODEL_LIST, config, ctx))
-
-    if selected & HPO2VEC_METHODS:
-        methods = list(selected & HPO2VEC_METHODS)
-        all_results.update(run_hpo2vec(patient, methods, config, ctx))
-
-    if selected & AUTOENCODER_METHODS:
-        methods = list(selected & AUTOENCODER_METHODS)
-        all_results.update(run_autoencoder(patient, methods, config, ctx))
 
     return all_results
 
@@ -346,8 +357,6 @@ def _result_to_dict(result: Any) -> dict[str, Any]:
         "explanation": getattr(result, "explanation", {}),
     }
 
-ic_values = load_json(ARTIFACTS_DIR / "information_content.json")
-MAX_IC = max(ic_values.values()) if ic_values else 1.0
 
 def _flatten_results(all_results: dict[str, Any]) -> list[dict[str, Any]]:
     """Flatten MethodResults objects into one frontend result list."""
@@ -358,15 +367,6 @@ def _flatten_results(all_results: dict[str, Any]) -> list[dict[str, Any]]:
             flat_results.append(_result_to_dict(result))
 
     flat_results.sort(key=lambda row: row["score"], reverse=True)
-
-    resnik_methods = {"semantic_resnik_bma"}
-    method_max: dict[str, float] = {}
-    for r in flat_results:
-        if r["method_name"] in resnik_methods:
-            method_max[r["method_name"]] = max(method_max.get(r["method_name"], 0.0), r["score"])
-    for r in flat_results:
-        if r["method_name"] in resnik_methods and method_max.get(r["method_name"], 0) > 0:
-            r["score"] = r["score"] / method_max[r["method_name"]]
     return flat_results
 
 
