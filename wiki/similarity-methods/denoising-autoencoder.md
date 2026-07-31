@@ -6,7 +6,7 @@ The denoising autoencoder (DAE) learns a compressed latent representation of HPO
 
 Unlike semantic or embedding methods that operate on individual term pairs or label text, the autoencoder works on the entire HPO profile at once as a fixed-length binary vector. The latent space captures co-occurrence structure across the whole vocabulary.
 
-The method is implemented across five files:
+The method is implemented across four files:
 
 ```text
 config.py        Architecture dimensions, training hyperparameters, cache paths

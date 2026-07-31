@@ -11,7 +11,7 @@ Four modes are implemented, each building the patient and disease vectors differ
 - `tfidf_hybrid` — patient HPO labels vs disease description text
 - `tfidf_hpo_labels` — patient HPO labels vs disease HPO labels
 
-The method is implemented across five files:
+The method is implemented across four files:
 
 ```text
 config.py        Mode names, thresholds, field names, and output paths

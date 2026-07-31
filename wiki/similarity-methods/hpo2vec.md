@@ -6,7 +6,7 @@ HPO2Vec+ learns dense vector embeddings for every HPO term and disease node by t
 
 Unlike semantic methods, HPO2Vec+ does not compute pairwise term-to-term similarity using ancestor structure at inference time. Instead, the ontology structure and disease associations are baked into the embeddings during training. At inference, comparison is a single cosine operation between two dense vectors.
 
-The method is implemented across five files:
+The method is implemented across four files:
 
 ```text
 config.py        Walk parameters, embedding settings, model cache path

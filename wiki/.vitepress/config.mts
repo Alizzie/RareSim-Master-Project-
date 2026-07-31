@@ -26,6 +26,11 @@ export default defineConfig({
         items: [
           { text: 'Architecture Design', link: '/system/architecture-design' },
           { text: 'Web Interface', link: '/system/web-interface' },
+          { text: 'CLI', link: '/system/cli' },
+          { text: 'HPO Extraction Pipeline', link: '/system/hpo-extraction-pipeline' },
+          { text: 'Data & Storage Lifecycle', link: '/system/data-and-storage-lifecycle' },
+          { text: 'Deployment & External Dependencies', link: '/system/deployment-and-external-dependencies' },
+          { text: 'Implementation & Libraries', link: '/system/implementation-and-libraries' },
         ]
       },
       {
@@ -36,12 +41,15 @@ export default defineConfig({
           { text: 'Raw Sources & Ontology Loading', link: '/artifacts/raw-sources-and-ontology-loading' },
           { text: 'Disease ID Normalization & Mapping', link: '/artifacts/disease-id-normalization-and-mapping' },
           { text: 'Disease Profile Construction', link: '/artifacts/disease-profile-construction' },
+          { text: 'Patient Profile Construction', link: '/artifacts/patient-profile-construction' },
           { text: 'File Reference & Runtime Loading', link: '/artifacts/file-reference-and-runtime-loading' },
+
         ]
       },
       {
         text: 'Similarity Methods',
         items: [
+          { text: 'Methods Overview', link: '/similarity-methods/overview' },
           { text: 'Embedding Methods', link: '/similarity-methods/embedding' },
           { text: 'LLM', link: '/similarity-methods/llm' },
           { text: 'TF-IDF', link: '/similarity-methods/tfidf-methods' },
@@ -59,6 +67,7 @@ export default defineConfig({
           { text: 'Dataset Format', link: '/evaluation/dataset-format' },
           { text: 'Dataset Available', link: '/evaluation/dataset-available' },
           { text: 'Dataset Adding', link: '/evaluation/dataset-adding' },
+          { text: 'Benchmark Dataset Standardization', link: '/evaluation/benchmark-dataset-standardization' },
           { text: 'Batch Runners & Shared Utilities', link: '/evaluation/batch-runners-and-shared-utilities' },
           { text: 'Cache Format', link: '/evaluation/cache-format' },
           { text: 'Evaluator & Metrics', link: '/evaluation/evaluator-and-metrics' },
