@@ -7,18 +7,18 @@ export default defineConfig({
   themeConfig: {
     sidebar: [
       {
-        text: 'Getting Started',
-        items: [
-          { text: 'Installation', link: '/getting-started/installation' },
-          { text: 'Quick Start', link: '/getting-started/quick-start' },
-        ]
-      },
-      {
         text: 'Project Overview',
         items: [
           { text: 'Overview', link: '/project-overview/overview' },
           { text: 'Configuration', link: '/project-overview/configuration' },
           { text: 'Output', link: '/project-overview/output' },
+        ]
+      },
+      {
+        text: 'Getting Started',
+        items: [
+          { text: 'Installation', link: '/getting-started/installation' },
+          { text: 'Quick Start', link: '/getting-started/quick-start' },
         ]
       },
       {
@@ -50,13 +50,13 @@ export default defineConfig({
         text: 'Similarity Methods',
         items: [
           { text: 'Methods Overview', link: '/similarity-methods/overview' },
-          { text: 'Embedding Methods', link: '/similarity-methods/embedding' },
-          { text: 'LLM', link: '/similarity-methods/llm' },
           { text: 'TF-IDF', link: '/similarity-methods/tfidf-methods' },
           { text: 'Semantic Methods', link: '/similarity-methods/semantic-methods' },
           { text: 'Set-Based Methods', link: '/similarity-methods/set-based-methods' },
           { text: 'HPO2Vec', link: '/similarity-methods/hpo2vec' },
           { text: 'Denoising Autoencoder', link: '/similarity-methods/denoising-autoencoder' },
+          { text: 'Embedding Methods', link: '/similarity-methods/embedding' },
+          { text: 'LLM', link: '/similarity-methods/llm' },
           { text: 'Adding a new similarity method', link: '/similarity-methods/adding-new-method' },
         ]
       },
