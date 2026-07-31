@@ -11,13 +11,13 @@ Given a patient's HPO terms or clinical text, RareSim ranks diseases by phenotyp
 Patient HPO terms / clinical text
         │
         ▼
-  HPO Extraction          ← dictionary, NER, FastHPOCR, GPT, PhenoBrain
+  HPO Extraction          <-dictionary, NER, FastHPOCR, GPT, PhenoBrain
         │
         ▼
-  Similarity Pipeline     ← semantic (Resnik/Lin/JC), set-based, TF-IDF, transformer, LLM
+  Similarity Pipeline     <-semantic (Resnik/Lin/JC), set-based, TF-IDF, transformer, LLM
         │
         ▼
-  Ranked Disease Results  ← scored against ~10,000 rare diseases
+  Ranked Disease Results  <-scored against ~10,000 rare diseases
 ```
 
 Disease knowledge is built from four ontologies: **HP**, **ORDO**, **MONDO**, and **HOOM**, merged and canonicalized to ORPHA identifiers.
@@ -29,16 +29,16 @@ Disease knowledge is built from four ontologies: **HP**, **ORDO**, **MONDO**, an
 ```
 RareSim/
   packages/
-    raresim-core/          ← installable Python package (core logic)
-    raresim-api/           ← FastAPI backend (wraps raresim-core)
-    raresim-frontend/      ← Vue 3 web interface
+    raresim-core/          <-installable Python package (core logic)
+    raresim-api/           <-FastAPI backend (wraps raresim-core)
+    raresim-frontend/      <-Vue 3 web interface
 
   scripts/
-    setup/                 ← one-time setup: ontologies, artifacts, third-party tools
-    evaluation/            ← evaluate pipeline performance
-    validation_tools/      ← run and compare existing tools (LIRICAL etc.)
-    experiments/           ← ad-hoc experiments
-    analysis/              ← analyse outputs, automated reporting
+    setup/                 <-one-time setup: ontologies, artifacts, third-party tools
+    evaluation/             <-evaluate pipeline performance
+    validation_tools/      <-run and compare existing tools (LIRICAL etc.)
+    experiments/            <-ad-hoc experiments
+    analysis/               <-analyse outputs, automated reporting
 
   tests/
     unit/
@@ -46,26 +46,31 @@ RareSim/
     validation_tool/
     evaluation/
 
-  data/                    ← gitignored large files (see data/README.md)
-    ontologies/            ← hp.owl, ordo.owl, mondo.owl, hoom.owl
-    datasets/              ← HMS.json, MME.json, LIRICAL.json, phenopackets/
+  data/                    <-gitignored large files (see data/README.md)
+    ontologies/             <-hp.owl, ordo.owl, mondo.owl, hoom.owl
+    datasets/                <-HMS.json, MME.json, LIRICAL.json, phenopackets/
 
-  outputs/                 ← gitignored, generated at runtime
-    artifacts/             ← precomputed profiles, IC, ancestors, labels
+  outputs/                 <-gitignored, generated at runtime
+    artifacts/              <-precomputed profiles, IC, ancestors, labels
     transformer/
     semantic/
     evaluation/
     validation/
     gui/
 
-  third_party/             ← externally cloned tools (gitignored)
+  third_party/             <-externally cloned tools (gitignored)
     fast_hpo_cr/
+
+  wiki/                    <-VitePress documentation site (see "Project Wiki" below)
+    .vitepress/
+      config.mts
 
   docs/
     notebooks/
 
-  pyproject.toml           ← root: dev tooling + uv workspace
-  .env                     ← local paths (not committed)
+  pyproject.toml           <-root: dev tooling + uv workspace
+  setup.sh                 <-bootstrap script: third-party tools, ontologies, artifacts
+  .env                     <-local paths (not committed)
   README.md
 ```
 
@@ -98,7 +103,7 @@ uv sync
 
 # or with pip
 pip install -e packages/raresim-core
-pip install -e packages/raresim-api
+pip install -e packages/raresim-backend
 ```
 
 ### 4. Configure paths
@@ -110,21 +115,38 @@ RARESIM_ROOT=/path/to/RareSim
 OPENAI_API_KEY=sk-...        # optional — only needed for GPT extraction
 ```
 
-### 5. Set up third-party tools
+### 5. Run the setup script
 
 ```bash
-python scripts/setup/setup_third_party.py
+./setup.sh
 ```
 
-This clones [FastHPOCR](https://github.com/tudorgroza/fast_hpo_cr) into `third_party/`. Skips anything already cloned.
+This bootstraps RareSim from a fresh clone to a runnable state, and all three steps are required; RareSim will not run without them:
 
-### 6. Download ontologies
+- Clones third-party tools ([FastHPOCR](https://github.com/tudorgroza/fast_hpo_cr)) into `third_party/`, skipping anything already cloned.
+- Downloads the ontology sources into `data/ontologies/`.
+- Builds the shared artifacts into `outputs/artifacts/`.
 
-Download the following files into `data/ontologies/` (see `data/README.md` for exact versions and sources):
+<details>
+<summary>Running the steps individually</summary>
+
+Useful for debugging a single step, or if you only need to rebuild artifacts after an ontology update.
+
+**Set up third-party tools**
 
 ```bash
-python scripts/setup/load_ontologies_to_local.py
+python -m raresim.build.setup_third_party
 ```
+
+Clones [FastHPOCR](https://github.com/tudorgroza/fast_hpo_cr) into `third_party/`. Skips anything already cloned.
+
+**Download ontologies**
+
+```bash
+python -m raresim.build.load_ontologies_to_local
+```
+
+Downloads the following files into `data/ontologies/` (see `data/README.md` for exact versions and sources):
 
 | File | Source |
 |------|--------|
@@ -136,10 +158,10 @@ python scripts/setup/load_ontologies_to_local.py
 | `en_product4_HPO.xml` | [Orphadata](https://www.orphadata.com) |
 | `disease_to_phenotypic_feature_association.all.tsv.gz` | [Monarch](https://monarch-initiative.github.io) |
 
-### 7. Build shared artifacts
+**Build shared artifacts**
 
 ```bash
-python scripts/setup/build_shared_artifacts.py
+python -m raresim.build.build_shared_artifacts
 ```
 
 Generates precomputed files in `outputs/artifacts/`:
@@ -149,32 +171,28 @@ Generates precomputed files in `outputs/artifacts/`:
 - `information_content.json`
 - `alias_to_canonical.json`
 
-### 8. Standardize phenopackets (optional)
+</details>
+
+### 6. Standardize phenopackets (optional)
 
 Only needed if you are using phenopacket datasets for evaluation.
 
 ```bash
-python scripts/setup/standardize_phenopackets.py
+python scripts/evaluation/data_prep/standardize_phenopackets.py
 ```
 
 Converts raw phenopackets from `data/datasets/phenopackets/raw/` into a standardized `[[HP terms], [disease codes]]` format, saved per release folder under `data/datasets/phenopackets/standardized_to_json/`.
 
 
-### 9. Run the pipeline
+### 7. Run the pipeline
 
 **Terminal interface:**
 ```bash
 # from HPO terms
-python scripts/raresim_cli/app.py --hpo HP:0001251,HP:0000545
+python packages/raresim_cli/app.py --hpo HP:0001251,HP:0000545
 
-# from clinical text
-python scripts/run_pipeline.py --text "Patient with cerebellar ataxia and macrocephaly."
-
-# from patient file
-python scripts/run_pipeline.py --patient data/patient_profiles/example_patient.json
-
-# all methods, example patient
-python scripts/run_pipeline.py --defaults
+# from a specific similarity method
+python packages/raresim_core/similarity_methods/semantic/pipeline.py
 ```
 
 **Web interface:**
@@ -267,14 +285,56 @@ ruff format .
 ## Package Architecture
 
 ```
-raresim-core            ← pure logic, no HTTP
+raresim-core            <-pure logic, no HTTP
     │  Python import
-raresim-api             ← FastAPI, wraps raresim-core
+raresim-api             <-FastAPI, wraps raresim-core
     │  HTTP /api/*
-raresim-frontend        ← Vue 3, calls raresim-api
+raresim-frontend        <-Vue 3, calls raresim-api
 ```
 
 `raresim-core` has zero knowledge of the API or frontend. Scripts and tests import directly from `raresim-core`.
+
+---
+
+## Project Wiki
+
+Project documentation (method write-ups, setup guides, validation-tool notes, etc.) lives in a [VitePress](https://vitepress.dev/) site under the `wiki/` folder of this repository, rather than in GitLab's built-in wiki. The existing GitLab wiki pages have already been migrated into `wiki/`; continue updating them there, or add new pages following the steps below.
+
+### One-time setup
+
+Install Node.js (if not already installed):
+
+```bash
+nvm install 24
+```
+
+From the repository root, install the project dependencies:
+
+```bash
+npm install
+```
+
+This installs VitePress and only needs to be run once (or again after `wiki/.vitepress/config.mts` or its dependencies change).
+
+### Adding or editing a page
+
+1. Create a new Markdown file inside `wiki/`, named `Category_PageName.md` (e.g. `SimilarityMethods_SetBased.md`).
+2. Write the page content in that file.
+3. Open `wiki/.vitepress/config.mts` and add the new page under the correct sidebar category, using a link that matches the filename without the `.md` extension:
+
+   ```typescript
+   { text: 'Set-based', link: '/SimilarityMethods_SetBased' },
+   ```
+
+To edit an existing page, just edit its Markdown file directly; no config changes are needed unless you are moving it to a different sidebar category.
+
+### Previewing locally
+
+```bash
+npm run wiki:dev
+```
+
+Open the local URL printed in the terminal to preview the site with your changes.
 
 ---
 

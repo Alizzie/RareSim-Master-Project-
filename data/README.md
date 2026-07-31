@@ -7,7 +7,7 @@ All large files are gitignored. See sections below to download them.
 Run to download:
 
 ```bash
-python scripts/setup/load_ontologies.py
+python package/raresim-core/src/raresim/build/load_ontologies.py
 ```
 
 ### Included Ontologies:
