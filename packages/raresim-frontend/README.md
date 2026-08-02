@@ -12,13 +12,12 @@ raresim-frontend/
     components/
       InputPanel.vue         ← left panel: HPO input / raw text + extraction / method selector
       ResultsPanel.vue       ← right panel: ranked disease results
+      MethodComparison.vue  ← below Results: comparison between methods
     api/
       index.js               ← all frontend API calls (extract, diagnose)
-      backend/
-        main.py              ← FastAPI backend (place in your RareSim src/api/)
-  public/
-    index.html
+  index.html
   package.json
+  package-lock.json
   vite.config.js             ← dev server proxies /api → localhost:8000
 ```
 
