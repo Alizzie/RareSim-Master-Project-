@@ -265,33 +265,40 @@ let searchTimeout = null
 const selectedMethods = reactive(new Set(['semantic_resnik_bma', 'transformer']))
 
 const availableMethods = [
-  { id: 'semantic_resnik_bma',         label: 'Resnik BMA',   badge: 'IC'  },
+  { id: 'semantic_resnik_bma',         label: 'Resnik BMA',   badge: 'IC', note: 'Not normalized to 0–1, scores can exceed 1 and aren\'t directly comparable across methods' },
   { id: 'semantic_lin_bma',            label: 'Lin BMA',      badge: 'IC'  },
   { id: 'semantic_jiang_conrath_bma',  label: 'JC BMA',       badge: 'IC'  },
   { id: 'set_jaccard',                 label: 'Jaccard',      badge: 'set' },
   { id: 'set_dice',                    label: 'Dice',         badge: 'set' },
-  { id: 'tfidf',                       label: 'TF-IDF',       badge: 'txt' },
+  { id: 'tfidf_hpo',                   label: 'TF-IDF (HPO)',        badge: 'txt' },
+  { id: 'tfidf_hpo_labels',            label: 'TF-IDF (HPO Labels)', badge: 'txt' },
+  { id: 'tfidf_text',                  label: 'TF-IDF (Text)',       badge: 'txt' },
+  { id: 'tfidf_hybrid',                label: 'TF-IDF (Hybrid)',     badge: 'txt' },
   { id: 'transformer',                 label: 'Transformer',  badge: 'emb' },
   { id: 'llm',                         label: 'LLM',          badge: 'llm' },
   { id: 'hpo2vec_plus',                label: 'HPO2Vec+',     badge: 'emb' },
   { id: 'denoising_autoencoder', label: 'Autoencoder', badge: 'nn', note: 'Works best with 10+ HPO terms' },
 ]
 
-const TEXT_ONLY_METHODS = new Set([]) 
+const TEXT_ONLY_METHODS = new Set(['tfidf_text'])
 const HPO_ONLY_METHODS = new Set([
   'semantic_resnik_bma', 'semantic_lin_bma', 'semantic_jiang_conrath_bma',
   'set_jaccard', 'set_dice', 'set_cosine', 'set_overlap',
-  'hpo2vec_plus', 'denoising_autoencoder'
+  'hpo2vec_plus', 'denoising_autoencoder',
+  'tfidf_hpo', 'tfidf_hpo_labels',
 ])
 
 function isMethodDisabled(id) {
   if (mode.value === 'text' && HPO_ONLY_METHODS.has(id)) return true
+  if (mode.value === 'hpo' && TEXT_ONLY_METHODS.has(id)) return true
   return false
 }
 
 watch(mode, (newMode) => {
   if (newMode === 'text') {
     HPO_ONLY_METHODS.forEach(id => selectedMethods.delete(id))
+  } else if (newMode === 'hpo') {
+    TEXT_ONLY_METHODS.forEach(id => selectedMethods.delete(id))
   }
 })
 
@@ -425,11 +432,7 @@ function buildPayload() {
     hpo_terms: hpoTerms,
     excluded_hpo_terms: excludedTerms.value.map(t => t.hpo_id),
     raw_text: mode.value === 'text' ? rawText.value : null,
-    methods: [...selectedMethods].flatMap(m =>
-      m === 'tfidf'
-        ? ['tfidf_hpo', 'tfidf_text', 'tfidf_hybrid', 'tfidf_hpo_labels']
-        : [m]
-    ),
+    methods: [...selectedMethods],
     top_k: topK.value,
   }
 }
