@@ -134,19 +134,22 @@
         <div class="section-label">
           Extracted terms ({{ extractedTerms.length }})
           <span class="method-used">via {{ lastExtractMethod }}</span>
+          <button class="btn-copy-all" @click="copyAllTerms">
+            {{ copyFeedback || 'Copy all' }}
+          </button>
         </div>
-        <div class="tags-wrap">
-          <span
-            v-for="t in extractedTerms"
-            :key="t.hpo_id"
-            class="tag tag-extracted"
-            :title="`${t.hpo_id} · confidence: ${t.confidence}`"
+       <span
+          v-for="t in extractedTerms"
+          :key="t.hpo_id"
+          class="tag tag-extracted"
+          :class="{ 'tag-copied': copiedId === t.hpo_id }"
+          :title="copiedId === t.hpo_id ? 'Copied!' : `${t.hpo_id} · confidence: ${t.confidence} · click to copy`"
+          @click="copyOneTerm(t.hpo_id)"
           >
-            {{ t.label }}
-            <span class="tag-id">{{ t.hpo_id }}</span>
-          </span>
-        </div>
-        <p class="extract-note">
+          {{ t.label }}
+          <span class="tag-id">{{ copiedId === t.hpo_id ? 'Copied!' : t.hpo_id }}</span>
+        </span>
+                <p class="extract-note">
           These terms will be used as HPO input for semantic / set-based methods.
           Raw text will be used directly for transformer / LLM.
         </p>
@@ -160,13 +163,14 @@
         <label
           v-for="m in availableMethods"
           :key="m.id"
-          :class="['method-item', { checked: selectedMethods.has(m.id) }]"
+          :class="['method-item', { checked: selectedMethods.has(m.id), disabled: isMethodDisabled(m.id) }]"
+          @click.prevent="!isMethodDisabled(m.id) && toggleMethod(m.id)"
         >
           <input
             type="checkbox"
             :value="m.id"
             :checked="selectedMethods.has(m.id)"
-            @change="toggleMethod(m.id)"
+            :disabled="isMethodDisabled(m.id)"
           />
           <div class="check-box">
             <span v-if="selectedMethods.has(m.id)" class="check-icon">✓</span>
@@ -214,7 +218,7 @@
 </template>
 
 <script setup>
-import { ref, computed, reactive } from 'vue'
+import { ref, computed, reactive, watch } from 'vue'
 import { extractTerms } from '../api/index.js'
 import { searchHpo } from '../api/index.js'
 
@@ -261,17 +265,42 @@ let searchTimeout = null
 const selectedMethods = reactive(new Set(['semantic_resnik_bma', 'transformer']))
 
 const availableMethods = [
-  { id: 'semantic_resnik_bma',         label: 'Resnik BMA',   badge: 'IC'  },
+  { id: 'semantic_resnik_bma',         label: 'Resnik BMA',   badge: 'IC', note: 'Not normalized to 0–1, scores can exceed 1 and aren\'t directly comparable across methods' },
   { id: 'semantic_lin_bma',            label: 'Lin BMA',      badge: 'IC'  },
   { id: 'semantic_jiang_conrath_bma',  label: 'JC BMA',       badge: 'IC'  },
   { id: 'set_jaccard',                 label: 'Jaccard',      badge: 'set' },
   { id: 'set_dice',                    label: 'Dice',         badge: 'set' },
-  { id: 'tfidf',                       label: 'TF-IDF',       badge: 'txt' },
+  { id: 'tfidf_hpo',                   label: 'TF-IDF (HPO)',        badge: 'txt' },
+  { id: 'tfidf_hpo_labels',            label: 'TF-IDF (HPO Labels)', badge: 'txt' },
+  { id: 'tfidf_text',                  label: 'TF-IDF (Text)',       badge: 'txt' },
+  { id: 'tfidf_hybrid',                label: 'TF-IDF (Hybrid)',     badge: 'txt' },
   { id: 'transformer',                 label: 'Transformer',  badge: 'emb' },
   { id: 'llm',                         label: 'LLM',          badge: 'llm' },
   { id: 'hpo2vec_plus',                label: 'HPO2Vec+',     badge: 'emb' },
   { id: 'denoising_autoencoder', label: 'Autoencoder', badge: 'nn', note: 'Works best with 10+ HPO terms' },
 ]
+
+const TEXT_ONLY_METHODS = new Set(['tfidf_text'])
+const HPO_ONLY_METHODS = new Set([
+  'semantic_resnik_bma', 'semantic_lin_bma', 'semantic_jiang_conrath_bma',
+  'set_jaccard', 'set_dice', 'set_cosine', 'set_overlap',
+  'hpo2vec_plus', 'denoising_autoencoder',
+  'tfidf_hpo', 'tfidf_hpo_labels',
+])
+
+function isMethodDisabled(id) {
+  if (mode.value === 'text' && HPO_ONLY_METHODS.has(id)) return true
+  if (mode.value === 'hpo' && TEXT_ONLY_METHODS.has(id)) return true
+  return false
+}
+
+watch(mode, (newMode) => {
+  if (newMode === 'text') {
+    HPO_ONLY_METHODS.forEach(id => selectedMethods.delete(id))
+  } else if (newMode === 'hpo') {
+    TEXT_ONLY_METHODS.forEach(id => selectedMethods.delete(id))
+  }
+})
 
 // ── computed ───────────────────────────────────────────────────────────────
 const hasHpoInput = computed(() =>
@@ -323,6 +352,8 @@ function onSearch() {
 }
 
 function includeTerm(term) {
+  excludedTerms.value = excludedTerms.value.filter(t => t.hpo_id !== term.hpo_id)
+
   if (!parsedTerms.value.includes(term.hpo_id)) {
     parsedTerms.value.push(term.hpo_id)
     hpoRaw.value = parsedTerms.value.join(', ')
@@ -332,6 +363,9 @@ function includeTerm(term) {
 }
 
 function excludeTerm(term) {
+  parsedTerms.value = parsedTerms.value.filter(id => id !== term.hpo_id)
+  hpoRaw.value = parsedTerms.value.join(', ')
+
   if (!excludedTerms.value.find(t => t.hpo_id === term.hpo_id)) {
     excludedTerms.value.push(term)
   }
@@ -358,6 +392,34 @@ async function runExtraction() {
   }
 }
 
+const copyFeedback = ref('')
+const copiedId = ref('')
+
+async function copyAllTerms() {
+  const ids = extractedTerms.value.map(t => t.hpo_id).join(', ')
+  try {
+    await navigator.clipboard.writeText(ids)
+    copyFeedback.value = 'Copied!'
+  } catch (e) {
+    copyFeedback.value = 'Copy failed'
+  } finally {
+    setTimeout(() => { copyFeedback.value = '' }, 1500)
+  }
+}
+
+async function copyOneTerm(hpoId) {
+  try {
+    await navigator.clipboard.writeText(hpoId)
+    copiedId.value = hpoId
+  } catch (e) {
+    // silently ignore — tag just won't show feedback
+  } finally {
+    setTimeout(() => {
+      if (copiedId.value === hpoId) copiedId.value = ''
+    }, 1200)
+  }
+}
+
 // ── Methods ────────────────────────────────────────────────────────────────
 function toggleMethod(id) {
   if (selectedMethods.has(id)) selectedMethods.delete(id)
@@ -375,11 +437,7 @@ function buildPayload() {
     hpo_terms: hpoTerms,
     excluded_hpo_terms: excludedTerms.value.map(t => t.hpo_id),
     raw_text: mode.value === 'text' ? rawText.value : null,
-    methods: [...selectedMethods].flatMap(m =>
-      m === 'tfidf'
-        ? ['tfidf_hpo', 'tfidf_text', 'tfidf_hybrid', 'tfidf_hpo_labels']
-        : [m]
-    ),
+    methods: [...selectedMethods],
     top_k: topK.value,
   }
 }
@@ -508,6 +566,26 @@ function buildPayload() {
   font-weight: 400;
   color: var(--text-secondary);
 }
+
+.btn-copy-all {
+  margin-left: auto;
+  font-size: 10px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 99px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-secondary);
+  cursor: pointer;
+  text-transform: none;
+  letter-spacing: 0;
+  transition: all .15s;
+}
+.btn-copy-all:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-light);
+}
 .tags-wrap {
   display: flex;
   flex-wrap: wrap;
@@ -538,6 +616,20 @@ function buildPayload() {
   gap: 1px;
   padding: 4px 10px;
   border-radius: 8px;
+  cursor: pointer;
+  transition: background .15s, border-color .15s, transform .1s;
+}
+.tag-extracted:hover {
+  border-color: var(--green);
+  background: #DFF3EA;
+}
+.tag-extracted:active {
+  transform: scale(0.97);
+}
+.tag-copied {
+  background: var(--accent-light) !important;
+  border-color: var(--accent) !important;
+  color: var(--accent) !important;
 }
 .tag-id {
   font-family: var(--mono);
@@ -847,6 +939,12 @@ function buildPayload() {
   color: var(--text-tertiary);
   width: 100%;
   margin-top: 2px;
+}
+
+.method-item.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 </style>
 

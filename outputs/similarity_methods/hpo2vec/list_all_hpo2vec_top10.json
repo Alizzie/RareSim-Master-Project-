@@ -1,6 +1,6 @@
 {
   "hpo2vec_plus": {
-    "schema_version": "1.1",
+    "schema_version": "1.2",
     "method_name": "hpo2vec_plus",
     "pipeline_name": "hpo2vec",
     "config": {
@@ -13,15 +13,15 @@
       "n_patient_terms_raw": 3,
       "n_patient_terms_propagated": 14,
       "n_patient_terms_used": 14,
-      "n_diseases_scored": 13147,
-      "n_diseases_skipped": 6515,
-      "computation_time_seconds": 2.5786
+      "n_diseases_scored": 11153,
+      "n_diseases_skipped": 6671,
+      "computation_time_seconds": 3.021
     },
     "rankings": [
       {
         "rank": 1,
         "disease_id": "ORPHA:2802",
-        "label": "Anemia, sideroblastic, and spinocerebellar ataxia",
+        "label": "ORPHA:2802",
         "profile_type": null,
         "category_source_id": "ORPHA:2802",
         "category_path": [
@@ -33,20 +33,19 @@
           }
         ],
         "matched_aliases": [
-          "HP:0040283",
           "MONDO:0010524",
           "VERY_FREQUENT"
         ],
-        "score": 0.872039,
+        "score": 0.875608,
         "method_name": "hpo2vec_plus",
         "explanation": {
-          "summary": "HPO2Vec embedding similarity (hpo2vec_plus): 0.8720. 14 of 14 patient terms overlap directly. Score is cosine similarity of IC-weighted Word2Vec term embeddings, not direct HPO overlap.",
+          "summary": "HPO2Vec embedding similarity (hpo2vec_plus): 0.8756. 14 of 14 patient terms overlap directly. Score is cosine similarity of IC-weighted Word2Vec term embeddings, not direct HPO overlap.",
           "coverage": {
             "patient_hpo_coverage": 1.0,
-            "disease_hpo_coverage": 0.0819,
-            "direction_asymmetry": 0.9181,
+            "disease_hpo_coverage": 0.0897,
+            "direction_asymmetry": 0.9103,
             "n_patient_terms": 14,
-            "n_disease_terms": 171,
+            "n_disease_terms": 156,
             "n_matched_terms": 14,
             "n_unmatched_patient_terms": 0
           },
@@ -54,103 +53,115 @@
             {
               "id": "HP:0002470",
               "label": "Nonprogressive cerebellar ataxia",
-              "ic": 7.5839,
+              "ic": 7.4857,
               "match_type": "direct",
               "match_score": 1.0
             },
             {
               "id": "HP:0001903",
               "label": "Anemia",
-              "ic": 3.0818,
+              "ic": 3.1277,
               "match_type": "direct",
               "match_score": 1.0
             },
             {
               "id": "HP:0001877",
               "label": "Abnormal erythrocyte morphology",
-              "ic": 2.954,
+              "ic": 3.0061,
               "match_type": "propagated",
               "match_score": 1.0
             },
             {
               "id": "HP:0001251",
               "label": "Ataxia",
-              "ic": 2.6845,
+              "ic": 2.7356,
               "match_type": "propagated",
               "match_score": 1.0
             },
             {
               "id": "HP:0011443",
               "label": "Abnormality of coordination",
-              "ic": 2.5955,
+              "ic": 2.6392,
               "match_type": "propagated",
               "match_score": 1.0
             },
             {
               "id": "HP:0001871",
               "label": "Abnormality of blood and blood-forming tissues",
-              "ic": 2.0644,
+              "ic": 2.1114,
               "match_type": "propagated",
               "match_score": 1.0
             },
             {
               "id": "HP:0001263",
               "label": "Global developmental delay",
-              "ic": 1.9147,
+              "ic": 1.9853,
               "match_type": "direct",
               "match_score": 1.0
             },
             {
               "id": "HP:0011442",
               "label": "Abnormal central motor function",
-              "ic": 1.8564,
+              "ic": 1.9049,
               "match_type": "propagated",
               "match_score": 1.0
             },
             {
               "id": "HP:0012758",
               "label": "Neurodevelopmental delay",
-              "ic": 1.6537,
+              "ic": 1.7165,
               "match_type": "propagated",
               "match_score": 1.0
             },
             {
               "id": "HP:0012759",
               "label": "Neurodevelopmental abnormality",
-              "ic": 1.4049,
+              "ic": 1.4603,
               "match_type": "propagated",
               "match_score": 1.0
             },
             {
               "id": "HP:0012638",
               "label": "Abnormal nervous system physiology",
-              "ic": 0.993,
+              "ic": 1.0381,
               "match_type": "propagated",
               "match_score": 1.0
             },
             {
               "id": "HP:0000707",
               "label": "Abnormality of the nervous system",
-              "ic": 0.8868,
+              "ic": 0.9332,
               "match_type": "propagated",
               "match_score": 1.0
             },
             {
               "id": "HP:0000118",
               "label": "Phenotypic abnormality",
-              "ic": 0.4124,
+              "ic": 0.4803,
               "match_type": "propagated",
               "match_score": 1.0
             },
             {
               "id": "HP:0000001",
               "label": "All",
-              "ic": 0.4025,
+              "ic": 0.4688,
               "match_type": "propagated",
               "match_score": 1.0
             }
           ],
           "unmatched_patient_terms": [],
+          "excluded_terms": [
+            {
+              "id": "HP:0000001",
+              "label": "All",
+              "ic": 0.4688
+            }
+          ],
+          "exclusion_conflicts": {
+            "n_conflicts": 0,
+            "patient_excluded_but_disease_asserts": [],
+            "disease_excluded_but_patient_has": []
+          },
           "method_specific": {
             "embedding_method": "hpo2vec_random_walk",
             "aggregation": "ic_weighted_average",
@@ -161,294 +172,13 @@
             "interpretation_note": "Matched-term and coverage fields are descriptive HPO overlap shown for readability. They do NOT drive the embedding score."
           },
           "diagnostics": {
-            "raw_score": 0.872039,
+            "raw_score": 0.875608,
             "n_patient_terms_in_vocab": 14
           }
         }
       },
       {
         "rank": 2,
-        "disease_id": "ORPHA:314978",
-        "label": "Spinocerebellar ataxia, X-linked 5",
-        "profile_type": null,
-        "category_source_id": "ORPHA:314978",
-        "category_path": [
-          {
-            "disease_id": "ORPHA:557493",
-            "label": "Disorder",
-            "profile_type": null,
-            "profile_type_label": null
-          }
-        ],
-        "matched_aliases": [
-          "HP:0040285",
-          "MONDO:0010404"
-        ],
-        "score": 0.79582,
-        "method_name": "hpo2vec_plus",
-        "explanation": {
-          "summary": "HPO2Vec embedding similarity (hpo2vec_plus): 0.7958. 10 of 14 patient terms overlap directly. Score is cosine similarity of IC-weighted Word2Vec term embeddings, not direct HPO overlap.",
-          "coverage": {
-            "patient_hpo_coverage": 0.7143,
-            "disease_hpo_coverage": 0.1266,
-            "direction_asymmetry": 0.5877,
-            "n_patient_terms": 14,
-            "n_disease_terms": 79,
-            "n_matched_terms": 10,
-            "n_unmatched_patient_terms": 4
-          },
-          "matched_terms": [
-            {
-              "id": "HP:0002470",
-              "label": "Nonprogressive cerebellar ataxia",
-              "ic": 7.5839,
-              "match_type": "direct",
-              "match_score": 1.0
-            },
-            {
-              "id": "HP:0001251",
-              "label": "Ataxia",
-              "ic": 2.6845,
-              "match_type": "propagated",
-              "match_score": 1.0
-            },
-            {
-              "id": "HP:0011443",
-              "label": "Abnormality of coordination",
-              "ic": 2.5955,
-              "match_type": "propagated",
-              "match_score": 1.0
-            },
-            {
-              "id": "HP:0011442",
-              "label": "Abnormal central motor function",
-              "ic": 1.8564,
-              "match_type": "propagated",
-              "match_score": 1.0
-            },
-            {
-              "id": "HP:0012758",
-              "label": "Neurodevelopmental delay",
-              "ic": 1.6537,
-              "match_type": "propagated",
-              "match_score": 1.0
-            },
-            {
-              "id": "HP:0012759",
-              "label": "Neurodevelopmental abnormality",
-              "ic": 1.4049,
-              "match_type": "propagated",
-              "match_score": 1.0
-            },
-            {
-              "id": "HP:0012638",
-              "label": "Abnormal nervous system physiology",
-              "ic": 0.993,
-              "match_type": "propagated",
-              "match_score": 1.0
-            },
-            {
-              "id": "HP:0000707",
-              "label": "Abnormality of the nervous system",
-              "ic": 0.8868,
-              "match_type": "propagated",
-              "match_score": 1.0
-            },
-            {
-              "id": "HP:0000118",
-              "label": "Phenotypic abnormality",
-              "ic": 0.4124,
-              "match_type": "propagated",
-              "match_score": 1.0
-            },
-            {
-              "id": "HP:0000001",
-              "label": "All",
-              "ic": 0.4025,
-              "match_type": "propagated",
-              "match_score": 1.0
-            }
-          ],
-          "unmatched_patient_terms": [
-            {
-              "id": "HP:0001903",
-              "label": "Anemia",
-              "ic": 3.0818
-            },
-            {
-              "id": "HP:0001877",
-              "label": "Abnormal erythrocyte morphology",
-              "ic": 2.954
-            },
-            {
-              "id": "HP:0001871",
-              "label": "Abnormality of blood and blood-forming tissues",
-              "ic": 2.0644
-            },
-            {
-              "id": "HP:0001263",
-              "label": "Global developmental delay",
-              "ic": 1.9147
-            }
-          ],
-          "method_specific": {
-            "embedding_method": "hpo2vec_random_walk",
-            "aggregation": "ic_weighted_average",
-            "uses_ic_values": true,
-            "uses_dense_embeddings": true,
-            "uses_direct_hpo_overlap_for_score": false,
-            "score_note": "Cosine similarity between IC-weighted averaged Word2Vec embeddings of the patient and disease HPO term sets.",
-            "interpretation_note": "Matched-term and coverage fields are descriptive HPO overlap shown for readability. They do NOT drive the embedding score."
-          },
-          "diagnostics": {
-            "raw_score": 0.79582,
-            "n_patient_terms_in_vocab": 14
-          }
-        }
-      },
-      {
-        "rank": 3,
-        "disease_id": "ORPHA:293955",
-        "label": "Thiamine metabolism dysfunction syndrome 5 (episodic encephalopathy type)",
-        "profile_type": null,
-        "category_source_id": "ORPHA:293955",
-        "category_path": [
-          {
-            "disease_id": "ORPHA:557493",
-            "label": "Disorder",
-            "profile_type": null,
-            "profile_type_label": null
-          }
-        ],
-        "matched_aliases": [
-          "2/5",
-          "MONDO:0013761",
-          "OMIM:614458"
-        ],
-        "score": 0.792085,
-        "method_name": "hpo2vec_plus",
-        "explanation": {
-          "summary": "HPO2Vec embedding similarity (hpo2vec_plus): 0.7921. 10 of 14 patient terms overlap directly. Score is cosine similarity of IC-weighted Word2Vec term embeddings, not direct HPO overlap.",
-          "coverage": {
-            "patient_hpo_coverage": 0.7143,
-            "disease_hpo_coverage": 0.0893,
-            "direction_asymmetry": 0.625,
-            "n_patient_terms": 14,
-            "n_disease_terms": 112,
-            "n_matched_terms": 10,
-            "n_unmatched_patient_terms": 4
-          },
-          "matched_terms": [
-            {
-              "id": "HP:0001251",
-              "label": "Ataxia",
-              "ic": 2.6845,
-              "match_type": "propagated",
-              "match_score": 1.0
-            },
-            {
-              "id": "HP:0011443",
-              "label": "Abnormality of coordination",
-              "ic": 2.5955,
-              "match_type": "propagated",
-              "match_score": 1.0
-            },
-            {
-              "id": "HP:0001263",
-              "label": "Global developmental delay",
-              "ic": 1.9147,
-              "match_type": "direct",
-              "match_score": 1.0
-            },
-            {
-              "id": "HP:0011442",
-              "label": "Abnormal central motor function",
-              "ic": 1.8564,
-              "match_type": "propagated",
-              "match_score": 1.0
-            },
-            {
-              "id": "HP:0012758",
-              "label": "Neurodevelopmental delay",
-              "ic": 1.6537,
-              "match_type": "propagated",
-              "match_score": 1.0
-            },
-            {
-              "id": "HP:0012759",
-              "label": "Neurodevelopmental abnormality",
-              "ic": 1.4049,
-              "match_type": "propagated",
-              "match_score": 1.0
-            },
-            {
-              "id": "HP:0012638",
-              "label": "Abnormal nervous system physiology",
-              "ic": 0.993,
-              "match_type": "propagated",
-              "match_score": 1.0
-            },
-            {
-              "id": "HP:0000707",
-              "label": "Abnormality of the nervous system",
-              "ic": 0.8868,
-              "match_type": "propagated",
-              "match_score": 1.0
-            },
-            {
-              "id": "HP:0000118",
-              "label": "Phenotypic abnormality",
-              "ic": 0.4124,
-              "match_type": "propagated",
-              "match_score": 1.0
-            },
-            {
-              "id": "HP:0000001",
-              "label": "All",
-              "ic": 0.4025,
-              "match_type": "propagated",
-              "match_score": 1.0
-            }
-          ],
-          "unmatched_patient_terms": [
-            {
-              "id": "HP:0002470",
-              "label": "Nonprogressive cerebellar ataxia",
-              "ic": 7.5839
-            },
-            {
-              "id": "HP:0001903",
-              "label": "Anemia",
-              "ic": 3.0818
-            },
-            {
-              "id": "HP:0001877",
-              "label": "Abnormal erythrocyte morphology",
-              "ic": 2.954
-            },
-            {
-              "id": "HP:0001871",
-              "label": "Abnormality of blood and blood-forming tissues",
-              "ic": 2.0644
-            }
-          ],
-          "method_specific": {
-            "embedding_method": "hpo2vec_random_walk",
-            "aggregation": "ic_weighted_average",
-            "uses_ic_values": true,
-            "uses_dense_embeddings": true,
-            "uses_direct_hpo_overlap_for_score": false,
-            "score_note": "Cosine similarity between IC-weighted averaged Word2Vec embeddings of the patient and disease HPO term sets.",
-            "interpretation_note": "Matched-term and coverage fields are descriptive HPO overlap shown for readability. They do NOT drive the embedding score."
-          },
-          "diagnostics": {
-            "raw_score": 0.792085,
-            "n_patient_terms_in_vocab": 14
-          }
-        }
-      },
-      {
-        "rank": 4,
         "disease_id": "ORPHA:247242",
         "label": "acquired ataxia",
         "profile_type": "category",
@@ -464,10 +194,10 @@
         "matched_aliases": [
           "MONDO:0016593"
         ],
-        "score": 0.791744,
+        "score": 0.796659,
         "method_name": "hpo2vec_plus",
         "explanation": {
-          "summary": "HPO2Vec embedding similarity (hpo2vec_plus): 0.7917. 7 of 14 patient terms overlap directly. Score is cosine similarity of IC-weighted Word2Vec term embeddings, not direct HPO overlap.",
+          "summary": "HPO2Vec embedding similarity (hpo2vec_plus): 0.7967. 7 of 14 patient terms overlap directly. Score is cosine similarity of IC-weighted Word2Vec term embeddings, not direct HPO overlap.",
           "coverage": {
             "patient_hpo_coverage": 0.5,
             "disease_hpo_coverage": 1.0,
@@ -481,49 +211,49 @@
             {
               "id": "HP:0001251",
               "label": "Ataxia",
-              "ic": 2.6845,
+              "ic": 2.7356,
               "match_type": "propagated",
               "match_score": 1.0
             },
             {
               "id": "HP:0011443",
               "label": "Abnormality of coordination",
-              "ic": 2.5955,
+              "ic": 2.6392,
               "match_type": "propagated",
               "match_score": 1.0
             },
             {
               "id": "HP:0011442",
               "label": "Abnormal central motor function",
-              "ic": 1.8564,
+              "ic": 1.9049,
               "match_type": "propagated",
               "match_score": 1.0
             },
             {
               "id": "HP:0012638",
               "label": "Abnormal nervous system physiology",
-              "ic": 0.993,
+              "ic": 1.0381,
               "match_type": "propagated",
               "match_score": 1.0
             },
             {
               "id": "HP:0000707",
               "label": "Abnormality of the nervous system",
-              "ic": 0.8868,
+              "ic": 0.9332,
               "match_type": "propagated",
               "match_score": 1.0
             },
             {
               "id": "HP:0000118",
               "label": "Phenotypic abnormality",
-              "ic": 0.4124,
+              "ic": 0.4803,
               "match_type": "propagated",
               "match_score": 1.0
             },
             {
               "id": "HP:0000001",
               "label": "All",
-              "ic": 0.4025,
+              "ic": 0.4688,
               "match_type": "propagated",
               "match_score": 1.0
             }
@@ -532,39 +262,51 @@
             {
               "id": "HP:0002470",
               "label": "Nonprogressive cerebellar ataxia",
-              "ic": 7.5839
+              "ic": 7.4857
             },
             {
               "id": "HP:0001903",
               "label": "Anemia",
-              "ic": 3.0818
+              "ic": 3.1277
             },
             {
               "id": "HP:0001877",
               "label": "Abnormal erythrocyte morphology",
-              "ic": 2.954
+              "ic": 3.0061
             },
             {
               "id": "HP:0001871",
               "label": "Abnormality of blood and blood-forming tissues",
-              "ic": 2.0644
+              "ic": 2.1114
             },
             {
               "id": "HP:0001263",
               "label": "Global developmental delay",
-              "ic": 1.9147
+              "ic": 1.9853
             },
             {
               "id": "HP:0012758",
               "label": "Neurodevelopmental delay",
-              "ic": 1.6537
+              "ic": 1.7165
             },
             {
               "id": "HP:0012759",
               "label": "Neurodevelopmental abnormality",
-              "ic": 1.4049
+              "ic": 1.4603
             }
           ],
+          "excluded_terms": [
+            {
+              "id": "HP:0000001",
+              "label": "All",
+              "ic": 0.4688
+            }
+          ],
+          "exclusion_conflicts": {
+            "n_conflicts": 0,
+            "patient_excluded_but_disease_asserts": [],
+            "disease_excluded_but_patient_has": []
+          },
           "method_specific": {
             "embedding_method": "hpo2vec_random_walk",
             "aggregation": "ic_weighted_average",
@@ -575,13 +317,13 @@
             "interpretation_note": "Matched-term and coverage fields are descriptive HPO overlap shown for readability. They do NOT drive the embedding score."
           },
           "diagnostics": {
-            "raw_score": 0.791744,
+            "raw_score": 0.796659,
             "n_patient_terms_in_vocab": 14
           }
         }
       },
       {
-        "rank": 5,
+        "rank": 3,
         "disease_id": "ORPHA:102002",
         "label": "cerebellar ataxia",
         "profile_type": "category",
@@ -597,10 +339,10 @@
         "matched_aliases": [
           "MONDO:0000437"
         ],
-        "score": 0.791744,
+        "score": 0.796659,
         "method_name": "hpo2vec_plus",
         "explanation": {
-          "summary": "HPO2Vec embedding similarity (hpo2vec_plus): 0.7917. 7 of 14 patient terms overlap directly. Score is cosine similarity of IC-weighted Word2Vec term embeddings, not direct HPO overlap.",
+          "summary": "HPO2Vec embedding similarity (hpo2vec_plus): 0.7967. 7 of 14 patient terms overlap directly. Score is cosine similarity of IC-weighted Word2Vec term embeddings, not direct HPO overlap.",
           "coverage": {
             "patient_hpo_coverage": 0.5,
             "disease_hpo_coverage": 1.0,
@@ -614,49 +356,49 @@
             {
               "id": "HP:0001251",
               "label": "Ataxia",
-              "ic": 2.6845,
+              "ic": 2.7356,
               "match_type": "propagated",
               "match_score": 1.0
             },
             {
               "id": "HP:0011443",
               "label": "Abnormality of coordination",
-              "ic": 2.5955,
+              "ic": 2.6392,
               "match_type": "propagated",
               "match_score": 1.0
             },
             {
               "id": "HP:0011442",
               "label": "Abnormal central motor function",
-              "ic": 1.8564,
+              "ic": 1.9049,
               "match_type": "propagated",
               "match_score": 1.0
             },
             {
               "id": "HP:0012638",
               "label": "Abnormal nervous system physiology",
-              "ic": 0.993,
+              "ic": 1.0381,
               "match_type": "propagated",
               "match_score": 1.0
             },
             {
               "id": "HP:0000707",
               "label": "Abnormality of the nervous system",
-              "ic": 0.8868,
+              "ic": 0.9332,
               "match_type": "propagated",
               "match_score": 1.0
             },
             {
               "id": "HP:0000118",
               "label": "Phenotypic abnormality",
-              "ic": 0.4124,
+              "ic": 0.4803,
               "match_type": "propagated",
               "match_score": 1.0
             },
             {
               "id": "HP:0000001",
               "label": "All",
-              "ic": 0.4025,
+              "ic": 0.4688,
               "match_type": "propagated",
               "match_score": 1.0
             }
@@ -665,39 +407,51 @@
             {
               "id": "HP:0002470",
               "label": "Nonprogressive cerebellar ataxia",
-              "ic": 7.5839
+              "ic": 7.4857
             },
             {
               "id": "HP:0001903",
               "label": "Anemia",
-              "ic": 3.0818
+              "ic": 3.1277
             },
             {
               "id": "HP:0001877",
               "label": "Abnormal erythrocyte morphology",
-              "ic": 2.954
+              "ic": 3.0061
             },
             {
               "id": "HP:0001871",
               "label": "Abnormality of blood and blood-forming tissues",
-              "ic": 2.0644
+              "ic": 2.1114
             },
             {
               "id": "HP:0001263",
               "label": "Global developmental delay",
-              "ic": 1.9147
+              "ic": 1.9853
             },
             {
               "id": "HP:0012758",
               "label": "Neurodevelopmental delay",
-              "ic": 1.6537
+              "ic": 1.7165
             },
             {
               "id": "HP:0012759",
               "label": "Neurodevelopmental abnormality",
-              "ic": 1.4049
+              "ic": 1.4603
             }
           ],
+          "excluded_terms": [
+            {
+              "id": "HP:0000001",
+              "label": "All",
+              "ic": 0.4688
+            }
+          ],
+          "exclusion_conflicts": {
+            "n_conflicts": 0,
+            "patient_excluded_but_disease_asserts": [],
+            "disease_excluded_but_patient_has": []
+          },
           "method_specific": {
             "embedding_method": "hpo2vec_random_walk",
             "aggregation": "ic_weighted_average",
@@ -708,23 +462,23 @@
             "interpretation_note": "Matched-term and coverage fields are descriptive HPO overlap shown for readability. They do NOT drive the embedding score."
           },
           "diagnostics": {
-            "raw_score": 0.791744,
+            "raw_score": 0.796659,
             "n_patient_terms_in_vocab": 14
           }
         }
       },
       {
-        "rank": 6,
+        "rank": 4,
         "disease_id": "MONDO:0100308",
         "label": "atactic disorder",
         "profile_type": null,
         "category_source_id": null,
         "category_path": [],
         "matched_aliases": [],
-        "score": 0.791744,
+        "score": 0.796659,
         "method_name": "hpo2vec_plus",
         "explanation": {
-          "summary": "HPO2Vec embedding similarity (hpo2vec_plus): 0.7917. 7 of 14 patient terms overlap directly. Score is cosine similarity of IC-weighted Word2Vec term embeddings, not direct HPO overlap.",
+          "summary": "HPO2Vec embedding similarity (hpo2vec_plus): 0.7967. 7 of 14 patient terms overlap directly. Score is cosine similarity of IC-weighted Word2Vec term embeddings, not direct HPO overlap.",
           "coverage": {
             "patient_hpo_coverage": 0.5,
             "disease_hpo_coverage": 1.0,
@@ -738,49 +492,49 @@
             {
               "id": "HP:0001251",
               "label": "Ataxia",
-              "ic": 2.6845,
+              "ic": 2.7356,
               "match_type": "propagated",
               "match_score": 1.0
             },
             {
               "id": "HP:0011443",
               "label": "Abnormality of coordination",
-              "ic": 2.5955,
+              "ic": 2.6392,
               "match_type": "propagated",
               "match_score": 1.0
             },
             {
               "id": "HP:0011442",
               "label": "Abnormal central motor function",
-              "ic": 1.8564,
+              "ic": 1.9049,
               "match_type": "propagated",
               "match_score": 1.0
             },
             {
               "id": "HP:0012638",
               "label": "Abnormal nervous system physiology",
-              "ic": 0.993,
+              "ic": 1.0381,
               "match_type": "propagated",
               "match_score": 1.0
             },
             {
               "id": "HP:0000707",
               "label": "Abnormality of the nervous system",
-              "ic": 0.8868,
+              "ic": 0.9332,
               "match_type": "propagated",
               "match_score": 1.0
             },
             {
               "id": "HP:0000118",
               "label": "Phenotypic abnormality",
-              "ic": 0.4124,
+              "ic": 0.4803,
               "match_type": "propagated",
               "match_score": 1.0
             },
             {
               "id": "HP:0000001",
               "label": "All",
-              "ic": 0.4025,
+              "ic": 0.4688,
               "match_type": "propagated",
               "match_score": 1.0
             }
@@ -789,39 +543,51 @@
             {
               "id": "HP:0002470",
               "label": "Nonprogressive cerebellar ataxia",
-              "ic": 7.5839
+              "ic": 7.4857
             },
             {
               "id": "HP:0001903",
               "label": "Anemia",
-              "ic": 3.0818
+              "ic": 3.1277
             },
             {
               "id": "HP:0001877",
               "label": "Abnormal erythrocyte morphology",
-              "ic": 2.954
+              "ic": 3.0061
             },
             {
               "id": "HP:0001871",
               "label": "Abnormality of blood and blood-forming tissues",
-              "ic": 2.0644
+              "ic": 2.1114
             },
             {
               "id": "HP:0001263",
               "label": "Global developmental delay",
-              "ic": 1.9147
+              "ic": 1.9853
             },
             {
               "id": "HP:0012758",
               "label": "Neurodevelopmental delay",
-              "ic": 1.6537
+              "ic": 1.7165
             },
             {
               "id": "HP:0012759",
               "label": "Neurodevelopmental abnormality",
-              "ic": 1.4049
+              "ic": 1.4603
             }
           ],
+          "excluded_terms": [
+            {
+              "id": "HP:0000001",
+              "label": "All",
+              "ic": 0.4688
+            }
+          ],
+          "exclusion_conflicts": {
+            "n_conflicts": 0,
+            "patient_excluded_but_disease_asserts": [],
+            "disease_excluded_but_patient_has": []
+          },
           "method_specific": {
             "embedding_method": "hpo2vec_random_walk",
             "aggregation": "ic_weighted_average",
@@ -832,145 +598,17 @@
             "interpretation_note": "Matched-term and coverage fields are descriptive HPO overlap shown for readability. They do NOT drive the embedding score."
           },
           "diagnostics": {
-            "raw_score": 0.791744,
+            "raw_score": 0.796659,
             "n_patient_terms_in_vocab": 14
           }
         }
       },
       {
-        "rank": 7,
-        "disease_id": "OMIM:605388",
-        "label": "Cerebral palsy, ataxic, autosomal recessive",
+        "rank": 5,
+        "disease_id": "ORPHA:293955",
+        "label": "childhood encephalopathy due to thiamine pyrophosphokinase deficiency",
         "profile_type": null,
-        "category_source_id": null,
-        "category_path": [],
-        "matched_aliases": [],
-        "score": 0.789579,
-        "method_name": "hpo2vec_plus",
-        "explanation": {
-          "summary": "HPO2Vec embedding similarity (hpo2vec_plus): 0.7896. 9 of 14 patient terms overlap directly. Score is cosine similarity of IC-weighted Word2Vec term embeddings, not direct HPO overlap.",
-          "coverage": {
-            "patient_hpo_coverage": 0.6429,
-            "disease_hpo_coverage": 0.2143,
-            "direction_asymmetry": 0.4286,
-            "n_patient_terms": 14,
-            "n_disease_terms": 42,
-            "n_matched_terms": 9,
-            "n_unmatched_patient_terms": 5
-          },
-          "matched_terms": [
-            {
-              "id": "HP:0001251",
-              "label": "Ataxia",
-              "ic": 2.6845,
-              "match_type": "propagated",
-              "match_score": 1.0
-            },
-            {
-              "id": "HP:0011443",
-              "label": "Abnormality of coordination",
-              "ic": 2.5955,
-              "match_type": "propagated",
-              "match_score": 1.0
-            },
-            {
-              "id": "HP:0011442",
-              "label": "Abnormal central motor function",
-              "ic": 1.8564,
-              "match_type": "propagated",
-              "match_score": 1.0
-            },
-            {
-              "id": "HP:0012758",
-              "label": "Neurodevelopmental delay",
-              "ic": 1.6537,
-              "match_type": "propagated",
-              "match_score": 1.0
-            },
-            {
-              "id": "HP:0012759",
-              "label": "Neurodevelopmental abnormality",
-              "ic": 1.4049,
-              "match_type": "propagated",
-              "match_score": 1.0
-            },
-            {
-              "id": "HP:0012638",
-              "label": "Abnormal nervous system physiology",
-              "ic": 0.993,
-              "match_type": "propagated",
-              "match_score": 1.0
-            },
-            {
-              "id": "HP:0000707",
-              "label": "Abnormality of the nervous system",
-              "ic": 0.8868,
-              "match_type": "propagated",
-              "match_score": 1.0
-            },
-            {
-              "id": "HP:0000118",
-              "label": "Phenotypic abnormality",
-              "ic": 0.4124,
-              "match_type": "propagated",
-              "match_score": 1.0
-            },
-            {
-              "id": "HP:0000001",
-              "label": "All",
-              "ic": 0.4025,
-              "match_type": "propagated",
-              "match_score": 1.0
-            }
-          ],
-          "unmatched_patient_terms": [
-            {
-              "id": "HP:0002470",
-              "label": "Nonprogressive cerebellar ataxia",
-              "ic": 7.5839
-            },
-            {
-              "id": "HP:0001903",
-              "label": "Anemia",
-              "ic": 3.0818
-            },
-            {
-              "id": "HP:0001877",
-              "label": "Abnormal erythrocyte morphology",
-              "ic": 2.954
-            },
-            {
-              "id": "HP:0001871",
-              "label": "Abnormality of blood and blood-forming tissues",
-              "ic": 2.0644
-            },
-            {
-              "id": "HP:0001263",
-              "label": "Global developmental delay",
-              "ic": 1.9147
-            }
-          ],
-          "method_specific": {
-            "embedding_method": "hpo2vec_random_walk",
-            "aggregation": "ic_weighted_average",
-            "uses_ic_values": true,
-            "uses_dense_embeddings": true,
-            "uses_direct_hpo_overlap_for_score": false,
-            "score_note": "Cosine similarity between IC-weighted averaged Word2Vec embeddings of the patient and disease HPO term sets.",
-            "interpretation_note": "Matched-term and coverage fields are descriptive HPO overlap shown for readability. They do NOT drive the embedding score."
-          },
-          "diagnostics": {
-            "raw_score": 0.789579,
-            "n_patient_terms_in_vocab": 14
-          }
-        }
-      },
-      {
-        "rank": 8,
-        "disease_id": "ORPHA:71277",
-        "label": "GLUT1 deficiency syndrome 1, infantile onset, severe",
-        "profile_type": null,
-        "category_source_id": "ORPHA:71277",
+        "category_source_id": "ORPHA:293955",
         "category_path": [
           {
             "disease_id": "ORPHA:557493",
@@ -980,104 +618,89 @@
           }
         ],
         "matched_aliases": [
-          "HP:0040283",
-          "MONDO:0011724"
+          "MONDO:0013761"
         ],
-        "score": 0.788571,
+        "score": 0.794601,
         "method_name": "hpo2vec_plus",
         "explanation": {
-          "summary": "HPO2Vec embedding similarity (hpo2vec_plus): 0.7886. 12 of 14 patient terms overlap directly. Score is cosine similarity of IC-weighted Word2Vec term embeddings, not direct HPO overlap.",
+          "summary": "HPO2Vec embedding similarity (hpo2vec_plus): 0.7946. 10 of 14 patient terms overlap directly. Score is cosine similarity of IC-weighted Word2Vec term embeddings, not direct HPO overlap.",
           "coverage": {
-            "patient_hpo_coverage": 0.8571,
-            "disease_hpo_coverage": 0.0896,
-            "direction_asymmetry": 0.7676,
+            "patient_hpo_coverage": 0.7143,
+            "disease_hpo_coverage": 0.098,
+            "direction_asymmetry": 0.6162,
             "n_patient_terms": 14,
-            "n_disease_terms": 134,
-            "n_matched_terms": 12,
-            "n_unmatched_patient_terms": 2
+            "n_disease_terms": 102,
+            "n_matched_terms": 10,
+            "n_unmatched_patient_terms": 4
           },
           "matched_terms": [
             {
-              "id": "HP:0001877",
-              "label": "Abnormal erythrocyte morphology",
-              "ic": 2.954,
-              "match_type": "propagated",
-              "match_score": 1.0
-            },
-            {
               "id": "HP:0001251",
               "label": "Ataxia",
-              "ic": 2.6845,
+              "ic": 2.7356,
               "match_type": "propagated",
               "match_score": 1.0
             },
             {
               "id": "HP:0011443",
               "label": "Abnormality of coordination",
-              "ic": 2.5955,
-              "match_type": "propagated",
-              "match_score": 1.0
-            },
-            {
-              "id": "HP:0001871",
-              "label": "Abnormality of blood and blood-forming tissues",
-              "ic": 2.0644,
+              "ic": 2.6392,
               "match_type": "propagated",
               "match_score": 1.0
             },
             {
               "id": "HP:0001263",
               "label": "Global developmental delay",
-              "ic": 1.9147,
+              "ic": 1.9853,
               "match_type": "direct",
               "match_score": 1.0
             },
             {
               "id": "HP:0011442",
               "label": "Abnormal central motor function",
-              "ic": 1.8564,
+              "ic": 1.9049,
               "match_type": "propagated",
               "match_score": 1.0
             },
             {
               "id": "HP:0012758",
               "label": "Neurodevelopmental delay",
-              "ic": 1.6537,
+              "ic": 1.7165,
               "match_type": "propagated",
               "match_score": 1.0
             },
             {
               "id": "HP:0012759",
               "label": "Neurodevelopmental abnormality",
-              "ic": 1.4049,
+              "ic": 1.4603,
               "match_type": "propagated",
               "match_score": 1.0
             },
             {
               "id": "HP:0012638",
               "label": "Abnormal nervous system physiology",
-              "ic": 0.993,
+              "ic": 1.0381,
               "match_type": "propagated",
               "match_score": 1.0
             },
             {
               "id": "HP:0000707",
               "label": "Abnormality of the nervous system",
-              "ic": 0.8868,
+              "ic": 0.9332,
               "match_type": "propagated",
               "match_score": 1.0
             },
             {
               "id": "HP:0000118",
               "label": "Phenotypic abnormality",
-              "ic": 0.4124,
+              "ic": 0.4803,
               "match_type": "propagated",
               "match_score": 1.0
             },
             {
               "id": "HP:0000001",
               "label": "All",
-              "ic": 0.4025,
+              "ic": 0.4688,
               "match_type": "propagated",
               "match_score": 1.0
             }
@@ -1086,14 +709,36 @@
             {
               "id": "HP:0002470",
               "label": "Nonprogressive cerebellar ataxia",
-              "ic": 7.5839
+              "ic": 7.4857
             },
             {
               "id": "HP:0001903",
               "label": "Anemia",
-              "ic": 3.0818
+              "ic": 3.1277
+            },
+            {
+              "id": "HP:0001877",
+              "label": "Abnormal erythrocyte morphology",
+              "ic": 3.0061
+            },
+            {
+              "id": "HP:0001871",
+              "label": "Abnormality of blood and blood-forming tissues",
+              "ic": 2.1114
             }
           ],
+          "excluded_terms": [
+            {
+              "id": "HP:0000001",
+              "label": "All",
+              "ic": 0.4688
+            }
+          ],
+          "exclusion_conflicts": {
+            "n_conflicts": 0,
+            "patient_excluded_but_disease_asserts": [],
+            "disease_excluded_but_patient_has": []
+          },
           "method_specific": {
             "embedding_method": "hpo2vec_random_walk",
             "aggregation": "ic_weighted_average",
@@ -1104,15 +749,167 @@
             "interpretation_note": "Matched-term and coverage fields are descriptive HPO overlap shown for readability. They do NOT drive the embedding score."
           },
           "diagnostics": {
-            "raw_score": 0.788571,
+            "raw_score": 0.794601,
             "n_patient_terms_in_vocab": 14
           }
         }
       },
       {
-        "rank": 9,
+        "rank": 6,
+        "disease_id": "ORPHA:314978",
+        "label": "ORPHA:314978",
+        "profile_type": null,
+        "category_source_id": "ORPHA:314978",
+        "category_path": [
+          {
+            "disease_id": "ORPHA:557493",
+            "label": "Disorder",
+            "profile_type": null,
+            "profile_type_label": null
+          }
+        ],
+        "matched_aliases": [
+          "MONDO:0010404",
+          "VERY_FREQUENT"
+        ],
+        "score": 0.792152,
+        "method_name": "hpo2vec_plus",
+        "explanation": {
+          "summary": "HPO2Vec embedding similarity (hpo2vec_plus): 0.7922. 10 of 14 patient terms overlap directly. Score is cosine similarity of IC-weighted Word2Vec term embeddings, not direct HPO overlap.",
+          "coverage": {
+            "patient_hpo_coverage": 0.7143,
+            "disease_hpo_coverage": 0.1471,
+            "direction_asymmetry": 0.5672,
+            "n_patient_terms": 14,
+            "n_disease_terms": 68,
+            "n_matched_terms": 10,
+            "n_unmatched_patient_terms": 4
+          },
+          "matched_terms": [
+            {
+              "id": "HP:0002470",
+              "label": "Nonprogressive cerebellar ataxia",
+              "ic": 7.4857,
+              "match_type": "direct",
+              "match_score": 1.0
+            },
+            {
+              "id": "HP:0001251",
+              "label": "Ataxia",
+              "ic": 2.7356,
+              "match_type": "propagated",
+              "match_score": 1.0
+            },
+            {
+              "id": "HP:0011443",
+              "label": "Abnormality of coordination",
+              "ic": 2.6392,
+              "match_type": "propagated",
+              "match_score": 1.0
+            },
+            {
+              "id": "HP:0011442",
+              "label": "Abnormal central motor function",
+              "ic": 1.9049,
+              "match_type": "propagated",
+              "match_score": 1.0
+            },
+            {
+              "id": "HP:0012758",
+              "label": "Neurodevelopmental delay",
+              "ic": 1.7165,
+              "match_type": "propagated",
+              "match_score": 1.0
+            },
+            {
+              "id": "HP:0012759",
+              "label": "Neurodevelopmental abnormality",
+              "ic": 1.4603,
+              "match_type": "propagated",
+              "match_score": 1.0
+            },
+            {
+              "id": "HP:0012638",
+              "label": "Abnormal nervous system physiology",
+              "ic": 1.0381,
+              "match_type": "propagated",
+              "match_score": 1.0
+            },
+            {
+              "id": "HP:0000707",
+              "label": "Abnormality of the nervous system",
+              "ic": 0.9332,
+              "match_type": "propagated",
+              "match_score": 1.0
+            },
+            {
+              "id": "HP:0000118",
+              "label": "Phenotypic abnormality",
+              "ic": 0.4803,
+              "match_type": "propagated",
+              "match_score": 1.0
+            },
+            {
+              "id": "HP:0000001",
+              "label": "All",
+              "ic": 0.4688,
+              "match_type": "propagated",
+              "match_score": 1.0
+            }
+          ],
+          "unmatched_patient_terms": [
+            {
+              "id": "HP:0001903",
+              "label": "Anemia",
+              "ic": 3.1277
+            },
+            {
+              "id": "HP:0001877",
+              "label": "Abnormal erythrocyte morphology",
+              "ic": 3.0061
+            },
+            {
+              "id": "HP:0001871",
+              "label": "Abnormality of blood and blood-forming tissues",
+              "ic": 2.1114
+            },
+            {
+              "id": "HP:0001263",
+              "label": "Global developmental delay",
+              "ic": 1.9853
+            }
+          ],
+          "excluded_terms": [
+            {
+              "id": "HP:0000001",
+              "label": "All",
+              "ic": 0.4688
+            }
+          ],
+          "exclusion_conflicts": {
+            "n_conflicts": 0,
+            "patient_excluded_but_disease_asserts": [],
+            "disease_excluded_but_patient_has": []
+          },
+          "method_specific": {
+            "embedding_method": "hpo2vec_random_walk",
+            "aggregation": "ic_weighted_average",
+            "uses_ic_values": true,
+            "uses_dense_embeddings": true,
+            "uses_direct_hpo_overlap_for_score": false,
+            "score_note": "Cosine similarity between IC-weighted averaged Word2Vec embeddings of the patient and disease HPO term sets.",
+            "interpretation_note": "Matched-term and coverage fields are descriptive HPO overlap shown for readability. They do NOT drive the embedding score."
+          },
+          "diagnostics": {
+            "raw_score": 0.792152,
+            "n_patient_terms_in_vocab": 14
+          }
+        }
+      },
+      {
+        "rank": 7,
         "disease_id": "ORPHA:210128",
-        "label": "Urocanase deficiency",
+        "label": "ORPHA:210128",
         "profile_type": null,
         "category_source_id": "ORPHA:210128",
         "category_path": [
@@ -1124,19 +921,19 @@
           }
         ],
         "matched_aliases": [
-          "HP:0040281",
-          "MONDO:0010167"
+          "MONDO:0010167",
+          "VERY_FREQUENT"
         ],
-        "score": 0.786932,
+        "score": 0.789381,
         "method_name": "hpo2vec_plus",
         "explanation": {
-          "summary": "HPO2Vec embedding similarity (hpo2vec_plus): 0.7869. 8 of 14 patient terms overlap directly. Score is cosine similarity of IC-weighted Word2Vec term embeddings, not direct HPO overlap.",
+          "summary": "HPO2Vec embedding similarity (hpo2vec_plus): 0.7894. 8 of 14 patient terms overlap directly. Score is cosine similarity of IC-weighted Word2Vec term embeddings, not direct HPO overlap.",
           "coverage": {
             "patient_hpo_coverage": 0.5714,
-            "disease_hpo_coverage": 0.1039,
-            "direction_asymmetry": 0.4675,
+            "disease_hpo_coverage": 0.1159,
+            "direction_asymmetry": 0.4555,
             "n_patient_terms": 14,
-            "n_disease_terms": 77,
+            "n_disease_terms": 69,
             "n_matched_terms": 8,
             "n_unmatched_patient_terms": 6
           },
@@ -1144,56 +941,56 @@
             {
               "id": "HP:0001251",
               "label": "Ataxia",
-              "ic": 2.6845,
+              "ic": 2.7356,
               "match_type": "propagated",
               "match_score": 1.0
             },
             {
               "id": "HP:0011443",
               "label": "Abnormality of coordination",
-              "ic": 2.5955,
+              "ic": 2.6392,
               "match_type": "propagated",
               "match_score": 1.0
             },
             {
               "id": "HP:0011442",
               "label": "Abnormal central motor function",
-              "ic": 1.8564,
+              "ic": 1.9049,
               "match_type": "propagated",
               "match_score": 1.0
             },
             {
               "id": "HP:0012759",
               "label": "Neurodevelopmental abnormality",
-              "ic": 1.4049,
+              "ic": 1.4603,
               "match_type": "propagated",
               "match_score": 1.0
             },
             {
               "id": "HP:0012638",
               "label": "Abnormal nervous system physiology",
-              "ic": 0.993,
+              "ic": 1.0381,
               "match_type": "propagated",
               "match_score": 1.0
             },
             {
               "id": "HP:0000707",
               "label": "Abnormality of the nervous system",
-              "ic": 0.8868,
+              "ic": 0.9332,
               "match_type": "propagated",
               "match_score": 1.0
             },
             {
               "id": "HP:0000118",
               "label": "Phenotypic abnormality",
-              "ic": 0.4124,
+              "ic": 0.4803,
               "match_type": "propagated",
               "match_score": 1.0
             },
             {
               "id": "HP:0000001",
               "label": "All",
-              "ic": 0.4025,
+              "ic": 0.4688,
               "match_type": "propagated",
               "match_score": 1.0
             }
@@ -1202,34 +999,46 @@
             {
               "id": "HP:0002470",
               "label": "Nonprogressive cerebellar ataxia",
-              "ic": 7.5839
+              "ic": 7.4857
             },
             {
               "id": "HP:0001903",
               "label": "Anemia",
-              "ic": 3.0818
+              "ic": 3.1277
             },
             {
               "id": "HP:0001877",
               "label": "Abnormal erythrocyte morphology",
-              "ic": 2.954
+              "ic": 3.0061
             },
             {
               "id": "HP:0001871",
               "label": "Abnormality of blood and blood-forming tissues",
-              "ic": 2.0644
+              "ic": 2.1114
             },
             {
               "id": "HP:0001263",
               "label": "Global developmental delay",
-              "ic": 1.9147
+              "ic": 1.9853
             },
             {
               "id": "HP:0012758",
               "label": "Neurodevelopmental delay",
-              "ic": 1.6537
+              "ic": 1.7165
             }
           ],
+          "excluded_terms": [
+            {
+              "id": "HP:0000001",
+              "label": "All",
+              "ic": 0.4688
+            }
+          ],
+          "exclusion_conflicts": {
+            "n_conflicts": 0,
+            "patient_excluded_but_disease_asserts": [],
+            "disease_excluded_but_patient_has": []
+          },
           "method_specific": {
             "embedding_method": "hpo2vec_random_walk",
             "aggregation": "ic_weighted_average",
@@ -1240,15 +1049,151 @@
             "interpretation_note": "Matched-term and coverage fields are descriptive HPO overlap shown for readability. They do NOT drive the embedding score."
           },
           "diagnostics": {
-            "raw_score": 0.786932,
+            "raw_score": 0.789381,
             "n_patient_terms_in_vocab": 14
           }
         }
       },
       {
-        "rank": 10,
+        "rank": 8,
+        "disease_id": "MONDO:0010548",
+        "label": "spinocerebellar ataxia, X-linked 2",
+        "profile_type": null,
+        "category_source_id": null,
+        "category_path": [],
+        "matched_aliases": [],
+        "score": 0.788623,
+        "method_name": "hpo2vec_plus",
+        "explanation": {
+          "summary": "HPO2Vec embedding similarity (hpo2vec_plus): 0.7886. 7 of 14 patient terms overlap directly. Score is cosine similarity of IC-weighted Word2Vec term embeddings, not direct HPO overlap.",
+          "coverage": {
+            "patient_hpo_coverage": 0.5,
+            "disease_hpo_coverage": 0.875,
+            "direction_asymmetry": 0.375,
+            "n_patient_terms": 14,
+            "n_disease_terms": 8,
+            "n_matched_terms": 7,
+            "n_unmatched_patient_terms": 7
+          },
+          "matched_terms": [
+            {
+              "id": "HP:0001251",
+              "label": "Ataxia",
+              "ic": 2.7356,
+              "match_type": "propagated",
+              "match_score": 1.0
+            },
+            {
+              "id": "HP:0011443",
+              "label": "Abnormality of coordination",
+              "ic": 2.6392,
+              "match_type": "propagated",
+              "match_score": 1.0
+            },
+            {
+              "id": "HP:0011442",
+              "label": "Abnormal central motor function",
+              "ic": 1.9049,
+              "match_type": "propagated",
+              "match_score": 1.0
+            },
+            {
+              "id": "HP:0012638",
+              "label": "Abnormal nervous system physiology",
+              "ic": 1.0381,
+              "match_type": "propagated",
+              "match_score": 1.0
+            },
+            {
+              "id": "HP:0000707",
+              "label": "Abnormality of the nervous system",
+              "ic": 0.9332,
+              "match_type": "propagated",
+              "match_score": 1.0
+            },
+            {
+              "id": "HP:0000118",
+              "label": "Phenotypic abnormality",
+              "ic": 0.4803,
+              "match_type": "propagated",
+              "match_score": 1.0
+            },
+            {
+              "id": "HP:0000001",
+              "label": "All",
+              "ic": 0.4688,
+              "match_type": "propagated",
+              "match_score": 1.0
+            }
+          ],
+          "unmatched_patient_terms": [
+            {
+              "id": "HP:0002470",
+              "label": "Nonprogressive cerebellar ataxia",
+              "ic": 7.4857
+            },
+            {
+              "id": "HP:0001903",
+              "label": "Anemia",
+              "ic": 3.1277
+            },
+            {
+              "id": "HP:0001877",
+              "label": "Abnormal erythrocyte morphology",
+              "ic": 3.0061
+            },
+            {
+              "id": "HP:0001871",
+              "label": "Abnormality of blood and blood-forming tissues",
+              "ic": 2.1114
+            },
+            {
+              "id": "HP:0001263",
+              "label": "Global developmental delay",
+              "ic": 1.9853
+            },
+            {
+              "id": "HP:0012758",
+              "label": "Neurodevelopmental delay",
+              "ic": 1.7165
+            },
+            {
+              "id": "HP:0012759",
+              "label": "Neurodevelopmental abnormality",
+              "ic": 1.4603
+            }
+          ],
+          "excluded_terms": [
+            {
+              "id": "HP:0000001",
+              "label": "All",
+              "ic": 0.4688
+            }
+          ],
+          "exclusion_conflicts": {
+            "n_conflicts": 0,
+            "patient_excluded_but_disease_asserts": [],
+            "disease_excluded_but_patient_has": []
+          },
+          "method_specific": {
+            "embedding_method": "hpo2vec_random_walk",
+            "aggregation": "ic_weighted_average",
+            "uses_ic_values": true,
+            "uses_dense_embeddings": true,
+            "uses_direct_hpo_overlap_for_score": false,
+            "score_note": "Cosine similarity between IC-weighted averaged Word2Vec embeddings of the patient and disease HPO term sets.",
+            "interpretation_note": "Matched-term and coverage fields are descriptive HPO overlap shown for readability. They do NOT drive the embedding score."
+          },
+          "diagnostics": {
+            "raw_score": 0.788623,
+            "n_patient_terms_in_vocab": 14
+          }
+        }
+      },
+      {
+        "rank": 9,
         "disease_id": "ORPHA:3327",
-        "label": "Thyrocerebroretinal syndrome",
+        "label": "ORPHA:3327",
         "profile_type": null,
         "category_source_id": "ORPHA:3327",
         "category_path": [
@@ -1260,19 +1205,19 @@
           }
         ],
         "matched_aliases": [
-          "HP:0040285",
+          "FREQUENT",
           "MONDO:0010128"
         ],
-        "score": 0.786816,
+        "score": 0.787693,
         "method_name": "hpo2vec_plus",
         "explanation": {
-          "summary": "HPO2Vec embedding similarity (hpo2vec_plus): 0.7868. 10 of 14 patient terms overlap directly. Score is cosine similarity of IC-weighted Word2Vec term embeddings, not direct HPO overlap.",
+          "summary": "HPO2Vec embedding similarity (hpo2vec_plus): 0.7877. 10 of 14 patient terms overlap directly. Score is cosine similarity of IC-weighted Word2Vec term embeddings, not direct HPO overlap.",
           "coverage": {
             "patient_hpo_coverage": 0.7143,
-            "disease_hpo_coverage": 0.1887,
-            "direction_asymmetry": 0.5256,
+            "disease_hpo_coverage": 0.2,
+            "direction_asymmetry": 0.5143,
             "n_patient_terms": 14,
-            "n_disease_terms": 53,
+            "n_disease_terms": 50,
             "n_matched_terms": 10,
             "n_unmatched_patient_terms": 4
           },
@@ -1280,70 +1225,70 @@
             {
               "id": "HP:0002470",
               "label": "Nonprogressive cerebellar ataxia",
-              "ic": 7.5839,
+              "ic": 7.4857,
               "match_type": "direct",
               "match_score": 1.0
             },
             {
               "id": "HP:0001251",
               "label": "Ataxia",
-              "ic": 2.6845,
+              "ic": 2.7356,
               "match_type": "propagated",
               "match_score": 1.0
             },
             {
               "id": "HP:0011443",
               "label": "Abnormality of coordination",
-              "ic": 2.5955,
+              "ic": 2.6392,
               "match_type": "propagated",
               "match_score": 1.0
             },
             {
               "id": "HP:0001871",
               "label": "Abnormality of blood and blood-forming tissues",
-              "ic": 2.0644,
+              "ic": 2.1114,
               "match_type": "propagated",
               "match_score": 1.0
             },
             {
               "id": "HP:0011442",
               "label": "Abnormal central motor function",
-              "ic": 1.8564,
+              "ic": 1.9049,
               "match_type": "propagated",
               "match_score": 1.0
             },
             {
               "id": "HP:0012759",
               "label": "Neurodevelopmental abnormality",
-              "ic": 1.4049,
+              "ic": 1.4603,
               "match_type": "propagated",
               "match_score": 1.0
             },
             {
               "id": "HP:0012638",
               "label": "Abnormal nervous system physiology",
-              "ic": 0.993,
+              "ic": 1.0381,
               "match_type": "propagated",
               "match_score": 1.0
             },
             {
               "id": "HP:0000707",
               "label": "Abnormality of the nervous system",
-              "ic": 0.8868,
+              "ic": 0.9332,
               "match_type": "propagated",
               "match_score": 1.0
             },
             {
               "id": "HP:0000118",
               "label": "Phenotypic abnormality",
-              "ic": 0.4124,
+              "ic": 0.4803,
               "match_type": "propagated",
               "match_score": 1.0
             },
             {
               "id": "HP:0000001",
               "label": "All",
-              "ic": 0.4025,
+              "ic": 0.4688,
               "match_type": "propagated",
               "match_score": 1.0
             }
@@ -1352,24 +1297,36 @@
             {
               "id": "HP:0001903",
               "label": "Anemia",
-              "ic": 3.0818
+              "ic": 3.1277
             },
             {
               "id": "HP:0001877",
               "label": "Abnormal erythrocyte morphology",
-              "ic": 2.954
+              "ic": 3.0061
             },
             {
               "id": "HP:0001263",
               "label": "Global developmental delay",
-              "ic": 1.9147
+              "ic": 1.9853
             },
             {
               "id": "HP:0012758",
               "label": "Neurodevelopmental delay",
-              "ic": 1.6537
+              "ic": 1.7165
             }
           ],
+          "excluded_terms": [
+            {
+              "id": "HP:0000001",
+              "label": "All",
+              "ic": 0.4688
+            }
+          ],
+          "exclusion_conflicts": {
+            "n_conflicts": 0,
+            "patient_excluded_but_disease_asserts": [],
+            "disease_excluded_but_patient_has": []
+          },
           "method_specific": {
             "embedding_method": "hpo2vec_random_walk",
             "aggregation": "ic_weighted_average",
@@ -1380,7 +1337,147 @@
             "interpretation_note": "Matched-term and coverage fields are descriptive HPO overlap shown for readability. They do NOT drive the embedding score."
           },
           "diagnostics": {
-            "raw_score": 0.786816,
+            "raw_score": 0.787693,
+            "n_patient_terms_in_vocab": 14
+          }
+        }
+      },
+      {
+        "rank": 10,
+        "disease_id": "MONDO:0011548",
+        "label": "cerebral palsy, ataxic, autosomal recessive",
+        "profile_type": null,
+        "category_source_id": null,
+        "category_path": [],
+        "matched_aliases": [],
+        "score": 0.787184,
+        "method_name": "hpo2vec_plus",
+        "explanation": {
+          "summary": "HPO2Vec embedding similarity (hpo2vec_plus): 0.7872. 9 of 14 patient terms overlap directly. Score is cosine similarity of IC-weighted Word2Vec term embeddings, not direct HPO overlap.",
+          "coverage": {
+            "patient_hpo_coverage": 0.6429,
+            "disease_hpo_coverage": 0.2647,
+            "direction_asymmetry": 0.3782,
+            "n_patient_terms": 14,
+            "n_disease_terms": 34,
+            "n_matched_terms": 9,
+            "n_unmatched_patient_terms": 5
+          },
+          "matched_terms": [
+            {
+              "id": "HP:0001251",
+              "label": "Ataxia",
+              "ic": 2.7356,
+              "match_type": "propagated",
+              "match_score": 1.0
+            },
+            {
+              "id": "HP:0011443",
+              "label": "Abnormality of coordination",
+              "ic": 2.6392,
+              "match_type": "propagated",
+              "match_score": 1.0
+            },
+            {
+              "id": "HP:0011442",
+              "label": "Abnormal central motor function",
+              "ic": 1.9049,
+              "match_type": "propagated",
+              "match_score": 1.0
+            },
+            {
+              "id": "HP:0012758",
+              "label": "Neurodevelopmental delay",
+              "ic": 1.7165,
+              "match_type": "propagated",
+              "match_score": 1.0
+            },
+            {
+              "id": "HP:0012759",
+              "label": "Neurodevelopmental abnormality",
+              "ic": 1.4603,
+              "match_type": "propagated",
+              "match_score": 1.0
+            },
+            {
+              "id": "HP:0012638",
+              "label": "Abnormal nervous system physiology",
+              "ic": 1.0381,
+              "match_type": "propagated",
+              "match_score": 1.0
+            },
+            {
+              "id": "HP:0000707",
+              "label": "Abnormality of the nervous system",
+              "ic": 0.9332,
+              "match_type": "propagated",
+              "match_score": 1.0
+            },
+            {
+              "id": "HP:0000118",
+              "label": "Phenotypic abnormality",
+              "ic": 0.4803,
+              "match_type": "propagated",
+              "match_score": 1.0
+            },
+            {
+              "id": "HP:0000001",
+              "label": "All",
+              "ic": 0.4688,
+              "match_type": "propagated",
+              "match_score": 1.0
+            }
+          ],
+          "unmatched_patient_terms": [
+            {
+              "id": "HP:0002470",
+              "label": "Nonprogressive cerebellar ataxia",
+              "ic": 7.4857
+            },
+            {
+              "id": "HP:0001903",
+              "label": "Anemia",
+              "ic": 3.1277
+            },
+            {
+              "id": "HP:0001877",
+              "label": "Abnormal erythrocyte morphology",
+              "ic": 3.0061
+            },
+            {
+              "id": "HP:0001871",
+              "label": "Abnormality of blood and blood-forming tissues",
+              "ic": 2.1114
+            },
+            {
+              "id": "HP:0001263",
+              "label": "Global developmental delay",
+              "ic": 1.9853
+            }
+          ],
+          "excluded_terms": [
+            {
+              "id": "HP:0000001",
+              "label": "All",
+              "ic": 0.4688
+            }
+          ],
+          "exclusion_conflicts": {
+            "n_conflicts": 0,
+            "patient_excluded_but_disease_asserts": [],
+            "disease_excluded_but_patient_has": []
+          },
+          "method_specific": {
+            "embedding_method": "hpo2vec_random_walk",
+            "aggregation": "ic_weighted_average",
+            "uses_ic_values": true,
+            "uses_dense_embeddings": true,
+            "uses_direct_hpo_overlap_for_score": false,
+            "score_note": "Cosine similarity between IC-weighted averaged Word2Vec embeddings of the patient and disease HPO term sets.",
+            "interpretation_note": "Matched-term and coverage fields are descriptive HPO overlap shown for readability. They do NOT drive the embedding score."
+          },
+          "diagnostics": {
+            "raw_score": 0.787184,
             "n_patient_terms_in_vocab": 14
           }
         }

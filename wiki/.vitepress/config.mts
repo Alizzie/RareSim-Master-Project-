@@ -26,6 +26,7 @@ export default defineConfig({
         items: [
           { text: 'Architecture Design', link: '/system/architecture-design' },
           { text: 'Web Interface', link: '/system/web-interface' },
+          { text: 'Web Interface (Demo)', link: '/system/web-interface-demo' },
           { text: 'CLI', link: '/system/cli' },
           { text: 'HPO Extraction Pipeline', link: '/system/hpo-extraction-pipeline' },
           { text: 'Data & Storage Lifecycle', link: '/system/data-and-storage-lifecycle' },
@@ -82,6 +83,7 @@ export default defineConfig({
           { text: 'LIRICAL', link: '/validation/lirical' },
           { text: 'Phenomizer', link: '/validation/phenomiser' },
           { text: 'PhenoBrain', link: '/validation/phenobrain' },
+          { text: `PhenoBrain Local`, link: '/validation/phenobrain-local' },
           { text: 'DX29 Search', link: '/validation/dx29-search' },
           { text: 'DX29 Phrank', link: '/validation/dx29-phrank' },
           { text: 'Validation Output', link: '/validation/output' },

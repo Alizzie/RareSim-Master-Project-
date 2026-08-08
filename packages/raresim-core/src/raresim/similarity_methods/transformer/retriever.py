@@ -43,7 +43,6 @@ from raresim.types.result import RunStats, SimilarityResult
 from raresim.types.schemas import PatientProfile
 from raresim.utils.io import load_json, make_safe_model_name, save_json
 
-
 # ── Cache utilities ───────────────────────────────────────────────────────────
 
 
@@ -70,7 +69,9 @@ def persistent_cache_exists(cache_paths: dict[str, Path]) -> bool:
     )
 
 
-def compute_disease_fingerprint(disease_ids: list[str], disease_texts: list[str]) -> str:
+def compute_disease_fingerprint(
+    disease_ids: list[str], disease_texts: list[str]
+) -> str:
     """
     Stable hash of disease IDs and embedding texts.
 
@@ -167,7 +168,11 @@ def _get_result_profile(
 
     Prefer the canonical profile. Fall back to the representative alias profile.
     """
-    return disease_profiles.get(canonical_id) or disease_profiles.get(representative_id) or {}
+    return (
+        disease_profiles.get(canonical_id)
+        or disease_profiles.get(representative_id)
+        or {}
+    )
 
 
 def select_top_canonical_indices(
@@ -224,6 +229,7 @@ def collapse_ranked_results_to_canonical(  # pylint: disable=too-many-arguments,
     hpo_labels: dict[str, str],
     ic_values: dict[str, float],
     result_method_name: str,
+    patient: PatientProfile,
 ) -> list[SimilarityResult]:
     """
     Collapse alias-level results into canonical disease-level results.
@@ -315,6 +321,7 @@ def collapse_ranked_results_to_canonical(  # pylint: disable=too-many-arguments,
                     ic_values=ic_values,
                     hpo_labels=hpo_labels,
                     method_specific=method_specific_block,
+                    patient=patient,
                 ),
             )
         )
@@ -557,6 +564,7 @@ class DiseaseRetriever:  # pylint: disable=too-many-instance-attributes
             ic_values=self.ic_values,
             top_k=top_k,
             result_method_name=model_name,
+            patient=self.patient,
         )
 
     def run_stats(
@@ -570,7 +578,9 @@ class DiseaseRetriever:  # pylint: disable=too-many-instance-attributes
         labels_used = select_phenotype_labels(list(patient_terms), self.hpo_labels)
 
         resources = self.model_registry.get(model_name)
-        n_diseases_scored = len(resources["disease_ids"]) if resources else len(rankings)
+        n_diseases_scored = (
+            len(resources["disease_ids"]) if resources else len(rankings)
+        )
 
         return build_run_stats(
             n_patient_terms_raw=len(patient_terms),

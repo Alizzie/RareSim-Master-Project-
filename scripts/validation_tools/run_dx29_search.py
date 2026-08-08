@@ -1,4 +1,19 @@
-"""Run Dx29 on benchmark datasets and evaluate results."""
+"""Run Dx29 (Search algorithm) on benchmark datasets and evaluate results.
+
+Sends each case's HPO terms to a locally running Dx29 BioNET container
+(`/api/v1/Search`) and writes a standardized per-dataset TSV summary. The Dx29
+container must be running before this script is invoked.
+
+Usage:
+    # All datasets against the default local host
+    python3 run_dx29_search.py
+
+    # Specific datasets
+    python3 run_dx29_search.py --datasets MME HMS
+
+    # Custom host / language / top-k
+    python3 run_dx29_search.py --host http://localhost:8080 --lang en --topk 1000
+"""
 
 import argparse
 import time

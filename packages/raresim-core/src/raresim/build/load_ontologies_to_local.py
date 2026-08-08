@@ -52,7 +52,7 @@ def main():
             "path": ONTOLOGY_DIR / "mondo_rare.owl",
         },
         "ordo": {
-            "url": "https://www.orphadata.com/data/ontologies/ordo/last_version/ORDO_en_4.8.owl",
+            "url": "https://www.orphadata.com/data/ontologies/ordo/last_version/ORDO_en_4.9.owl",
             "path": ONTOLOGY_DIR / "ordo.owl",
         },
         "hoom": {

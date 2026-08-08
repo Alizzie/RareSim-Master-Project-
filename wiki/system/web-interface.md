@@ -4,78 +4,20 @@
 
 This page covers the two components that make up RareSim's interactive web interface: the FastAPI **backend** (`raresim-backend`) and the Vue **frontend** (`raresim-frontend`). Together they're one of three ways to run the RareSim pipeline — see [CLI](/system/cli) for the terminal alternative, and [Evaluation](/evaluation/workflow-overview) for the offline batch-runner alternative.
 
-## Backend (FastAPI)
+**Terminal 1 — backend:**
 
-The backend is a FastAPI application (`raresim_api`) exposing a small set of REST endpoints over the shared computational core (`raresim_core`), which implements ontology handling, patient-profile construction, and the similarity-scoring pipelines themselves. This separation lets the same core logic be invoked either through the web API or directly via the CLI.
+Create a `.env` file at the project root with `RARESIM_ROOT=/path/to/RareSim` (see [Installation](/getting-started/installation)), then:
+\`\`\`bash
+uvicorn raresim_api.main:app --reload --port 8000
+\`\`\`
 
-### API surface
-
-| Endpoint | Purpose |
-|---|---|
-| `POST /api/extract` | Extracts HPO terms from raw clinical text, using one of five extraction backends (dictionary lookup, biomedical NER, FastHPOCR, GPT-4o-mini, PhenoBrain). |
-| `POST /api/diagnose` | Core endpoint. Accepts a patient's HPO terms and/or raw text plus a set of requested similarity methods; returns ranked disease candidates. |
-| `POST /api/patients/save` | Persists a patient profile and its diagnosis results to disk, as either a plain JSON record or a Phenopacket. |
-| `GET /api/hpo/search` | Substring search over the loaded HPO label index — used for frontend autocomplete. |
-| `GET /api/health` | Basic liveness/readiness check. |
-
-Request/response bodies are validated with Pydantic models (`DiagnoseRequest`, `ExtractRequest`, `SavePatientRequest`). Cross-origin requests from the Vite dev server are permitted via FastAPI's CORS middleware.
-
-The extraction backends listed for `/api/extract` correspond exactly to the five method keys documented on [Patient Profile Construction](/artifacts/patient-profile-construction) (`dictionary`, `biomedical_ner`, `fast_hpo_cr`, `chatgpt`, `phenobrain_api`).
-
-### Request flow
-
-```mermaid
-flowchart TD
-    FE["Frontend<br/>fetch via api/index.js"] -->|"POST /api/diagnose"| VALID["Pydantic validation<br/>DiagnoseRequest"]
-    VALID --> REG["Validate requested methods<br/>against method registry"]
-    REG --> EXPAND["Expand aggregate methods<br/>e.g. 'transformer' -> PubMedBERT,<br/>ClinicalBERT, SapBERT, BioBERT, MiniLM"]
-    EXPAND --> CONFIG["Build PipelineConfig<br/>top-k, propagation, IC threshold,<br/>canonical profiles"]
-
-    CTX["AppContext<br/>loaded once at startup"] --> DISPATCH
-    CONFIG --> DISPATCH["Dispatch to selected pipelines<br/>run(patient, methods, config, ctx)"]
-
-    DISPATCH --> M1["set_based"]
-    DISPATCH --> M2["semantic"]
-    DISPATCH --> M3["tfidf"]
-    DISPATCH --> M4["transformer"]
-    DISPATCH --> M5["llm"]
-    DISPATCH --> M6["hpo2vec"]
-    DISPATCH --> M7["autoencoder"]
-
-    M1 --> NORM["Normalize to SimilarityResult<br/>flatten + cap to top-k per method"]
-    M2 --> NORM
-    M3 --> NORM
-    M4 --> NORM
-    M5 --> NORM
-    M6 --> NORM
-    M7 --> NORM
-
-    NORM --> COMP["Cross-method comparison stats<br/>analysis/method_comparison.py"]
-    COMP --> RESP["JSON response"]
-    RESP --> FE
-```
-
-This is the same `run(patient, methods, config, ctx)` dispatch pattern used by the [CLI](/system/cli#dispatch) — the backend and CLI are two different callers of an identical dispatch mechanism, not two separate implementations of it.
-
-### Shared application context
-
-At startup, the backend loads ontology-derived artifacts once into memory (HPO labels, term ancestors, information-content values, canonical disease profiles) rather than reloading per request. Per-request state — disease profiles, HPO label/ancestor maps, IC values, disease metadata — is assembled into an `AppContext` object (`raresim.core.context`), threaded through every similarity method call. This is the same `AppContext` documented in [Architecture Design](/system/architecture-design) — the backend is simply one more caller of it, alongside the CLI and the evaluation batch runners.
-
-### Method dispatch
-
-Similarity methods are organized into method groups (semantic, set-based, TF-IDF, transformer, LLM, HPO2Vec, denoising autoencoder), each an independent pipeline module under `raresim.similarity_methods.*` with a common interface:
-
-```python
-run(patient, methods, config, ctx)
-```
-
-On a `/api/diagnose` request, the backend:
-
-1. Validates requested method identifiers against the method registry.
-2. Expands convenience aggregate methods — e.g. a single `"transformer"` selection expands to all configured transformer backbones (PubMedBERT, ClinicalBERT, SapBERT, BioBERT, MiniLM).
-3. Dispatches only to the pipelines whose methods were actually selected.
-4. Normalizes results from each pipeline into a common `SimilarityResult` shape, flattens into one ranked list, caps to the requested top-*k* per method.
-5. Attaches cross-method comparison statistics via `raresim.analysis.method_comparison`.
+**Terminal 2 — frontend:**
+\`\`\`bash
+cd packages/raresim-frontend
+npm install
+npm run dev
+\`\`\`
+Then open `http://localhost:3000`.
 
 ### Configuration and reproducibility
 
@@ -89,7 +31,21 @@ Served locally via Uvicorn (`uvicorn raresim_api.main:app`), proxied by the Vite
 
 The frontend is a single-page application built with Vue 3 (Composition API), bundled via Vite. Communicates with the backend exclusively over REST, keeping all similarity computation server-side.
 
-### Component structure
+| Method | Badge | Notes |
+|--------|-------|-------|
+| Resnik BMA | IC | Semantic similarity using information content |
+| Lin BMA | IC | Lin's normalized semantic similarity |
+| JC BMA | IC | Jiang-Conrath semantic similarity |
+| Jaccard | set | Set overlap: intersection / union |
+| Dice | set | Set overlap: 2 × intersection / (A + B) |
+| TF-IDF (HPO) | txt | TF-IDF over HPO term presence — HPO-terms mode only |
+| TF-IDF (HPO Labels) | txt | TF-IDF over HPO label text — HPO-terms mode only |
+| TF-IDF (Text) | txt | TF-IDF over raw clinical text — raw-text mode only |
+| TF-IDF (Hybrid) | txt | Patient HPO labels vs. disease description — both modes |
+| Transformer | emb | Sentence transformer embeddings |
+| LLM | llm | GPT-based ranking |
+| HPO2Vec+ | emb | Node2Vec embeddings on enriched HPO graph |
+| Autoencoder | nn | Denoising autoencoder latent space similarity. |
 
 Three top-level components (plus one supplementary view):
 
@@ -148,4 +104,10 @@ Backend communication is centralized in one API module (`api/index.js`), wrappin
 
 ### Build and dev tooling
 
-Vite is both dev server and production bundler. During development, `/api/*` requests are proxied to the FastAPI backend at `http://localhost:8000` (configured in `vite.config.js`), avoiding CORS issues without requiring the backend to implement its own CORS headers for local dev.
+| Method | Path | Description |
+|--------|------|-------------|
+| POST | `/api/extract` | Extract HPO terms from clinical text |
+| POST | `/api/diagnose` | Run similarity diagnosis |
+| GET | `/api/hpo/search?q=` | Search HPO terms by label |
+| POST | `/api/patients/save` | Save patient session to disk |
+| GET | `/api/health` | Health check |

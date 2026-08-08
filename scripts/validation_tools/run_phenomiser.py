@@ -1,13 +1,16 @@
-#!/usr/bin/env python3
-"""
-run_phenomizer.py — Run Phenomizer on PhenoBrain benchmark datasets.
+"""Run Phenomiser on PhenoBrain benchmark datasets and evaluate results.
+
+Requires a one-time (~20 h) precomputation of the semantic-similarity background
+model (see the wiki). Each case is run through the Phenomiser CLI JAR and cached;
+outputs are parsed (sorted by adjusted p-value) into a standardized per-dataset
+TSV summary.
 
 Usage:
-    python3 validation_tools/run_phenomiser.py \
-        --data-dir validation_tools/datasets/PhenoBrainBenchmarkDatasets \
-        --phenomizer-jar ~/Phenomiser/phenomiser-cli/target/phenomiser-cli-0.0.2.jar \
-        --hp-obo ~/phenomiser_data/hp.obo \
-        --hpoa ~/phenomiser_data/phenotype.hpoa --datasets MME
+    python3 run_phenomiser.py \\
+        --phenomizer-jar ~/Phenomiser/phenomiser-cli/target/phenomiser-cli-0.0.2.jar \\
+        --hp-obo ~/phenomiser_data/hp.obo \\
+        --hpoa ~/phenomiser_data/phenotype.hpoa \\
+        --datasets MME HMS
 """
 
 import subprocess

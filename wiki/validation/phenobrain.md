@@ -7,19 +7,16 @@ PhenoBrain is an ensemble AI model for rare disease diagnosis prioritisation. It
 - **Web interface:** [phenobrain.cs.tsinghua.edu.cn](http://www.phenobrain.cs.tsinghua.edu.cn/pc)
 - **Tested on:** macOS, May 2026
 
-> **Note:** PhenoBrain runs as a hosted service — there is no local setup required. Queries are sent to the Tsinghua University API server. Results depend on the availability of that server.
+> **Note:** PhenoBrain runs as a hosted service. It covers the hosted PhenoBrain API, so there is no local setup required. Queries are sent to the Tsinghua University API server. Results depend on the availability of that server.
+For the self-hosted deployment (running their GitHub pipeline locally and standardizing its raw CSV), see the [PhenoBrain (Local)](./phenobrain-local.md) page.
 
----
-
-## Requirements
+## 1. Requirements
 
 - Python 3.9+
 - `requests` library (`pip install requests`)
 - Internet access to reach `www.phenobrain.cs.tsinghua.edu.cn`
 
----
-
-## How It Works
+## 2. How It Works
 
 PhenoBrain uses an asynchronous task-based API. Each query follows a two-step process:
 
@@ -30,9 +27,8 @@ The runner handles this automatically, polling every 3 seconds with a 300-second
 
 The returned disease codes use PhenoBrain's internal `RD:` namespace. A second API call maps these to standard OMIM and Orphanet identifiers for comparison against ground truth.
 
----
 
-## Running the Benchmark
+## 3. Running the Benchmark
 
 ```bash
 # Run against all datasets (auto-discovered)
@@ -55,11 +51,19 @@ python3 run_phenobrain.py --data-dir /path/to/your/datasets
 
 > **Note:** The maximum value for `--topk` is 200. Values above 200 are silently capped to 200 by the API. Cases where the correct diagnosis falls outside the top 200 will have `rank = None`.
 
----
+## 4. Implementation
+`run_phenobrain.py` processes each case against the live API:
 
-## Output Format
+1. **Submit:** POSTs the case's HPO terms to `/predict` (Ensemble model) and receives a `TASK_ID` (with up to 3 retries on transient failures).
+2. **Poll:** Polls `/query-predict-result` every 3 s (300 s timeout) until the task state is `SUCCESS`.
+3. **Remap:** The results carry internal `RD`: codes; a batched `/disease-list-detail` call maps them to OMIM/ORPHA before matching against ground truth.
+4. **Rank:** The best (lowest) rank whose mapped codes contain a confirmed disease is taken as the case result, then written into the summary.
 
-Results are written to `phenobrain_benchmarks/<dataset>_summary.tsv`:
+`query_time_sec` covers the full submit + poll + remap round-trip. There is no local cache; every run re-queries the API.
+
+## 5. Output Format
+
+Results are written to `output/validation_tools/phenobrain_benchmarks/<dataset>_summary.tsv`:
 
 | Column | Description |
 |--------|-------------|
@@ -74,34 +78,13 @@ Results are written to `phenobrain_benchmarks/<dataset>_summary.tsv`:
 
 Raw per-case output is not cached — each run queries the live API. Use the summary TSV as the persistent record of results.
 
----
-
-## Results
-
-Results across all datasets from the benchmark run (May 2026):
-
-| Dataset | n | Found | Top-1 | Top-3 | Top-5 | Top-10 | Top-20 | Median rank |
-|---------|---|-------|-------|-------|-------|--------|--------|-------------|
-| MME | 40 | 39/40 | 0.500 | 0.725 | 0.800 | 0.850 | 0.875 | 1 |
-| HMS | 88 | 80/88 | 0.193 | 0.330 | 0.409 | 0.523 | 0.659 | 7.5 |
-| LIRICAL | 370 | 344/370 | 0.341 | 0.481 | 0.532 | 0.603 | 0.662 | 3.0 |
-| RAMEDIS | 375 | 341/375 | 0.272 | 0.493 | 0.563 | 0.659 | 0.741 | 3 |
-| PUMCH_L | 988 | 921/988 | 0.306 | 0.465 | 0.545 | 0.633 | 0.705 | 4 |
-| PUMCH-ADM | 75 | 74/75 | 0.400 | 0.573 | 0.627 | 0.680 | 0.773 | 2.0 |
-
-> These results use the Ensemble model with `--topk 200`. Cases where the ground truth was not in the top 200 are counted as not found.
-
----
-
-## API Notes
+## 6. API Notes
 
 The PhenoBrain API uses internal `RD:` and `CCRD:` disease codes rather than OMIM or Orphanet IDs directly. The runner resolves these to standard identifiers via a `disease-list-detail` API call before comparing against ground truth.
 
 The available prediction models are: `Ensemble`, `ICTO (A)`, `ICTO (U)`, `PPO`, `CNB`, `MLP (M)`, `MinIC`, `Res`, `BOQA`, `GDDP`, `RBP`, `Lin`, `JC`, `SimUI`, `TO`, `Cosine`, `RDD`. The benchmark uses `Ensemble` as it is the top-performing model.
 
----
-
-## Performance
+## 7. Performance
 
 | Metric | Value |
 |--------|-------|
@@ -110,8 +93,26 @@ The available prediction models are: `Ensemble`, `ICTO (A)`, `ICTO (U)`, `PPO`, 
 
 Query time is dominated by network latency and server processing. There is no `--skip-existing` option since results are not cached locally — re-running will re-query the API.
 
----
+## 8. Results
 
-## Reference
+Results across all datasets from the benchmark run (May 2026):
+
+| Dataset |  Found | Top-1 | Top-3 | Top-5 | Top-10 | MRR | Avg. Query Time (s) |
+|---------|--------|--------|--------|--------|---------|---------|-------------|
+| MME |  39/40 | 0.500 | 0.725 | 0.800 | 0.850 | 0.634 | 5.6 |
+| HMS |  80/88 | 0.193 | 0.330 | 0.409 | 0.523 | 0.296 | 5.6 |
+| LIRICAL |  344/370 | 0.341 | 0.481 | 0.532 | 0.603 | 0.431 | 5.6 |
+| RAMEDIS |  341/375 | 0.272 | 0.493 | 0.563 | 0.659 | 0.409 | 5.6 |
+| PUMCH_L |  921/988 | 0.306 | 0.465 | 0.545 | 0.633 | 0.418 | 5.6 |
+| PUMCH-ADM | 74/75 | 0.400 | 0.573 | 0.627 | 0.680 | 0.510 | 5.6 |
+| GA4GH Phenopackets | 362/384 | 0.346 | 0.487 | 0.544 | 0.641 | 0.443 | 6.25 |
+| MyGene2 (5.7.22) | 131/146 | 0.363 | 0.555 | 0.589 | 0.637 | 0.463 | 6.25 |
+| 0.1.27 | 5991/10374 | 0.176 | 0.270 | 0.306 | 0.365 | 0.241 | 5.65 |
+| test_medical_cases | 195/200 | 0.775 | 0.870 | 0.890 | 0.915 | 0.830 | 6.26 |
+
+> These results use the Ensemble model with `--topk 200`. Cases where the ground truth was not in the top 200 are counted as not found.
+
+
+## 9. Reference
 
 > Mao X. et al. *A phenotype-based AI pipeline outperforms human experts in differentially diagnosing rare diseases using EHRs.* npj Digital Medicine 8, 68 (2025). https://doi.org/10.1038/s41746-025-01452-1

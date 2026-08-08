@@ -1,23 +1,27 @@
-"""
-compare_methods.py — Compare multiple method benchmark summaries.
+"""Compare multiple method benchmark summaries.
 
-Reads one TSV summary per method (output of run_<tool>.py runners) and produces:
-  1. Recall@k and MRR table per method
+Auto-discovers every `*_benchmarks/<dataset>_summary.tsv` produced by the
+run_<tool>.py runners (under output/validation_tools/) and reports, per dataset:
+
+  1. Recall@k and MRR table per method (plus average query time)
   2. Agreement analysis (consensus / hard / easy cases, unique finds)
   3. Per-case rank matrix
 
-Benchmark folders are auto-discovered using the pattern *_benchmarks/.
-Available datasets are inferred from the summary TSV files found in those folders.
+Benchmark folders and available datasets are discovered automatically — you do
+not pass any file paths. The common case is just `python3 compare_methods.py`.
 
 Usage:
-  # Compare all methods for a specific dataset
+  # Compare every method for one dataset
   python3 compare_methods.py --dataset mme
 
-  # Compare a specific dataset and write to a custom output file
-  python3 compare_methods.py --dataset mme --output results/mme_comparison.txt
+  # Compare every dataset found across all benchmark folders (no flags needed)
+  python3 compare_methods.py
 
-  # List all available datasets across benchmark folders
+  # List available datasets and which methods have results for each
   python3 compare_methods.py --list-datasets
+
+  # Write to a custom file (use '-' for stdout)
+  python3 compare_methods.py --dataset mme --output results/mme_comparison.txt
 """
 
 import argparse
@@ -198,10 +202,12 @@ def print_recall_table(
         stats = compute_stats(rows, top_ks)
         mrr = compute_mrr(rows)
         n, found = stats["n"], stats["found"]
+        # Some methods (e.g. local PhenoBrain) carry no query times.
+        mqt = stats["mean_query_time"] if stats["mean_query_time"] is not None else "/"
         line = f"  {method:<{col_w}}"
         for k in top_ks:
             line += f"{stats['topk'][k]:>{k_w}.4f}"
-        line += f"{mrr:>{k_w}.4f}\t{found}/{n}\t{stats['mean_query_time']}"
+        line += f"{mrr:>{k_w}.4f}\t{found}/{n}\t{mqt}"
         f.write(f"{line}\n")
 
     f.write(f"{sep}\n")
@@ -351,18 +357,18 @@ def main():
 
     if args.dataset:
         run_comparison(args.dataset, args)
-    else:
-        available = discover_available_datasets()
-        if not available:
-            print("No benchmark summaries found. Run at least one tool first.")
-            return
-        print(
-            f"No --dataset specified. Running comparison for all {len(available)} found:"
-        )
-        for name in sorted(available):
-            print(f"  - {name}")
-        for name in sorted(available):
-            run_comparison(name, args)
+        return
+
+    available = discover_available_datasets()
+    if not available:
+        print("No benchmark summaries found. Run at least one tool first.")
+        return
+
+    print(f"No --dataset specified. Running comparison for all {len(available)} found:")
+    for name in sorted(available):
+        print(f"  - {name}")
+    for name in sorted(available):
+        run_comparison(name, args)
 
 
 if __name__ == "__main__":

@@ -1,4 +1,19 @@
-"""Run Phenobrain on benchmark datasets and evaluate results."""
+"""Run PhenoBrain on benchmark datasets and evaluate results.
+
+Queries the hosted PhenoBrain API (Tsinghua) with each case's HPO terms, polls
+for the asynchronous result, remaps PhenoBrain `RD:` codes to OMIM/ORPHA, and
+writes a standardized per-dataset TSV summary. No local install or cache.
+
+Usage:
+    # All datasets (auto-discovered from --data-dir)
+    python3 run_phenobrain.py
+
+    # Specific datasets
+    python3 run_phenobrain.py --datasets MME HMS
+
+    # Custom dataset directory and top-k (max 200)
+    python3 run_phenobrain.py --data-dir /path/to/datasets --topk 200
+"""
 
 import time
 import argparse

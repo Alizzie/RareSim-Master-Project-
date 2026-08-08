@@ -41,6 +41,7 @@ from raresim.similarity_methods.autoencoder.methods import (
 from raresim.similarity_methods.autoencoder.explanation import build_explanation
 from raresim.utils.io import save_json, load_json
 from raresim.utils.timer import Timer
+from raresim.utils.disease_profile_utils import disease_exclusion_inputs
 
 
 from raresim.similarity_methods.autoencoder.config import (
@@ -172,7 +173,6 @@ def run(  # pylint: disable=too-many-locals
         terms_key=config.terms_key,
     )
 
-    patient_raw_terms = patient.hpo_terms
     patient_terms = patient.get_terms(config.use_propagated_terms)
 
     if not patient_terms:
@@ -187,6 +187,7 @@ def run(  # pylint: disable=too-many-locals
     n_skipped = 0
 
     for disease_id, profile in ctx.disease_profiles.items():
+        disease_raw_terms, disease_excluded_terms = disease_exclusion_inputs(profile)
         disease_terms = set(profile.get(config.terms_key, []))
 
         if not disease_terms:
@@ -221,13 +222,15 @@ def run(  # pylint: disable=too-many-locals
                     disease_terms=disease_terms,
                     hpo_labels=ctx.hpo_labels,
                     ic_values=ctx.ic_values,
-                    patient_raw_terms=patient_raw_terms,
+                    patient=patient,
+                    disease_terms_raw=disease_raw_terms,
+                    excluded_disease_terms=disease_excluded_terms,
                 ),
             )
         )
 
     metadata = build_run_stats(
-        n_patient_terms_raw=len(patient_raw_terms),
+        n_patient_terms_raw=len(patient.hpo_terms),
         n_patient_terms_propagated=len(patient.get_terms(use_propagated=True)),
         n_patient_terms_used=len(patient_terms),
         n_diseases_scored=len(results),

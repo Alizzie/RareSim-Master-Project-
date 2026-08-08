@@ -1,4 +1,19 @@
-"""Run Dx29 Phrank on benchmark datasets and evaluate results."""
+"""Run Dx29 (Phrank algorithm) on benchmark datasets and evaluate results.
+
+Uses the same local Dx29 BioNET container as run_dx29_search.py, but queries the
+Phrank endpoint (`/api/v1/Diagnosis/phrank`). Writes a standardized per-dataset
+TSV summary. The Dx29 container must be running before this script is invoked.
+
+Usage:
+    # All datasets against the default local host
+    python3 run_dx29_phrank.py
+
+    # Specific datasets
+    python3 run_dx29_phrank.py --datasets MME HMS
+
+    # Custom host / language / top-k
+    python3 run_dx29_phrank.py --host http://localhost:8080 --lang en --topk 1000
+"""
 
 import argparse
 import time
