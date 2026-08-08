@@ -26,6 +26,7 @@ export default defineConfig({
         items: [
           { text: 'Architecture Design', link: '/system/architecture-design' },
           { text: 'Web Interface', link: '/system/web-interface' },
+          { text: 'Web Interface (Demo)', link: '/system/web-interface-demo' },
         ]
       },
       {

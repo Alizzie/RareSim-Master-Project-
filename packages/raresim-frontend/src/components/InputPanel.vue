@@ -352,6 +352,8 @@ function onSearch() {
 }
 
 function includeTerm(term) {
+  excludedTerms.value = excludedTerms.value.filter(t => t.hpo_id !== term.hpo_id)
+
   if (!parsedTerms.value.includes(term.hpo_id)) {
     parsedTerms.value.push(term.hpo_id)
     hpoRaw.value = parsedTerms.value.join(', ')
@@ -361,6 +363,9 @@ function includeTerm(term) {
 }
 
 function excludeTerm(term) {
+  parsedTerms.value = parsedTerms.value.filter(id => id !== term.hpo_id)
+  hpoRaw.value = parsedTerms.value.join(', ')
+
   if (!excludedTerms.value.find(t => t.hpo_id === term.hpo_id)) {
     excludedTerms.value.push(term)
   }

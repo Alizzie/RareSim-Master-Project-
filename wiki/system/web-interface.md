@@ -5,17 +5,18 @@ RareSim includes a browser-based interface for running patient diagnosis interac
 ## Running the Interface
 
 **Terminal 1 — backend:**
-```bash
-RARESIM_ROOT=/path/to/RareSim uvicorn raresim_api.main:app --reload --port 8000
-```
+
+Create a `.env` file at the project root with `RARESIM_ROOT=/path/to/RareSim` (see [Installation](/getting-started/installation)), then:
+\`\`\`bash
+uvicorn raresim_api.main:app --reload --port 8000
+\`\`\`
 
 **Terminal 2 — frontend:**
-```bash
+\`\`\`bash
 cd packages/raresim-frontend
 npm install
 npm run dev
-```
-
+\`\`\`
 Then open `http://localhost:3000`.
 
 ## Input Panel
@@ -43,7 +44,10 @@ Select one or more methods to run. Available methods:
 | JC BMA | IC | Jiang-Conrath semantic similarity |
 | Jaccard | set | Set overlap: intersection / union |
 | Dice | set | Set overlap: 2 × intersection / (A + B) |
-| TF-IDF | txt | Term frequency-inverse document frequency |
+| TF-IDF (HPO) | txt | TF-IDF over HPO term presence — HPO-terms mode only |
+| TF-IDF (HPO Labels) | txt | TF-IDF over HPO label text — HPO-terms mode only |
+| TF-IDF (Text) | txt | TF-IDF over raw clinical text — raw-text mode only |
+| TF-IDF (Hybrid) | txt | Patient HPO labels vs. disease description — both modes |
 | Transformer | emb | Sentence transformer embeddings |
 | LLM | llm | GPT-based ranking |
 | HPO2Vec+ | emb | Node2Vec embeddings on enriched HPO graph |
@@ -81,6 +85,4 @@ Files are saved to `outputs/webapp/patient_profiles/` and can be retrieved via `
 | POST | `/api/diagnose` | Run similarity diagnosis |
 | GET | `/api/hpo/search?q=` | Search HPO terms by label |
 | POST | `/api/patients/save` | Save patient session to disk |
-| GET | `/api/patients` | List saved patient sessions |
-| GET | `/api/patients/{filename}` | Load a saved patient session |
 | GET | `/api/health` | Health check |
