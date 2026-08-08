@@ -14,8 +14,11 @@ flowchart TD
     C --> E["Load phenotype annotation sources"]
     E --> E1["phenotype.hpoa<br/>hoom.owl<br/>en_product4_HPO.xml<br/>Monarch TSV.gz"]
     E1 --> E2["Raw phenotype records"]
+    E2 --> EC["annotation_source_counts"]
     E2 --> E3["Merge phenotype records<br/>raresim/ontology/phenotype_merge.py"]
-    E3 --> E4["Deduplicated positive records<br/>term provenance<br/>negative terms"]
+    E3 --> E4["Deduplicated positive records"]
+    E3 --> EP["term_provenance"]
+    E3 --> EN["negative_terms_by_disease"]
 
     C --> F["Load disease metadata"]
     F --> F1["ordo.owl<br/>mondo_rare.owl"]
@@ -26,6 +29,8 @@ flowchart TD
     G --> G1["orpha_mapping_index"]
 
     E4 --> H["Build canonical disease profiles<br/>raresim/ontology/disease_profiles.py"]
+    EP --> H
+    EN --> H
     D3 --> H
     D1 --> H
     F2 --> H
@@ -54,6 +59,9 @@ flowchart TD
 
     D1 --> N["Save JSON artifacts<br/>outputs/artifacts/"]
     D3 --> N
+    EC --> N
+    EP --> N
+    EN --> N
     E4 --> N
     F3 --> N
     G1 --> N

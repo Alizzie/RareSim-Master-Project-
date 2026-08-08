@@ -7,13 +7,6 @@ export default defineConfig({
   themeConfig: {
     sidebar: [
       {
-        text: 'Getting Started',
-        items: [
-          { text: 'Installation', link: '/getting-started/installation' },
-          { text: 'Quick Start', link: '/getting-started/quick-start' },
-        ]
-      },
-      {
         text: 'Project Overview',
         items: [
           { text: 'Overview', link: '/project-overview/overview' },
@@ -22,11 +15,23 @@ export default defineConfig({
         ]
       },
       {
+        text: 'Getting Started',
+        items: [
+          { text: 'Installation', link: '/getting-started/installation' },
+          { text: 'Quick Start', link: '/getting-started/quick-start' },
+        ]
+      },
+      {
         text: 'System',
         items: [
           { text: 'Architecture Design', link: '/system/architecture-design' },
           { text: 'Web Interface', link: '/system/web-interface' },
           { text: 'Web Interface (Demo)', link: '/system/web-interface-demo' },
+          { text: 'CLI', link: '/system/cli' },
+          { text: 'HPO Extraction Pipeline', link: '/system/hpo-extraction-pipeline' },
+          { text: 'Data & Storage Lifecycle', link: '/system/data-and-storage-lifecycle' },
+          { text: 'Deployment & External Dependencies', link: '/system/deployment-and-external-dependencies' },
+          { text: 'Implementation & Libraries', link: '/system/implementation-and-libraries' },
         ]
       },
       {
@@ -37,19 +42,22 @@ export default defineConfig({
           { text: 'Raw Sources & Ontology Loading', link: '/artifacts/raw-sources-and-ontology-loading' },
           { text: 'Disease ID Normalization & Mapping', link: '/artifacts/disease-id-normalization-and-mapping' },
           { text: 'Disease Profile Construction', link: '/artifacts/disease-profile-construction' },
+          { text: 'Patient Profile Construction', link: '/artifacts/patient-profile-construction' },
           { text: 'File Reference & Runtime Loading', link: '/artifacts/file-reference-and-runtime-loading' },
+
         ]
       },
       {
         text: 'Similarity Methods',
         items: [
-          { text: 'Embedding Methods', link: '/similarity-methods/embedding' },
-          { text: 'LLM', link: '/similarity-methods/llm' },
+          { text: 'Methods Overview', link: '/similarity-methods/overview' },
           { text: 'TF-IDF', link: '/similarity-methods/tfidf-methods' },
           { text: 'Semantic Methods', link: '/similarity-methods/semantic-methods' },
           { text: 'Set-Based Methods', link: '/similarity-methods/set-based-methods' },
           { text: 'HPO2Vec', link: '/similarity-methods/hpo2vec' },
           { text: 'Denoising Autoencoder', link: '/similarity-methods/denoising-autoencoder' },
+          { text: 'Embedding Methods', link: '/similarity-methods/embedding' },
+          { text: 'LLM', link: '/similarity-methods/llm' },
           { text: 'Adding a new similarity method', link: '/similarity-methods/adding-new-method' },
         ]
       },
@@ -60,6 +68,7 @@ export default defineConfig({
           { text: 'Dataset Format', link: '/evaluation/dataset-format' },
           { text: 'Dataset Available', link: '/evaluation/dataset-available' },
           { text: 'Dataset Adding', link: '/evaluation/dataset-adding' },
+          { text: 'Benchmark Dataset Standardization', link: '/evaluation/benchmark-dataset-standardization' },
           { text: 'Batch Runners & Shared Utilities', link: '/evaluation/batch-runners-and-shared-utilities' },
           { text: 'Cache Format', link: '/evaluation/cache-format' },
           { text: 'Evaluator & Metrics', link: '/evaluation/evaluator-and-metrics' },

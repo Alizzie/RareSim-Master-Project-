@@ -1,8 +1,8 @@
 # Web Interface
 
-RareSim includes a browser-based interface for running patient diagnosis interactively. It consists of a Vue 3 frontend and a FastAPI backend.
+## Purpose
 
-## Running the Interface
+This page covers the two components that make up RareSim's interactive web interface: the FastAPI **backend** (`raresim-backend`) and the Vue **frontend** (`raresim-frontend`). Together they're one of three ways to run the RareSim pipeline — see [CLI](/system/cli) for the terminal alternative, and [Evaluation](/evaluation/workflow-overview) for the offline batch-runner alternative.
 
 **Terminal 1 — backend:**
 
@@ -19,23 +19,17 @@ npm run dev
 \`\`\`
 Then open `http://localhost:3000`.
 
-## Input Panel
+### Configuration and reproducibility
 
-The left panel handles patient input and method selection.
+Each request builds one `PipelineConfig` object (top-*k*, whether propagation to ontology ancestors is applied, the IC threshold for filtering uninformative terms, whether canonical alias-resolved disease profiles are used). Applying the same config across all method pipelines in a request means cross-method comparisons reflect scoring differences, not inconsistent preprocessing.
 
-### Phenotype Search
-A searchbar at the top lets you find HPO terms by name (e.g. typing "ataxia" returns all matching phenotypes). Each result has two buttons:
-- **+ Include** — adds the term to the patient's HPO term list
-- **− Exclude** — marks the term as excluded; excluded terms are filtered out before diagnosis runs
+### Deployment
 
-Excluded terms are sent to the backend as `excluded_hpo_terms` and removed from the patient's HPO set before any similarity method runs.
+Served locally via Uvicorn (`uvicorn raresim_api.main:app`), proxied by the Vite dev server so the frontend can issue same-origin API calls during development. See [Deployment & External Dependencies](/system/deployment-and-external-dependencies) for the full local-process picture and how this backend relates to the CLI's independent invocation of the same core package.
 
-### Input Modes
-- **HPO Terms** — paste HPO IDs directly (e.g. `HP:0001251, HP:0000545`). Terms are parsed and displayed as tags.
-- **Raw Text** — paste clinical notes. Use the Extract bar to map text to HPO terms via dictionary lookup, FastHPOCR, GPT-4o-mini, PhenoBrain, or BioNER.
+## Frontend (Vue)
 
-### Similarity Methods
-Select one or more methods to run. Available methods:
+The frontend is a single-page application built with Vue 3 (Composition API), bundled via Vite. Communicates with the backend exclusively over REST, keeping all similarity computation server-side.
 
 | Method | Badge | Notes |
 |--------|-------|-------|
@@ -53,31 +47,62 @@ Select one or more methods to run. Available methods:
 | HPO2Vec+ | emb | Node2Vec embeddings on enriched HPO graph |
 | Autoencoder | nn | Denoising autoencoder latent space similarity. |
 
-### Top-K
-Slider to control how many results are returned per method (5, 10, 15, or 20).
+Three top-level components (plus one supplementary view):
 
-## Results Panel
+```text
+App.vue                Root component. Orchestrates application state
+                       (idle -> loading -> done/error), mediates data
+                       flow between input and results panels. Holds no
+                       computation logic — dispatches requests, passes
+                       results down as props.
 
-The right panel shows diagnosis results after running.
+InputPanel.vue          All patient-input concerns: manual HPO term
+                       entry (regex-validated against HP:\d{7}),
+                       free-text entry with pluggable extraction
+                       backends, live phenotype search/autocomplete,
+                       inclusion/exclusion term tagging, similarity-
+                       method selection with mode-aware method gating
+                       (HPO-only methods like Resnik/Lin/Jiang-Conrath
+                       BMA and set-based methods are auto-disabled in
+                       free-text mode).
 
-### Method Filter
-When multiple methods are selected, filter buttons appear above the results list —> one per method plus an "All" option. Clicking a method shows only that method's top-K results
+ResultsPanel.vue        Renders the ranked disease candidate list:
+                       per-result explanations, shared-phenotype
+                       highlighting, run metadata (method count,
+                       runtime, disease corpus size), patient-record
+                       export (JSON or Phenopacket).
 
-### Result Cards
-Each card shows:
-- Rank, disease label, disease ID
-- Method used (shown as a badge)
-- Score with a visual bar
-- Expandable detail section with shared phenotypes and top term matches
+MethodComparison.vue    Supplementary view comparing ranking agreement
+                       and divergence across multiple methods run
+                       within the same query.
+```
 
-### Save Patient
-After running a diagnosis, click **Save Patient** to save the session to disk. Choose the format before saving:
-- **JSON** — saves HPO terms, raw text, methods used, and full results
-- **Phenopacket** — saves HPO terms in GA4GH phenopacket format with results in metadata
+```mermaid
+flowchart TD
+    APP["App.vue<br/>state: idle -> loading -> done/error<br/>no computation logic"]
 
-Files are saved to `outputs/webapp/patient_profiles/` and can be retrieved via `GET /api/patients`.
+    APP <=="props: state, config<br/>emit: submit(patient, methods)"==> INPUT["InputPanel.vue<br/>HPO term entry, free-text entry,<br/>extraction backend selection,<br/>method selection + mode gating"]
 
-## API Endpoints
+    APP == "props: results" ==> RESULTS["ResultsPanel.vue<br/>ranked candidates, explanations,<br/>run metadata, export"]
+    APP == "props: results" ==> COMPARE["MethodComparison.vue<br/>ranking agreement / divergence"]
+
+    INPUT -.->|"calls"| API["api/index.js<br/>extractTerms, diagnose,<br/>searchHpo, savePatient"]
+    APP -.->|"calls"| API
+
+    API -->|"fetch POST/GET"| BACKEND["FastAPI backend<br/>/api/extract, /api/diagnose,<br/>/api/hpo/search, /api/patients/save"]
+    BACKEND --> API
+    API --> APP
+```
+
+**Legend:** the thick double-headed arrow between `App.vue` and `InputPanel.vue` carries traffic both ways — props down, `submit` event up. Thick single-headed arrows (`==>`) are props flowing down to the display components. Dotted arrows (`-.->`) are calls out to `api/index.js` and the fetch/response cycle with the backend.
+
+No global state library sits between these components — `App.vue` holds the request/response state directly and passes it down as props, with child components emitting events back up. This is visible in the diagram as the lack of any shared store node: every arrow is either a direct prop/emit between `App.vue` and a child, or a direct call through `api/index.js`.
+
+### Data flow
+
+Backend communication is centralized in one API module (`api/index.js`), wrapping `fetch` in thin `post()`/`get()` helpers and exposing typed functions (`extractTerms`, `diagnose`, `searchHpo`, `savePatient`) matching the FastAPI endpoints one-to-one.
+
+### Build and dev tooling
 
 | Method | Path | Description |
 |--------|------|-------------|

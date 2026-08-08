@@ -12,7 +12,7 @@ Three pairwise similarity functions are implemented, all using the same **Best M
 - Lin BMA
 - Jiang-Conrath BMA
 
-The method is implemented across five files:
+The method is implemented across four files:
 
 ```text
 config.py        Method map, constants, weak match threshold, and output paths
