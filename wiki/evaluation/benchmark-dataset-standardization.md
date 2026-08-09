@@ -38,7 +38,7 @@ For each entry, this script calls:
 build_patient_profile()
 ```
 
-(see [Patient Profile Construction](patient-profile-construction.md)) using one or more of the extraction strategies listed there, selectable per run via:
+(see [Patient Profile Construction](../artifacts/patient-profile-construction.md)) using one or more of the extraction strategies listed there, selectable per run via:
 
 ```bash
 --methods
@@ -108,4 +108,4 @@ scripts/evaluation/data_prep/standardize_mygene2.py
 from raresim.hpo_extraction import build_patient_profile
 ```
 
-See [Patient Profile Construction](patient-profile-construction.md) for what that function does and how it differs from the example-patient builder of the same name.
+See [Patient Profile Construction](../artifacts/patient-profile-construction.md) for what that function does and how it differs from the example-patient builder of the same name.

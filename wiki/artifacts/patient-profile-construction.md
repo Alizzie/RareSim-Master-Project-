@@ -77,7 +77,7 @@ This is the general-purpose builder. It takes raw clinical text, runs one or mor
 - `patient` — dict with `patient_id`, `raw_text`, `hpo_terms`, `propagated_hpo_terms`, `methods_used`
 - `extracted_terms` — list of dicts carrying full extraction provenance (which method found which term)
 
-This is the function `run_medical_cases_extraction.py` imports and calls (see [Benchmark Dataset Standardization](benchmark-dataset-standardization.md)):
+This is the function `run_medical_cases_extraction.py` imports and calls (see [Benchmark Dataset Standardization](../evaluation/benchmark-dataset-standardization.md)):
 
 ```python
 from raresim.hpo_extraction import build_patient_profile
@@ -113,7 +113,7 @@ GPT-based extraction (GPT-4o-mini)
 Ensemble of the above
 ```
 
-This is the same extraction machinery used by the Medical cases benchmark standardization step (`run_medical_cases_extraction.py`, selectable via `--methods`) — see [Benchmark Dataset Standardization](benchmark-dataset-standardization.md).
+This is the same extraction machinery used by the Medical cases benchmark standardization step (`run_medical_cases_extraction.py`, selectable via `--methods`) — see [Benchmark Dataset Standardization](../evaluation/benchmark-dataset-standardization.md).
 
 Dispatch lives in `raresim/hpo_extraction/ensemble.py`, in `extract_hpo_terms()`. All five method keys are confirmed:
 

@@ -1,0 +1,31 @@
+image: node:24
+
+pages:
+  cache:
+    paths:
+      - node_modules/
+
+  before_script:
+    - npm ci
+
+  script:
+    - |
+      export VITEPRESS_BASE="$(node -e '
+        const url = process.env.CI_PAGES_URL;
+        if (!url) {
+          process.stdout.write("/");
+        } else {
+          let path = new URL(url).pathname;
+          if (!path.endsWith("/")) path += "/";
+          process.stdout.write(path);
+        }
+      ')"
+    - echo "VitePress base path: ${VITEPRESS_BASE}"
+    - npm run wiki:build
+
+  artifacts:
+    paths:
+      - public
+
+  only:
+    - main
