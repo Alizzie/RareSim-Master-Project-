@@ -1,4 +1,6 @@
-## Screenshots
+# Web Interface (Demo)
+
+## Demo
 
 ### Input Panel
 
