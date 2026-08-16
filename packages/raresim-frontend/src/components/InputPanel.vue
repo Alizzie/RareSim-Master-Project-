@@ -262,7 +262,7 @@ const searchResults = ref([])
 const excludedTerms = ref([])
 let searchTimeout = null
 
-const selectedMethods = reactive(new Set(['semantic_resnik_bma', 'transformer']))
+const selectedMethods = reactive(new Set())
 
 const availableMethods = [
   { id: 'semantic_resnik_bma',         label: 'Resnik BMA',   badge: 'IC', note: 'Not normalized to 0–1, scores can exceed 1 and aren\'t directly comparable across methods' },
@@ -285,7 +285,7 @@ const HPO_ONLY_METHODS = new Set([
   'semantic_resnik_bma', 'semantic_lin_bma', 'semantic_jiang_conrath_bma',
   'set_jaccard', 'set_dice', 'set_cosine', 'set_overlap',
   'hpo2vec_plus', 'denoising_autoencoder',
-  'tfidf_hpo', 'tfidf_hpo_labels',
+  'tfidf_hpo', 'tfidf_hpo_labels', 'tfidf_hybrid',
 ])
 
 function isMethodDisabled(id) {
