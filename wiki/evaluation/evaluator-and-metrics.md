@@ -48,7 +48,6 @@ python scripts/evaluation/evaluator.py --dataset MME --top-k 20
 
 Note that `--top-k` here only changes the NDCG cutoff and the "found within top-k" check used internally for NDCG's ideal-DCG normalization — Recall@1/3/5/10/20 are always reported at those five fixed cutoffs regardless of this flag.
 
----
 
 ## Evaluator workflow
 
@@ -66,7 +65,6 @@ flowchart TD
     J --> K["Write JSON, TXT, TSV outputs"]
 ```
 
----
 
 ## Method detection
 
@@ -82,7 +80,6 @@ Because methods are detected from the cache rather than hardcoded, a new method 
 
 Before evaluation, `main()` also prints per-method coverage — how many of the loaded cases have that method recorded in `case["methods_run"]` — so it's easy to spot a method that only partially finished a batch run.
 
----
 
 ## Disease ID matching
 
@@ -102,7 +99,6 @@ get_disease_id_from_result(result)
 
 This supports the different result schemas written by the various batch runners: `disease_id` for semantic / set-based / tfidf / hpo2vec / autoencoder results, `canonical_disease_id` for transformer results, and `ordo_id` for LLM results.
 
----
 
 ## Alias matching
 
@@ -140,7 +136,6 @@ find_all_matched_ranks(...)
 count_distinct_ground_truth(...)
 ```
 
----
 
 ## Rank finding
 
@@ -164,7 +159,6 @@ None
 
 A separate function, `find_all_matched_ranks(...)`, returns the ranks of *every* distinct candidate that matches any ground-truth disease (not just the best one). This is used only for NDCG, described next.
 
----
 
 ## Metrics
 
@@ -229,7 +223,6 @@ Number of cases where the correct disease (or an alias-equivalent ID) was found 
 
 Median of the best rank across only the cases where the disease was found (cases where nothing was found are excluded, not treated as an infinite rank). With an even number of found cases, the evaluator reports the lower of the two middle values (`found_ranks[len(found_ranks) // 2]`), not an averaged median.
 
----
 
 ## Timing
 
@@ -241,7 +234,6 @@ aggregate_method_timing(cases)
 
 If a method does not write timing information for a case, that case is simply excluded from the average for that method. If a method never writes timing at all, its average runtime is reported as unavailable (`n/a`) rather than as an error.
 
----
 
 ## RRF ensembles
 
@@ -293,7 +285,6 @@ If no method passes the threshold, `ensemble_rrf_top` falls back to using all ba
 
 Each ensemble's own rank and NDCG are computed the same way as for a base method — `find_rank` / `find_all_matched_ranks` are re-applied to the top-`k` RRF-fused results for each case.
 
----
 
 ## Method agreement analysis
 
@@ -325,7 +316,6 @@ Rank histogram
 
 This helps determine whether methods tend to fail on the same cases (redundant) or solve complementary cases (worth ensembling).
 
----
 
 ## Output files
 

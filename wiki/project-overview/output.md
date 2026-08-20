@@ -15,7 +15,6 @@ outputs/
 └── webapp/                           output from the frontend/GUI
 ```
 
----
 
 ## `outputs/artifacts/` — the offline build output
 
@@ -45,7 +44,6 @@ negative_terms_by_disease.json      disease-HPO terms explicitly recorded as neg
 
 `canonical_disease_profiles.json` vs. `disease_profiles.json` matters beyond the build phase: `PipelineConfig.use_canonical_profiles` (see [Configuration](configuration.md#per-run-configuration--pipelineconfig)) decides which one `AppContext` loads for a given run, which in turn affects whether OMIM/MONDO-style ground-truth IDs match during evaluation.
 
----
 
 ## `outputs/similarity_methods/cache/` — multi-method run caches
 
@@ -65,7 +63,6 @@ Written by `core/cache.py` (`save_run_cache()`), read back by `load_run_cache()`
 
 Cache files are named from `patient_id` plus a timestamp, so re-running the same patient doesn't overwrite earlier runs.
 
----
 
 ## `outputs/evaluation/` — batch evaluation cache and reports
 
@@ -79,7 +76,6 @@ The figures, CSV tables, and self-contained HTML report produced by the benchmar
 
 Result files from running external validation tools (LIRICAL, Phenomizer, PhenoBrain, Dx29) as comparison baselines, produced by the runners under `scripts/validation_tools/`. The path convention (`<tool>_benchmarks/<dataset>_summary.tsv`) and how these feed into the visualization report are documented in [visualizing-results.md](../evaluation/visualizing-results.md#validation-tool-path-convention-drives-q5).
 
----
 
 ## The standard method output object — `MethodResults`
 

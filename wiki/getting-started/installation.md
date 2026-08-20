@@ -106,7 +106,6 @@ You should see `canonical_disease_profiles.json`, `hpo_labels.json`, `hpo_ancest
 
 Once artifacts exist, continue to [Quick Start](quick-start.md) to run something end-to-end.
 
----
 
 ## Reconnecting later (already set up)
 

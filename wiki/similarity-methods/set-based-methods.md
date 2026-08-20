@@ -22,7 +22,6 @@ pipeline.py      Pipeline entry point, term collection, result construction
 explanation.py   Formula components, IC-weighted match quality, shared spine fields
 ```
 
----
 
 ## High-Level Method Logic
 
@@ -43,7 +42,6 @@ Rank diseases by score
 
 No IC filtering is applied before scoring. Propagated terms are used on both sides so that ancestor terms are included, which broadens the overlap surface between patient and disease.
 
----
 
 ## Similarity Functions
 
@@ -82,7 +80,6 @@ Cosine(A, B) = |A ∩ B| / (√|A| × √|B|)
 
 Treats each set as a binary vector and computes the cosine of the angle between them. Normalizes by both set sizes equally. Produces values in **[0, 1]**.
 
----
 
 ## Formula Components
 
@@ -95,7 +92,6 @@ Each method records its raw numerator and denominator in the explanation so the 
 | `set_overlap` | `intersection_size`, `min_size` |
 | `set_cosine` | `intersection_size`, `size_patient`, `size_disease` |
 
----
 
 ## IC-Weighted Match Quality
 
@@ -107,7 +103,6 @@ IC_match = Σ IC(t)  for t in A ∩ B
 
 Two diseases can have the same Jaccard score but different IC match scores if one shares more specific (high-IC) terms. The IC score is surfaced as a quality proxy for the match. The top 5 matched terms by IC are also recorded.
 
----
 
 ## Explanation Fields
 
@@ -121,7 +116,6 @@ Two diseases can have the same Jaccard score but different IC match scores if on
 | `ic_weighted_match_score` | Sum of IC for all matched terms |
 | `top_ic_matched_terms` | Top 5 matched terms by IC descending |
 
----
 
 ## Run Statistics
 

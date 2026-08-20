@@ -20,7 +20,6 @@ pipeline.py      Pipeline entry point and mode runners
 explanation.py   Contribution breakdown, low-IDF flags, IC filter impact
 ```
 
----
 
 ## High-Level Method Logic
 
@@ -39,7 +38,6 @@ For each disease:
 Rank diseases by score
 ```
 
----
 
 ## IDF Weighting
 
@@ -54,7 +52,6 @@ IDF(term) = log(N / df(term))
 
 A term in every disease has IDF ≈ 0 and contributes nothing to the score. A term in only one disease has a high IDF and is a strong signal. IDF is computed separately for HPO-mode and text-mode because they operate over different corpora (HPO ID sets vs description text).
 
----
 
 ## Cosine Similarity
 
@@ -66,7 +63,6 @@ cosine(A, B) = (A · B) / (||A|| × ||B||)
 
 Both vectors are sparse dicts. The dot product is the sum of products over shared keys. Score is in **[0, 1]**.
 
----
 
 ## The Four Modes
 
@@ -114,7 +110,6 @@ disease_vec[token] = count(token in disease HPO labels) × IDF(token)
 
 IC filtering is applied to patient terms. Disease terms are not IC-filtered.
 
----
 
 ## IC Filtering (Hybrid and HPO Labels modes)
 
@@ -122,13 +117,11 @@ Before building the patient vector in hybrid and hpo_labels modes, terms with IC
 
 The filter impact — terms removed and before/after counts — is recorded in the explanation.
 
----
 
 ## Low-IDF Flagging
 
 The explanation flags matched terms or tokens whose IDF weight is below `LOW_IDF_THRESHOLD = 0.5`. These are very common terms that are unlikely to have driven the score meaningfully. They are surfaced so the user can inspect whether the match is backed by specific or generic overlap.
 
----
 
 ## Explanation Fields
 
@@ -146,7 +139,6 @@ The explanation flags matched terms or tokens whose IDF weight is below `LOW_IDF
 | `vector_norms` | `dot_product`, `patient_norm`, `disease_norm`, `score_check` |
 | `ic_filter_impact` | Terms removed by IC threshold, before/after counts (hybrid and labels modes) |
 
----
 
 ## Configuration
 
@@ -158,7 +150,6 @@ The explanation flags matched terms or tokens whose IDF weight is below `LOW_IDF
 | `DISEASE_TEXT_FIELD` | `merged_description` | Field used for disease text in text, hybrid, and labels modes |
 | `ic_threshold` | 1.5 | IC below this removes patient terms in hybrid and labels modes |
 
----
 
 ## Run Statistics
 

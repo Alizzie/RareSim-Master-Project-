@@ -2,7 +2,6 @@
 
 RareSim's configuration is spread across a few deliberate layers: one environment variable that anchors every path, one file of build-time constants, one per-run config object that every similarity method reads, and per-method `config.py` files for method-specific tuning. This page covers each layer and where it lives.
 
----
 
 ## `RARESIM_ROOT` — the one required environment variable
 
@@ -26,7 +25,6 @@ ONTOLOGY_PATHS                                     dict of raw ontology source f
 
 plus the paths to every built artifact file (`canonical_disease_profiles.json`, `hpo_labels.json`, `alias_to_canonical.json`, `information_content.json`, ancestor/parent files, metadata indices — the full list is in [Output](output.md)).
 
----
 
 ## Build-time behavior constants — `core/config.py`
 
@@ -54,7 +52,6 @@ EXAMPLE_PATIENT
     is supplied.
 ```
 
----
 
 ## Per-run configuration — `PipelineConfig`
 
@@ -76,7 +73,6 @@ use_canonical_profiles    whether AppContext loads canonical_disease_profiles.js
 
 Every batch runner under `scripts/evaluation/` builds its own `PipelineConfig` from CLI flags — see [batch-runners-and-shared-utilities.md](../evaluation/batch-runners-and-shared-utilities.md) for the exact defaults each runner uses.
 
----
 
 ## HPO extraction configuration — `hpo_extraction/_config.py`
 
@@ -95,7 +91,6 @@ BIOMEDICAL_NER_MODEL / BIOMEDICAL_NER_MIN_CONFIDENCE
 
 `registry.py` also exposes an `EXTRACTION_METHODS` list — keep the two in sync if you add or remove a backend; nothing currently enforces they match automatically.
 
----
 
 ## Per-method configuration — `similarity_methods/<method>/config.py`
 
@@ -109,7 +104,6 @@ similarity_methods/hpo2vec/                 METHOD_NAMES, PIPELINE_NAME, MODEL_C
 
 If you're adding a new method, its `config.py` is where method-specific constants belong — see [adding-method.md](../evaluation/adding-method.md) for the evaluation-runner side of adding a method, and see [adding-new-method.md](../similarity-methods/adding-new-method.md) for adding a new similarity method in detail.
 
----
 
 ## Benchmark visualization configuration — `config.py`
 

@@ -15,7 +15,6 @@ pipeline.py      Pipeline entry point, model training/loading, encoding loop
 explanation.py   Method-specific explanation block and base explainer delegation
 ```
 
----
 
 ## High-Level Method Logic
 
@@ -43,7 +42,6 @@ For each patient:
     Rank diseases by score
 ```
 
----
 
 ## Step 1: Build the Vocabulary
 
@@ -55,7 +53,6 @@ vocab = sorted(union of all propagated_hpo_terms across diseases)
 
 This is the fixed-dimension binary vector space. Every term is assigned an index. The vocabulary size determines the input and output dimensions of the autoencoder.
 
----
 
 ## Step 2: Binary Vectors
 
@@ -68,7 +65,6 @@ vec[i] = 0.0  otherwise
 
 No IC weighting at this stage. The autoencoder learns to weight terms implicitly through training by observing which terms co-occur across disease profiles.
 
----
 
 ## Step 3: Train the Autoencoder
 
@@ -114,7 +110,6 @@ The model must reconstruct the clean vector from the corrupted input. Masking al
 | `EPOCHS` | 50 |
 | `BATCH_SIZE` | 64 |
 
----
 
 ## Step 4: Encode Profiles
 
@@ -127,7 +122,6 @@ latent = ReLU(h1 @ W2 + b2)
 
 This produces a 128-dimensional latent vector for each patient and disease. The decoder is not used at inference.
 
----
 
 ## Step 5: Euclidean Similarity
 
@@ -144,19 +138,16 @@ similarity = 1 / (1 + distance)
 
 Euclidean distance is used instead of cosine similarity because the latent space uses ReLU activations, which produce non-negative sparse vectors where cosine similarity is less reliable — two vectors can appear similar in direction while being very different in magnitude.
 
----
 
 ## Model Caching
 
 Trained models are saved to `model_cache/` as `.npz` files containing all weight matrices and biases. The model is loaded on subsequent runs without retraining. Delete the cache to force retraining.
 
----
 
 ## Important: Score vs HPO Overlap
 
 The score is driven entirely by **latent space geometry**, not by direct HPO term overlap. Matched and unmatched term fields in the explanation are computed from raw HPO set intersection for readability only and do not affect the score. The explanation explicitly notes this.
 
----
 
 ## Explanation Fields
 
@@ -174,7 +165,6 @@ The score is driven entirely by **latent space geometry**, not by direct HPO ter
 | `score_note` | Explains Euclidean similarity over encoded latent vectors |
 | `interpretation_note` | Clarifies matched terms are descriptive, not the score driver |
 
----
 
 ## Run Statistics
 
@@ -188,7 +178,6 @@ number of diseases skipped (no terms in vocabulary)
 runtime
 ```
 
----
 
 ## Note on Sparse Patient Profiles
 

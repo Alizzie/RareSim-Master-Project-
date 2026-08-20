@@ -39,7 +39,6 @@ scripts/evaluation/run_llm_text.py
 
 The `_text` runners (`run_tfidf_text.py`, `run_transformer_text.py`, `run_llm_text.py`) consume raw clinical text instead of HPO terms. `run_set_jaccard_penalized.py` consumes HPO terms plus an *excluded* HPO term list. See [Raw-text runners](#raw-text-runners) and [`run_set_jaccard_penalized.py`](#run_set_jaccard_penalizedpy) below.
 
----
 
 ## `_batch_utils.py`
 
@@ -79,7 +78,6 @@ add_common_args(parser)
 
 Note: `load_raw_text_cases()` / `load_negative_aware_test_cases()` are **not** part of `_batch_utils.py` — each of the four non-standard runners (`run_tfidf_text.py`, `run_llm_text.py`, `run_transformer_text.py`, `run_set_jaccard_penalized.py`) implements its own loader and case dataclass locally, because each has a slightly different accepted schema. See [Test Case Loading](#test-case-loading) below.
 
----
 
 ## Method Names
 
@@ -107,7 +105,6 @@ run_llm_text.py               LLM_MODEL_LIST, MAX_NEW_TOKENS_RETRIEVAL  (same co
 
 These identifiers are used verbatim as the keys under `results`, `method_elapsed_seconds`, and `methods_run` in the evaluation cache (see [cache-format.md](cache-format.md)), and therefore as the method names the evaluator reports.
 
----
 
 ## Test Case Loading
 
@@ -190,7 +187,6 @@ Used only by `run_set_jaccard_penalized.py`:
 
 `hpo_terms` and `disease_codes` are required and non-empty; `excluded_hpo_terms` is optional and may be empty.
 
----
 
 ## Patient Construction
 
@@ -229,7 +225,6 @@ PatientProfile(
 
 The same patient representation is used across the method runners so that method comparisons are based on consistent input.
 
----
 
 ## Common Command-Line Arguments
 
@@ -266,7 +261,6 @@ python scripts/evaluation/run_set_based.py \
     --top-k 10
 ```
 
----
 
 ## Generic Runner Pattern
 
@@ -285,7 +279,6 @@ flowchart TD
     K --> E
 ```
 
----
 
 ## Cache Structure
 
@@ -307,7 +300,6 @@ Each cache file stores case index, input HPO terms (or raw text), ground-truth d
 
 The cache makes it possible to resume a run without recomputing methods that are already available (see `--no-resume` in [cache-format.md](cache-format.md)).
 
----
 
 ## `run_set_based.py`
 
@@ -332,7 +324,6 @@ python scripts/evaluation/run_set_based.py \
     --test-set data/datasets/phenobrain_testdata/MME.json
 ```
 
----
 
 ## `run_set_jaccard_penalized.py`
 
@@ -376,7 +367,6 @@ python scripts/evaluation/run_set_jaccard_penalized.py \
     --cache-name MME
 ```
 
----
 
 ## `run_semantic.py`
 
@@ -410,7 +400,6 @@ python scripts/evaluation/run_semantic.py \
     --ic-threshold 1.5
 ```
 
----
 
 ## `run_tfidf.py`
 
@@ -443,7 +432,6 @@ python scripts/evaluation/run_tfidf.py \
     --test-set data/datasets/phenobrain_testdata/MME.json
 ```
 
----
 
 ## `run_tfidf_text.py`
 
@@ -476,7 +464,6 @@ python scripts/evaluation/run_tfidf_text.py \
     --cache-name medical_cases_raw
 ```
 
----
 
 ## `run_hpo2vec.py`
 
@@ -506,7 +493,6 @@ python scripts/evaluation/run_hpo2vec.py \
     --test-set data/datasets/phenobrain_testdata/MME.json
 ```
 
----
 
 ## `run_autoencoder.py`
 
@@ -557,7 +543,6 @@ python scripts/evaluation/run_autoencoder.py \
     --retrain
 ```
 
----
 
 ## `run_transformer.py`
 
@@ -596,7 +581,6 @@ CUDA_VISIBLE_DEVICES=5 python scripts/evaluation/run_transformer.py \
     --top-k 10
 ```
 
----
 
 ## `run_transformer_text.py`
 
@@ -622,7 +606,6 @@ CUDA_VISIBLE_DEVICES=5 python scripts/evaluation/run_transformer_text.py \
     --cache-name medical_cases_raw
 ```
 
----
 
 ## `run_llm.py`
 
@@ -661,7 +644,6 @@ CUDA_VISIBLE_DEVICES=5 python scripts/evaluation/run_llm.py \
     --top-k 10
 ```
 
----
 
 ## `run_llm_text.py`
 

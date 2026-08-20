@@ -2,7 +2,6 @@
 
 This page covers adding a new method family to `raresim-core` itself — a new `similarity_methods/<method>/` package that scores patients against diseases and plugs into the shared pipeline. If you've already got a method and just want to run it against benchmark datasets, that's a separate step — see [adding-method.md](../evaluation/adding-method.md) in the Evaluation section instead.
 
----
 
 ## 1. Create the package directory
 
@@ -16,7 +15,6 @@ packages/raresim-core/src/raresim/similarity_methods/<your_method>/
 
 That four-file layout covers every existing method family except transformer and LLM, which add a `retriever.py` (a higher-level orchestration class) because they manage state beyond a single patient-disease comparison — a disk-backed embedding cache, or prompt construction and generation across a batch of candidates. Add `retriever.py` only if your method has that kind of cross-cutting state to manage; otherwise the four-file layout is the norm — see [Similarity Methods Overview → standard file layout](./overview.md#standard-file-layout).
 
----
 
 ## 2. `config.py` — constants your method needs
 
@@ -29,7 +27,6 @@ PIPELINE_NAME          identifies your method in results, caches, and CLI output
 
 If your method has multiple named variants (like semantic's Resnik/Lin/Jiang-Conrath, or transformer's five model options), a method map here is the established pattern — see semantic's and transformer's `config.py` for the shape.
 
----
 
 ## 3. `methods.py` — the scoring logic
 
@@ -39,7 +36,6 @@ This is where the actual similarity computation lives. Two things every method n
 
 **Decide propagated vs. raw terms deliberately, and document the choice.** `PatientProfile.get_terms()` and `PipelineConfig` both default to propagated terms (terms plus all HPO ancestors). Most methods use that default. See [Overview → propagated vs. raw](./overview.md#propagated-vs-raw-hpo-terms) for how the existing methods split on this.
 
----
 
 ## 4. `explanation.py` — the "why this ranked here" block
 
@@ -57,7 +53,6 @@ interpretation_note     clarifies that matched_terms, if shown, are descriptive 
 
 See [Overview → the explanation object](./overview.md#the-explanation-object-shared-shape-method-specific-content) for the full pattern and which existing methods use it.
 
----
 
 ## 5. `pipeline.py` — the entry point
 
@@ -81,7 +76,6 @@ main()
 
 If your method loads a model or another expensive resource, unload/release it at the end of `run()` — transformer and LLM both do this explicitly (`unload_pipeline`) since these run on shared GPU resources.
 
----
 
 ## 6. Run statistics
 
@@ -97,13 +91,11 @@ runtime
 
 This is what feeds `RunStats` in the final `MethodResults` object (see [Output](../project-overview/output.md#the-standard-method-output-object--methodresults)) — it's what actually happened during the run, distinct from `PipelineConfig`, which is what was requested.
 
----
 
 ## 7. Register the method
 
 New methods need to be discoverable by name for the shared framework and CLI to find them — `similarity_methods/registry.py` is where existing methods are listed (see [Project Overview → similarity methods](../project-overview/overview.md#similarity-methods)).
 
----
 
 ## 8. Wire it into batch evaluation (separate step)
 

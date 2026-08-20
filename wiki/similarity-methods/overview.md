@@ -14,7 +14,6 @@ RareSim ranks candidate rare diseases against a patient profile using seven inde
 | Transformer | [embedding.md](./embedding.md) | Cosine similarity of dense text embeddings from a biomedical sentence-transformer model | dot product of L2-normalized vectors |
 | LLM | [llm.md](./llm.md) | A generative model's confidence label for a disease it proposed directly, mapped to a fixed numeric score | discrete: {0.1, 0.3, 0.5, 0.6, 0.9} |
 
----
 
 ## Standard file layout
 
@@ -39,7 +38,6 @@ similarity_methods/llm/           config.py, methods.py, explanation.py, pipelin
 
 Every family's `pipeline.py` connects to the shared runtime described in [Overview → Shared runtime infrastructure](../project-overview/overview.md#shared-runtime-infrastructure-core): it reads artifacts once via `AppContext`, builds results into the standard `SimilarityResult`/`MethodResults` shape, and is runnable standalone via `core/method_runner.run_similarity_method()` or through the batch evaluation harness (see [workflow-overview.md](../evaluation/workflow-overview.md)).
 
----
 
 ## Propagated vs. raw HPO terms
 
@@ -50,7 +48,6 @@ Most methods score against **propagated** HPO terms (the patient's/disease's ter
 
 HPO2Vec+'s graph construction similarly uses **raw** (not propagated) disease-to-phenotype edges, on the reasoning that the IS-A edges already encode the ontology hierarchy, so adding propagated terms as direct disease-phenotype edges would double up and bias walks toward ancestor nodes.
 
----
 
 ## Every method converts to "higher is better"
 
@@ -61,7 +58,6 @@ Jiang-Conrath:          similarity = 1 / (1 + distance)
 Denoising autoencoder:   similarity = 1 / (1 + ||patient_latent − disease_latent||₂)
 ```
 
----
 
 ## Where to go next
 

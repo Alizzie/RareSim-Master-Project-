@@ -6,7 +6,6 @@ This page explains how to add a new method to the RareSim evaluation workflow.
 
 The evaluator automatically detects methods from cache files. Therefore, a new method does not need evaluator changes if it writes results in the expected format.
 
----
 
 ## Where a new method fits
 
@@ -24,7 +23,6 @@ The method implementation computes rankings.
 
 The evaluation runner runs the method over all test cases and writes results into the shared evaluation cache format.
 
----
 
 ## Required cache contract
 
@@ -66,7 +64,6 @@ Minimal result example:
 }
 ```
 
----
 
 ## Step 1: Implement the method
 
@@ -102,7 +99,6 @@ list[dict]
 
 If using `SimilarityResult`, make sure it can be serialized with `.to_dict()`.
 
----
 
 ## Step 2: Create a batch runner
 
@@ -139,7 +135,6 @@ Negative-aware methods (HPO terms plus explicitly excluded terms):
 
 See [batch-runners-and-shared-utilities.md](batch-runners-and-shared-utilities.md) for what each of these actually does. If the new method needs raw clinical text or excluded/negated terms as input, base the runner on the matching category above rather than the plain HPO-term template, since the test-set loading and patient-construction logic differ (see [dataset-format.md](dataset-format.md)).
 
----
 
 ## Step 3: Use common batch utilities
 
@@ -166,7 +161,6 @@ from scripts.evaluation._batch_utils import (
 
 Note: `load_test_cases` and `build_patient` are only appropriate for the standard HPO-term format. If the new method consumes raw text or a negative-aware format, write a small local loader instead (see how `run_tfidf_text.py` and `run_set_jaccard_penalized.py` do it) — `load_cache` is useful there for validating that a new run's ground truth/raw text matches whatever is already cached for that case.
 
----
 
 ## Step 4: Define a stable method name
 
@@ -187,7 +181,6 @@ methods_run
 
 Do not rename it after generating caches unless old caches are regenerated or migrated.
 
----
 
 ## Step 5: Load test cases and shared context
 
@@ -203,7 +196,6 @@ ancestor_sets = preprocess_ancestor_sets(ctx.ancestors)
 
 Use canonical profiles by default unless the method specifically needs expanded alias profiles.
 
----
 
 ## Step 6: Build patient input
 
@@ -230,7 +222,6 @@ patient = PatientProfile(
 )
 ```
 
----
 
 ## Step 7: Run the method and produce ranked results
 
@@ -252,7 +243,6 @@ ordo_id
 
 but `disease_id` is preferred for consistency.
 
----
 
 ## Step 8: Save results to cache
 
@@ -280,7 +270,6 @@ if the output is grouped by method.
 
 This merges the new method results with existing results in the same case file (see [cache-format.md](cache-format.md) for the exact merge behavior).
 
----
 
 ## Step 9: Run the evaluator
 
@@ -294,7 +283,6 @@ The evaluator automatically detects the new method from the cache files.
 
 No evaluator changes are needed if the cache format is correct.
 
----
 
 ## Minimal new runner template
 
@@ -450,7 +438,6 @@ if __name__ == "__main__":
 
 This template matches the import path and structure used by every runner in the codebase (`scripts.evaluation._batch_utils`, not a bare `_batch_utils` import).
 
----
 
 ## New method checklist
 
@@ -485,7 +472,6 @@ After running:
     python scripts/evaluation/evaluator.py --dataset <DATASET>
 ```
 
----
 
 ## Common mistakes
 

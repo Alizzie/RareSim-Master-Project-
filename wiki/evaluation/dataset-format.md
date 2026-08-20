@@ -13,7 +13,6 @@ Raw-text               -> run_tfidf_text.py, run_transformer_text.py,
 Negative-aware         -> run_set_jaccard_penalized.py
 ```
 
----
 
 ## Standard (HPO-term) format
 
@@ -43,7 +42,6 @@ A case may have more than one ground-truth ID — this is used both for genuinel
 
 There is no `id` field in this format — cases are identified purely by their position in the array, and cached as `case_{index:04d}`.
 
----
 
 ## Raw-text format
 
@@ -87,7 +85,6 @@ The root is a JSON object mapping a disease identifier (bare numeric or already-
 
 Both shapes require every text value to be a non-empty string after stripping whitespace, or the loader raises an error naming the offending case index.
 
----
 
 ## Negative-aware format
 
@@ -113,7 +110,6 @@ disease_codes       required, non-empty list[str]. Ground-truth disease IDs.
 
 All three fields are normalized (deduplicated and stripped) the same way. This format is designed to layer onto an existing HPO-term dataset — see `--cache-name` and the `_with_excluded` filename convention in [batch-runners-and-shared-utilities.md](batch-runners-and-shared-utilities.md) and [workflow-overview.md](workflow-overview.md).
 
----
 
 ## Validation behavior common to all three formats
 

@@ -6,7 +6,6 @@ This page lists every benchmark dataset currently used for RareSim evaluation, w
 
 **13,040 cases total** across five dataset sources (one of which, the PhenoBrain benchmark, is itself six separate cohorts).
 
----
 
 ## Top-level sources
 
@@ -19,7 +18,6 @@ This page lists every benchmark dataset currently used for RareSim evaluation, w
 | Medical cases | 200 | Raw-text version (for transformer, LLM, and `tfidf_text`), plus a pre-extracted-HPO-terms version with ORPHA ground truth | Ali Khan, S. (2025). *Can LLMs Help with Rare Diseases?* Bachelor's thesis, University of Zurich (UZH). |
 | **Total** | **13,040** | | |
 
----
 
 ## PhenoBrain benchmark cohorts
 
@@ -34,7 +32,6 @@ The PhenoBrain benchmark is split into six cohorts, each used independently (as 
 | PUMCH-ADM | 75 | 18.6 ± 10.4 | 7.35 | 100.0% | O / Or / C | 0 |
 | RAMEDIS | 375 | 10.5 ± 6.7 | 2.74 | 100.0% | Or / O / C | 24 |
 
----
 
 ## Other dataset sources
 
@@ -47,7 +44,6 @@ The PhenoBrain benchmark is split into six cohorts, each used independently (as 
 
 **Column key** (same for both tables above): `HPO/case` and `GT/case` are the mean ± SD HPO term count and mean ground-truth cardinality per case; `Multi-GT` is the share of cases with more than one ground-truth disease; `Namespaces` lists the disease ID systems present (O = OMIM, Or = ORPHA, C = CCRD), most common first; `Dup.` is the number of cases in that dataset sharing an identical (HPO term set, ground truth) fingerprint with another case in the same dataset.
 
----
 
 ## Reading the statistics
 
@@ -57,7 +53,6 @@ The PhenoBrain benchmark is split into six cohorts, each used independently (as 
 
 **Phenopacket Store version 0.1.27 contains 1,374 duplicate cases among 10,374 records, corresponding to approximately 13% of the dataset.** This is compatible with a documented limitation of the source data rather than being introduced by RareSim preprocessing. Danis et al. (2025) note that the same individual may be described in multiple publications under different identifiers and that duplicate detection is not handled by the Phenopacket Schema itself. RareSim does not perform cross-case deduplication during standardization. Consequently, duplicate records already present in the source dataset may remain in the standardized benchmark.
 
----
 
 ## Raw-text availability
 
@@ -68,7 +63,6 @@ Medical cases is the exception, and exists in two representations of the same 20
 - **HPO-based representation.** Phenotype terms were extracted from the underlying clinical text as a one-time offline preprocessing step when the benchmark was built. Only the extracted HPO terms and their ORPHA ground truth are provided to phenotype-based retrieval methods. This representation exercises RareSim's *ranking* methods on already-extracted phenotype profiles — it does not itself re-run or benchmark RareSim's HPO extraction pipeline, since that extraction happened upstream and independently.
 - **Raw-text representation.** Preserves the original clinical descriptions together with the same ORPHA ground-truth identifiers, in the [raw-text format](dataset-format.md#raw-text-format). This is what `run_transformer_text.py`, `run_llm_text.py`, and `run_tfidf_text.py` consume: the transformer and LLM methods use the clinical description directly, while `tfidf_text` compares the patient narrative against disease text representations. The two representations contain the same 200 cases and differ only in what patient information is supplied to the method.
 
----
 
 ## Contributing a new dataset
 

@@ -4,7 +4,6 @@
 
 RareSim retrieves and ranks candidate rare diseases for a patient, given either structured HPO (Human Phenotype Ontology) phenotype terms or raw clinical text. It implements several independent similarity/retrieval method families (set-based, semantic, TF-IDF, HPO2Vec, a denoising autoencoder, transformer embedding retrieval, and direct LLM retrieval) against a shared, precomputed corpus of disease profiles, and provides shared infrastructure — patient/disease data models, a common output schema, evaluation tooling, and a benchmarking/visualization layer — so those methods can be compared on equal footing.
 
----
 
 ## Repository layout
 
@@ -46,7 +45,6 @@ RareSim-Master-Project-/
 
 `data/` and `third_party/` are both gitignored, same as `outputs/` — none of the three come from cloning the repo. `data/ontologies/` and `data/models/` get populated by the [Installation](../getting-started/installation.md) bootstrap steps; `data/datasets/` (benchmark test sets) needs separate manual download — see the note in [Quick Start](../getting-started/quick-start.md#before-running-this-get-a-benchmark-dataset) and `data/README.md` itself.
 
----
 
 ## `raresim-core` directory tree
 
@@ -63,7 +61,6 @@ packages/raresim-core/src/raresim/
 `-- analysis/            Method comparison utilities
 ```
 
----
 
 ## The two core data objects
 
@@ -101,7 +98,6 @@ term_provenance
 
 Positive and excluded patient terms are kept strictly separate: `hpo_terms`/`propagated_hpo_terms` are positive evidence, `excluded_hpo_terms` is negative evidence, and a similarity method only acts on excluded terms if it explicitly implements that logic (see [`run_set_jaccard_penalized.py`](../evaluation/batch-runners-and-shared-utilities.md#run_set_jaccard_penalizedpy) for the one method that currently does).
 
----
 
 ## End-to-end data flow
 
@@ -131,7 +127,6 @@ Positive and excluded patient terms are kept strictly separate: `hpo_terms`/`pro
    MethodResults -> saved JSON / run cache / API response / frontend / evaluation cache
 ```
 
----
 
 ## HPO extraction (raw text → HPO terms)
 
@@ -147,7 +142,6 @@ Five extraction backends are available (`registry.py` / `_config.py` → `EXTRAC
 
 This package prepares patient-side input; it is not itself a disease-similarity method.
 
----
 
 ## Similarity methods
 
@@ -186,7 +180,6 @@ Every method ultimately returns a list of `SimilarityResult` objects (or plain d
 
 For batch evaluation of these methods against benchmark datasets, see [workflow-overview.md](../evaluation/workflow-overview.md) and the rest of the Evaluation section.
 
----
 
 ## Shared runtime infrastructure (`core/`)
 
@@ -209,7 +202,6 @@ analysis/method_comparison.py
 
 `analysis/method_comparison.py` is worth distinguishing from the evaluation layer: it answers "which methods agree on this one patient, right now" (consensus via reciprocal rank fusion, pairwise Jaccard agreement between method candidate sets) without any ground truth — agreement is not the same thing as correctness. The benchmark evaluator in `scripts/evaluation/evaluator.py` is the tool that actually scores methods against known-correct diagnoses; see [evaluator-and-metrics.md](../evaluation/evaluator-and-metrics.md).
 
----
 
 ## Where to go next
 

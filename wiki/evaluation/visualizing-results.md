@@ -27,7 +27,6 @@ Q6  Does combining methods (RRF) help?   Best ensemble vs best single method per
 Q7  How do method families compare?      Mean Recall@10 by family, across all datasets
 ```
 
----
 
 ## Where it fits in the workflow
 
@@ -49,7 +48,6 @@ run_*.py batch runners  ->  outputs/evaluation/<DATASET>/cache/case_*.json
 
 Run it after you've already run the evaluator for every dataset you want to compare — it doesn't call any batch runner or the evaluator itself, it only reads finished output files from disk.
 
----
 
 ## Expected input layout
 
@@ -98,7 +96,6 @@ RareSim JSON     "n_cases", "method_metrics" (per method:
 
 These are exactly the fields `evaluator.py` writes into `<DATASET>_evaluation.json` — see [evaluator-and-metrics.md](evaluator-and-metrics.md#output-files).
 
----
 
 ## Running it
 
@@ -127,7 +124,6 @@ python -m scripts.evaluation.benchmark_visualization.plot_evaluation_questions \
 
 `--top-n` controls how many methods appear in the Q2 recall curves (default 7).
 
----
 
 ## Outputs
 
@@ -154,7 +150,6 @@ outputs/evaluation_visual_questions/
 
 `evaluation_report.html` embeds every PNG as a base64 data URI and inlines its own CSS, so it's a single file you can open directly or send to someone without the rest of the `outputs/` tree.
 
----
 
 ## Name resolution (methods, tools, datasets)
 
@@ -170,7 +165,6 @@ system_type_for_raresim(method) # "RareSim method" vs "Ensemble" (anything named
 
 `method_family()` classifies by name pattern: `ensemble_*` → Ensemble, `semantic_*` → Semantic, `set_*` → Set-based, `tfidf`/`tfidf_cosine` → TF-IDF, `hpo2vec` → HPO2Vec, anything with "mistral" or "llm" in the name → LLM, anything with "autoencoder" → Autoencoder, anything with "bert"/"minilm"/"transformer" → Transformer encoder, and everything else falls into "Other RareSim method". A method not covered by any rule still shows up in every chart.
 
----
 
 ## Adding a method, tool, or dataset
 

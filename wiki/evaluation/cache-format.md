@@ -29,7 +29,6 @@ case_0002.json
 
 `<DATASET>` is normally the test-set filename stem, but the `_text` runners and `run_set_jaccard_penalized.py` accept `--cache-name` to target an existing dataset's cache explicitly (see [batch-runners-and-shared-utilities.md](batch-runners-and-shared-utilities.md)).
 
----
 
 ## Cache path
 
@@ -51,7 +50,6 @@ returns:
 outputs/evaluation/MME/cache/case_0000.json
 ```
 
----
 
 ## Cache file structure (HPO-term cases)
 
@@ -117,7 +115,6 @@ Example:
 
 If the case already exists in the cache (written earlier by another runner such as `run_set_based.py`), this runner preserves the existing `hpo_terms` and `ground_truth` rather than overwriting them with the negative-aware test set's values, and only warns (without failing) if the ground truth differs.
 
----
 
 ## Required fields
 
@@ -179,7 +176,6 @@ Written by the `_text` runners after `save_cache()`, so they survive subsequent 
 
 Written by `run_set_jaccard_penalized.py` after `save_cache()`.
 
----
 
 ## Result fields
 
@@ -205,7 +201,6 @@ Preferred format:
 
 The evaluator extracts disease IDs from, in order: `disease_id`, `canonical_disease_id`, `ordo_id`. See `get_disease_id_from_result()` in [evaluator-and-metrics.md](evaluator-and-metrics.md).
 
----
 
 ## Cache merging
 
@@ -244,7 +239,6 @@ and each case file accumulates results from all methods.
 
 The raw-text and negative-aware runners layer additional metadata (`case_id`/`raw_text` or `excluded_hpo_terms`) on top of this same merge behavior — see above.
 
----
 
 ## Resume behavior
 
@@ -272,7 +266,6 @@ python scripts/evaluation/run_set_based.py \
 
 Use `--no-resume` when old cached results for that method should be recomputed and overwritten (e.g. after a bug fix in the method implementation).
 
----
 
 ## Error files
 

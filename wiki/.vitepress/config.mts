@@ -67,8 +67,8 @@ export default defineConfig({
         items: [
           { text: 'Workflow Overview', link: '/evaluation/workflow-overview' },
           { text: 'Dataset Format', link: '/evaluation/dataset-format' },
-          { text: 'Dataset Available', link: '/evaluation/dataset-available' },
-          { text: 'Dataset Adding', link: '/evaluation/dataset-adding' },
+          { text: 'Available Datasets', link: '/evaluation/dataset-available' },
+          { text: 'Adding a Dataset', link: '/evaluation/dataset-adding' },
           { text: 'Benchmark Dataset Standardization', link: '/evaluation/benchmark-dataset-standardization' },
           { text: 'Batch Runners & Shared Utilities', link: '/evaluation/batch-runners-and-shared-utilities' },
           { text: 'Cache Format', link: '/evaluation/cache-format' },

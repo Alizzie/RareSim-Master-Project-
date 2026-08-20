@@ -2,7 +2,6 @@
 
 This assumes you've completed [Installation](installation.md) — `RARESIM_ROOT` is set and `outputs/artifacts/` is populated. A few paths from here depending on what you're trying to do: run the full benchmark evaluation workflow, run one method's pipeline directly against a single patient, or use the web interface. The first is more thoroughly verified against actual source code, so start there if you're unsure.
 
----
 
 ## Option A: run the benchmark evaluation workflow (recommended first run)
 
@@ -32,7 +31,6 @@ Check `outputs/evaluation/MME/MME_evaluation_summary.txt` for a human-readable r
 - See [workflow-overview.md](../evaluation/workflow-overview.md) for the complete recommended command sequence, and [dataset-available.md](../evaluation/dataset-available.md) for what other benchmark datasets exist.
 - Once you have results for a few methods, [visualizing-results.md](../evaluation/visualizing-results.md) turns them into comparison figures and an HTML report.
 
----
 
 ## Option B: run one similarity method's pipeline directly
 
@@ -80,7 +78,6 @@ The CPU-only method families (`set_based`, `semantic`, `tfidf`, `hpo2vec`) follo
 
 Without an explicit patient, these default to the example patient from installation.
 
----
 
 ## Option C: the web interface
 
@@ -98,7 +95,6 @@ npm run dev
 
 Then open the frontend's local dev URL in a browser. Reach for this if you want to try a patient interactively.
 
----
 
 ## Where output goes
 

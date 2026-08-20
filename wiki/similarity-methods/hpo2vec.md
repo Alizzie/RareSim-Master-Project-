@@ -15,7 +15,6 @@ pipeline.py      Pipeline entry point, model loading/caching, scoring loop
 explanation.py   Method-specific explanation block and base explainer delegation
 ```
 
----
 
 ## High-Level Method Logic
 
@@ -41,7 +40,6 @@ For each patient:
     Rank diseases by score
 ```
 
----
 
 ## Step 1: Build the Graph
 
@@ -62,7 +60,6 @@ graph[hpo_id].append(disease_id)
 
 All nodes — both HPO terms and disease IDs — live in the same graph.
 
----
 
 ## Step 2: IC-Weighted Random Walks
 
@@ -100,7 +97,6 @@ Probabilities are normalized to sum to 1.0 after applying both IC and bias weigh
 
 Walks from all nodes are shuffled before being passed to Word2Vec so the model does not see all walks from the same node consecutively.
 
----
 
 ## Step 3: Train Word2Vec
 
@@ -114,7 +110,6 @@ The random walks are treated as sentences and fed to a **Skip-gram Word2Vec** mo
 | `EPOCHS` | 5 |
 | `WORKERS` | 4 |
 
----
 
 ## Step 4: Embed Term Sets
 
@@ -128,7 +123,6 @@ embedding = Σ (IC(t) × vec(t))  /  Σ IC(t)   for t in terms ∩ vocab
 - Terms with no IC value (e.g. disease nodes used as patient terms) default to weight 1.0.
 - Returns `None` if no terms in the set have an embedding.
 
----
 
 ## Step 5: Cosine Similarity
 
@@ -138,19 +132,16 @@ score = cosine(patient_embedding, disease_embedding)
 
 Score is in **[-1, 1]** but in practice stays in **[0, 1]** for non-negative IC-weighted vectors.
 
----
 
 ## Model Caching
 
 Trained Word2Vec models are saved to `model_cache/` so they do not need to be retrained on every run. The cache is keyed on the training configuration. Delete the cache directory to force retraining.
 
----
 
 ## Important: Score vs HPO Overlap
 
 The score is driven entirely by **embedding geometry**, not by direct HPO term overlap. The matched/unmatched term fields shown in the explanation are computed from raw HPO set intersection for readability only and do not affect the score. The explanation explicitly notes this.
 
----
 
 ## Explanation Fields
 
@@ -169,7 +160,6 @@ The score is driven entirely by **embedding geometry**, not by direct HPO term o
 | `interpretation_note` | Clarifies matched terms are descriptive, not the score driver |
 | `n_patient_terms_in_vocab` | How many patient terms had a Word2Vec embedding (diagnostics) |
 
----
 
 ## Run Statistics
 

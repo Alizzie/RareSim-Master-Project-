@@ -4,7 +4,6 @@
 
 This page covers how to add a new patient test-set file to the benchmarking suite so it can be run through the batch runners and evaluator.
 
----
 
 ## 1. Choose the right format
 
@@ -24,7 +23,6 @@ to layer a penalized-method pass onto an existing HPO-term dataset?
 
 The format determines which batch runners can consume the file — the standard and raw-text formats are mutually exclusive per file (a runner picks its loader based on the file's shape and field names), so if you want both HPO-term and raw-text evaluation for the same patients, prepare two files.
 
----
 
 ## 2. Place the file
 
@@ -36,7 +34,6 @@ data/datasets/free_text/<NAME>.json                raw-text sets
 data/datasets/phenopackets/standardized_to_json<NAME>_with_excluded.json   negative-aware sets
 ```
 
----
 
 ## 3. Name the dataset
 
@@ -48,7 +45,6 @@ data/datasets/phenobrain_testdata/MME.json  ->  outputs/evaluation/MME/
 
 Raw-text and negative-aware runners accept `--cache-name` to override this — useful when you want a raw-text file's results to merge into an existing HPO-term dataset's cache, or vice versa, rather than getting a cache directory of its own.
 
----
 
 ## 4. Validate before a full run
 
@@ -68,7 +64,6 @@ python scripts/evaluation/run_set_based.py \
 
 Check the printed per-case lines and confirm `outputs/evaluation/MY_NEW_SET/cache/case_0000.json` (etc.) looks correct before running the rest of the methods and the full case count.
 
----
 
 ## 5. Run the full workflow
 
@@ -83,7 +78,6 @@ python scripts/evaluation/run_semantic.py --test-set data/datasets/NEW_DATASET_F
 python scripts/evaluation/evaluator.py --dataset MY_NEW_SET
 ```
 
----
 
 ## 6. Document the dataset
 

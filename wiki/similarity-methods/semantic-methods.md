@@ -21,7 +21,6 @@ pipeline.py      Pipeline entry point, IC filtering, bidirectional BMA scoring
 explanation.py   BMA directions, semantic clusters, weak matches, IC filter impact
 ```
 
----
 
 ## High-Level Method Logic
 
@@ -46,7 +45,6 @@ For each disease:
 Rank diseases by score
 ```
 
----
 
 ## Information Content (IC)
 
@@ -62,7 +60,6 @@ IC(term) = -log(df(term) / N)
 
 A term appearing in every disease has IC ≈ 0 and carries no discriminative signal. A term appearing in only one disease has a high IC and is a strong diagnostic signal. IC values are precomputed once and shared across all semantic methods.
 
----
 
 ## Most Informative Common Ancestor (MICA)
 
@@ -74,7 +71,6 @@ MICA(a, b) = argmax IC(t)  for t in ancestors(a) ∩ ancestors(b)
 
 Ancestor sets are computed inclusively, meaning each term is its own ancestor. MICA computation results are cached at module level keyed on `(term_a, term_b)`. Since ancestor sets and IC values are fixed for an entire batch run, the same pair always produces the same result. Call `clear_mica_cache()` between patients if memory becomes a concern.
 
----
 
 ## Pairwise Similarity Functions
 
@@ -103,7 +99,6 @@ JC_similarity(a, b) = 1 / (1 + distance)
 
 Distance-based measure converted to similarity. Bounded in **(0, 1]**. Returns 0.0 if no common ancestor exists.
 
----
 
 ## Best Match Average (BMA)
 
@@ -124,7 +119,6 @@ score = 0.5 × (p2d_avg + d2p_avg)
 
 This bidirectional averaging prevents a disease with many terms from always outscoring one with few, because the disease-to-patient direction penalizes diseases whose terms are not explained by the patient.
 
----
 
 ## IC Filtering
 
@@ -132,7 +126,6 @@ Before scoring, terms with IC below the configured threshold (`ic_threshold = 1.
 
 The filter impact — how many terms were removed and which ones — is recorded in the explanation.
 
----
 
 ## Semantic Clusters
 
@@ -144,7 +137,6 @@ The explanation layer groups patient-to-disease BMA matches by their shared MICA
 
 This gives a higher-level view of why the score is high: instead of listing individual term matches, clusters reveal the shared semantic concept driving the similarity. Only clusters with at least 2 patient terms are shown.
 
----
 
 ## Weak Matches
 
@@ -152,7 +144,6 @@ Patient terms whose best BMA partner scored below `WEAK_MATCH_THRESHOLD = 0.3` a
 
 Weak matches are sorted by IC descending so the most notable unexplained features appear first.
 
----
 
 ## BMA Asymmetry
 
@@ -170,7 +161,6 @@ The interpretation is classified as:
 | `patient_better_covered` | Patient terms match disease well; disease has many extra terms |
 | `disease_better_covered` | Disease terms match patient well; patient has unexplained terms |
 
----
 
 ## Explanation Fields
 
@@ -186,7 +176,6 @@ The interpretation is classified as:
 | `weak_patient_matches` | Patient terms with BMA score below 0.3, sorted by IC |
 | `ic_filter_impact` | Terms removed by IC threshold filtering, before/after counts |
 
----
 
 ## Run Statistics
 

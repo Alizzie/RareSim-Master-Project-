@@ -81,7 +81,6 @@ python -m raresim.build.load_ontologies_to_local
 python -m raresim.build.build_shared_artifacts
 ```
 
----
 
 ## Raw Input Files
 
