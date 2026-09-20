@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Before any similarity method runs, RareSim builds a set of shared JSON artifacts.
+Before any similarity method runs, Rarefully builds a set of shared JSON artifacts.
 
 These artifacts contain cleaned and standardized ontology data, disease profiles, HPO labels, disease mappings, metadata, ancestor relations, and information content values.
 

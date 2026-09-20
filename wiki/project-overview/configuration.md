@@ -1,6 +1,6 @@
 # Configuration
 
-RareSim's configuration is spread across a few deliberate layers: one environment variable that anchors every path, one file of build-time constants, one per-run config object that every similarity method reads, and per-method `config.py` files for method-specific tuning. This page covers each layer and where it lives.
+Rarefully's configuration is spread across a few deliberate layers: one environment variable that anchors every path, one file of build-time constants, one per-run config object that every similarity method reads, and per-method `config.py` files for method-specific tuning. This page covers each layer and where it lives.
 
 
 ## `RARESIM_ROOT` — the one required environment variable

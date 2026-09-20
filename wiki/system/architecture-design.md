@@ -2,19 +2,19 @@
 
 ## Purpose
 
-This page covers RareSim's overall system architecture: how the codebase is split into packages, how a request flows from raw patient input to a ranked result, and how similarity methods and their results are structured. For the exact build-time artifact mechanics, see the [Artifacts](/artifacts/shared-overview) section; for the offline benchmarking loop, see [Evaluation](/evaluation/workflow-overview); to see how external baseline tools work, see [Validation Tools](/validation/tools-overview); to see how similarity methods work, see [Similarity Methods](/similarity-methods/overview).
+This page covers Rarefully's overall system architecture: how the codebase is split into packages, how a request flows from raw patient input to a ranked result, and how similarity methods and their results are structured. For the exact build-time artifact mechanics, see the [Artifacts](/artifacts/shared-overview) section; for the offline benchmarking loop, see [Evaluation](/evaluation/workflow-overview); to see how external baseline tools work, see [Validation Tools](/validation/tools-overview); to see how similarity methods work, see [Similarity Methods](/similarity-methods/overview).
 
 ## Package Layout
 
 The repository is a small monorepo with four packages plus a scripts directory, alongside data, output, and documentation folders that aren't part of the installable code:
 
 ```text
-packages/raresim-core       Main RareSim logic: ontology processing, artifact
+packages/raresim-core       Main Rarefully logic: ontology processing, artifact
                              construction, patient/disease representations,
                              HPO extraction, similarity methods, ranking,
                              explanations, caching, method comparison.
 
-packages/raresim-backend    FastAPI layer exposing RareSim over HTTP,
+packages/raresim-backend    FastAPI layer exposing Rarefully over HTTP,
                              used by the Vue frontend.
 
 packages/raresim-frontend   Vue-based frontend: patient input, result
@@ -136,7 +136,7 @@ This keeps algorithm-specific logic separate from general infrastructure: a set-
 
 ## Runtime Pipeline
 
-At runtime, RareSim receives a patient case represented as a `PatientProfile` and compares it against the disease profile collection. Artifacts are loaded once through `AppContext`, giving every method access to the same disease profiles, HPO labels, information content values, HPO ancestors, disease ancestors, disease metadata, and alias mappings.
+At runtime, Rarefully receives a patient case represented as a `PatientProfile` and compares it against the disease profile collection. Artifacts are loaded once through `AppContext`, giving every method access to the same disease profiles, HPO labels, information content values, HPO ancestors, disease ancestors, disease metadata, and alias mappings.
 
 ```mermaid
 flowchart TD

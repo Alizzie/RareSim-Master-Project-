@@ -103,7 +103,7 @@ packages/raresim-core/src/raresim/build/build_shared_artifacts.py
 
 ## HPO Extraction Strategies
 
-When a patient case only supplies raw clinical text, phenotype mentions are extracted and mapped to HPO identifiers. RareSim does not commit to a single extraction strategy; the following are supported and selectable:
+When a patient case only supplies raw clinical text, phenotype mentions are extracted and mapped to HPO identifiers. Rarefully does not commit to a single extraction strategy; the following are supported and selectable:
 
 ```text
 Dictionary-based matching

@@ -193,7 +193,7 @@ dense embeddings
 direct HPO overlap for scoring
 ```
 
-`build_explanation(...)` wraps the LLM-specific explanation inside the shared RareSim explanation format. Shared HPO terms may be shown for readability, but they do not drive the LLM score.
+`build_explanation(...)` wraps the LLM-specific explanation inside the shared Rarefully explanation format. Shared HPO terms may be shown for readability, but they do not drive the LLM score.
 
 
 ## retriever.py
@@ -229,7 +229,7 @@ explainer_model
 
 ## pipeline.py
 
-Connects the LLM method to the shared RareSim pipeline runner.
+Connects the LLM method to the shared Rarefully pipeline runner.
 
 `run(patient, selected, config, ctx)` runs the LLM method for each selected model.
 
@@ -303,6 +303,6 @@ So the LLM method is generative and prompt-based, while the transformer method i
 
 # Summary
 
-The LLM method directly asks a generative model to retrieve rare diseases from patient text and direct HPO labels. The generated disease list is parsed, validated, scored using confidence labels, and converted into standard RareSim results. The same model can also generate clinical explanations for top candidates.
+The LLM method directly asks a generative model to retrieve rare diseases from patient text and direct HPO labels. The generated disease list is parsed, validated, scored using confidence labels, and converted into standard Rarefully results. The same model can also generate clinical explanations for top candidates.
 
 The score is not based on embeddings, information content, or direct HPO overlap. It is based on the LLM's generated confidence level.

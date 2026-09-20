@@ -2,7 +2,7 @@
 
 ## Purpose
 
-`raresim-cli` is the third way to run RareSim's retrieval pipeline, alongside the [backend API](/system/web-interface), the [frontend](/system/web-interface), and the offline [batch runners](/evaluation/workflow-overview). It's a terminal application (`app.py`) for direct, scripted, or interactive use without a running API server.
+`raresim-cli` is the third way to run Rarefully's retrieval pipeline, alongside the [backend API](/system/web-interface), the [frontend](/system/web-interface), and the offline [batch runners](/evaluation/workflow-overview). It's a terminal application (`app.py`) for direct, scripted, or interactive use without a running API server.
 
 ## Patient Input Modes
 

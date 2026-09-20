@@ -2,7 +2,7 @@
 
 ## Purpose
 
-A quick reference for what RareSim is actually built with — languages, key libraries, and the tools/frameworks tying the pieces together.
+A quick reference for what Rarefully is actually built with — languages, key libraries, and the tools/frameworks tying the pieces together.
 
 ## Programming Language
 

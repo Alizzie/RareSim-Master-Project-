@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This page explains how to add a new method to the RareSim evaluation workflow.
+This page explains how to add a new method to the Rarefully evaluation workflow.
 
 The evaluator automatically detects methods from cache files. Therefore, a new method does not need evaluator changes if it writes results in the expected format.
 
@@ -287,7 +287,7 @@ No evaluator changes are needed if the cache format is correct.
 ## Minimal new runner template
 
 ```python
-"""Batch runner for RareSim my_method similarity."""
+"""Batch runner for Rarefully my_method similarity."""
 
 import argparse
 from pathlib import Path

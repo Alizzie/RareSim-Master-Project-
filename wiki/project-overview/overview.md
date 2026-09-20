@@ -1,8 +1,8 @@
 # Project Overview
 
-## What RareSim is
+## What Rarefully is
 
-RareSim retrieves and ranks candidate rare diseases for a patient, given either structured HPO (Human Phenotype Ontology) phenotype terms or raw clinical text. It implements several independent similarity/retrieval method families (set-based, semantic, TF-IDF, HPO2Vec, a denoising autoencoder, transformer embedding retrieval, and direct LLM retrieval) against a shared, precomputed corpus of disease profiles, and provides shared infrastructure — patient/disease data models, a common output schema, evaluation tooling, and a benchmarking/visualization layer — so those methods can be compared on equal footing.
+Rarefully retrieves and ranks candidate rare diseases for a patient, given either structured HPO (Human Phenotype Ontology) phenotype terms or raw clinical text. It implements several independent similarity/retrieval method families (set-based, semantic, TF-IDF, HPO2Vec, a denoising autoencoder, transformer embedding retrieval, and direct LLM retrieval) against a shared, precomputed corpus of disease profiles, and provides shared infrastructure — patient/disease data models, a common output schema, evaluation tooling, and a benchmarking/visualization layer — so those methods can be compared on equal footing.
 
 
 ## Repository layout
@@ -57,14 +57,14 @@ packages/raresim-core/src/raresim/
 |-- ontology/            Ontology loading, phenotype merging, profile construction
 |-- hpo_extraction/      Extraction of HPO terms from patient text
 |-- core/                Runtime context, pipeline helpers, explanations, cache
-|-- similarity_methods/  Internal RareSim similarity and retrieval methods
+|-- similarity_methods/  Internal Rarefully similarity and retrieval methods
 `-- analysis/            Method comparison utilities
 ```
 
 
 ## The two core data objects
 
-Everything in RareSim revolves around two objects, defined in `types/schemas.py`.
+Everything in Rarefully revolves around two objects, defined in `types/schemas.py`.
 
 **`PatientProfile`** — the query side:
 

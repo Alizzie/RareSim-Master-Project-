@@ -1,7 +1,7 @@
-# RareSim
+# Rarefully
 
 A rare disease similarity pipeline for phenotype-driven diagnosis support.
-Given a patient's HPO terms or clinical text, RareSim ranks diseases by phenotypic similarity using multiple methods — semantic IC-based, set-based, TF-IDF, transformer, and LLM.
+Given a patient's HPO terms or clinical text, Rarefully ranks diseases by phenotypic similarity using multiple methods — semantic IC-based, set-based, TF-IDF, transformer, and LLM.
 
 ---
 
@@ -121,7 +121,7 @@ OPENAI_API_KEY=sk-...        # optional — only needed for GPT extraction
 ./setup.sh
 ```
 
-This bootstraps RareSim from a fresh clone to a runnable state, and all three steps are required; RareSim will not run without them:
+This bootstraps Rarefully from a fresh clone to a runnable state, and all three steps are required; Rarefully will not run without them:
 
 - Clones third-party tools ([FastHPOCR](https://github.com/tudorgroza/fast_hpo_cr)) into `third_party/`, skipping anything already cloned.
 - Downloads the ontology sources into `data/ontologies/`.

@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This page covers how RareSim's processes are actually deployed locally, and every external system it talks to.
+This page covers how Rarefully's processes are actually deployed locally, and every external system it talks to.
 
 ## Process Model
 
@@ -95,7 +95,7 @@ A public, hosted API at `phenobrain.cs.tsinghua.edu.cn` (Tsinghua University), n
 
 The validation-tool comparison also runs PhenoBrain **locally**.
 
-**Deployment.** This is a self-hosted deployment built from the authors' own pipeline ([`xiaohaomao/timgroup_disease_diagnosis`](https://github.com/xiaohaomao/timgroup_disease_diagnosis) on GitHub), run against RareSim's own datasets via that repo's evaluation entry point, `core/script/test/test_optimal_model.py`, on the `INTEGRATE_CCRD_OMIM_ORPHA` knowledge base.
+**Deployment.** This is a self-hosted deployment built from the authors' own pipeline ([`xiaohaomao/timgroup_disease_diagnosis`](https://github.com/xiaohaomao/timgroup_disease_diagnosis) on GitHub), run against Rarefully's own datasets via that repo's evaluation entry point, `core/script/test/test_optimal_model.py`, on the `INTEGRATE_CCRD_OMIM_ORPHA` knowledge base.
 
 **Two-step process.**
 

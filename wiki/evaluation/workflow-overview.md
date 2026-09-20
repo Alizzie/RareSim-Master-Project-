@@ -2,7 +2,7 @@
 
 ## Purpose
 
-The evaluation workflow compares RareSim similarity methods on benchmark test sets.
+The evaluation workflow compares Rarefully similarity methods on benchmark test sets.
 
 Three test-set shapes are supported, depending on which runner is used (full schemas in [dataset-format.md](dataset-format.md)):
 

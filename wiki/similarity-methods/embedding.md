@@ -13,7 +13,7 @@ config.py        Model list, constants, cache paths, and pipeline settings
 methods.py       Text construction and embedding backend utilities
 retriever.py     Disease ranking, caching, canonical deduplication, and result construction
 explanation.py   Structured explanations for transformer results
-pipeline.py      Pipeline entry point used by the RareSim framework
+pipeline.py      Pipeline entry point used by the Rarefully framework
 ```
 
 ## High-Level Method Logic
@@ -236,7 +236,7 @@ Shared HPO labels may be shown in the explanation, but they are only descriptive
 
 ## Pipeline Entry Point
 
-The `pipeline.py` file connects the transformer retriever to the general RareSim pipeline framework.
+The `pipeline.py` file connects the transformer retriever to the general Rarefully pipeline framework.
 
 The main `run()` function:
 
@@ -251,7 +251,7 @@ The main `run()` function:
 
 The `run_default_model()` function runs only the default transformer model, which is MiniLM. This is useful for frontend or API usage where loading all transformer models would be inefficient.
 
-The `main()` function allows the transformer pipeline to be run from the command line through the shared RareSim pipeline runner.
+The `main()` function allows the transformer pipeline to be run from the command line through the shared Rarefully pipeline runner.
 
 ## Run Statistics
 

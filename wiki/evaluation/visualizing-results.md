@@ -22,7 +22,7 @@ Q1  Which method performs best?          Recall@10 heatmap (method x dataset) + 
 Q2  Which method ranks the disease highest?  Recall@k curves per dataset, top-N methods
 Q3  Which method is too slow for its performance?  Runtime vs Recall@10 scatter per dataset
 Q4  Are some datasets much harder?       Best vs mean Recall@10 per dataset, + hard-case rate
-Q5  Do validation tools beat RareSim?    Best-per-system-type bars + validation-minus-RareSim gap
+Q5  Do validation tools beat Rarefully?    Best-per-system-type bars + validation-minus-Rarefully gap
 Q6  Does combining methods (RRF) help?   Best ensemble vs best single method per dataset
 Q7  How do method families compare?      Mean Recall@10 by family, across all datasets
 ```
@@ -71,7 +71,7 @@ RareSim-Master-Project-/
 └── scripts/evaluation/benchmark_visualization/
 ```
 
-RareSim results are read from `*evaluation*.json` (preferred) and/or `*summary*.tsv`, searched recursively under `--raresim`. Validation-tool results are read from `*summary*.tsv` under `--validation`.
+Rarefully results are read from `*evaluation*.json` (preferred) and/or `*summary*.tsv`, searched recursively under `--raresim`. Validation-tool results are read from `*summary*.tsv` under `--validation`.
 
 ### Validation-tool path convention (drives Q5)
 
@@ -88,7 +88,7 @@ Validation TSV   must have a "rank" column.
                  "case_id", "method", "query_time_sec" are recommended
                  (rows with no rank are treated as "not found").
 
-RareSim JSON     "n_cases", "method_metrics" (per method:
+Rarefully JSON     "n_cases", "method_metrics" (per method:
                  recall_1/3/5/10/20, mrr, ndcg, median_rank, found),
                  "method_avg_seconds", and optionally "rank_matrix"
                  (used for Q4's hard-case rate).
@@ -114,7 +114,7 @@ python -m scripts.evaluation.benchmark_visualization.make_evaluation_report \
     --output outputs/evaluation_visual_questions/evaluation_report.html
 ```
 
-RareSim only, skipping the validation-tool comparison (Q5/Q6 simply omit the tool bars):
+Rarefully only, skipping the validation-tool comparison (Q5/Q6 simply omit the tool bars):
 
 ```bash
 python -m scripts.evaluation.benchmark_visualization.plot_evaluation_questions \
@@ -160,10 +160,10 @@ normalize_dataset_name(value)   # folder/file token -> canonical dataset name (v
 clean_method_label(method)      # raw method key -> readable label (via METHOD_LABELS)
 validation_tool_label(path)     # "<tool>_benchmarks" parent folder -> tool label (via VALIDATION_TOOL_LABELS)
 method_family(method)           # raw method key -> family bucket, e.g. "Semantic", "Set-based", "Ensemble"
-system_type_for_raresim(method) # "RareSim method" vs "Ensemble" (anything named ensemble_*)
+system_type_for_raresim(method) # "Rarefully method" vs "Ensemble" (anything named ensemble_*)
 ```
 
-`method_family()` classifies by name pattern: `ensemble_*` → Ensemble, `semantic_*` → Semantic, `set_*` → Set-based, `tfidf`/`tfidf_cosine` → TF-IDF, `hpo2vec` → HPO2Vec, anything with "mistral" or "llm" in the name → LLM, anything with "autoencoder" → Autoencoder, anything with "bert"/"minilm"/"transformer" → Transformer encoder, and everything else falls into "Other RareSim method". A method not covered by any rule still shows up in every chart.
+`method_family()` classifies by name pattern: `ensemble_*` → Ensemble, `semantic_*` → Semantic, `set_*` → Set-based, `tfidf`/`tfidf_cosine` → TF-IDF, `hpo2vec` → HPO2Vec, anything with "mistral" or "llm" in the name → LLM, anything with "autoencoder" → Autoencoder, anything with "bert"/"minilm"/"transformer" → Transformer encoder, and everything else falls into "Other Rarefully method". A method not covered by any rule still shows up in every chart.
 
 
 ## Adding a method, tool, or dataset
@@ -172,7 +172,7 @@ Everything is discovered from disk. What auto-works vs. what needs a `config.py`
 
 | You add a… | Required | Optional |
 |---|---|---|
-| **RareSim method** (new key in `method_metrics`) | nothing | `METHOD_LABELS[key]` for a readable name; a `method_family()` rule only if it's a genuinely new family, else it shows as *Other RareSim method* |
+| **Rarefully method** (new key in `method_metrics`) | nothing | `METHOD_LABELS[key]` for a readable name; a `method_family()` rule only if it's a genuinely new family, else it shows as *Other Rarefully method* |
 | **Validation tool** (new `<tool>_benchmarks/` folder) | nothing | `VALIDATION_TOOL_LABELS[folder]` for correct casing, else it's title-cased from the folder name |
 | **Dataset** (new `evaluation/FOO/…`) | **add `"FOO"` to `DATASETS`** in `config.py`, or it is silently filtered out | `DATASET_COLORS["FOO"]` (else grey); a `DATASET_NAME_MAP` entry if the folder/file token isn't already the canonical name |
 

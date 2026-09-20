@@ -1,6 +1,6 @@
 # Output
 
-Everything RareSim writes to disk lives under `OUTPUTS_DIR` (`RARESIM_ROOT/outputs/` — see [Configuration](configuration.md)). This page is a map of what gets written where and by which layer, so you know which directory to check for a given question.
+Everything Rarefully writes to disk lives under `OUTPUTS_DIR` (`RARESIM_ROOT/outputs/` — see [Configuration](configuration.md)). This page is a map of what gets written where and by which layer, so you know which directory to check for a given question.
 
 The real top-level list, confirmed against an actual `outputs/` tree, is longer than the layers documented in depth below:
 

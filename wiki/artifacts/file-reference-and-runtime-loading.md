@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This page explains the generated artifact files and how they are loaded later by RareSim.
+This page explains the generated artifact files and how they are loaded later by Rarefully.
 
 Artifacts are saved under:
 

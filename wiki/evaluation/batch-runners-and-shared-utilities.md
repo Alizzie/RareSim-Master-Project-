@@ -2,13 +2,13 @@
 
 ## Purpose
 
-The batch runners execute RareSim similarity methods on every test case in a benchmark dataset.
+The batch runners execute Rarefully similarity methods on every test case in a benchmark dataset.
 
 Most runners follow the same general workflow:
 
 ```text
 1. Load benchmark test cases (HPO-term cases, or raw-text cases for text-mode runners).
-2. Load shared RareSim artifacts through AppContext.
+2. Load shared Rarefully artifacts through AppContext.
 3. Build a PatientProfile for each case.
 4. Run one method group.
 5. Serialize the results.

@@ -48,7 +48,7 @@ from:
 raresim/utils/paths.py
 ```
 
-The script downloads ontology, annotation, and auxiliary files used by RareSim. Most are used by build_shared_artifacts.py. The hpo.obo file is mainly used by the FastHPOCR extraction/indexing workflow, not directly by build_shared_artifacts.py.
+The script downloads ontology, annotation, and auxiliary files used by Rarefully. Most are used by build_shared_artifacts.py. The hpo.obo file is mainly used by the FastHPOCR extraction/indexing workflow, not directly by build_shared_artifacts.py.
 
 | Source key | Downloaded local file |
 |---|---|
@@ -84,7 +84,7 @@ python -m raresim.build.build_shared_artifacts
 
 ## Raw Input Files
 
-RareSim uses the following raw files.
+Rarefully uses the following raw files.
 
 ### HPO ontology
 

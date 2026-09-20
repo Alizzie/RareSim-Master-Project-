@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This page lists every benchmark dataset currently used for RareSim evaluation, with case counts, phenotype/ground-truth statistics, and sources. Case counts reflect what's present in the evaluation cache after standardization.
+This page lists every benchmark dataset currently used for Rarefully evaluation, with case counts, phenotype/ground-truth statistics, and sources. Case counts reflect what's present in the evaluation cache after standardization.
 
 **13,040 cases total** across five dataset sources (one of which, the PhenoBrain benchmark, is itself six separate cohorts).
 
@@ -51,7 +51,7 @@ The PhenoBrain benchmark is split into six cohorts, each used independently (as 
 
 **Ground-truth cardinality is not uniform either.** Medical cases has exactly one ground-truth disease per case throughout (0% Multi-GT), while MME, HMS, PUMCH-ADM, and RAMEDIS have more than one ground-truth disease in *every* case, and PUMCH_L averages over nine. This is why the evaluator's rank-based metrics are defined per case as the best rank across all ground-truth diseases (`rank_i = min` over the ground-truth set `G_i`) rather than assuming a single correct answer — see [evaluator-and-metrics.md](evaluator-and-metrics.md). A large share of cases genuinely have more than one acceptable answer.
 
-**Phenopacket Store version 0.1.27 contains 1,374 duplicate cases among 10,374 records, corresponding to approximately 13% of the dataset.** This is compatible with a documented limitation of the source data rather than being introduced by RareSim preprocessing. Danis et al. (2025) note that the same individual may be described in multiple publications under different identifiers and that duplicate detection is not handled by the Phenopacket Schema itself. RareSim does not perform cross-case deduplication during standardization. Consequently, duplicate records already present in the source dataset may remain in the standardized benchmark.
+**Phenopacket Store version 0.1.27 contains 1,374 duplicate cases among 10,374 records, corresponding to approximately 13% of the dataset.** This is compatible with a documented limitation of the source data rather than being introduced by Rarefully preprocessing. Danis et al. (2025) note that the same individual may be described in multiple publications under different identifiers and that duplicate detection is not handled by the Phenopacket Schema itself. Rarefully does not perform cross-case deduplication during standardization. Consequently, duplicate records already present in the source dataset may remain in the standardized benchmark.
 
 
 ## Raw-text availability
@@ -60,7 +60,7 @@ All benchmark datasets except **Medical cases** have 0% raw-text availability in
 
 Medical cases is the exception, and exists in two representations of the same 200 patients:
 
-- **HPO-based representation.** Phenotype terms were extracted from the underlying clinical text as a one-time offline preprocessing step when the benchmark was built. Only the extracted HPO terms and their ORPHA ground truth are provided to phenotype-based retrieval methods. This representation exercises RareSim's *ranking* methods on already-extracted phenotype profiles — it does not itself re-run or benchmark RareSim's HPO extraction pipeline, since that extraction happened upstream and independently.
+- **HPO-based representation.** Phenotype terms were extracted from the underlying clinical text as a one-time offline preprocessing step when the benchmark was built. Only the extracted HPO terms and their ORPHA ground truth are provided to phenotype-based retrieval methods. This representation exercises Rarefully's *ranking* methods on already-extracted phenotype profiles — it does not itself re-run or benchmark Rarefully's HPO extraction pipeline, since that extraction happened upstream and independently.
 - **Raw-text representation.** Preserves the original clinical descriptions together with the same ORPHA ground-truth identifiers, in the [raw-text format](dataset-format.md#raw-text-format). This is what `run_transformer_text.py`, `run_llm_text.py`, and `run_tfidf_text.py` consume: the transformer and LLM methods use the clinical description directly, while `tfidf_text` compares the patient narrative against disease text representations. The two representations contain the same 200 cases and differ only in what patient information is supplied to the method.
 
 

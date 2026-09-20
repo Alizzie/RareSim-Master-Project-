@@ -4,7 +4,7 @@
 
 Raw sources use different ID formats for the same disease or phenotype.
 
-RareSim normalizes identifiers and maps equivalent disease IDs to canonical IDs where possible.
+Rarefully normalizes identifiers and maps equivalent disease IDs to canonical IDs where possible.
 
 This is necessary because the same disease may appear as:
 
@@ -134,7 +134,7 @@ Rules:
 4. ORDO metadata may use exactMatch first, then xref fallback. The mapping utility also supports HOOM metadata, but the current build does not load HOOM metadata.
 5. If no reliable ORPHA mapping exists, the normalized original ID is kept.
 
-Important: RareSim does not force every disease ID to ORPHA.
+Important: Rarefully does not force every disease ID to ORPHA.
 
 This matters for identifiers such as:
 

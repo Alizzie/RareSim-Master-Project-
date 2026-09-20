@@ -1,6 +1,6 @@
-# Welcome to the RareSim wiki!
+# Welcome to the Rarefully wiki!
 
-RareSim retrieves and ranks candidate rare diseases for a patient, given either structured HPO phenotype terms or raw clinical text. It implements several independent similarity methods against a shared corpus of disease profiles, and provides shared infrastructure.
+Rarefully retrieves and ranks candidate rare diseases for a patient, given either structured HPO phenotype terms or raw clinical text. It implements several independent similarity methods against a shared corpus of disease profiles, and provides shared infrastructure.
 
 New here? Start with [Installation](getting-started/installation.md) and [Quick Start](getting-started/quick-start.md). If you want to read more about how the project is put together, head to [Project Overview](project-overview/overview.md).
 
