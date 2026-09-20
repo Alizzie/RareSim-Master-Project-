@@ -1,8 +1,8 @@
 import { defineConfig } from 'vitepress'
 
 export default defineConfig({
-  title: "RareSim Wiki",
-  description: "Documentation for the RareSim project",
+  title: "Rarefully Wiki",
+  description: "Documentation for the Rarefully project",
   base: process.env.VITEPRESS_BASE || "/",
   outDir: "../public",
   themeConfig: {
