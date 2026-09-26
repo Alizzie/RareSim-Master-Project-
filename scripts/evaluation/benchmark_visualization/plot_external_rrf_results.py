@@ -327,28 +327,28 @@ def plot_recall10_comparison(
         x - width,
         rarefully_rrf,
         width,
-        label="Rarefully ensemble (RRF)",
+        label="RRF (all Rarefully)",
     )
 
     bars_external = ax.bar(
         x,
         external,
         width,
-        label="Selected external system",
+        label="Selected validation tool",
     )
 
     bars_all_plus = ax.bar(
         x + width,
         all_plus_external,
         width,
-        label="A: All Rarefully + external",
+        label="A: RRF (all Rarefully + validation tool)",
     )
 
     bars_best_plus = ax.bar(
         x + 2 * width,
         best_plus_external,
         width,
-        label="B: Best Rarefully + external",
+        label="B: RRF (best Rarefully + validation tool)",
     )
 
     # Add Recall@10 values above every bar
